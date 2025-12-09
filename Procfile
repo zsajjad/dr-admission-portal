@@ -1,0 +1,1 @@
+web: NODE_OPTIONS="--max_old_space_size=768" next start
