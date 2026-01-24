@@ -106,4 +106,24 @@ export default defineMessages({
     id: `${scope}.cancel`,
     defaultMessage: 'Cancel',
   },
+  markAsManualVerification: {
+    id: `${scope}.markAsManualVerification`,
+    defaultMessage: 'Mark as Manual Verification Required',
+  },
+  manualVerificationSuccess: {
+    id: `${scope}.manualVerificationSuccess`,
+    defaultMessage: 'Admission marked for manual verification',
+  },
+  manualVerificationError: {
+    id: `${scope}.manualVerificationError`,
+    defaultMessage: 'Failed to mark admission for manual verification',
+  },
+  unverifiedInfo: {
+    id: `${scope}.unverifiedInfo`,
+    defaultMessage: 'This admission can be verified or marked for manual verification.',
+  },
+  manualVerificationRequiredInfo: {
+    id: `${scope}.manualVerificationRequiredInfo`,
+    defaultMessage: 'This admission requires manual verification. You can verify or reject it.',
+  },
 });

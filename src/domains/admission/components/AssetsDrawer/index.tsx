@@ -47,6 +47,8 @@ const getStatusColor = (status: string) => {
       return 'error';
     case 'DUPLICATE_MERGED':
       return 'warning';
+    case 'MANUAL_VERIFICATION_REQUIRED':
+      return 'warning';
     default:
       return 'default';
   }
@@ -68,6 +70,8 @@ export function AssetsDrawer({ open, onClose, admission }: AssetsDrawerProps) {
     rejectError: useFormattedMessage(messages.rejectError),
     rejectedReasonRequired: useFormattedMessage(messages.rejectedReasonRequired),
     rejectedReasonPlaceholder: useFormattedMessage(messages.rejectedReasonPlaceholder),
+    manualVerificationSuccess: useFormattedMessage(messages.manualVerificationSuccess),
+    manualVerificationError: useFormattedMessage(messages.manualVerificationError),
   };
 
   const handleVerify = useCallback(() => {
@@ -88,6 +92,29 @@ export function AssetsDrawer({ open, onClose, admission }: AssetsDrawerProps) {
         },
         onError: (error) => {
           enqueueSnackbar(extractNetworkError(error) || formattedMessages.verifyError, { variant: 'error' });
+        },
+      },
+    );
+  }, [admission, updateStatusMutation, queryClient, enqueueSnackbar, formattedMessages, onClose]);
+
+  const handleManualVerification = useCallback(() => {
+    if (!admission) return;
+
+    updateStatusMutation.mutate(
+      {
+        id: admission.id,
+        data: {
+          status: 'MANUAL_VERIFICATION_REQUIRED' as UpdateAdmissionStatusDtoStatus,
+        },
+      },
+      {
+        onSuccess: () => {
+          enqueueSnackbar(formattedMessages.manualVerificationSuccess, { variant: 'success' });
+          queryClient.invalidateQueries({ queryKey: [KEYS.ADMISSION_LISTING] });
+          onClose();
+        },
+        onError: (error) => {
+          enqueueSnackbar(extractNetworkError(error) || formattedMessages.manualVerificationError, { variant: 'error' });
         },
       },
     );
@@ -135,6 +162,8 @@ export function AssetsDrawer({ open, onClose, admission }: AssetsDrawerProps) {
 
   const isVerified = admission?.status === UpdateAdmissionStatusDtoStatus.VERIFIED;
   const isRejected = admission?.status === UpdateAdmissionStatusDtoStatus.REJECTED;
+  const isUnverified = admission?.status === UpdateAdmissionStatusDtoStatus.UNVERIFIED;
+  const isManualVerificationRequired = (admission?.status as string) === 'MANUAL_VERIFICATION_REQUIRED';
   const canChangeStatus = !isVerified && !isRejected;
 
   return (
@@ -309,6 +338,18 @@ export function AssetsDrawer({ open, onClose, admission }: AssetsDrawerProps) {
           {/* Action Buttons */}
           {canChangeStatus ? (
             <Stack spacing={2}>
+              {/* Info message based on current status */}
+              {isUnverified && (
+                <Alert severity="info">
+                  <FormattedMessage {...messages.unverifiedInfo} />
+                </Alert>
+              )}
+              {isManualVerificationRequired && (
+                <Alert severity="warning">
+                  <FormattedMessage {...messages.manualVerificationRequiredInfo} />
+                </Alert>
+              )}
+
               {!showRejectForm ? (
                 <>
                   <Button
@@ -325,15 +366,32 @@ export function AssetsDrawer({ open, onClose, admission }: AssetsDrawerProps) {
                       <FormattedMessage {...messages.markAsVerified} />
                     )}
                   </Button>
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    fullWidth
-                    onClick={() => setShowRejectForm(true)}
-                    disabled={updateStatusMutation.isPending}
-                  >
-                    <FormattedMessage {...messages.markAsRejected} />
-                  </Button>
+
+                  {/* UNVERIFIED: Can mark as MANUAL_VERIFICATION_REQUIRED */}
+                  {isUnverified && (
+                    <Button
+                      variant="outlined"
+                      color="warning"
+                      fullWidth
+                      onClick={handleManualVerification}
+                      disabled={updateStatusMutation.isPending}
+                    >
+                      <FormattedMessage {...messages.markAsManualVerification} />
+                    </Button>
+                  )}
+
+                  {/* MANUAL_VERIFICATION_REQUIRED: Can reject */}
+                  {isManualVerificationRequired && (
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      fullWidth
+                      onClick={() => setShowRejectForm(true)}
+                      disabled={updateStatusMutation.isPending}
+                    >
+                      <FormattedMessage {...messages.markAsRejected} />
+                    </Button>
+                  )}
                 </>
               ) : (
                 <>
