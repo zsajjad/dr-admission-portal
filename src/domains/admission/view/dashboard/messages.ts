@@ -73,6 +73,22 @@ export default defineMessages({
     id: 'app.admission.dashboard.classLevelStats',
     defaultMessage: 'Admissions by Class Level',
   },
+  tiflanClassBreakdown: {
+    id: 'app.admission.dashboard.tiflanClassBreakdown',
+    defaultMessage: 'Tiflan Class Breakdown',
+  },
+  muhibanGirlsBreakdown: {
+    id: 'app.admission.dashboard.muhibanGirlsBreakdown',
+    defaultMessage: 'Muhiban Girls',
+  },
+  muhibanBoysBreakdown: {
+    id: 'app.admission.dashboard.muhibanBoysBreakdown',
+    defaultMessage: 'Muhiban Boys',
+  },
+  nasiranGenderBreakdown: {
+    id: 'app.admission.dashboard.nasiranGenderBreakdown',
+    defaultMessage: 'Nasiran (Boys vs Girls)',
+  },
   // Status labels
   unverified: {
     id: 'app.admission.dashboard.unverified',

@@ -17,6 +17,7 @@ import {
   AdmissionsControllerFindAllSortBy,
   AdmissionsControllerFindAllStatus,
 } from '@/providers/service/app.schemas';
+import { useAreaControllerFindAll } from '@/providers/service/area/area';
 import { useBranchControllerFindAll } from '@/providers/service/branch/branch';
 import { useSessionControllerFindAll } from '@/providers/service/session/session';
 
@@ -58,6 +59,7 @@ interface AdmissionFilters {
   branchId?: string;
   sessionId?: string;
   status?: string;
+  areaId?: string;
 }
 
 export function AdmissionListing() {
@@ -94,6 +96,7 @@ export function AdmissionListing() {
     branchFilterLabel: useFormattedMessage(messages.branchFilterLabel),
     sessionFilterLabel: useFormattedMessage(messages.sessionFilterLabel),
     statusFilterLabel: useFormattedMessage(messages.statusFilterLabel),
+    areaFilterLabel: useFormattedMessage(messages.areaFilterLabel),
   };
 
   const { filters, setFilter, handleSortModelChange, handleFilterModelChange, handlePaginationModelChange } =
@@ -107,6 +110,13 @@ export function AdmissionListing() {
   const { data: sessionsData } = useSessionControllerFindAll({ take: 100 });
   const sessions = sessionsData?.data || [];
 
+  // Fetch areas for filter dropdown (filtered by branchId if available)
+  const { data: areasData } = useAreaControllerFindAll({
+    take: 100,
+    branchId: filters.branchId,
+  });
+  const areas = areasData?.data || [];
+
   // Find selected values for controlled Autocomplete
   const selectedBranch = useMemo(
     () => branches.find((b) => b.id === filters.branchId) || null,
@@ -117,6 +127,7 @@ export function AdmissionListing() {
     [sessions, filters.sessionId],
   );
   const selectedStatus = useMemo(() => statusOptions.find((s) => s.id === filters.status) || null, [filters.status]);
+  const selectedArea = useMemo(() => areas.find((a) => a.id === filters.areaId) || null, [areas, filters.areaId]);
 
   const {
     data: admissions,
@@ -130,7 +141,9 @@ export function AdmissionListing() {
       skip: filters.page * filters.pageSize,
       take: filters.pageSize,
       includeInActive: filters.includeInActive,
+      branchId: filters.branchId,
       sessionId: filters.sessionId,
+      areaId: filters.areaId,
       status: filters.status as AdmissionsControllerFindAllStatus,
     },
     {
@@ -250,7 +263,7 @@ export function AdmissionListing() {
           getOptionLabel={(option) => option.name || ''}
           value={selectedBranch}
           onChange={(_, newValue) => {
-            setFilter({ branchId: newValue?.id, page: 0 });
+            setFilter({ branchId: newValue?.id, areaId: undefined, page: 0 });
           }}
           renderInput={(params) => (
             <TextField {...params} label={<FormattedMessage {...messages.branchFilterLabel} />} />
@@ -281,6 +294,17 @@ export function AdmissionListing() {
           renderInput={(params) => (
             <TextField {...params} label={<FormattedMessage {...messages.statusFilterLabel} />} />
           )}
+        />
+        <Autocomplete
+          size="small"
+          sx={{ minWidth: 200 }}
+          options={areas}
+          getOptionLabel={(option) => option.name || ''}
+          value={selectedArea}
+          onChange={(_, newValue) => {
+            setFilter({ areaId: newValue?.id, page: 0 });
+          }}
+          renderInput={(params) => <TextField {...params} label={<FormattedMessage {...messages.areaFilterLabel} />} />}
         />
       </Stack>
 

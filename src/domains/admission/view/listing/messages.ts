@@ -78,4 +78,8 @@ export default defineMessages({
     id: `${scope}.statusFilterLabel`,
     defaultMessage: 'Status',
   },
+  areaFilterLabel: {
+    id: `${scope}.areaFilterLabel`,
+    defaultMessage: 'Area',
+  },
 });

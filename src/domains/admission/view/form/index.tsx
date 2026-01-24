@@ -2,6 +2,7 @@
 
 import React from 'react';
 
+import { format } from 'date-fns';
 import { useFormik } from 'formik';
 
 import { Alert, Checkbox, FormControlLabel, Grid, MenuItem, Stack, TextField, Typography } from '@mui/material';
@@ -88,7 +89,7 @@ export function AdmissionForm({ editItem, isLoading, isEditMode = false }: Admis
     fatherName: editItem?.student?.fatherName || '',
     phone: editItem?.student?.phone || '',
     alternatePhone: editItem?.student?.alternatePhone || '',
-    dateOfBirth: editItem?.student?.dateOfBirth || '',
+    dateOfBirth: editItem?.student?.dateOfBirth ? format(new Date(editItem.student.dateOfBirth), 'yyyy-MM-dd') : '',
     gender: (editItem?.student?.gender as UpdateAdmissionDtoGender) || UpdateAdmissionDtoGender.MALE,
     address: editItem?.student?.address || '',
     identityNumber: editItem?.student?.identityNumber || '',

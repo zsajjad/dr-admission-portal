@@ -1,44 +1,41 @@
 'use client';
 
-import React, { useEffect, useLayoutEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 
 import * as am5 from '@amcharts/amcharts5';
 import * as am5percent from '@amcharts/amcharts5/percent';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
 
-import { Box } from '@mui/material';
+import { ChartCard } from './ChartCard';
 
-type PieChartProps = {
-  data: { name: string; value: number; color?: string }[];
-  height?: number;
-  width?: number | string;
-  innerRadius?: number;
-  outerRadius?: number;
-  showLegend?: boolean;
-  colors?: string[];
-};
+export interface GenderChartData {
+  name: string;
+  value: number;
+  color: string;
+}
+
+export interface GenderDistributionChartProps {
+  title: React.ReactNode;
+  data: GenderChartData[];
+}
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
-export const PieChart: React.FC<PieChartProps> = ({
-  data,
-  height = 400,
-  width = '100%',
-  innerRadius = 50,
-  showLegend = true,
-  colors = ['#620E00', '#03A9F4', '#4CAF50', '#FF9800', '#9C27B0', '#E91E63'],
-}) => {
+export function GenderDistributionChart({ title, data }: GenderDistributionChartProps) {
   const chartRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<am5.Root | null>(null);
 
   useIsomorphicLayoutEffect(() => {
     if (!chartRef.current) return;
 
     const root = am5.Root.new(chartRef.current);
+    rootRef.current = root;
+
     root.setThemes([am5themes_Animated.new(root)]);
 
     const chart = root.container.children.push(
       am5percent.PieChart.new(root, {
-        innerRadius: am5.percent(innerRadius),
+        innerRadius: am5.percent(50),
         layout: root.verticalLayout,
       }),
     );
@@ -55,19 +52,26 @@ export const PieChart: React.FC<PieChartProps> = ({
       stroke: am5.color(0xffffff),
     });
 
-    // Set colors from data or defaults
     series.slices.template.adapters.add('fill', (fill, target) => {
       const dataItem = target.dataItem;
       if (dataItem) {
-        const dataContext = dataItem.dataContext as { color?: string };
+        const dataContext = dataItem.dataContext as GenderChartData;
         if (dataContext?.color) {
           return am5.color(dataContext.color);
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const index = series.dataItems.indexOf(dataItem as any);
-        return am5.color(colors[index % colors.length]);
       }
       return fill;
+    });
+
+    series.slices.template.adapters.add('stroke', (stroke, target) => {
+      const dataItem = target.dataItem;
+      if (dataItem) {
+        const dataContext = dataItem.dataContext as GenderChartData;
+        if (dataContext?.color) {
+          return am5.color(dataContext.color);
+        }
+      }
+      return stroke;
     });
 
     series.labels.template.setAll({
@@ -75,28 +79,17 @@ export const PieChart: React.FC<PieChartProps> = ({
       fontSize: 12,
     });
 
-    if (showLegend) {
-      const legend = chart.children.push(
-        am5.Legend.new(root, {
-          centerX: am5.percent(50),
-          x: am5.percent(50),
-          marginTop: 15,
-        }),
-      );
-      legend.data.setAll(chart.series.values);
-    }
-
     series.data.setAll(data);
     series.appear(1000, 100);
 
     return () => {
       root.dispose();
     };
-  }, [data, innerRadius, showLegend, colors]);
+  }, [data]);
 
   return (
-    <Box width={width} height={height}>
-      <div ref={chartRef} style={{ width: '100%', height: '100%' }} />
-    </Box>
+    <ChartCard title={title} minHeight={250}>
+      <div ref={chartRef} style={{ width: '100%', height: 250 }} />
+    </ChartCard>
   );
-};
+}

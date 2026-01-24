@@ -3,20 +3,15 @@
 import * as React from 'react';
 
 import Image from 'next/image';
-import RouterLink from 'next/link';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-import { Logo } from '@/components/Logo';
-
 import { colorSchemes } from '@/theme/color-schemes';
 import FormattedMessage from '@/theme/FormattedMessage';
 
 import images from '@/assets/images';
-
-import { routes } from '@/router/routes';
 
 import { config } from '@/config';
 
@@ -38,9 +33,6 @@ export function Layout({ children }: LayoutProps): React.JSX.Element {
       }}
     >
       <Box sx={{ display: 'flex', flex: '1 1 auto', flexDirection: 'column' }}>
-        <Box component={RouterLink} href={routes.home} sx={{ p: 3 }}>
-          <Logo width={'200px'} />
-        </Box>
         <Box sx={{ alignItems: 'center', display: 'flex', flex: '1 1 auto', justifyContent: 'center', p: 3 }}>
           <Box sx={{ maxWidth: '450px', width: '100%' }}>{children}</Box>
         </Box>

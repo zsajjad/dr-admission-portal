@@ -114,7 +114,9 @@ export function AssetsDrawer({ open, onClose, admission }: AssetsDrawerProps) {
           onClose();
         },
         onError: (error) => {
-          enqueueSnackbar(extractNetworkError(error) || formattedMessages.manualVerificationError, { variant: 'error' });
+          enqueueSnackbar(extractNetworkError(error) || formattedMessages.manualVerificationError, {
+            variant: 'error',
+          });
         },
       },
     );

@@ -1,13 +1,13 @@
-import Zoom from 'react-medium-image-zoom';
+import { useState } from 'react';
 
 import Image, { ImageProps } from 'next/image';
 import Link from 'next/link';
 
-import { Skeleton } from '@mui/material';
+import { Box, Modal, Skeleton } from '@mui/material';
 
 import { useAssetsControllerGetDetail } from '@/providers/service/assets/assets';
 
-import 'react-medium-image-zoom/dist/styles.css';
+import { FullScreenViewer } from './FullScreenViewer';
 
 interface AssetViewerProps extends Omit<ImageProps, 'src' | 'alt'> {
   assetId: string;
@@ -16,6 +16,7 @@ interface AssetViewerProps extends Omit<ImageProps, 'src' | 'alt'> {
 }
 
 export function AssetViewer({ assetId, zoomable = false, ...props }: AssetViewerProps) {
+  const [isFullScreen, setIsFullScreen] = useState(false);
   const { data: asset, isLoading } = useAssetsControllerGetDetail(assetId);
 
   if (isLoading) return <Skeleton variant="rectangular" {...props} />;
@@ -25,7 +26,33 @@ export function AssetViewer({ assetId, zoomable = false, ...props }: AssetViewer
   const imageElement = <Image id="next_image" src={asset?.signedUrl} alt={asset?.title} {...props} />;
 
   if (zoomable) {
-    return <Zoom>{imageElement}</Zoom>;
+    return (
+      <>
+        <Box onClick={() => setIsFullScreen(true)} sx={{ cursor: 'zoom-in', display: 'inline-block' }}>
+          {imageElement}
+        </Box>
+        <Modal
+          open={isFullScreen}
+          onClose={() => setIsFullScreen(false)}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          slotProps={{
+            backdrop: {
+              sx: {
+                backgroundColor: 'rgba(0, 0, 0, 0.9)',
+              },
+            },
+          }}
+        >
+          <Box>
+            <FullScreenViewer src={asset.signedUrl} alt={asset.title} onClose={() => setIsFullScreen(false)} />
+          </Box>
+        </Modal>
+      </>
+    );
   }
 
   return (

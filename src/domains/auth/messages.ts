@@ -15,6 +15,6 @@ export default defineMessages({
   description: {
     id: `${scope}.description`,
     defaultMessage:
-      'A centralized control panel that enables administrators to securely manage users, platform operations, and investments.',
+      'A centralized control panel that enables administrators to securely manage admissions, branches, questions, and users.',
   },
 });
