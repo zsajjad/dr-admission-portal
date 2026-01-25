@@ -68,7 +68,7 @@ export function VanChip({ areaId, branchId, gender, classLevelName, hasVan, hasB
   return (
     <Chip
       label={van.name}
-      size="small"
+      size="medium"
       sx={{
         backgroundColor: van.colorHex,
         color: getContrastColor(van.colorHex),

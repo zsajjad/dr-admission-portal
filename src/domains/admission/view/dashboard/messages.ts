@@ -151,9 +151,33 @@ export default defineMessages({
     id: 'app.admission.dashboard.areaId',
     defaultMessage: 'Area ID',
   },
+  tiflanMale: {
+    id: 'app.admission.dashboard.tiflanMale',
+    defaultMessage: 'Tiflan M',
+  },
+  tiflanFemale: {
+    id: 'app.admission.dashboard.tiflanFemale',
+    defaultMessage: 'Tiflan F',
+  },
+  muhibanMale: {
+    id: 'app.admission.dashboard.muhibanMale',
+    defaultMessage: 'Muhiban M',
+  },
+  muhibanFemale: {
+    id: 'app.admission.dashboard.muhibanFemale',
+    defaultMessage: 'Muhiban F',
+  },
+  nasiranMale: {
+    id: 'app.admission.dashboard.nasiranMale',
+    defaultMessage: 'Nasiran M',
+  },
+  nasiranFemale: {
+    id: 'app.admission.dashboard.nasiranFemale',
+    defaultMessage: 'Nasiran F',
+  },
   thisYear: {
     id: 'app.admission.dashboard.thisYear',
-    defaultMessage: 'This Year',
+    defaultMessage: 'Total',
   },
   lastYear: {
     id: 'app.admission.dashboard.lastYear',

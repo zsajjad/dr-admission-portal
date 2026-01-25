@@ -1269,6 +1269,18 @@ export interface AdmissionsDashboardAreaStat {
   id: string;
   /** Area name */
   name: string;
+  /** Tiflan male students count */
+  tiflanMale: number;
+  /** Tiflan female students count */
+  tiflanFemale: number;
+  /** Muhiban male students count */
+  muhibanMale: number;
+  /** Muhiban female students count */
+  muhibanFemale: number;
+  /** Nasiran male students count */
+  nasiranMale: number;
+  /** Nasiran female students count */
+  nasiranFemale: number;
   /** Number of admissions this year (current session) */
   thisYear: number;
   /** Number of admissions from last year (stored in area.lastYearTotal) */
@@ -1327,7 +1339,7 @@ export interface AdmissionsDashboardClassFeeStats {
 }
 
 export interface FeeCardClassStat {
-  /** Class level code (e.g., "Tiflan1", "Muhiban5") */
+  /** Class level code (e.g., "Tiflan1", "Muhibaan5") */
   code: string;
   /** Class level display name */
   name: string;

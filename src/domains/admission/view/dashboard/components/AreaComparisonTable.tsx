@@ -51,20 +51,38 @@ export function AreaComparisonTable({ data }: AreaComparisonTableProps) {
           <Table size="small">
             <TableHead>
               <TableRow sx={{ backgroundColor: 'rgba(0, 0, 0, 0.04)' }}>
-                <TableCell sx={{ fontWeight: 600, width: 50 }}>#</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>
+                <TableCell sx={{ fontWeight: 600, width: 40, p: 1 }}>#</TableCell>
+                <TableCell sx={{ fontWeight: 600, p: 1 }}>
                   <FormattedMessage {...messages.areaId} />
                 </TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>
+                <TableCell sx={{ fontWeight: 600, p: 1 }}>
                   <FormattedMessage {...messages.areaName} />
                 </TableCell>
-                <TableCell align="right" sx={{ fontWeight: 600 }}>
+                <TableCell align="center" sx={{ fontWeight: 600, p: 1 }}>
+                  <FormattedMessage {...messages.tiflanMale} />
+                </TableCell>
+                <TableCell align="center" sx={{ fontWeight: 600, p: 1 }}>
+                  <FormattedMessage {...messages.tiflanFemale} />
+                </TableCell>
+                <TableCell align="center" sx={{ fontWeight: 600, p: 1 }}>
+                  <FormattedMessage {...messages.muhibanMale} />
+                </TableCell>
+                <TableCell align="center" sx={{ fontWeight: 600, p: 1 }}>
+                  <FormattedMessage {...messages.muhibanFemale} />
+                </TableCell>
+                <TableCell align="center" sx={{ fontWeight: 600, p: 1 }}>
+                  <FormattedMessage {...messages.nasiranMale} />
+                </TableCell>
+                <TableCell align="center" sx={{ fontWeight: 600, p: 1 }}>
+                  <FormattedMessage {...messages.nasiranFemale} />
+                </TableCell>
+                <TableCell align="center" sx={{ fontWeight: 600, p: 1 }}>
                   <FormattedMessage {...messages.thisYear} />
                 </TableCell>
-                <TableCell align="right" sx={{ fontWeight: 600 }}>
+                <TableCell align="center" sx={{ fontWeight: 600, p: 1 }}>
                   <FormattedMessage {...messages.lastYear} />
                 </TableCell>
-                <TableCell align="right" sx={{ fontWeight: 600 }}>
+                <TableCell align="center" sx={{ fontWeight: 600, p: 1 }}>
                   <FormattedMessage {...messages.change} />
                 </TableCell>
               </TableRow>
@@ -79,26 +97,43 @@ export function AreaComparisonTable({ data }: AreaComparisonTableProps) {
                       '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.02)' },
                     }}
                   >
-                    <TableCell sx={{ color: 'text.secondary', padding: 1, paddingX: 2 }}>{index + 1}</TableCell>
-                    <TableCell className="font-urdu" sx={{ padding: 1, paddingX: 2 }}>
+                    <TableCell sx={{ color: 'text.secondary', p: 1 }}>{index + 1}</TableCell>
+                    <TableCell className="font-urdu" sx={{ p: 1 }}>
                       {area.id}
                     </TableCell>
-                    <TableCell className="font-urdu" sx={{ padding: 1, paddingX: 2 }}>
+                    <TableCell className="font-urdu" sx={{ p: 1 }}>
                       {area.name}
                     </TableCell>
-                    <TableCell align="right" sx={{ padding: 1, paddingX: 2 }}>
+                    <TableCell align="center" sx={{ p: 1 }}>
+                      {area.tiflanMale}
+                    </TableCell>
+                    <TableCell align="center" sx={{ p: 1 }}>
+                      {area.tiflanFemale}
+                    </TableCell>
+                    <TableCell align="center" sx={{ p: 1 }}>
+                      {area.muhibanMale}
+                    </TableCell>
+                    <TableCell align="center" sx={{ p: 1 }}>
+                      {area.muhibanFemale}
+                    </TableCell>
+                    <TableCell align="center" sx={{ p: 1 }}>
+                      {area.nasiranMale}
+                    </TableCell>
+                    <TableCell align="center" sx={{ p: 1 }}>
+                      {area.nasiranFemale}
+                    </TableCell>
+                    <TableCell align="center" sx={{ p: 1, fontWeight: 600 }}>
                       {area.thisYear}
                     </TableCell>
-                    <TableCell align="right" sx={{ padding: 1, paddingX: 2 }}>
+                    <TableCell align="center" sx={{ p: 1 }}>
                       {area.lastYear}
                     </TableCell>
                     <TableCell
-                      align="right"
+                      align="center"
                       sx={{
                         fontWeight: 600,
                         color: change > 0 ? '#2E7D32' : change < 0 ? '#C0392B' : theme.palette.text.secondary,
-                        padding: 1,
-                        paddingX: 2,
+                        p: 1,
                       }}
                     >
                       {change > 0 ? '+' : ''}
