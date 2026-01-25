@@ -7,11 +7,12 @@ import { useFormik } from 'formik';
 
 import { Alert, Checkbox, FormControlLabel, Grid, MenuItem, Stack, TextField, Typography } from '@mui/material';
 
+import { AssetUploader } from '@/components/Asset/Uploader';
 import { FormSkeleton } from '@/components/Skeleton/FormSkeleton';
 import { SubmitButton } from '@/components/SubmitButton';
 
 import { useAdmissionsControllerUpdate } from '@/providers/service/admissions/admissions';
-import { Admission, UpdateAdmissionDtoGender } from '@/providers/service/app.schemas';
+import { Admission, AssetsControllerUploadPublicType, UpdateAdmissionDtoGender } from '@/providers/service/app.schemas';
 
 import { FormattedMessage, useFormattedMessage } from '@/theme/FormattedMessage';
 
@@ -46,6 +47,7 @@ interface FormValues {
   vanRequired: boolean;
   isMarried: boolean;
   isWorking: boolean;
+  identityProofAssetId?: string;
 }
 
 export function AdmissionForm({ editItem, isLoading, isEditMode = false }: AdmissionFormProps): React.JSX.Element {
@@ -82,6 +84,10 @@ export function AdmissionForm({ editItem, isLoading, isEditMode = false }: Admis
     schoolNamePlaceholder: useFormattedMessage(messages.schoolNamePlaceholder),
     schoolClassPlaceholder: useFormattedMessage(messages.schoolClassPlaceholder),
     lastYearClassPlaceholder: useFormattedMessage(messages.lastYearClassPlaceholder),
+
+    // Asset uploader
+    identityProofLabel: useFormattedMessage(messages.identityProofLabel),
+    identityProofHelperText: useFormattedMessage(messages.identityProofHelperText),
   };
 
   const initialValues: FormValues = {
@@ -101,6 +107,7 @@ export function AdmissionForm({ editItem, isLoading, isEditMode = false }: Admis
     vanRequired: editItem?.vanRequired || false,
     isMarried: editItem?.isMarried || false,
     isWorking: editItem?.isWorking || false,
+    identityProofAssetId: editItem?.student?.identityProofAssetId || undefined,
   };
 
   const formik = useFormik<FormValues>({
@@ -129,6 +136,7 @@ export function AdmissionForm({ editItem, isLoading, isEditMode = false }: Admis
             vanRequired: values.vanRequired,
             isMarried: values.isMarried,
             isWorking: values.isWorking,
+            identityProofAssetId: values.identityProofAssetId,
           },
         };
         admissionUpdateMutation.mutate(
@@ -289,6 +297,20 @@ export function AdmissionForm({ editItem, isLoading, isEditMode = false }: Admis
             error={touched.identityNumber && Boolean(errors.identityNumber)}
             placeholder={generalMessages.identityNumberPlaceholder}
             label={<FormattedMessage {...messages.identityNumberLabel} />}
+          />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, md: 6, lg: 6 }}>
+          <AssetUploader
+            category="admission"
+            type={AssetsControllerUploadPublicType.IMAGE}
+            label={generalMessages.identityProofLabel}
+            helperText={generalMessages.identityProofHelperText}
+            initialValue={values.identityProofAssetId ? { id: values.identityProofAssetId } : undefined}
+            onUploadSuccess={(asset) => setFieldValue('identityProofAssetId', asset.id)}
+            onDeleteSuccess={() => setFieldValue('identityProofAssetId', undefined)}
+            onError={() => {}}
+            height={120}
+            disabled={isSubmitting}
           />
         </Grid>
       </Grid>

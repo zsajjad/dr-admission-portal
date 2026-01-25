@@ -222,4 +222,14 @@ export default defineMessages({
     id: `${scope}.failedToFetch`,
     defaultMessage: 'Failed to fetch admission',
   },
+
+  // Asset uploader
+  identityProofLabel: {
+    id: `${scope}.identityProofLabel`,
+    defaultMessage: 'Identity Proof (B-Form/CNIC)',
+  },
+  identityProofHelperText: {
+    id: `${scope}.identityProofHelperText`,
+    defaultMessage: 'Upload a scanned copy of B-Form or CNIC',
+  },
 });
