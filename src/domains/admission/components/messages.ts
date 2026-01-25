@@ -24,4 +24,8 @@ export default defineMessages({
     id: `${scope}.heading.edit`,
     defaultMessage: 'Edit Admission',
   },
+  fromLegacy: {
+    id: `${scope}.heading.fromLegacy`,
+    defaultMessage: 'Admission from Legacy Data',
+  },
 });

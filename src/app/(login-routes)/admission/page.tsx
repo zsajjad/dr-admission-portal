@@ -8,7 +8,7 @@ import { AdmissionListing } from '@/domains/admission/view/listing';
 export default function AdmissionPage(): React.JSX.Element {
   return (
     <Stack>
-      <Heading showAddButton headingType="list" showIncludeInActive />
+      <Heading showAddButton showFromLegacyButton headingType="list" showIncludeInActive />
       <AdmissionListing />
     </Stack>
   );

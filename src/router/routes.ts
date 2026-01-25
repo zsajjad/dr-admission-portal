@@ -20,6 +20,7 @@ export const routes = {
   admission: {
     listing: '/admission',
     create: '/admission/create',
+    fromLegacy: '/admission/from-legacy',
     edit: (id: string) => `/admission/edit/${id}`,
     detail: (id: string) => `/admission/${id}`,
   },
