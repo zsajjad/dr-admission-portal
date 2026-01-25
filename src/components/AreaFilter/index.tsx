@@ -25,7 +25,7 @@ export interface AreaFilterProps {
   onAreaChange?: (areaId: string | undefined) => void;
 }
 
-export function AreaFilter({ size = 'small', minWidth = 180, onAreaChange }: AreaFilterProps) {
+export function AreaFilter({ size = 'small', minWidth = 280, onAreaChange }: AreaFilterProps) {
   const { filters, setFilter } = useListingFilters<AreaFilterState>();
 
   // Fetch areas for filter dropdown (filtered by branchId if available)
@@ -52,12 +52,16 @@ export function AreaFilter({ size = 'small', minWidth = 180, onAreaChange }: Are
       value={selectedArea}
       onChange={handleChange}
       renderOption={(props, option) => (
-        <li {...props} key={option.id} className="font-urdu">
+        <li {...props} key={option.id} className={`${props.className || ''} font-urdu`} style={{ padding: '8px 16px' }}>
           {option.name}
         </li>
       )}
       renderInput={(params) => (
-        <TextField {...params} label={<FormattedMessage {...messages.areaLabel} />} className="font-urdu" />
+        <TextField
+          {...params}
+          label={<FormattedMessage {...messages.areaLabel} />}
+          inputProps={{ ...params.inputProps, className: `${params.inputProps?.className || ''} font-urdu` }}
+        />
       )}
     />
   );

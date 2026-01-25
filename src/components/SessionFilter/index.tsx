@@ -24,7 +24,7 @@ export interface SessionFilterProps {
   onSessionChange?: (sessionId: string | undefined) => void;
 }
 
-export function SessionFilter({ size = 'small', minWidth = 180, onSessionChange }: SessionFilterProps) {
+export function SessionFilter({ size = 'small', minWidth = 280, onSessionChange }: SessionFilterProps) {
   const { filters, setFilter } = useListingFilters<SessionFilterState>();
 
   // Fetch sessions for filter dropdown
@@ -51,12 +51,16 @@ export function SessionFilter({ size = 'small', minWidth = 180, onSessionChange 
       value={selectedSession}
       onChange={handleChange}
       renderOption={(props, option) => (
-        <li {...props} key={option.id} className="font-urdu">
+        <li {...props} key={option.id} className={`${props.className || ''} font-urdu`} style={{ padding: '8px 16px' }}>
           {option.name}
         </li>
       )}
       renderInput={(params) => (
-        <TextField {...params} label={<FormattedMessage {...messages.sessionLabel} />} className="font-urdu" />
+        <TextField
+          {...params}
+          label={<FormattedMessage {...messages.sessionLabel} />}
+          inputProps={{ ...params.inputProps, className: `${params.inputProps?.className || ''} font-urdu` }}
+        />
       )}
     />
   );

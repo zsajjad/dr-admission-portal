@@ -28,7 +28,7 @@ export interface BranchFilterProps {
 
 export function BranchFilter({
   size = 'small',
-  minWidth = 180,
+  minWidth = 280,
   onBranchChange,
   resetFiltersOnChange = [],
 }: BranchFilterProps) {
@@ -65,12 +65,16 @@ export function BranchFilter({
       value={selectedBranch}
       onChange={handleChange}
       renderOption={(props, option) => (
-        <li {...props} key={option.id} className="font-urdu">
+        <li {...props} key={option.id} className={`${props.className || ''} font-urdu`} style={{ padding: '8px 16px' }}>
           {option.name}
         </li>
       )}
       renderInput={(params) => (
-        <TextField {...params} label={<FormattedMessage {...messages.branchLabel} />} className="font-urdu" />
+        <TextField
+          {...params}
+          label={<FormattedMessage {...messages.branchLabel} />}
+          inputProps={{ ...params.inputProps, className: `${params.inputProps?.className || ''} font-urdu` }}
+        />
       )}
     />
   );

@@ -53,6 +53,9 @@ export function AreaComparisonTable({ data }: AreaComparisonTableProps) {
               <TableRow sx={{ backgroundColor: 'rgba(0, 0, 0, 0.04)' }}>
                 <TableCell sx={{ fontWeight: 600, width: 50 }}>#</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>
+                  <FormattedMessage {...messages.areaId} />
+                </TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>
                   <FormattedMessage {...messages.areaName} />
                 </TableCell>
                 <TableCell align="right" sx={{ fontWeight: 600 }}>
@@ -76,15 +79,26 @@ export function AreaComparisonTable({ data }: AreaComparisonTableProps) {
                       '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.02)' },
                     }}
                   >
-                    <TableCell sx={{ color: 'text.secondary' }}>{index + 1}</TableCell>
-                    <TableCell>{area.name}</TableCell>
-                    <TableCell align="right">{area.thisYear}</TableCell>
-                    <TableCell align="right">{area.lastYear}</TableCell>
+                    <TableCell sx={{ color: 'text.secondary', padding: 1, paddingX: 2 }}>{index + 1}</TableCell>
+                    <TableCell className="font-urdu" sx={{ padding: 1, paddingX: 2 }}>
+                      {area.id}
+                    </TableCell>
+                    <TableCell className="font-urdu" sx={{ padding: 1, paddingX: 2 }}>
+                      {area.name}
+                    </TableCell>
+                    <TableCell align="right" sx={{ padding: 1, paddingX: 2 }}>
+                      {area.thisYear}
+                    </TableCell>
+                    <TableCell align="right" sx={{ padding: 1, paddingX: 2 }}>
+                      {area.lastYear}
+                    </TableCell>
                     <TableCell
                       align="right"
                       sx={{
                         fontWeight: 600,
                         color: change > 0 ? '#2E7D32' : change < 0 ? '#C0392B' : theme.palette.text.secondary,
+                        padding: 1,
+                        paddingX: 2,
                       }}
                     >
                       {change > 0 ? '+' : ''}

@@ -10,7 +10,7 @@ import { extractNetworkError } from '@/utils/extractNetworkError';
 
 import {
   AreaComparisonTable,
-  ClassBreakdownChart,
+  ClassFeeBreakdownChart,
   DashboardFilters,
   FunnelMetricsChart,
   GenderDistributionChart,
@@ -42,10 +42,10 @@ export function AdmissionDashboard() {
     trendChartData,
     groupChartData,
     areaTableData,
-    tiflanClassChartData,
-    muhibanGirlsChartData,
-    muhibanBoysChartData,
-    nasiranGenderChartData,
+    tiflanFeeChartData,
+    muhibanBoysFeeChartData,
+    muhibanGirlsFeeChartData,
+    nasiranFeeChartData,
   } = useDashboardData({ branchId: filters.branchId, sessionId: filters.sessionId });
 
   if (isLoading) {
@@ -147,37 +147,34 @@ export function AdmissionDashboard() {
         </Grid>
       </Grid>
 
-      {/* Charts Row 3 - Tiflan & Nasiran */}
+      {/* Charts Row 3 - Fee Breakdown Cards (Confirmed vs Expected) */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid size={{ xs: 12, md: 6 }}>
-          <ClassBreakdownChart
-            title={<FormattedMessage {...messages.tiflanClassBreakdown} />}
-            data={tiflanClassChartData}
-            color="#1565C0"
+          <ClassFeeBreakdownChart
+            title={<FormattedMessage {...messages.tiflanFeeBreakdown} />}
+            data={tiflanFeeChartData}
           />
         </Grid>
         <Grid size={{ xs: 12, md: 6 }}>
-          <GenderDistributionChart
-            title={<FormattedMessage {...messages.nasiranGenderBreakdown} />}
-            data={nasiranGenderChartData}
+          <ClassFeeBreakdownChart
+            title={<FormattedMessage {...messages.nasiranFeeBreakdown} />}
+            data={nasiranFeeChartData}
           />
         </Grid>
       </Grid>
 
-      {/* Charts Row 4 - Muhiban Girls & Boys (Full Width) */}
+      {/* Charts Row 4 - Muhiban Fee Breakdown (Boys & Girls) */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid size={{ xs: 12, md: 6 }}>
-          <ClassBreakdownChart
-            title={<FormattedMessage {...messages.muhibanGirlsBreakdown} />}
-            data={muhibanGirlsChartData}
-            color="#E91E63"
+          <ClassFeeBreakdownChart
+            title={<FormattedMessage {...messages.muhibanBoysFeeBreakdown} />}
+            data={muhibanBoysFeeChartData}
           />
         </Grid>
         <Grid size={{ xs: 12, md: 6 }}>
-          <ClassBreakdownChart
-            title={<FormattedMessage {...messages.muhibanBoysBreakdown} />}
-            data={muhibanBoysChartData}
-            color="#1565C0"
+          <ClassFeeBreakdownChart
+            title={<FormattedMessage {...messages.muhibanGirlsFeeBreakdown} />}
+            data={muhibanGirlsFeeChartData}
           />
         </Grid>
       </Grid>

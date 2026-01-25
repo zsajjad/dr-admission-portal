@@ -73,21 +73,21 @@ export default defineMessages({
     id: 'app.admission.dashboard.classLevelStats',
     defaultMessage: 'Admissions by Class Level',
   },
-  tiflanClassBreakdown: {
-    id: 'app.admission.dashboard.tiflanClassBreakdown',
-    defaultMessage: 'Tiflan Class Breakdown',
+  tiflanFeeBreakdown: {
+    id: 'app.admission.dashboard.tiflanFeeBreakdown',
+    defaultMessage: 'Tiflan',
   },
-  muhibanGirlsBreakdown: {
-    id: 'app.admission.dashboard.muhibanGirlsBreakdown',
-    defaultMessage: 'Muhiban Girls',
-  },
-  muhibanBoysBreakdown: {
-    id: 'app.admission.dashboard.muhibanBoysBreakdown',
+  muhibanBoysFeeBreakdown: {
+    id: 'app.admission.dashboard.muhibanBoysFeeBreakdown',
     defaultMessage: 'Muhiban Boys',
   },
-  nasiranGenderBreakdown: {
-    id: 'app.admission.dashboard.nasiranGenderBreakdown',
-    defaultMessage: 'Nasiran (Boys vs Girls)',
+  muhibanGirlsFeeBreakdown: {
+    id: 'app.admission.dashboard.muhibanGirlsFeeBreakdown',
+    defaultMessage: 'Muhiban Girls',
+  },
+  nasiranFeeBreakdown: {
+    id: 'app.admission.dashboard.nasiranFeeBreakdown',
+    defaultMessage: 'Nasiran',
   },
   // Status labels
   unverified: {
@@ -146,6 +146,10 @@ export default defineMessages({
   areaName: {
     id: 'app.admission.dashboard.areaName',
     defaultMessage: 'Area',
+  },
+  areaId: {
+    id: 'app.admission.dashboard.areaId',
+    defaultMessage: 'Area ID',
   },
   thisYear: {
     id: 'app.admission.dashboard.thisYear',

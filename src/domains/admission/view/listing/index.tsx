@@ -151,7 +151,7 @@ export function AdmissionListing() {
         field: 'grNumber',
         headerName: formattedMessages.grNumberColumnName,
         flex: 1,
-        maxWidth: 150,
+        maxWidth: 200,
         sortable: false,
         renderCell: (params) => getSafeValue(params.row.student?.grNumber),
       },
@@ -178,6 +178,7 @@ export function AdmissionListing() {
         field: 'branch',
         headerName: formattedMessages.branchColumnName,
         flex: 1,
+        maxWidth: 100,
         renderCell: (params) => getSafeValue(params.row.branch?.code),
       },
       // {

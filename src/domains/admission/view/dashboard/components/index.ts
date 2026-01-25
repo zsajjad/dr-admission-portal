@@ -24,5 +24,8 @@ export type { FunnelData, FunnelMetricsChartProps } from './FunnelMetricsChart';
 export { ClassBreakdownChart } from './ClassBreakdownChart';
 export type { ClassChartData, ClassBreakdownChartProps } from './ClassBreakdownChart';
 
+export { ClassFeeBreakdownChart } from './ClassFeeBreakdownChart';
+export type { ClassFeeChartData, ClassFeeBreakdownChartProps } from './ClassFeeBreakdownChart';
+
 export { AreaComparisonTable } from './AreaComparisonTable';
 export type { AreaComparisonTableProps } from './AreaComparisonTable';

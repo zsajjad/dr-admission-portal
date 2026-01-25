@@ -1,18 +1,23 @@
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { useAdmissionsControllerGetDashboard } from '@/providers/service/admissions/admissions';
 import {
   AdmissionsDashboardAreaStat,
-  AdmissionsDashboardClassLevelStat,
   AdmissionsDashboardGenderStat,
   AdmissionsDashboardGroupStat,
   AdmissionsDashboardStatusStat,
   AdmissionsDashboardTrendPoint,
-  ClassLevel,
+  FeeCardClassStat,
+  FeeCardGenderStat,
 } from '@/providers/service/app.schemas';
-import { useClassLevelControllerFindAll } from '@/providers/service/class-level/class-level';
 
-import type { ClassChartData, GenderChartData, GroupChartData, StatusChartData, TrendChartData } from '../components';
+import type {
+  ClassFeeChartData,
+  GenderChartData,
+  GroupChartData,
+  StatusChartData,
+  TrendChartData,
+} from '../components';
 import { GENDER_COLORS, STATUS_COLORS } from '../constants';
 
 export interface UseDashboardDataProps {
@@ -21,9 +26,6 @@ export interface UseDashboardDataProps {
 }
 
 export function useDashboardData({ branchId, sessionId }: UseDashboardDataProps) {
-  // Fetch class levels for sorting by age
-  const { data: classLevelsData } = useClassLevelControllerFindAll({ take: 100, sortBy: 'age', sortOrder: 'asc' });
-
   const {
     data: dashboardData,
     isLoading,
@@ -82,125 +84,48 @@ export function useDashboardData({ branchId, sessionId }: UseDashboardDataProps)
     return dashboardData.data.areaStats as AdmissionsDashboardAreaStat[];
   }, [dashboardData]);
 
-  // Create lookup maps for class level sorting by age and group
-  const classLevelInfoMap = useMemo(() => {
-    const map: Record<string, { age: number; group: string }> = {};
-    if (classLevelsData?.data) {
-      classLevelsData.data.forEach((cl: ClassLevel, index: number) => {
-        map[cl.code] = {
-          age: cl.age ?? index,
-          group: cl.group,
-        };
-      });
-    }
-    return map;
-  }, [classLevelsData]);
+  // Transform class fee stats to chart data format
+  const mapClassFeeStats = (classes: FeeCardClassStat[]): ClassFeeChartData[] => {
+    return classes.map((stat, index) => ({
+      name: stat.name || stat.code,
+      code: stat.code,
+      confirmed: stat.confirmed,
+      expected: stat.expected,
+      total: stat.confirmed + stat.expected,
+      age: index, // Use index for ordering since API returns sorted data
+    }));
+  };
 
-  // Codes to merge into Tiflan3
-  const TIFLAN_MERGE_CODES = ['Tiflan3', 'Tiflan4'];
+  // Tiflan fee breakdown - all classes regardless of gender
+  const tiflanFeeChartData: ClassFeeChartData[] = useMemo(() => {
+    if (!dashboardData?.data?.feeCardStats?.tiflan?.classes) return [];
+    return mapClassFeeStats(dashboardData.data.feeCardStats.tiflan.classes);
+  }, [dashboardData]);
 
-  // Build Tiflan class breakdown data (with Tiflan4 merged into Tiflan3)
-  const tiflanClassChartData: ClassChartData[] = useMemo(() => {
-    if (!dashboardData?.data?.classLevelStats) return [];
+  // Muhiban Boys fee breakdown
+  const muhibanBoysFeeChartData: ClassFeeChartData[] = useMemo(() => {
+    if (!dashboardData?.data?.feeCardStats?.muhibanBoys?.classes) return [];
+    return mapClassFeeStats(dashboardData.data.feeCardStats.muhibanBoys.classes);
+  }, [dashboardData]);
 
-    const tiflanStats: Record<string, { name: string; code: string; count: number; age: number }> = {};
-    let tiflan3MergedCount = 0;
-    let tiflan3Age = 999;
+  // Muhiban Girls fee breakdown
+  const muhibanGirlsFeeChartData: ClassFeeChartData[] = useMemo(() => {
+    if (!dashboardData?.data?.feeCardStats?.muhibanGirls?.classes) return [];
+    return mapClassFeeStats(dashboardData.data.feeCardStats.muhibanGirls.classes);
+  }, [dashboardData]);
 
-    dashboardData.data.classLevelStats.forEach((stat: AdmissionsDashboardClassLevelStat) => {
-      const info = classLevelInfoMap[stat.code];
-      if (info?.group !== 'TIFLAN') return;
-
-      if (TIFLAN_MERGE_CODES.includes(stat.code)) {
-        tiflan3MergedCount += stat.count;
-        if (stat.code === 'Tiflan3' && info?.age !== undefined) {
-          tiflan3Age = info.age;
-        }
-      } else {
-        const key = stat.code;
-        if (!tiflanStats[key]) {
-          tiflanStats[key] = {
-            name: stat.name || stat.code,
-            code: stat.code,
-            count: 0,
-            age: info?.age ?? 999,
-          };
-        }
-        tiflanStats[key].count += stat.count;
-      }
-    });
-
-    // Add merged Tiflan3 entry
-    if (tiflan3MergedCount > 0) {
-      tiflanStats['Tiflan3'] = {
-        name: 'Tiflan3',
-        code: 'Tiflan3',
-        count: tiflan3MergedCount,
-        age: tiflan3Age,
-      };
-    }
-
-    return Object.values(tiflanStats).sort((a, b) => a.age - b.age);
-  }, [dashboardData, classLevelInfoMap]);
-
-  // Build Muhiban class breakdown data by gender
-  const buildMuhibanChartData = useCallback(
-    (gender: 'FEMALE' | 'MALE'): ClassChartData[] => {
-      if (!dashboardData?.data?.classLevelStats) return [];
-
-      const muhibanStats: Record<string, { name: string; code: string; count: number; age: number }> = {};
-
-      dashboardData.data.classLevelStats.forEach((stat: AdmissionsDashboardClassLevelStat) => {
-        const info = classLevelInfoMap[stat.code];
-        if (info?.group !== 'MUHIBAN' || stat.gender !== gender) return;
-
-        const key = stat.code;
-        if (!muhibanStats[key]) {
-          muhibanStats[key] = {
-            name: stat.name || stat.code,
-            code: stat.code,
-            count: 0,
-            age: info?.age ?? 999,
-          };
-        }
-        muhibanStats[key].count += stat.count;
-      });
-
-      return Object.values(muhibanStats).sort((a, b) => a.age - b.age);
-    },
-    [dashboardData, classLevelInfoMap],
-  );
-
-  const muhibanGirlsChartData = useMemo(() => buildMuhibanChartData('FEMALE'), [buildMuhibanChartData]);
-  const muhibanBoysChartData = useMemo(() => buildMuhibanChartData('MALE'), [buildMuhibanChartData]);
-
-  // Build Nasiran gender breakdown data (just boys vs girls totals)
-  const nasiranGenderChartData: GenderChartData[] = useMemo(() => {
-    if (!dashboardData?.data?.classLevelStats) return [];
-
-    let maleTotal = 0;
-    let femaleTotal = 0;
-
-    dashboardData.data.classLevelStats.forEach((stat: AdmissionsDashboardClassLevelStat) => {
-      const info = classLevelInfoMap[stat.code];
-      if (info?.group !== 'NASIRAN') return;
-
-      if (stat.gender === 'MALE') {
-        maleTotal += stat.count;
-      } else if (stat.gender === 'FEMALE') {
-        femaleTotal += stat.count;
-      }
-    });
-
-    const result: GenderChartData[] = [];
-    if (maleTotal > 0) {
-      result.push({ name: 'Boys', value: maleTotal, color: GENDER_COLORS.MALE });
-    }
-    if (femaleTotal > 0) {
-      result.push({ name: 'Girls', value: femaleTotal, color: GENDER_COLORS.FEMALE });
-    }
-    return result;
-  }, [dashboardData, classLevelInfoMap]);
+  // Nasiran gender breakdown with fee stats (mapped to same format as class breakdown)
+  const nasiranFeeChartData: ClassFeeChartData[] = useMemo(() => {
+    if (!dashboardData?.data?.feeCardStats?.nasiran?.genders) return [];
+    return dashboardData.data.feeCardStats.nasiran.genders.map((stat: FeeCardGenderStat, index: number) => ({
+      name: stat.gender === 'MALE' ? 'Boys' : 'Girls',
+      code: stat.gender,
+      confirmed: stat.confirmed,
+      expected: stat.expected,
+      total: stat.confirmed + stat.expected,
+      age: index,
+    }));
+  }, [dashboardData]);
 
   return {
     // Loading states
@@ -216,10 +141,10 @@ export function useDashboardData({ branchId, sessionId }: UseDashboardDataProps)
     trendChartData,
     groupChartData,
     areaTableData,
-    // Group-wise class breakdown
-    tiflanClassChartData,
-    muhibanGirlsChartData,
-    muhibanBoysChartData,
-    nasiranGenderChartData,
+    // Fee card stats (4 cards)
+    tiflanFeeChartData,
+    muhibanBoysFeeChartData,
+    muhibanGirlsFeeChartData,
+    nasiranFeeChartData,
   };
 }
