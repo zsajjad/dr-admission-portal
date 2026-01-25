@@ -29,7 +29,7 @@ export function SessionFilter({ size = 'small', minWidth = 180, onSessionChange 
 
   // Fetch sessions for filter dropdown
   const { data: sessionsData } = useSessionControllerFindAll({ take: 100 });
-  const sessions = sessionsData?.data || [];
+  const sessions = useMemo(() => sessionsData?.data || [], [sessionsData?.data]);
 
   const selectedSession = useMemo(
     () => sessions.find((s) => s.id === filters.sessionId) || null,

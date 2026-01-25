@@ -36,7 +36,7 @@ export function BranchFilter({
 
   // Fetch branches for filter dropdown
   const { data: branchesData } = useBranchControllerFindAll({ take: 100 });
-  const branches = branchesData?.data || [];
+  const branches = useMemo(() => branchesData?.data || [], [branchesData?.data]);
 
   const selectedBranch = useMemo(
     () => branches.find((b) => b.id === filters.branchId) || null,

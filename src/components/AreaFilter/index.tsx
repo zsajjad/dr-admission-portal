@@ -33,7 +33,7 @@ export function AreaFilter({ size = 'small', minWidth = 180, onAreaChange }: Are
     take: 100,
     branchId: filters.branchId,
   });
-  const areas = areasData?.data || [];
+  const areas = useMemo(() => areasData?.data || [], [areasData?.data]);
 
   const selectedArea = useMemo(() => areas.find((a) => a.id === filters.areaId) || null, [areas, filters.areaId]);
 

@@ -45,7 +45,7 @@ export default function VanForm({ editItem, isLoading, isEditMode = false }: Van
 
   // Fetch branches for dropdown
   const { data: branchesData } = useBranchControllerFindAll({ take: 100 });
-  const branches = branchesData?.data || [];
+  const branches = useMemo(() => branchesData?.data || [], [branchesData?.data]);
 
   const validationMessages = {
     branchRequired: useFormattedMessage(messages.branchError),
@@ -128,7 +128,7 @@ export default function VanForm({ editItem, isLoading, isEditMode = false }: Van
     take: 100,
     branchId: values.branchId || undefined,
   });
-  const areas = areasData?.data || [];
+  const areas = useMemo(() => areasData?.data || [], [areasData?.data]);
 
   // Find selected values for controlled Autocomplete
   const selectedBranch = useMemo(

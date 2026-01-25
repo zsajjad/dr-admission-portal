@@ -93,7 +93,6 @@ export function AdmissionListing() {
     classLevelColumnName: useFormattedMessage(messages.classLevelColumnName),
     vanColumnName: useFormattedMessage(messages.vanColumnName),
     branchColumnName: useFormattedMessage(messages.branchColumnName),
-    sessionColumnName: useFormattedMessage(messages.sessionColumnName),
     actionsColumnName: useFormattedMessage(messages.actionsColumnName),
 
     // Filter labels
@@ -243,7 +242,6 @@ export function AdmissionListing() {
       formattedMessages.fatherNameColumnName,
       formattedMessages.phoneColumnName,
       formattedMessages.branchColumnName,
-      formattedMessages.sessionColumnName,
       formattedMessages.statusColumnName,
       formattedMessages.classLevelColumnName,
       formattedMessages.vanColumnName,
