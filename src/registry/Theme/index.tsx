@@ -31,6 +31,22 @@ export function CustomThemeProvider({ children }: ThemeProviderProps): React.JSX
               '--MobileNav-width': '280px',
               '--MobileNav-zIndex': 1100,
             },
+            // Urdu font styles - apply to elements with lang="ur" attribute
+            '[lang="ur"]': {
+              fontFamily: 'var(--font-urdu), "Noto Nastaliq Urdu", serif !important',
+              direction: 'rtl',
+            },
+            // Utility class for Urdu text
+            '.font-urdu': {
+              fontFamily: 'var(--font-urdu), "Noto Nastaliq Urdu", serif !important',
+            },
+            // RTL layout when document is in Urdu
+            'html[lang="ur"]': {
+              direction: 'rtl',
+            },
+            'html[lang="ur"] body': {
+              fontFamily: 'var(--font-urdu), "Noto Nastaliq Urdu", serif',
+            },
           }}
         />
         {children}

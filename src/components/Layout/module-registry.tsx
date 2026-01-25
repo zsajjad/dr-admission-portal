@@ -22,6 +22,11 @@ export const MODULE_REGISTRY = {
     href: routes.branches.listing,
     icon: 'branches',
   },
+  van: {
+    title: <FormattedMessage {...messages.van} />,
+    href: routes.van.listing,
+    icon: 'van',
+  },
   admission: {
     title: <FormattedMessage {...messages.admissions} />,
     href: routes.admission.listing,

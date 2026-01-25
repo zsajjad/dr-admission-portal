@@ -4,6 +4,8 @@ import { useMemo } from 'react';
 
 import { Card, CardContent, Chip, Grid, Stack, Typography } from '@mui/material';
 
+import { VanChip } from '@/domains/van/components/VanChip';
+
 import { DataNotFound } from '@/components/DataNotFound';
 import InfoTooltip from '@/components/DataTable/InfoTooltipColumn/Tooltip';
 import { DetailItem } from '@/components/DetailItem';
@@ -249,6 +251,30 @@ export function AdmissionDetail({ admissionId }: { admissionId: string }) {
                 value={field.isBoolean ? (field.value ? formattedMessages.yes : formattedMessages.no) : field.value}
               />
             ))}
+          </Grid>
+        </CardContent>
+      </Card>
+
+      {/* Van Information */}
+      <Typography variant="h6">
+        <FormattedMessage {...messages.vanInfoLabel} />
+      </Typography>
+      <Card>
+        <CardContent>
+          <Grid container spacing={2}>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+              <Typography variant="subtitle2" color="text.secondary">
+                <FormattedMessage {...messages.vanLabel} />
+              </Typography>
+              <VanChip
+                areaId={admissionDetail?.area?.id}
+                branchId={admissionDetail?.branch?.id}
+                gender={admissionDetail?.student?.gender}
+                classLevelName={admissionDetail?.classLevel?.name}
+                hasVan={admissionDetail?.area?.hasVan}
+                hasBoysVan={admissionDetail?.area?.hasBoysVan}
+              />
+            </Grid>
           </Grid>
         </CardContent>
       </Card>

@@ -5,7 +5,6 @@ export { ChartCard } from './ChartCard';
 export type { ChartCardProps } from './ChartCard';
 
 export { DashboardFilters } from './DashboardFilters';
-export type { DashboardFiltersProps } from './DashboardFilters';
 
 export { StatusDistributionChart } from './StatusDistributionChart';
 export type { StatusChartData, StatusDistributionChartProps } from './StatusDistributionChart';

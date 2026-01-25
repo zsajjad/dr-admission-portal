@@ -24,6 +24,10 @@ export default defineMessages({
     id: `${scope}.branches`,
     defaultMessage: 'Branches',
   },
+  van: {
+    id: `${scope}.van`,
+    defaultMessage: 'Vans',
+  },
   admissions: {
     id: `${scope}.admissions`,
     defaultMessage: 'Admissions',

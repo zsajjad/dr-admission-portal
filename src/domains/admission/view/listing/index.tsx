@@ -6,9 +6,14 @@ import { Alert, Autocomplete, Chip, Stack, TextField } from '@mui/material';
 import { GridColDef, GridPaginationModel } from '@mui/x-data-grid';
 
 import { AssetsDrawer } from '@/domains/admission/components/AssetsDrawer';
+import { VanChip } from '@/domains/van/components/VanChip';
 
+import { AreaFilter } from '@/components/AreaFilter';
+import { BranchFilter } from '@/components/BranchFilter';
+import { ClassLevelChip } from '@/components/ClassLevelChip';
 import { DataTable } from '@/components/DataTable';
 import { RowActions } from '@/components/RowActions';
+import { SessionFilter } from '@/components/SessionFilter';
 
 import { KEYS } from '@/providers/constants/key';
 import { useAdmissionsControllerFindAll } from '@/providers/service/admissions/admissions';
@@ -17,9 +22,6 @@ import {
   AdmissionsControllerFindAllSortBy,
   AdmissionsControllerFindAllStatus,
 } from '@/providers/service/app.schemas';
-import { useAreaControllerFindAll } from '@/providers/service/area/area';
-import { useBranchControllerFindAll } from '@/providers/service/branch/branch';
-import { useSessionControllerFindAll } from '@/providers/service/session/session';
 
 import FormattedMessage, { useFormattedMessage } from '@/theme/FormattedMessage';
 
@@ -88,46 +90,21 @@ export function AdmissionListing() {
     fatherNameColumnName: useFormattedMessage(messages.fatherNameColumnName),
     phoneColumnName: useFormattedMessage(messages.phoneColumnName),
     statusColumnName: useFormattedMessage(messages.statusColumnName),
+    classLevelColumnName: useFormattedMessage(messages.classLevelColumnName),
+    vanColumnName: useFormattedMessage(messages.vanColumnName),
     branchColumnName: useFormattedMessage(messages.branchColumnName),
     sessionColumnName: useFormattedMessage(messages.sessionColumnName),
     actionsColumnName: useFormattedMessage(messages.actionsColumnName),
 
     // Filter labels
-    branchFilterLabel: useFormattedMessage(messages.branchFilterLabel),
-    sessionFilterLabel: useFormattedMessage(messages.sessionFilterLabel),
     statusFilterLabel: useFormattedMessage(messages.statusFilterLabel),
-    areaFilterLabel: useFormattedMessage(messages.areaFilterLabel),
   };
 
   const { filters, setFilter, handleSortModelChange, handleFilterModelChange, handlePaginationModelChange } =
     useListingFilters<AdmissionFilters>();
 
-  // Fetch branches for filter dropdown
-  const { data: branchesData } = useBranchControllerFindAll({ take: 100 });
-  const branches = branchesData?.data || [];
-
-  // Fetch sessions for filter dropdown
-  const { data: sessionsData } = useSessionControllerFindAll({ take: 100 });
-  const sessions = sessionsData?.data || [];
-
-  // Fetch areas for filter dropdown (filtered by branchId if available)
-  const { data: areasData } = useAreaControllerFindAll({
-    take: 100,
-    branchId: filters.branchId,
-  });
-  const areas = areasData?.data || [];
-
   // Find selected values for controlled Autocomplete
-  const selectedBranch = useMemo(
-    () => branches.find((b) => b.id === filters.branchId) || null,
-    [branches, filters.branchId],
-  );
-  const selectedSession = useMemo(
-    () => sessions.find((s) => s.id === filters.sessionId) || null,
-    [sessions, filters.sessionId],
-  );
   const selectedStatus = useMemo(() => statusOptions.find((s) => s.id === filters.status) || null, [filters.status]);
-  const selectedArea = useMemo(() => areas.find((a) => a.id === filters.areaId) || null, [areas, filters.areaId]);
 
   const {
     data: admissions,
@@ -202,14 +179,14 @@ export function AdmissionListing() {
         field: 'branch',
         headerName: formattedMessages.branchColumnName,
         flex: 1,
-        renderCell: (params) => getSafeValue(params.row.branch?.name),
+        renderCell: (params) => getSafeValue(params.row.branch?.code),
       },
-      {
-        field: 'session',
-        headerName: formattedMessages.sessionColumnName,
-        flex: 1,
-        renderCell: (params) => getSafeValue(params.row.session?.name),
-      },
+      // {
+      //   field: 'session',
+      //   headerName: formattedMessages.sessionColumnName,
+      //   flex: 1,
+      //   renderCell: (params) => getSafeValue(params.row.session?.id),
+      // },
       {
         field: 'status',
         headerName: formattedMessages.statusColumnName,
@@ -217,6 +194,33 @@ export function AdmissionListing() {
         maxWidth: 150,
         renderCell: (params) => (
           <Chip label={params.row.status} color={getStatusColor(params.row.status)} size="small" />
+        ),
+      },
+      {
+        field: 'classLevel',
+        headerName: formattedMessages.classLevelColumnName,
+        flex: 1,
+        maxWidth: 120,
+        sortable: false,
+        filterable: false,
+        renderCell: (params) => <ClassLevelChip classLevelId={params.row.classLevel?.id} />,
+      },
+      {
+        field: 'van',
+        headerName: formattedMessages.vanColumnName,
+        flex: 1,
+        maxWidth: 120,
+        sortable: false,
+        filterable: false,
+        renderCell: (params) => (
+          <VanChip
+            areaId={params.row.area?.id}
+            branchId={params.row.branch?.id}
+            gender={params.row.student?.gender}
+            classLevelName={params.row.classLevel?.name}
+            hasVan={params.row.area?.hasVan}
+            hasBoysVan={params.row.area?.hasBoysVan}
+          />
         ),
       },
       {
@@ -241,6 +245,8 @@ export function AdmissionListing() {
       formattedMessages.branchColumnName,
       formattedMessages.sessionColumnName,
       formattedMessages.statusColumnName,
+      formattedMessages.classLevelColumnName,
+      formattedMessages.vanColumnName,
       formattedMessages.actionsColumnName,
       route,
       handleOpenDrawer,
@@ -256,35 +262,12 @@ export function AdmissionListing() {
 
       {/* Filter Dropdowns */}
       <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
+        <BranchFilter resetFiltersOnChange={['areaId']} />
+        <SessionFilter />
+        <AreaFilter />
         <Autocomplete
           size="small"
-          sx={{ minWidth: 200 }}
-          options={branches}
-          getOptionLabel={(option) => option.name || ''}
-          value={selectedBranch}
-          onChange={(_, newValue) => {
-            setFilter({ branchId: newValue?.id, areaId: undefined, page: 0 });
-          }}
-          renderInput={(params) => (
-            <TextField {...params} label={<FormattedMessage {...messages.branchFilterLabel} />} />
-          )}
-        />
-        <Autocomplete
-          size="small"
-          sx={{ minWidth: 200 }}
-          options={sessions}
-          getOptionLabel={(option) => option.name || ''}
-          value={selectedSession}
-          onChange={(_, newValue) => {
-            setFilter({ sessionId: newValue?.id, page: 0 });
-          }}
-          renderInput={(params) => (
-            <TextField {...params} label={<FormattedMessage {...messages.sessionFilterLabel} />} />
-          )}
-        />
-        <Autocomplete
-          size="small"
-          sx={{ minWidth: 200 }}
+          sx={{ minWidth: 180 }}
           options={statusOptions}
           getOptionLabel={(option) => option.label}
           value={selectedStatus}
@@ -294,17 +277,6 @@ export function AdmissionListing() {
           renderInput={(params) => (
             <TextField {...params} label={<FormattedMessage {...messages.statusFilterLabel} />} />
           )}
-        />
-        <Autocomplete
-          size="small"
-          sx={{ minWidth: 200 }}
-          options={areas}
-          getOptionLabel={(option) => option.name || ''}
-          value={selectedArea}
-          onChange={(_, newValue) => {
-            setFilter({ areaId: newValue?.id, page: 0 });
-          }}
-          renderInput={(params) => <TextField {...params} label={<FormattedMessage {...messages.areaFilterLabel} />} />}
         />
       </Stack>
 

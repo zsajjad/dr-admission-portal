@@ -10,9 +10,7 @@ import {
   AdmissionsDashboardTrendPoint,
   ClassLevel,
 } from '@/providers/service/app.schemas';
-import { useBranchControllerFindAll } from '@/providers/service/branch/branch';
 import { useClassLevelControllerFindAll } from '@/providers/service/class-level/class-level';
-import { useSessionControllerFindAll } from '@/providers/service/session/session';
 
 import type { ClassChartData, GenderChartData, GroupChartData, StatusChartData, TrendChartData } from '../components';
 import { GENDER_COLORS, STATUS_COLORS } from '../constants';
@@ -23,9 +21,6 @@ export interface UseDashboardDataProps {
 }
 
 export function useDashboardData({ branchId, sessionId }: UseDashboardDataProps) {
-  // Fetch branches and sessions for dropdowns
-  const { data: branchesData } = useBranchControllerFindAll({ take: 100 });
-  const { data: sessionsData } = useSessionControllerFindAll({ take: 100 });
   // Fetch class levels for sorting by age
   const { data: classLevelsData } = useClassLevelControllerFindAll({ take: 100, sortBy: 'age', sortOrder: 'asc' });
 
@@ -208,9 +203,6 @@ export function useDashboardData({ branchId, sessionId }: UseDashboardDataProps)
   }, [dashboardData, classLevelInfoMap]);
 
   return {
-    // Dropdown data
-    branches: branchesData?.data,
-    sessions: sessionsData?.data,
     // Loading states
     isLoading,
     isError,

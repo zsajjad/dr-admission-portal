@@ -1,8 +1,10 @@
 'use client';
 
-import { Alert, Box, Grid, SelectChangeEvent, Skeleton } from '@mui/material';
+import { Alert, Box, Grid, Skeleton } from '@mui/material';
 
-import FormattedMessage, { useFormattedMessage } from '@/theme/FormattedMessage';
+import FormattedMessage from '@/theme/FormattedMessage';
+
+import { useListingFilters } from '@/hooks/useListingFilters';
 
 import { extractNetworkError } from '@/utils/extractNetworkError';
 
@@ -21,25 +23,15 @@ import { STAT_COLORS } from './constants';
 import { useDashboardData } from './hooks';
 import messages from './messages';
 
-export interface AdmissionDashboardProps {
+interface DashboardFilterState {
   branchId?: string;
   sessionId?: string;
-  onBranchChange?: (branchId: string) => void;
-  onSessionChange?: (sessionId: string) => void;
 }
 
-export function AdmissionDashboard({ branchId, sessionId, onBranchChange, onSessionChange }: AdmissionDashboardProps) {
-  // Translated messages for dropdowns
-  const filterLabels = {
-    branch: useFormattedMessage(messages.filterByBranch),
-    session: useFormattedMessage(messages.filterBySession),
-    allBranches: useFormattedMessage(messages.allBranches),
-    allSessions: useFormattedMessage(messages.allSessions),
-  };
+export function AdmissionDashboard() {
+  const { filters } = useListingFilters<DashboardFilterState>();
 
   const {
-    branches,
-    sessions,
     isLoading,
     isError,
     error,
@@ -54,15 +46,7 @@ export function AdmissionDashboard({ branchId, sessionId, onBranchChange, onSess
     muhibanGirlsChartData,
     muhibanBoysChartData,
     nasiranGenderChartData,
-  } = useDashboardData({ branchId, sessionId });
-
-  const handleBranchChange = (event: SelectChangeEvent<string>) => {
-    onBranchChange?.(event.target.value);
-  };
-
-  const handleSessionChange = (event: SelectChangeEvent<string>) => {
-    onSessionChange?.(event.target.value);
-  };
+  } = useDashboardData({ branchId: filters.branchId, sessionId: filters.sessionId });
 
   if (isLoading) {
     return (
@@ -94,15 +78,7 @@ export function AdmissionDashboard({ branchId, sessionId, onBranchChange, onSess
   return (
     <Box>
       {/* Filter Dropdowns */}
-      <DashboardFilters
-        branchId={branchId}
-        sessionId={sessionId}
-        branches={branches}
-        sessions={sessions}
-        onBranchChange={handleBranchChange}
-        onSessionChange={handleSessionChange}
-        labels={filterLabels}
-      />
+      <DashboardFilters />
 
       {/* Stats Cards */}
       <Grid container spacing={3} sx={{ mb: 3 }}>

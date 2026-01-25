@@ -52,6 +52,14 @@ export default defineMessages({
     id: `${scope}.statusColumnName`,
     defaultMessage: 'Status',
   },
+  classLevelColumnName: {
+    id: `${scope}.classLevelColumnName`,
+    defaultMessage: 'Class',
+  },
+  vanColumnName: {
+    id: `${scope}.vanColumnName`,
+    defaultMessage: 'Van',
+  },
   branchColumnName: {
     id: `${scope}.branchColumnName`,
     defaultMessage: 'Branch',
@@ -66,20 +74,8 @@ export default defineMessages({
   },
 
   // Filter Labels
-  branchFilterLabel: {
-    id: `${scope}.branchFilterLabel`,
-    defaultMessage: 'Branch',
-  },
-  sessionFilterLabel: {
-    id: `${scope}.sessionFilterLabel`,
-    defaultMessage: 'Session',
-  },
   statusFilterLabel: {
     id: `${scope}.statusFilterLabel`,
     defaultMessage: 'Status',
-  },
-  areaFilterLabel: {
-    id: `${scope}.areaFilterLabel`,
-    defaultMessage: 'Area',
   },
 });

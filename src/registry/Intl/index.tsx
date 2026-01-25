@@ -18,6 +18,30 @@ const availableLocales = {
   ur: urMessages,
 };
 
+// RTL locales configuration
+const rtlLocales = ['ur', 'ar', 'fa', 'he'];
+
+// Component to update document lang and dir attributes based on locale
+function LocaleDocumentUpdater({ locale }: { locale: string }) {
+  useEffect(() => {
+    const isRtl = rtlLocales.includes(locale);
+
+    // Update html lang attribute
+    document.documentElement.lang = locale;
+
+    // Update html dir attribute for RTL/LTR
+    document.documentElement.dir = isRtl ? 'rtl' : 'ltr';
+
+    return () => {
+      // Reset to defaults on unmount
+      document.documentElement.lang = 'en';
+      document.documentElement.dir = 'ltr';
+    };
+  }, [locale]);
+
+  return null;
+}
+
 export function IntlRegistry({
   children,
   customMessages,
@@ -50,5 +74,10 @@ export function IntlRegistry({
     setIntl(newIntl);
   }, [locale, customMessages]);
 
-  return <RawIntlProvider value={intl}>{children}</RawIntlProvider>;
+  return (
+    <RawIntlProvider value={intl}>
+      <LocaleDocumentUpdater locale={locale} />
+      {children}
+    </RawIntlProvider>
+  );
 }

@@ -187,7 +187,7 @@ export function QuestionSetDetail({ questionSetId }: { questionSetId: string }) 
           <Divider sx={{ mb: 2 }} />
           {sortedQuestions.length > 0 ? (
             <List>
-              {sortedQuestions.map((question, index) => (
+              {sortedQuestions.map((question) => (
                 <Paper key={question.id} elevation={1} sx={{ mb: 1 }}>
                   <ListItem>
                     <ListItemIcon>

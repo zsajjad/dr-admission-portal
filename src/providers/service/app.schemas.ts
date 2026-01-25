@@ -266,6 +266,10 @@ export interface CreateBranchDto {
   code: string;
   /** name */
   name: string;
+  /** defaultColorName */
+  defaultColorName?: string;
+  /** defaultColorHex (e.g. #FF5733) */
+  defaultColorHex?: string;
 }
 
 export interface AdminUserBase {
@@ -284,6 +288,10 @@ export interface Branch {
   code: string;
   /** name */
   name: string;
+  /** defaultColorName */
+  defaultColorName?: string;
+  /** defaultColorHex */
+  defaultColorHex?: string;
   /** isActive */
   isActive: boolean;
   /** createdAt */
@@ -319,6 +327,10 @@ export interface UpdateBranchDto {
   code?: string;
   /** name */
   name?: string;
+  /** defaultColorName */
+  defaultColorName?: string;
+  /** defaultColorHex (e.g. #FF5733) */
+  defaultColorHex?: string;
 }
 
 export interface UpdateBranchResponseDto {
@@ -417,6 +429,115 @@ export interface UpdateAreaResponseDto {
   /** Message of the action */
   message: string;
   data?: Area;
+}
+
+export interface CreateVanDto {
+  /** branchId */
+  branchId: string;
+  /** code */
+  code: string;
+  /** name */
+  name: string;
+  /** colorName */
+  colorName: string;
+  /** colorHex (e.g. #FF5733) */
+  colorHex: string;
+  /** areaIds */
+  areaIds?: string[];
+}
+
+export interface VanBranch {
+  /** id */
+  id: string;
+  /** code */
+  code: string;
+  /** name */
+  name: string;
+}
+
+export interface VanArea {
+  /** id */
+  id: string;
+  /** code */
+  code: string;
+  /** name */
+  name: string;
+  /** alias */
+  alias: string;
+}
+
+export interface Van {
+  /** id */
+  id: string;
+  /** branch */
+  branch: VanBranch;
+  /** code */
+  code: string;
+  /** name */
+  name: string;
+  /** colorName */
+  colorName: string;
+  /** colorHex */
+  colorHex: string;
+  /** areas */
+  areas?: VanArea[];
+  /** Male confirmed count (fees paid) */
+  maleConfirmedCount?: number;
+  /** Male applied count (fees not paid) */
+  maleAppliedCount?: number;
+  /** Female confirmed count (fees paid) */
+  femaleConfirmedCount?: number;
+  /** Female applied count (fees not paid) */
+  femaleAppliedCount?: number;
+  /** isActive */
+  isActive: boolean;
+  /** createdAt */
+  createdAt: string;
+  /** updatedAt */
+  updatedAt?: string;
+  /** createdBy */
+  createdBy?: AdminUserBase;
+  /** updatedBy */
+  updatedBy?: AdminUserBase;
+}
+
+export interface CreateVanResponseDto {
+  /** Message of the action */
+  message: string;
+  data: Van;
+}
+
+export interface ListVansResponseDto {
+  /** Total number of records */
+  count: number;
+  data: Van[];
+}
+
+export interface DetailVansResponseDto {
+  /** Message of the action */
+  message: string;
+  data: Van;
+}
+
+export interface UpdateVanDto {
+  /** branchId */
+  branchId?: string;
+  /** code */
+  code?: string;
+  /** name */
+  name?: string;
+  /** colorName */
+  colorName?: string;
+  /** colorHex (e.g. #FF5733) */
+  colorHex?: string;
+  /** areaIds - replaces all existing area associations */
+  areaIds?: string[];
+}
+
+export interface UpdateVanResponseDto {
+  /** Message of the action */
+  message: string;
+  data?: Van;
 }
 
 export interface CreateSessionDto {
@@ -1192,6 +1313,19 @@ export interface AdmissionsDashboardClassGenderStat {
   totalStudents: number;
 }
 
+export interface AdmissionsDashboardClassFeeStats {
+  /** Class level code (e.g., "KG", "1", "2") */
+  code: string;
+  /** Class level display name (e.g., "Kindergarten", "Grade 1") */
+  name: string;
+  /** Number of students who have paid fee in this class level */
+  feePaidCount: number;
+  /** Number of students who have not paid fee in this class level */
+  feeNotPaidCount: number;
+  /** Total students in this class level */
+  totalStudents: number;
+}
+
 export interface AdmissionsDashboardFunnel {
   /** Total number of active admissions */
   totalAdmissions: number;
@@ -1259,6 +1393,8 @@ export interface AdmissionsDashboardResponseData {
   groupStats: AdmissionsDashboardGroupStat[];
   /** Admission counts grouped by class level (e.g. KG, Grade 1) with male/female breakdown */
   classGenderStats: AdmissionsDashboardClassGenderStat[];
+  /** Admission counts grouped by class level (e.g. KG, Grade 1) with fee paid/not paid breakdown */
+  classFeeStats: AdmissionsDashboardClassFeeStats[];
   /** Funnel metrics showing admission progression and bottlenecks */
   funnel: AdmissionsDashboardFunnel;
   /** Conversion rate percentages for key milestones */
@@ -1925,6 +2061,71 @@ export const AreaControllerFindAllSortBy = {
 } as const;
 
 export type AreaControllerFindOneParams = {
+  /**
+   * Include deactivated records (admins only)
+   */
+  includeInActive?: boolean;
+};
+
+export type VanControllerFindAllParams = {
+  /**
+   * Number of records to skip
+   */
+  skip?: number;
+  /**
+   * Number of records to take
+   */
+  take?: number;
+  /**
+   * Sort direction
+   */
+  sortOrder?: VanControllerFindAllSortOrder;
+  /**
+   * Include deactivated records
+   */
+  includeInActive?: boolean;
+  /**
+   * branchId
+   */
+  branchId?: string;
+  /**
+   * code
+   */
+  code?: string;
+  /**
+   * name
+   */
+  name?: string;
+  /**
+   * sessionId - Filter admission counts by session
+   */
+  sessionId?: string;
+  /**
+   * Sort by
+   */
+  sortBy?: VanControllerFindAllSortBy;
+};
+
+export type VanControllerFindAllSortOrder =
+  (typeof VanControllerFindAllSortOrder)[keyof typeof VanControllerFindAllSortOrder];
+
+export const VanControllerFindAllSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type VanControllerFindAllSortBy = (typeof VanControllerFindAllSortBy)[keyof typeof VanControllerFindAllSortBy];
+
+export const VanControllerFindAllSortBy = {
+  id: 'id',
+  branchId: 'branchId',
+  code: 'code',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
+
+export type VanControllerFindOneParams = {
   /**
    * Include deactivated records (admins only)
    */

@@ -1,5 +1,7 @@
 import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
 import AccountTreeRoundedIcon from '@mui/icons-material/AccountTreeRounded';
+import AirportShuttleOutlinedIcon from '@mui/icons-material/AirportShuttleOutlined';
+import AirportShuttleRoundedIcon from '@mui/icons-material/AirportShuttleRounded';
 import AssignmentIndOutlinedIcon from '@mui/icons-material/AssignmentIndOutlined';
 import AssignmentIndRoundedIcon from '@mui/icons-material/AssignmentIndRounded';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
@@ -25,6 +27,10 @@ export const navIcons: Record<string, { filled: MuiIcon; outlined: MuiIcon }> = 
   branches: {
     filled: AccountTreeRoundedIcon,
     outlined: AccountTreeOutlinedIcon,
+  },
+  van: {
+    filled: AirportShuttleRoundedIcon,
+    outlined: AirportShuttleOutlinedIcon,
   },
   admissions: {
     filled: AssignmentIndRoundedIcon,

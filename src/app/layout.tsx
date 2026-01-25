@@ -35,13 +35,19 @@ const interVariable = localFont({
   display: 'swap',
 });
 
+const mehrNastaliq = localFont({
+  src: '../assets/fonts/MehrNastaliq.woff2',
+  variable: '--font-urdu',
+  display: 'swap',
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={interVariable.variable}>
+    <html lang="en" className={`${interVariable.variable} ${mehrNastaliq.variable}`}>
       <head></head>
       <body>
         <ErrorBoundary fallback={<SimpleErrorFallback />}>

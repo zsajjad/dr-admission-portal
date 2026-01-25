@@ -11,6 +11,12 @@ export const routes = {
     edit: (id: string) => `/branches/edit/${id}`,
     detail: (id: string) => `/branches/${id}`,
   },
+  van: {
+    listing: '/van?includeInActive=true',
+    create: '/van/create',
+    edit: (id: string) => `/van/edit/${id}`,
+    detail: (id: string) => `/van/${id}`,
+  },
   admission: {
     listing: '/admission',
     create: '/admission/create',

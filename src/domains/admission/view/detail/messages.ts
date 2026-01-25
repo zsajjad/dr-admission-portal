@@ -113,6 +113,14 @@ export default defineMessages({
     id: `${scope}.additionalInfoLabel`,
     defaultMessage: 'Additional Information',
   },
+  vanInfoLabel: {
+    id: `${scope}.vanInfoLabel`,
+    defaultMessage: 'Van Information',
+  },
+  vanLabel: {
+    id: `${scope}.vanLabel`,
+    defaultMessage: 'Assigned Van',
+  },
   yes: {
     id: `${scope}.yes`,
     defaultMessage: 'Yes',
