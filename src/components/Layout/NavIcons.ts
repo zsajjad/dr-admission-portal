@@ -6,6 +6,8 @@ import AssignmentIndOutlinedIcon from '@mui/icons-material/AssignmentIndOutlined
 import AssignmentIndRoundedIcon from '@mui/icons-material/AssignmentIndRounded';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
+import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
+import PrintRoundedIcon from '@mui/icons-material/PrintRounded';
 import QuizOutlinedIcon from '@mui/icons-material/QuizOutlined';
 import QuizRoundedIcon from '@mui/icons-material/QuizRounded';
 import SupervisedUserCircleOutlinedIcon from '@mui/icons-material/SupervisedUserCircleOutlined';
@@ -39,5 +41,9 @@ export const navIcons: Record<string, { filled: MuiIcon; outlined: MuiIcon }> = 
   questionSets: {
     filled: QuizRoundedIcon,
     outlined: QuizOutlinedIcon,
+  },
+  printing: {
+    filled: PrintRoundedIcon,
+    outlined: PrintOutlinedIcon,
   },
 };

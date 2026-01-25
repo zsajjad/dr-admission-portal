@@ -1,6 +1,6 @@
 'use client';
 
-import { Alert, Box, Grid, Skeleton } from '@mui/material';
+import { Alert, Box, Grid, Skeleton, Stack } from '@mui/material';
 
 import FormattedMessage from '@/theme/FormattedMessage';
 
@@ -28,6 +28,13 @@ interface DashboardFilterState {
   sessionId?: string;
 }
 
+const cardStyle = {
+  bgcolor: 'background.paper',
+  borderRadius: 3,
+  boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
+  p: 2.5,
+};
+
 export function AdmissionDashboard() {
   const { filters } = useListingFilters<DashboardFilterState>();
 
@@ -50,38 +57,45 @@ export function AdmissionDashboard() {
 
   if (isLoading) {
     return (
-      <Box sx={{ p: 3 }}>
-        <Grid container spacing={3}>
+      <Stack spacing={2.5}>
+        <Box sx={cardStyle}>
+          <Skeleton variant="rectangular" height={48} sx={{ borderRadius: 2 }} />
+        </Box>
+        <Grid container spacing={2.5}>
           {[...Array(4)].map((_, i) => (
             <Grid size={{ xs: 12, sm: 6, md: 3 }} key={i}>
-              <Skeleton variant="rectangular" height={120} sx={{ borderRadius: 1 }} />
-            </Grid>
-          ))}
-          {[...Array(4)].map((_, i) => (
-            <Grid size={{ xs: 12, md: 6 }} key={i + 4}>
-              <Skeleton variant="rectangular" height={350} sx={{ borderRadius: 1 }} />
+              <Skeleton variant="rectangular" height={100} sx={{ borderRadius: 3 }} />
             </Grid>
           ))}
         </Grid>
-      </Box>
+        <Grid container spacing={2.5}>
+          {[...Array(3)].map((_, i) => (
+            <Grid size={{ xs: 12, md: 4 }} key={i}>
+              <Skeleton variant="rectangular" height={300} sx={{ borderRadius: 3 }} />
+            </Grid>
+          ))}
+        </Grid>
+      </Stack>
     );
   }
 
   if (isError) {
     return (
-      <Alert severity="error" sx={{ m: 3 }}>
+      <Alert severity="error" sx={{ borderRadius: 3 }}>
         {extractNetworkError(error)}
       </Alert>
     );
   }
 
   return (
-    <Box>
-      {/* Filter Dropdowns */}
-      <DashboardFilters />
+    <Stack spacing={2.5}>
+      {/* Filters */}
+      <Box sx={cardStyle}>
+        <DashboardFilters />
+      </Box>
 
       {/* Stats Cards */}
-      <Grid container spacing={3} sx={{ mb: 3 }}>
+      <Grid container spacing={2.5}>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatCard
             title={<FormattedMessage {...messages.totalAdmissions} />}
@@ -115,8 +129,8 @@ export function AdmissionDashboard() {
         </Grid>
       </Grid>
 
-      {/* Charts Row 1 */}
-      <Grid container spacing={3} sx={{ mb: 3 }}>
+      {/* Charts Row 1 - Distribution Charts */}
+      <Grid container spacing={2.5}>
         <Grid size={{ xs: 12, md: 6, lg: 4 }}>
           <StatusDistributionChart
             title={<FormattedMessage {...messages.statusDistribution} />}
@@ -134,8 +148,8 @@ export function AdmissionDashboard() {
         </Grid>
       </Grid>
 
-      {/* Charts Row 2 */}
-      <Grid container spacing={3} sx={{ mb: 3 }}>
+      {/* Charts Row 2 - Trend & Funnel */}
+      <Grid container spacing={2.5}>
         <Grid size={{ xs: 12, lg: 8 }}>
           <TrendChart
             title={<FormattedMessage {...messages.admissionTrend} values={{ days: '30' }} />}
@@ -147,8 +161,8 @@ export function AdmissionDashboard() {
         </Grid>
       </Grid>
 
-      {/* Charts Row 3 - Fee Breakdown Cards (Confirmed vs Expected) */}
-      <Grid container spacing={3} sx={{ mb: 3 }}>
+      {/* Fee Breakdown Section */}
+      <Grid container spacing={2.5}>
         <Grid size={{ xs: 12, md: 6 }}>
           <ClassFeeBreakdownChart
             title={<FormattedMessage {...messages.tiflanFeeBreakdown} />}
@@ -161,10 +175,6 @@ export function AdmissionDashboard() {
             data={nasiranFeeChartData}
           />
         </Grid>
-      </Grid>
-
-      {/* Charts Row 4 - Muhiban Fee Breakdown (Boys & Girls) */}
-      <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid size={{ xs: 12, md: 6 }}>
           <ClassFeeBreakdownChart
             title={<FormattedMessage {...messages.muhibanBoysFeeBreakdown} />}
@@ -180,11 +190,7 @@ export function AdmissionDashboard() {
       </Grid>
 
       {/* Area Comparison Table */}
-      <Grid container spacing={3}>
-        <Grid size={{ xs: 12 }}>
-          <AreaComparisonTable data={areaTableData} />
-        </Grid>
-      </Grid>
-    </Box>
+      <AreaComparisonTable data={areaTableData} />
+    </Stack>
   );
 }

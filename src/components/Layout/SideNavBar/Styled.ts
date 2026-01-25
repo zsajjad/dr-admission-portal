@@ -6,9 +6,10 @@ export const SideNav = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   scrollbarWidth: 'none',
-  borderRadius: 8,
-  height: 'calc(100vh - 24px)',
+  borderRadius: 16,
+  height: 'calc(100vh - 32px)',
   width: 'var(--SideNav-width)',
+  boxShadow: '0 4px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)',
   '&::-webkit-scrollbar': {
     display: 'none',
   },
@@ -16,8 +17,9 @@ export const SideNav = styled(Box)(({ theme }) => ({
     display: 'none',
   },
 }));
+
 export const SideNavContainer = styled(Box)(({ theme }) => ({
-  padding: '12px 0 12px 12px',
+  padding: '16px 0 16px 16px',
   [theme.breakpoints.down('lg')]: {
     display: 'none',
   },

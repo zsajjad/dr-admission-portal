@@ -20,7 +20,7 @@ interface NavListProps {
 export function NavList({ items = [], pathname }: NavListProps): React.JSX.Element {
   return (
     <NavContainer>
-      <Stack component="ul" spacing={1.2} sx={{ listStyle: 'none', m: 0, p: 0 }}>
+      <Stack component="ul" spacing={1.5} sx={{ listStyle: 'none', m: 0, p: 0 }}>
         {items.map(({ key, ...item }) => (
           <NavListItem key={key} pathname={pathname} {...item} />
         ))}

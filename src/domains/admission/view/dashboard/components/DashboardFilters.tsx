@@ -6,7 +6,7 @@ import { SessionFilter } from '@/components/SessionFilter';
 
 export function DashboardFilters() {
   return (
-    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 3 }}>
+    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
       <BranchFilter resetFiltersOnChange={['areaId']} />
       <SessionFilter />
       <AreaFilter />

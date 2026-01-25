@@ -29,6 +29,9 @@ export const routes = {
     edit: (id: string) => `/questions/edit/${id}`,
     detail: (id: string) => `/questions/${id}`,
   },
+  printing: {
+    listing: '/printing',
+  },
   auth: {
     signIn: '/auth/sign-in',
     signUp: '/auth/sign-up',

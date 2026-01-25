@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import Typography, { type TypographyProps } from '@mui/material/Typography';
 
 export const NavContainer = styled(Box)({
-  padding: '12px',
+  padding: '16px',
   overflow: 'auto',
   '&::-webkit-scrollbar': {
     width: '6px',
@@ -33,16 +33,16 @@ export const NavItemBox = styled(Box, {
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(1.5),
-  borderRadius: '8px',
-  boxShadow: active ? '0px 2px 4px 2px rgba(16, 24, 40, 0.05)' : 'none',
+  borderRadius: '999px',
   cursor: 'pointer',
-  padding: '10px 16px',
+  padding: '12px 20px',
   position: 'relative',
   textDecoration: 'none',
   whiteSpace: 'nowrap',
   transition: 'all 0.2s ease-in-out',
   '&:hover': {
-    backgroundColor: active ? theme.palette.primary.dark : theme.palette.grey[100],
+    backgroundColor: active ? theme.palette.primary.dark : theme.palette.action.selected,
+    transform: active ? 'none' : 'translateX(4px)',
   },
   ...(disabled && {
     backgroundColor: 'var(--NavItem-disabled-background)',
@@ -52,7 +52,12 @@ export const NavItemBox = styled(Box, {
   ...(active && {
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.common.white,
+    boxShadow: '0 4px 14px rgba(0,0,0,0.18)',
   }),
+  ...(!active &&
+    !disabled && {
+      backgroundColor: theme.palette.action.hover,
+    }),
 }));
 
 interface NavItemTextProps extends TypographyProps {
@@ -63,7 +68,8 @@ export const NavItemText = styled(Typography, {
   shouldForwardProp: (prop) => prop !== 'active',
 })<NavItemTextProps>(({ theme, active }) => ({
   color: active ? theme.palette.common.white : theme.palette.grey[900],
-  fontWeight: 500,
+  fontWeight: active ? 600 : 500,
   lineHeight: '24px',
   fontSize: '14px',
+  letterSpacing: '0.01em',
 }));

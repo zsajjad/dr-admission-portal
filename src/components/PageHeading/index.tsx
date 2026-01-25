@@ -32,40 +32,107 @@ export function PageHeading({
         flexDirection: { xs: 'column', sm: 'row' },
         justifyContent: 'space-between',
         alignItems: { sm: 'center' },
-        gap: 1,
-        mb: 2,
-        flex: 1,
+        gap: 2,
+        mb: 3,
+        p: 2.5,
+        bgcolor: 'background.paper',
+        borderRadius: 4,
+        boxShadow: '0 4px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)',
       }}
     >
-      <Typography variant="h5">
+      <Typography
+        variant="h5"
+        sx={{
+          fontWeight: 600,
+          letterSpacing: '-0.01em',
+        }}
+      >
         <FormattedMessage {...heading} />
       </Typography>
       <Box
         sx={{
           display: 'flex',
           flexDirection: { xs: 'column', sm: 'row' },
-          alignItems: 'start',
-          gap: { xs: 1, sm: 2 },
+          alignItems: { xs: 'stretch', sm: 'center' },
+          gap: 2,
         }}
       >
         {rightActions}
         {onCheckedIncludeInActive ? (
-          <Box sx={{ textAlign: 'end' }}>
-            <FormControlLabel
-              control={
-                <Checkbox checked={isIncludeInActive} onChange={(e) => onCheckedIncludeInActive(e.target.checked)} />
-              }
-              label={<FormattedMessage {...messages.inActive} />}
-            />
-          </Box>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={isIncludeInActive}
+                onChange={(e) => onCheckedIncludeInActive(e.target.checked)}
+                sx={{
+                  '&.Mui-checked': {
+                    color: 'primary.main',
+                  },
+                }}
+              />
+            }
+            label={<FormattedMessage {...messages.inActive} />}
+            sx={{
+              m: 0,
+              px: 1.5,
+              py: 0.5,
+              borderRadius: '999px',
+              bgcolor: 'action.hover',
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                bgcolor: 'action.selected',
+              },
+            }}
+          />
         ) : null}
         {onAddPress ? (
-          <Button variant="contained" color="primary" onClick={onAddPress} disabled={addButtonDisable}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={onAddPress}
+            disabled={addButtonDisable}
+            sx={{
+              borderRadius: '999px',
+              px: 3,
+              py: 1.25,
+              fontWeight: 600,
+              textTransform: 'none',
+              boxShadow: '0 4px 14px rgba(0,0,0,0.18)',
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                transform: 'translateY(-1px)',
+                boxShadow: '0 6px 20px rgba(0,0,0,0.22)',
+              },
+              '&:active': {
+                transform: 'translateY(0)',
+              },
+            }}
+          >
             <FormattedMessage {...messages.addNew} />
           </Button>
         ) : null}
         {onEditPress ? (
-          <Button variant="contained" color="primary" onClick={onEditPress}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={onEditPress}
+            sx={{
+              borderRadius: '999px',
+              px: 3,
+              py: 1.25,
+              fontWeight: 600,
+              textTransform: 'none',
+              boxShadow: '0 4px 14px rgba(0,0,0,0.18)',
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                transform: 'translateY(-1px)',
+                boxShadow: '0 6px 20px rgba(0,0,0,0.22)',
+              },
+              '&:active': {
+                transform: 'translateY(0)',
+              },
+            }}
+          >
             <FormattedMessage {...messages.edit} />
           </Button>
         ) : null}

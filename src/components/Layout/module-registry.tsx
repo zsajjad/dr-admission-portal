@@ -37,6 +37,11 @@ export const MODULE_REGISTRY = {
     href: routes.questions.listing,
     icon: 'questionSets',
   },
+  printing: {
+    title: <FormattedMessage {...messages.printing} />,
+    href: routes.printing.listing,
+    icon: 'printing',
+  },
 } as const;
 
 export type ModuleKey = keyof typeof MODULE_REGISTRY;

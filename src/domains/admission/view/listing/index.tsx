@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { Alert, Autocomplete, Chip, Stack, TextField } from '@mui/material';
+import { Alert, Autocomplete, Box, Chip, Stack, TextField } from '@mui/material';
 import { GridColDef, GridPaginationModel } from '@mui/x-data-grid';
 
 import { AssetsDrawer } from '@/domains/admission/components/AssetsDrawer';
@@ -63,6 +63,13 @@ interface AdmissionFilters {
   status?: string;
   areaId?: string;
 }
+
+const cardStyle = {
+  bgcolor: 'background.paper',
+  borderRadius: 3,
+  boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
+  p: 2.5,
+};
 
 export function AdmissionListing() {
   const { route } = useQueryParams();
@@ -181,12 +188,6 @@ export function AdmissionListing() {
         maxWidth: 100,
         renderCell: (params) => getSafeValue(params.row.branch?.code),
       },
-      // {
-      //   field: 'session',
-      //   headerName: formattedMessages.sessionColumnName,
-      //   flex: 1,
-      //   renderCell: (params) => getSafeValue(params.row.session?.id),
-      // },
       {
         field: 'status',
         headerName: formattedMessages.statusColumnName,
@@ -251,34 +252,38 @@ export function AdmissionListing() {
       handleOpenDrawer,
     ],
   );
+
   return (
-    <Stack>
+    <Stack spacing={2.5}>
       {isError && (
-        <Alert severity="error" sx={{ mb: 2 }}>
+        <Alert severity="error" sx={{ borderRadius: 3 }}>
           {extractNetworkError(error)}
         </Alert>
       )}
 
       {/* Filter Dropdowns */}
-      <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
-        <BranchFilter resetFiltersOnChange={['areaId']} />
-        <SessionFilter />
-        <AreaFilter />
-        <Autocomplete
-          size="small"
-          sx={{ minWidth: 180 }}
-          options={statusOptions}
-          getOptionLabel={(option) => option.label}
-          value={selectedStatus}
-          onChange={(_, newValue) => {
-            setFilter({ status: newValue?.id, page: 0 });
-          }}
-          renderInput={(params) => (
-            <TextField {...params} label={<FormattedMessage {...messages.statusFilterLabel} />} />
-          )}
-        />
-      </Stack>
+      <Box sx={cardStyle}>
+        <Stack direction="row" spacing={2} flexWrap="wrap" useFlexGap>
+          <BranchFilter resetFiltersOnChange={['areaId']} />
+          <SessionFilter />
+          <AreaFilter />
+          <Autocomplete
+            size="small"
+            sx={{ minWidth: 180 }}
+            options={statusOptions}
+            getOptionLabel={(option) => option.label}
+            value={selectedStatus}
+            onChange={(_, newValue) => {
+              setFilter({ status: newValue?.id, page: 0 });
+            }}
+            renderInput={(params) => (
+              <TextField {...params} label={<FormattedMessage {...messages.statusFilterLabel} />} />
+            )}
+          />
+        </Stack>
+      </Box>
 
+      {/* Data Table */}
       <DataTable<Admission>
         getRowId={(row) => row?.id}
         pagination

@@ -36,6 +36,10 @@ export default defineMessages({
     id: `${scope}.questionSets`,
     defaultMessage: 'Question Sets',
   },
+  printing: {
+    id: `${scope}.printing`,
+    defaultMessage: 'Printing',
+  },
   signOut: {
     id: `${scope}.signOut`,
     defaultMessage: 'Sign Out',

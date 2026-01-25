@@ -2,8 +2,9 @@
 
 import { useMemo } from 'react';
 
-import { Card, CardContent, Chip, Grid, Stack, Typography } from '@mui/material';
+import { Box, Card, CardContent, Chip, Grid, Stack, Typography } from '@mui/material';
 
+import { PrintActions } from '@/domains/admission/components/PrintActions';
 import { VanChip } from '@/domains/van/components/VanChip';
 
 import { DataNotFound } from '@/components/DataNotFound';
@@ -32,6 +33,11 @@ const getStatusColor = (status: string) => {
     default:
       return 'default';
   }
+};
+
+const cardStyle = {
+  borderRadius: 3,
+  boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
 };
 
 export function AdmissionDetail({ admissionId }: { admissionId: string }) {
@@ -178,106 +184,114 @@ export function AdmissionDetail({ admissionId }: { admissionId: string }) {
   }
 
   return (
-    <Stack spacing={2}>
+    <Stack spacing={2.5}>
       {/* Status Card */}
-      <Card>
-        <CardContent>
+      <Card sx={cardStyle}>
+        <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
           <DetailTooltipWrapper>
             <InfoTooltip createdAt={admissionDetail?.createdAt} updatedAt={admissionDetail?.updatedAt} />
           </DetailTooltipWrapper>
           <Grid container spacing={2} alignItems="center">
             <Grid size={{ xs: 12, md: 6, lg: 3 }}>
-              <Typography variant="subtitle2" color="text.secondary">
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5 }}>
                 <FormattedMessage {...messages.statusLabel} />
               </Typography>
-              <Chip
-                label={admissionDetail?.status}
-                color={getStatusColor(admissionDetail?.status)}
-                size="small"
-                sx={{ mt: 0.5 }}
-              />
+              <Chip label={admissionDetail?.status} color={getStatusColor(admissionDetail?.status)} size="small" />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6, lg: 9 }}>
+              <Stack direction="row" justifyContent={{ xs: 'flex-start', md: 'flex-end' }}>
+                <PrintActions admission={admissionDetail} />
+              </Stack>
             </Grid>
           </Grid>
         </CardContent>
       </Card>
 
       {/* Student Information */}
-      <Typography variant="h6">
-        <FormattedMessage {...messages.studentInfoLabel} />
-      </Typography>
-      <Card>
-        <CardContent>
-          <Grid container spacing={2}>
-            {studentFields.map((field, idx) => (
-              <DetailItem
-                key={`student-${idx}`}
-                label={<FormattedMessage {...messages?.[field.label]} />}
-                value={field.value}
-              />
-            ))}
-          </Grid>
-        </CardContent>
-      </Card>
+      <Box>
+        <Typography variant="h6" sx={{ mb: 1.5, fontWeight: 600 }}>
+          <FormattedMessage {...messages.studentInfoLabel} />
+        </Typography>
+        <Card sx={cardStyle}>
+          <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
+            <Grid container spacing={2}>
+              {studentFields.map((field, idx) => (
+                <DetailItem
+                  key={`student-${idx}`}
+                  label={<FormattedMessage {...messages?.[field.label]} />}
+                  value={field.value}
+                />
+              ))}
+            </Grid>
+          </CardContent>
+        </Card>
+      </Box>
 
       {/* Admission Information */}
-      <Typography variant="h6">
-        <FormattedMessage {...messages.admissionInfoLabel} />
-      </Typography>
-      <Card>
-        <CardContent>
-          <Grid container spacing={2}>
-            {admissionFields.map((field, idx) => (
-              <DetailItem
-                key={`admission-${idx}`}
-                label={<FormattedMessage {...messages?.[field.label]} />}
-                value={field.value}
-              />
-            ))}
-          </Grid>
-        </CardContent>
-      </Card>
+      <Box>
+        <Typography variant="h6" sx={{ mb: 1.5, fontWeight: 600 }}>
+          <FormattedMessage {...messages.admissionInfoLabel} />
+        </Typography>
+        <Card sx={cardStyle}>
+          <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
+            <Grid container spacing={2}>
+              {admissionFields.map((field, idx) => (
+                <DetailItem
+                  key={`admission-${idx}`}
+                  label={<FormattedMessage {...messages?.[field.label]} />}
+                  value={field.value}
+                />
+              ))}
+            </Grid>
+          </CardContent>
+        </Card>
+      </Box>
 
       {/* Additional Information */}
-      <Typography variant="h6">
-        <FormattedMessage {...messages.additionalInfoLabel} />
-      </Typography>
-      <Card>
-        <CardContent>
-          <Grid container spacing={2}>
-            {additionalFields.map((field, idx) => (
-              <DetailItem
-                key={`additional-${idx}`}
-                label={<FormattedMessage {...messages?.[field.label]} />}
-                value={field.isBoolean ? (field.value ? formattedMessages.yes : formattedMessages.no) : field.value}
-              />
-            ))}
-          </Grid>
-        </CardContent>
-      </Card>
+      <Box>
+        <Typography variant="h6" sx={{ mb: 1.5, fontWeight: 600 }}>
+          <FormattedMessage {...messages.additionalInfoLabel} />
+        </Typography>
+        <Card sx={cardStyle}>
+          <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
+            <Grid container spacing={2}>
+              {additionalFields.map((field, idx) => (
+                <DetailItem
+                  key={`additional-${idx}`}
+                  label={<FormattedMessage {...messages?.[field.label]} />}
+                  value={field.isBoolean ? (field.value ? formattedMessages.yes : formattedMessages.no) : field.value}
+                />
+              ))}
+            </Grid>
+          </CardContent>
+        </Card>
+      </Box>
 
       {/* Van Information */}
-      <Typography variant="h6">
-        <FormattedMessage {...messages.vanInfoLabel} />
-      </Typography>
-      <Card>
-        <CardContent>
-          <Grid container spacing={2}>
-            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-              <Typography variant="subtitle2" color="text.secondary">
-                <FormattedMessage {...messages.vanLabel} />
-              </Typography>
-              <VanChip
-                areaId={admissionDetail?.area?.id}
-                branchId={admissionDetail?.branch?.id}
-                gender={admissionDetail?.student?.gender}
-                classLevelName={admissionDetail?.classLevel?.name}
-                hasVan={admissionDetail?.area?.hasVan}
-                hasBoysVan={admissionDetail?.area?.hasBoysVan}
-              />
+      <Box>
+        <Typography variant="h6" sx={{ mb: 1.5, fontWeight: 600 }}>
+          <FormattedMessage {...messages.vanInfoLabel} />
+        </Typography>
+        <Card sx={cardStyle}>
+          <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+                <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5 }}>
+                  <FormattedMessage {...messages.vanLabel} />
+                </Typography>
+                <VanChip
+                  areaId={admissionDetail?.area?.id}
+                  branchId={admissionDetail?.branch?.id}
+                  gender={admissionDetail?.student?.gender}
+                  classLevelName={admissionDetail?.classLevel?.name}
+                  hasVan={admissionDetail?.area?.hasVan}
+                  hasBoysVan={admissionDetail?.area?.hasBoysVan}
+                />
+              </Grid>
             </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </Box>
     </Stack>
   );
 }

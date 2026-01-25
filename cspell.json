@@ -7,7 +7,8 @@
     "api/service/api.config.json",
     "public",
     "README.md",
-    "scripts"
+    "scripts",
+    "docs/PRINTING_MODULE.md"
   ],
   "dictionaryDefinitions": [],
   "dictionaries": [],
