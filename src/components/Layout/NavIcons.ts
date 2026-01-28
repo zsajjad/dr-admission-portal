@@ -4,6 +4,8 @@ import AirportShuttleOutlinedIcon from '@mui/icons-material/AirportShuttleOutlin
 import AirportShuttleRoundedIcon from '@mui/icons-material/AirportShuttleRounded';
 import AssignmentIndOutlinedIcon from '@mui/icons-material/AssignmentIndOutlined';
 import AssignmentIndRoundedIcon from '@mui/icons-material/AssignmentIndRounded';
+import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
+import BarChartRoundedIcon from '@mui/icons-material/BarChartRounded';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
@@ -45,5 +47,9 @@ export const navIcons: Record<string, { filled: MuiIcon; outlined: MuiIcon }> = 
   printing: {
     filled: PrintRoundedIcon,
     outlined: PrintOutlinedIcon,
+  },
+  interactionReport: {
+    filled: BarChartRoundedIcon,
+    outlined: BarChartOutlinedIcon,
   },
 };

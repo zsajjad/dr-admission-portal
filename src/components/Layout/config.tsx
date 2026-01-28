@@ -2,7 +2,16 @@ import type { ModuleKey } from './module-registry';
 import { MODULE_REGISTRY } from './module-registry';
 import type { NavItemConfig } from './types';
 
-const NAV_ORDER: ModuleKey[] = ['home', 'adminUsers', 'branches', 'van', 'admission', 'questionSets', 'printing'];
+const NAV_ORDER: ModuleKey[] = [
+  'home',
+  'adminUsers',
+  'branches',
+  'van',
+  'admission',
+  'questionSets',
+  'printing',
+  'interactionReport',
+];
 
 const toNavItem = (moduleKey: ModuleKey): NavItemConfig => {
   const { title, href, icon } = MODULE_REGISTRY[moduleKey];

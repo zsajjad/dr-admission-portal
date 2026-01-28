@@ -14,6 +14,7 @@
   "dictionaries": [],
   "words": [
     "amcharts",
+    "bgcolor",
     "clickaway",
     "CNIC",
     "commitlint",
@@ -27,6 +28,7 @@
     "Madressa",
     "Mehr",
     "miterlimit",
+    "Muhibaan",
     "MUHIBAN",
     "NASIRAN",
     "Nastaliq",
@@ -48,8 +50,7 @@
     "wght",
     "xlink",
     "zoomable",
-    "اردو",
-    "Muhibaan"
+    "اردو"
   ],
   "ignoreWords": [],
   "import": []

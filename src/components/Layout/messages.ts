@@ -40,6 +40,10 @@ export default defineMessages({
     id: `${scope}.printing`,
     defaultMessage: 'Printing',
   },
+  interactionReport: {
+    id: `${scope}.interactionReport`,
+    defaultMessage: 'Interactions',
+  },
   signOut: {
     id: `${scope}.signOut`,
     defaultMessage: 'Sign Out',

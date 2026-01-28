@@ -33,6 +33,9 @@ export const routes = {
   printing: {
     listing: '/printing',
   },
+  interactionReport: {
+    listing: '/interactions/report',
+  },
   auth: {
     signIn: '/auth/sign-in',
     signUp: '/auth/sign-up',

@@ -42,6 +42,11 @@ export const MODULE_REGISTRY = {
     href: routes.printing.listing,
     icon: 'printing',
   },
+  interactionReport: {
+    title: <FormattedMessage {...messages.interactionReport} />,
+    href: routes.interactionReport.listing,
+    icon: 'interactionReport',
+  },
 } as const;
 
 export type ModuleKey = keyof typeof MODULE_REGISTRY;
