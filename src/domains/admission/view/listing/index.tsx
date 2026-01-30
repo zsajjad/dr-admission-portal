@@ -89,7 +89,8 @@ const statusOptions = [
 ];
 
 // Fee paid options for filter dropdown
-const feePaidOptions = [
+const feePaidOptions: { id: string; label: string; value: boolean | undefined }[] = [
+  { id: 'all', label: 'All', value: undefined },
   { id: 'true', label: 'Paid', value: true },
   { id: 'false', label: 'Unpaid', value: false },
 ];
@@ -247,7 +248,7 @@ export function AdmissionListing() {
   // Find selected values for controlled Autocomplete
   const selectedStatus = useMemo(() => statusOptions.find((s) => s.id === filters.status) || null, [filters.status]);
   const selectedFeePaid = useMemo(
-    () => feePaidOptions.find((f) => f.value === filters.isFeePaid) || null,
+    () => feePaidOptions.find((f) => f.value === filters.isFeePaid) || feePaidOptions[0],
     [filters.isFeePaid],
   );
 
@@ -424,7 +425,10 @@ export function AdmissionListing() {
             generateVerificationSlipMutation.isPending &&
             generateVerificationSlipMutation.variables?.data.admissionIds?.includes(admission.id);
           const isPrintingQR = printingQRId === admission.id;
-          const canVerify = admission.status === 'UNVERIFIED' || admission.status === 'MANUAL_VERIFICATION_REQUIRED';
+          const canVerify =
+            admission.status === 'UNVERIFIED' ||
+            admission.status === 'MANUAL_VERIFICATION_REQUIRED' ||
+            admission.status === 'REJECTED';
 
           return (
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>

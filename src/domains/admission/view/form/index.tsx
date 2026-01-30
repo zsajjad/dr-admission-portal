@@ -7,7 +7,9 @@ import { useFormik } from 'formik';
 
 import { Alert, Checkbox, FormControlLabel, Grid, MenuItem, Stack, TextField, Typography } from '@mui/material';
 
+import { AreaSelect } from '@/components/AreaSelect';
 import { AssetUploader } from '@/components/Asset/Uploader';
+import { BranchSelect } from '@/components/BranchSelect';
 import { FormSkeleton } from '@/components/Skeleton/FormSkeleton';
 import { SubmitButton } from '@/components/SubmitButton';
 
@@ -321,31 +323,28 @@ export function AdmissionForm({ editItem, isLoading, isEditMode = false }: Admis
       </Typography>
       <Grid container spacing={2}>
         <Grid size={{ xs: 12, sm: 6, md: 6, lg: 6 }}>
-          <TextField
-            name="branchId"
-            fullWidth
+          <BranchSelect
             value={values.branchId}
-            onBlur={handleBlur}
-            onChange={handleChange}
-            helperText={touched.branchId && errors.branchId}
-            error={touched.branchId && Boolean(errors.branchId)}
-            placeholder={generalMessages.branchPlaceholder}
-            label={<FormattedMessage {...messages.branchLabel} />}
-            disabled
+            onChange={(branchId) => {
+              setFieldValue('branchId', branchId);
+              // Reset areaId when branch changes
+              setFieldValue('areaId', '');
+            }}
+            onBlur={() => formik.setFieldTouched('branchId', true)}
+            error={errors.branchId}
+            touched={touched.branchId}
+            disabled={isSubmitting}
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 6, lg: 6 }}>
-          <TextField
-            name="areaId"
-            fullWidth
+          <AreaSelect
             value={values.areaId}
-            onBlur={handleBlur}
-            onChange={handleChange}
-            helperText={touched.areaId && errors.areaId}
-            error={touched.areaId && Boolean(errors.areaId)}
-            placeholder={generalMessages.areaPlaceholder}
-            label={<FormattedMessage {...messages.areaLabel} />}
-            disabled
+            branchId={values.branchId}
+            onChange={(areaId) => setFieldValue('areaId', areaId)}
+            onBlur={() => formik.setFieldTouched('areaId', true)}
+            error={errors.areaId}
+            touched={touched.areaId}
+            disabled={isSubmitting}
           />
         </Grid>
       </Grid>

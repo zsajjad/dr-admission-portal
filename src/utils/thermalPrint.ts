@@ -187,6 +187,15 @@ const COMMANDS = {
   /** ESC @ - Initialize printer */
   INIT: new Uint8Array([ESC, 0x40]),
 
+  /** ESC = 1 - Enable printer (peripheral device) - CRITICAL for printing to work */
+  ENABLE_PRINTER: new Uint8Array([ESC, 0x3d, 0x01]),
+
+  /** ESC t 0 - Select character code table (PC437 US Standard) */
+  CODE_TABLE_PC437: new Uint8Array([ESC, 0x74, 0x00]),
+
+  /** ESC ! 0 - Select print mode (normal) */
+  PRINT_MODE_NORMAL: new Uint8Array([ESC, 0x21, 0x00]),
+
   /** LF - Print and line feed */
   LINE_FEED: new Uint8Array([LF]),
 
@@ -444,10 +453,18 @@ export class WebUSBThermalPrinter {
   }
 
   /**
-   * Initialize the printer (ESC @)
+   * Initialize the printer with full setup sequence
+   * Based on POS-80XX manual - sends ESC @, ESC = 1, ESC t 0, ESC ! 0
    */
   async initialize(): Promise<void> {
-    await this.writeRaw(COMMANDS.INIT);
+    // Send all init commands in one buffer for reliability
+    const initSequence = new Uint8Array([
+      ...COMMANDS.INIT, // ESC @ - Initialize printer
+      ...COMMANDS.ENABLE_PRINTER, // ESC = 1 - Enable printer (critical!)
+      ...COMMANDS.CODE_TABLE_PC437, // ESC t 0 - Select code table
+      ...COMMANDS.PRINT_MODE_NORMAL, // ESC ! 0 - Normal print mode
+    ]);
+    await this.writeRaw(initSequence);
   }
 
   /**
@@ -756,10 +773,18 @@ export class ThermalPrinter {
   }
 
   /**
-   * Initialize the printer (ESC @)
+   * Initialize the printer with full setup sequence
+   * Based on POS-80XX manual - sends ESC @, ESC = 1, ESC t 0, ESC ! 0
    */
   async initialize(): Promise<void> {
-    await this.writeRaw(COMMANDS.INIT);
+    // Send all init commands in one buffer for reliability
+    const initSequence = new Uint8Array([
+      ...COMMANDS.INIT, // ESC @ - Initialize printer
+      ...COMMANDS.ENABLE_PRINTER, // ESC = 1 - Enable printer (critical!)
+      ...COMMANDS.CODE_TABLE_PC437, // ESC t 0 - Select code table
+      ...COMMANDS.PRINT_MODE_NORMAL, // ESC ! 0 - Normal print mode
+    ]);
+    await this.writeRaw(initSequence);
   }
 
   // --------------------------------------------------------------------------
@@ -1807,9 +1832,92 @@ export async function testPrint(): Promise<void> {
   }
 }
 
+/**
+ * Raw test with beeper to verify printer responds
+ */
+export async function rawTest(): Promise<void> {
+  console.log('=== RAW TEST WITH BEEPER ===');
+
+  const devices = await navigator.usb.getDevices();
+  let device = devices.find((d) => d.vendorId === 0x0483) || null;
+
+  if (!device) {
+    device = await navigator.usb.requestDevice({
+      filters: [{ vendorId: 0x0483 }],
+    });
+  }
+
+  console.log('Device:', device.productName);
+  await device.open();
+
+  if (device.configuration === null) {
+    await device.selectConfiguration(1);
+  }
+
+  await device.claimInterface(0);
+  console.log('Connected');
+
+  // Step 1: Beep to confirm printer responds
+  console.log('Step 1: Sending beep command...');
+  const beep = new Uint8Array([
+    // ESC B n t - Beep: n=3 times, t=2 (100ms each)
+    0x1b, 0x42, 0x03, 0x02,
+  ]);
+  await device.transferOut(1, beep);
+  console.log('Beep sent - did you hear 3 beeps?');
+
+  // Wait a moment
+  await new Promise((r) => setTimeout(r, 500));
+
+  // Step 2: Initialize and print
+  console.log('Step 2: Sending print data...');
+  const data = new Uint8Array([
+    // ESC @ - Initialize printer
+    0x1b, 0x40,
+
+    // ESC = 1 - Enable printer (peripheral device)
+    0x1b, 0x3d, 0x01,
+
+    // ESC t 0 - Code table PC437
+    0x1b, 0x74, 0x00,
+
+    // ESC ! 0 - Normal print mode
+    0x1b, 0x21, 0x00,
+
+    // Print "TEST" followed by LF
+    0x54, 0x45, 0x53, 0x54, 0x0a,
+
+    // Print "1234" followed by LF
+    0x31, 0x32, 0x33, 0x34, 0x0a,
+
+    // Multiple LFs for spacing
+    0x0a, 0x0a, 0x0a, 0x0a,
+
+    // GS V 1 - Cut
+    0x1d, 0x56, 0x01,
+  ]);
+
+  const result = await device.transferOut(1, data);
+  console.log('Print result:', result.status, result.bytesWritten, 'bytes');
+
+  // Step 3: Another beep to confirm completion
+  await device.transferOut(1, beep);
+  console.log('Final beep sent');
+
+  await device.releaseInterface(0);
+  await device.close();
+  console.log('=== DONE ===');
+  console.log('Did the printer:');
+  console.log('  1. Beep 3 times at start?');
+  console.log('  2. Print "TEST" and "1234"?');
+  console.log('  3. Cut the paper?');
+  console.log('  4. Beep 3 times at end?');
+}
+
 // Expose to window for browser console testing
 if (typeof window !== 'undefined') {
   (window as unknown as Record<string, unknown>).testPrint = testPrint;
+  (window as unknown as Record<string, unknown>).rawTest = rawTest;
   (window as unknown as Record<string, unknown>).printAdmissionSlip = printAdmissionSlip;
   (window as unknown as Record<string, unknown>).printAdmissionSlipBrowser = printAdmissionSlipBrowser;
   (window as unknown as Record<string, unknown>).printAdmissionSlipUSB = printAdmissionSlipUSB;

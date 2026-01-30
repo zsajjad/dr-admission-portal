@@ -166,7 +166,7 @@ export function AssetsDrawer({ open, onClose, admission }: AssetsDrawerProps) {
   const isRejected = admission?.status === UpdateAdmissionStatusDtoStatus.REJECTED;
   const isUnverified = admission?.status === UpdateAdmissionStatusDtoStatus.UNVERIFIED;
   const isManualVerificationRequired = (admission?.status as string) === 'MANUAL_VERIFICATION_REQUIRED';
-  const canChangeStatus = !isVerified && !isRejected;
+  const canChangeStatus = !isVerified;
 
   return (
     <Drawer
@@ -351,6 +351,14 @@ export function AssetsDrawer({ open, onClose, admission }: AssetsDrawerProps) {
                   <FormattedMessage {...messages.manualVerificationRequiredInfo} />
                 </Alert>
               )}
+              {isRejected && (
+                <Alert severity="error">
+                  <Typography variant="body2" fontWeight="medium" gutterBottom>
+                    <FormattedMessage {...messages.rejectedReason} />:
+                  </Typography>
+                  <Typography variant="body2">{admission.rejectedReason}</Typography>
+                </Alert>
+              )}
 
               {!showRejectForm ? (
                 <>
@@ -436,17 +444,8 @@ export function AssetsDrawer({ open, onClose, admission }: AssetsDrawerProps) {
               )}
             </Stack>
           ) : (
-            <Alert severity={isVerified ? 'success' : 'error'}>
-              {isVerified ? (
-                <FormattedMessage {...messages.alreadyVerified} />
-              ) : (
-                <>
-                  <Typography variant="body2" fontWeight="medium" gutterBottom>
-                    <FormattedMessage {...messages.rejectedReason} />:
-                  </Typography>
-                  <Typography variant="body2">{admission.rejectedReason}</Typography>
-                </>
-              )}
+            <Alert severity="success">
+              <FormattedMessage {...messages.alreadyVerified} />
             </Alert>
           )}
         </Stack>
