@@ -28,10 +28,9 @@ import { SessionFilter } from '@/components/SessionFilter';
 
 import {
   CardPrintRequestEntity,
-  CardPrintRequestEntityStatus,
+  CardPrintRequestStatus,
   PrintingControllerCountCardPrintRequestsParams,
   PrintingControllerListCardPrintRequestsParams,
-  PrintingControllerListCardPrintRequestsStatus,
 } from '@/providers/service/app.schemas';
 import {
   getPrintingControllerCountCardPrintRequestsQueryKey,
@@ -54,13 +53,13 @@ import viewMessages from '../messages';
 interface FilterState {
   sessionId?: string;
   branchId?: string;
-  status?: PrintingControllerListCardPrintRequestsStatus;
+  status?: CardPrintRequestStatus;
 }
 
 const STATUS_OPTIONS = [
-  { value: 'PENDING', label: 'Pending' },
-  { value: 'COMPLETED', label: 'Completed' },
-  { value: 'CANCELLED', label: 'Cancelled' },
+  { value: CardPrintRequestStatus.PENDING, label: 'Pending' },
+  { value: CardPrintRequestStatus.COMPLETED, label: 'Completed' },
+  { value: CardPrintRequestStatus.CANCELLED, label: 'Cancelled' },
 ];
 
 function formatDate(dateString?: string): string {
@@ -68,13 +67,13 @@ function formatDate(dateString?: string): string {
   return new Date(dateString).toLocaleString();
 }
 
-function getStatusColor(status: CardPrintRequestEntityStatus): 'warning' | 'success' | 'default' {
+function getStatusColor(status: CardPrintRequestStatus): 'warning' | 'success' | 'default' {
   switch (status) {
-    case 'PENDING':
+    case CardPrintRequestStatus.PENDING:
       return 'warning';
-    case 'COMPLETED':
+    case CardPrintRequestStatus.COMPLETED:
       return 'success';
-    case 'CANCELLED':
+    case CardPrintRequestStatus.CANCELLED:
       return 'default';
     default:
       return 'default';
@@ -171,7 +170,7 @@ export function CardRequestsTab() {
 
   const handleStatusChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value;
-    setFilter({ status: value === '' ? undefined : (value as PrintingControllerListCardPrintRequestsStatus) });
+    setFilter({ status: value === '' ? undefined : (value as CardPrintRequestStatus) });
   };
 
   const handleSelectionChange = (selectionModel: GridRowSelectionModel) => {

@@ -59,16 +59,6 @@ function RatingBadge({ rating }: { rating: number }) {
   return <Box sx={ratingBadgeStyle(rating)}>{rating}</Box>;
 }
 
-function StudentGroupBadge({ type }: { type: 'best' | 'average' | 'attention' }) {
-  const labels = {
-    best: <FormattedMessage {...messages.studentsBest} />,
-    average: <FormattedMessage {...messages.studentsAverage} />,
-    attention: <FormattedMessage {...messages.studentsNeedingAttention} />,
-  };
-
-  return <Box sx={studentGroupBadgeStyle(type)}>{labels[type]}</Box>;
-}
-
 function AverageRatingChip({ rating }: { rating: number }) {
   return (
     <Chip
@@ -91,7 +81,7 @@ interface StudentListProps {
   groupType: 'best' | 'average' | 'attention';
 }
 
-function StudentList({ students, groupType }: StudentListProps) {
+function StudentList({ students }: StudentListProps) {
   if (students.length === 0) {
     return (
       <Box sx={{ p: 3, textAlign: 'center' }}>

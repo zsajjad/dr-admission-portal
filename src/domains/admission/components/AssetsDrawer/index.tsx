@@ -25,7 +25,7 @@ import { AssetViewer } from '@/components/Asset';
 
 import { KEYS } from '@/providers/constants/key';
 import { useAdmissionsControllerUpdateStatus } from '@/providers/service/admissions/admissions';
-import { Admission, UpdateAdmissionStatusDtoStatus } from '@/providers/service/app.schemas';
+import { Admission, AdmissionStatus } from '@/providers/service/app.schemas';
 
 import { FormattedMessage, useFormattedMessage } from '@/theme/FormattedMessage';
 
@@ -81,7 +81,7 @@ export function AssetsDrawer({ open, onClose, admission }: AssetsDrawerProps) {
       {
         id: admission.id,
         data: {
-          status: UpdateAdmissionStatusDtoStatus.VERIFIED,
+          status: AdmissionStatus.VERIFIED,
         },
       },
       {
@@ -104,7 +104,7 @@ export function AssetsDrawer({ open, onClose, admission }: AssetsDrawerProps) {
       {
         id: admission.id,
         data: {
-          status: 'MANUAL_VERIFICATION_REQUIRED' as UpdateAdmissionStatusDtoStatus,
+          status: 'MANUAL_VERIFICATION_REQUIRED' as AdmissionStatus,
         },
       },
       {
@@ -136,7 +136,7 @@ export function AssetsDrawer({ open, onClose, admission }: AssetsDrawerProps) {
       {
         id: admission.id,
         data: {
-          status: UpdateAdmissionStatusDtoStatus.REJECTED,
+          status: AdmissionStatus.REJECTED,
           rejectedReason: rejectedReason.trim(),
         },
       },
@@ -162,10 +162,10 @@ export function AssetsDrawer({ open, onClose, admission }: AssetsDrawerProps) {
     onClose();
   }, [onClose]);
 
-  const isVerified = admission?.status === UpdateAdmissionStatusDtoStatus.VERIFIED;
-  const isRejected = admission?.status === UpdateAdmissionStatusDtoStatus.REJECTED;
-  const isUnverified = admission?.status === UpdateAdmissionStatusDtoStatus.UNVERIFIED;
-  const isManualVerificationRequired = (admission?.status as string) === 'MANUAL_VERIFICATION_REQUIRED';
+  const isVerified = admission?.status === AdmissionStatus.VERIFIED;
+  const isRejected = admission?.status === AdmissionStatus.REJECTED;
+  const isUnverified = admission?.status === AdmissionStatus.UNVERIFIED;
+  const isManualVerificationRequired = admission?.status === AdmissionStatus.MANUAL_VERIFICATION_REQUIRED;
   const canChangeStatus = !isVerified;
 
   return (

@@ -635,10 +635,9 @@ export interface ListAttendanceDaysResponseDto {
   data: AttendanceDay[];
 }
 
-export type BulkAttendanceRecordItemDtoStatus =
-  (typeof BulkAttendanceRecordItemDtoStatus)[keyof typeof BulkAttendanceRecordItemDtoStatus];
+export type AttendanceStatus = (typeof AttendanceStatus)[keyof typeof AttendanceStatus];
 
-export const BulkAttendanceRecordItemDtoStatus = {
+export const AttendanceStatus = {
   PRESENT: 'PRESENT',
   ABSENT: 'ABSENT',
   LATE: 'LATE',
@@ -648,7 +647,7 @@ export const BulkAttendanceRecordItemDtoStatus = {
 export interface BulkAttendanceRecordItemDto {
   /** admissionId */
   admissionId: string;
-  status: BulkAttendanceRecordItemDtoStatus;
+  status: AttendanceStatus;
 }
 
 export interface BulkUpsertAttendanceRecordsDto {
@@ -660,19 +659,10 @@ export interface BulkUpsertAttendanceRecordsResponseDto {
   message: string;
 }
 
-export type AttendanceSummaryRowStatus = (typeof AttendanceSummaryRowStatus)[keyof typeof AttendanceSummaryRowStatus];
-
-export const AttendanceSummaryRowStatus = {
-  PRESENT: 'PRESENT',
-  ABSENT: 'ABSENT',
-  LATE: 'LATE',
-  EXCUSED: 'EXCUSED',
-} as const;
-
 export interface AttendanceSummaryRow {
   /** classLevelId */
   classLevelId: string;
-  status: AttendanceSummaryRowStatus;
+  status: AttendanceStatus;
   /** count */
   count: number;
 }
@@ -683,22 +673,12 @@ export interface AttendanceSummaryResponseDto {
   data: AttendanceSummaryRow[];
 }
 
-export type StudentAttendanceHistoryRowStatus =
-  (typeof StudentAttendanceHistoryRowStatus)[keyof typeof StudentAttendanceHistoryRowStatus];
-
-export const StudentAttendanceHistoryRowStatus = {
-  PRESENT: 'PRESENT',
-  ABSENT: 'ABSENT',
-  LATE: 'LATE',
-  EXCUSED: 'EXCUSED',
-} as const;
-
 export interface StudentAttendanceHistoryRow {
   /** attendanceDayId */
   attendanceDayId: string;
   /** date */
   date: string;
-  status: StudentAttendanceHistoryRowStatus;
+  status: AttendanceStatus;
 }
 
 export interface StudentAttendanceHistoryResponseDto {
@@ -721,9 +701,9 @@ export const ClassLevelGroup = {
 /**
  * gender
  */
-export type CreateClassLevelDtoGender = (typeof CreateClassLevelDtoGender)[keyof typeof CreateClassLevelDtoGender];
+export type Gender = (typeof Gender)[keyof typeof Gender];
 
-export const CreateClassLevelDtoGender = {
+export const Gender = {
   FEMALE: 'FEMALE',
   MALE: 'MALE',
 } as const;
@@ -738,20 +718,10 @@ export interface CreateClassLevelDto {
   /** name */
   name: string;
   /** gender */
-  gender: CreateClassLevelDtoGender;
+  gender: Gender;
   /** sortOrder */
   sortOrder?: number;
 }
-
-/**
- * gender
- */
-export type ClassLevelGender = (typeof ClassLevelGender)[keyof typeof ClassLevelGender];
-
-export const ClassLevelGender = {
-  FEMALE: 'FEMALE',
-  MALE: 'MALE',
-} as const;
 
 export interface ClassLevel {
   /** group */
@@ -765,7 +735,7 @@ export interface ClassLevel {
   /** name */
   name: string;
   /** gender */
-  gender: ClassLevelGender;
+  gender: Gender;
   /** sortOrder */
   sortOrder: number;
   /** isActive */
@@ -798,16 +768,6 @@ export interface DetailClassLevelsResponseDto {
   data: ClassLevel;
 }
 
-/**
- * gender
- */
-export type UpdateClassLevelDtoGender = (typeof UpdateClassLevelDtoGender)[keyof typeof UpdateClassLevelDtoGender];
-
-export const UpdateClassLevelDtoGender = {
-  FEMALE: 'FEMALE',
-  MALE: 'MALE',
-} as const;
-
 export interface UpdateClassLevelDto {
   /** group */
   group?: ClassLevelGroup;
@@ -818,7 +778,7 @@ export interface UpdateClassLevelDto {
   /** name */
   name?: string;
   /** gender */
-  gender?: UpdateClassLevelDtoGender;
+  gender?: Gender;
   /** sortOrder */
   sortOrder?: number;
 }
@@ -828,17 +788,6 @@ export interface UpdateClassLevelResponseDto {
   message: string;
   data?: ClassLevel;
 }
-
-/**
- * normalized gender (if possible)
- */
-export type LegacyAdmissionPrefillGender =
-  (typeof LegacyAdmissionPrefillGender)[keyof typeof LegacyAdmissionPrefillGender];
-
-export const LegacyAdmissionPrefillGender = {
-  FEMALE: 'FEMALE',
-  MALE: 'MALE',
-} as const;
 
 export interface LegacyAdmissionPrefill {
   /** legacyStudentId */
@@ -854,7 +803,7 @@ export interface LegacyAdmissionPrefill {
   /** dateOfBirth */
   dateOfBirth?: string;
   /** normalized gender (if possible) */
-  gender?: LegacyAdmissionPrefillGender;
+  gender?: Gender;
   /** phone */
   phone?: string;
   /** alternatePhone */
@@ -923,13 +872,6 @@ export interface SearchLegacyAdmissionsResponseDto {
   data: LegacyStudentRow[];
 }
 
-export type CreateAdmissionDtoGender = (typeof CreateAdmissionDtoGender)[keyof typeof CreateAdmissionDtoGender];
-
-export const CreateAdmissionDtoGender = {
-  FEMALE: 'FEMALE',
-  MALE: 'MALE',
-} as const;
-
 export interface CreateAdmissionDto {
   /** sessionId */
   sessionId: string;
@@ -945,7 +887,7 @@ export interface CreateAdmissionDto {
   fatherName: string;
   /** dateOfBirth */
   dateOfBirth: string;
-  gender: CreateAdmissionDtoGender;
+  gender: Gender;
   /** phone */
   phone: string;
   /** alternatePhone */
@@ -972,19 +914,23 @@ export interface CreateAdmissionDto {
   photoAssetId?: string;
 }
 
+export type AdmissionStatus = (typeof AdmissionStatus)[keyof typeof AdmissionStatus];
+
+export const AdmissionStatus = {
+  UNVERIFIED: 'UNVERIFIED',
+  VERIFIED: 'VERIFIED',
+  MANUAL_VERIFICATION_REQUIRED: 'MANUAL_VERIFICATION_REQUIRED',
+  CONFIRMED: 'CONFIRMED',
+  REJECTED: 'REJECTED',
+  DUPLICATE_MERGED: 'DUPLICATE_MERGED',
+} as const;
+
 export interface AdmissionSession {
   /** id */
   id: string;
   /** name */
   name: string;
 }
-
-export type AdmissionStudentGender = (typeof AdmissionStudentGender)[keyof typeof AdmissionStudentGender];
-
-export const AdmissionStudentGender = {
-  FEMALE: 'FEMALE',
-  MALE: 'MALE',
-} as const;
 
 export interface AdmissionStudent {
   /** id */
@@ -997,7 +943,7 @@ export interface AdmissionStudent {
   fatherName: string;
   /** dateOfBirth */
   dateOfBirth: string;
-  gender: AdmissionStudentGender;
+  gender: Gender;
   /** phone */
   phone: string;
   /** alternatePhone */
@@ -1089,16 +1035,6 @@ export interface AdmissionArea {
   hasBoysVan: boolean;
 }
 
-/**
- * gender
- */
-export type AdmissionClassLevelGender = (typeof AdmissionClassLevelGender)[keyof typeof AdmissionClassLevelGender];
-
-export const AdmissionClassLevelGender = {
-  FEMALE: 'FEMALE',
-  MALE: 'MALE',
-} as const;
-
 export interface AdmissionClassLevel {
   /** id */
   id: string;
@@ -1109,21 +1045,10 @@ export interface AdmissionClassLevel {
   /** name */
   name: string;
   /** gender */
-  gender: AdmissionClassLevelGender;
+  gender: Gender;
   /** group */
   group: ClassLevelGroup;
 }
-
-export type AdmissionStatus = (typeof AdmissionStatus)[keyof typeof AdmissionStatus];
-
-export const AdmissionStatus = {
-  UNVERIFIED: 'UNVERIFIED',
-  VERIFIED: 'VERIFIED',
-  MANUAL_VERIFICATION_REQUIRED: 'MANUAL_VERIFICATION_REQUIRED',
-  CONFIRMED: 'CONFIRMED',
-  REJECTED: 'REJECTED',
-  DUPLICATE_MERGED: 'DUPLICATE_MERGED',
-} as const;
 
 export interface Admission {
   /** id */
@@ -1189,56 +1114,19 @@ export interface ListAdmissionsResponseDto {
   data: Admission[];
 }
 
-/**
- * Admission status (UNVERIFIED, VERIFIED, REJECTED)
- */
-export type AdmissionsDashboardStatusStatStatus =
-  (typeof AdmissionsDashboardStatusStatStatus)[keyof typeof AdmissionsDashboardStatusStatStatus];
-
-export const AdmissionsDashboardStatusStatStatus = {
-  UNVERIFIED: 'UNVERIFIED',
-  VERIFIED: 'VERIFIED',
-  MANUAL_VERIFICATION_REQUIRED: 'MANUAL_VERIFICATION_REQUIRED',
-  CONFIRMED: 'CONFIRMED',
-  REJECTED: 'REJECTED',
-  DUPLICATE_MERGED: 'DUPLICATE_MERGED',
-} as const;
-
 export interface AdmissionsDashboardStatusStat {
   /** Admission status (UNVERIFIED, VERIFIED, REJECTED) */
-  status: AdmissionsDashboardStatusStatStatus;
+  status: AdmissionStatus;
   /** Number of admissions in this status */
   count: number;
 }
 
-/**
- * Student gender (MALE, FEMALE)
- */
-export type AdmissionsDashboardGenderStatGender =
-  (typeof AdmissionsDashboardGenderStatGender)[keyof typeof AdmissionsDashboardGenderStatGender];
-
-export const AdmissionsDashboardGenderStatGender = {
-  FEMALE: 'FEMALE',
-  MALE: 'MALE',
-} as const;
-
 export interface AdmissionsDashboardGenderStat {
   /** Student gender (MALE, FEMALE) */
-  gender: AdmissionsDashboardGenderStatGender;
+  gender: Gender;
   /** Number of admissions for this gender */
   count: number;
 }
-
-/**
- * Gender this class level is designated for
- */
-export type AdmissionsDashboardClassLevelStatGender =
-  (typeof AdmissionsDashboardClassLevelStatGender)[keyof typeof AdmissionsDashboardClassLevelStatGender];
-
-export const AdmissionsDashboardClassLevelStatGender = {
-  FEMALE: 'FEMALE',
-  MALE: 'MALE',
-} as const;
 
 export interface AdmissionsDashboardClassLevelStat {
   /** Class level code (e.g., "KG", "1", "2") */
@@ -1246,7 +1134,7 @@ export interface AdmissionsDashboardClassLevelStat {
   /** Class level display name (e.g., "Kindergarten", "Grade 1") */
   name: string;
   /** Gender this class level is designated for */
-  gender: AdmissionsDashboardClassLevelStatGender;
+  gender: Gender;
   /** Number of admissions in this class level */
   count: number;
 }
@@ -1345,19 +1233,9 @@ export interface MuhibanFeeCard {
   total: FeeCardTotal;
 }
 
-/**
- * Student gender
- */
-export type FeeCardGenderStatGender = (typeof FeeCardGenderStatGender)[keyof typeof FeeCardGenderStatGender];
-
-export const FeeCardGenderStatGender = {
-  FEMALE: 'FEMALE',
-  MALE: 'MALE',
-} as const;
-
 export interface FeeCardGenderStat {
   /** Student gender */
-  gender: FeeCardGenderStatGender;
+  gender: Gender;
   /** Total admissions (expected) */
   expected: number;
   /** Fee paid admissions (confirmed) */
@@ -1476,13 +1354,6 @@ export interface DetailAdmissionResponseDto {
   data: Admission;
 }
 
-export type UpdateAdmissionDtoGender = (typeof UpdateAdmissionDtoGender)[keyof typeof UpdateAdmissionDtoGender];
-
-export const UpdateAdmissionDtoGender = {
-  FEMALE: 'FEMALE',
-  MALE: 'MALE',
-} as const;
-
 export interface UpdateAdmissionDto {
   /** branchId */
   branchId?: string;
@@ -1494,7 +1365,7 @@ export interface UpdateAdmissionDto {
   fatherName?: string;
   /** dateOfBirth */
   dateOfBirth?: string;
-  gender?: UpdateAdmissionDtoGender;
+  gender?: Gender;
   /** phone */
   phone?: string;
   /** alternatePhone */
@@ -1527,20 +1398,8 @@ export interface UpdateAdmissionResponseDto {
   data?: Admission;
 }
 
-export type UpdateAdmissionStatusDtoStatus =
-  (typeof UpdateAdmissionStatusDtoStatus)[keyof typeof UpdateAdmissionStatusDtoStatus];
-
-export const UpdateAdmissionStatusDtoStatus = {
-  UNVERIFIED: 'UNVERIFIED',
-  VERIFIED: 'VERIFIED',
-  MANUAL_VERIFICATION_REQUIRED: 'MANUAL_VERIFICATION_REQUIRED',
-  CONFIRMED: 'CONFIRMED',
-  REJECTED: 'REJECTED',
-  DUPLICATE_MERGED: 'DUPLICATE_MERGED',
-} as const;
-
 export interface UpdateAdmissionStatusDto {
-  status: UpdateAdmissionStatusDtoStatus;
+  status: AdmissionStatus;
   /** rejectedReason (required when status=REJECTED) */
   rejectedReason?: string;
 }
@@ -1573,16 +1432,6 @@ export interface FinalizeAdmissionResponseDto {
   data: Admission;
 }
 
-/**
- * Gender
- */
-export type InteractionStudentGender = (typeof InteractionStudentGender)[keyof typeof InteractionStudentGender];
-
-export const InteractionStudentGender = {
-  FEMALE: 'FEMALE',
-  MALE: 'MALE',
-} as const;
-
 export interface InteractionStudent {
   /** Student ID */
   id: string;
@@ -1593,7 +1442,7 @@ export interface InteractionStudent {
   /** Father name */
   fatherName: string;
   /** Gender */
-  gender: InteractionStudentGender;
+  gender: Gender;
 }
 
 /**
@@ -1688,19 +1537,12 @@ export interface DashboardSession {
   name: string;
 }
 
-export type DashboardClassLevelGender = (typeof DashboardClassLevelGender)[keyof typeof DashboardClassLevelGender];
-
-export const DashboardClassLevelGender = {
-  FEMALE: 'FEMALE',
-  MALE: 'MALE',
-} as const;
-
 export interface DashboardClassLevel {
   id: string;
   code: string;
   name: string;
   age: number;
-  gender: DashboardClassLevelGender;
+  gender: Gender;
 }
 
 export interface DashboardBranch {
@@ -1899,17 +1741,6 @@ export interface QuestionSetSession {
   name: string;
 }
 
-/**
- * gender
- */
-export type QuestionSetClassLevelGender =
-  (typeof QuestionSetClassLevelGender)[keyof typeof QuestionSetClassLevelGender];
-
-export const QuestionSetClassLevelGender = {
-  FEMALE: 'FEMALE',
-  MALE: 'MALE',
-} as const;
-
 export interface QuestionSetClassLevel {
   /** id */
   id: string;
@@ -1920,7 +1751,7 @@ export interface QuestionSetClassLevel {
   /** name */
   name: string;
   /** gender */
-  gender: QuestionSetClassLevelGender;
+  gender: Gender;
 }
 
 export interface QuestionSetQuestion {
@@ -2129,13 +1960,6 @@ export interface IdCardVan {
   colorName: string;
 }
 
-export type IdCardStudentGender = (typeof IdCardStudentGender)[keyof typeof IdCardStudentGender];
-
-export const IdCardStudentGender = {
-  FEMALE: 'FEMALE',
-  MALE: 'MALE',
-} as const;
-
 export interface IdCardStudent {
   grNumber: string;
   name: string;
@@ -2143,7 +1967,7 @@ export interface IdCardStudent {
   dateOfBirth: string;
   phone: string;
   alternatePhone?: string;
-  gender: IdCardStudentGender;
+  gender: Gender;
   area: IdCardArea;
   branch: IdCardBranch;
   classLevel: IdCardClassLevel;
@@ -2159,30 +1983,6 @@ export interface IdCardPreviewResponseDto {
   count: number;
   data: IdCardStudent[];
 }
-
-/**
- * Admission status filter
- */
-export type IdCardFilterDtoStatus = (typeof IdCardFilterDtoStatus)[keyof typeof IdCardFilterDtoStatus];
-
-export const IdCardFilterDtoStatus = {
-  UNVERIFIED: 'UNVERIFIED',
-  VERIFIED: 'VERIFIED',
-  MANUAL_VERIFICATION_REQUIRED: 'MANUAL_VERIFICATION_REQUIRED',
-  CONFIRMED: 'CONFIRMED',
-  REJECTED: 'REJECTED',
-  DUPLICATE_MERGED: 'DUPLICATE_MERGED',
-} as const;
-
-/**
- * Gender filter
- */
-export type IdCardFilterDtoGender = (typeof IdCardFilterDtoGender)[keyof typeof IdCardFilterDtoGender];
-
-export const IdCardFilterDtoGender = {
-  FEMALE: 'FEMALE',
-  MALE: 'MALE',
-} as const;
 
 export interface IdCardFilterDto {
   /** Specific admission IDs to generate cards for. When provided, other filters are ignored. */
@@ -2200,27 +2000,20 @@ export interface IdCardFilterDto {
   /** Class Level Group */
   classLevelGroup?: string;
   /** Admission status filter */
-  status?: IdCardFilterDtoStatus;
+  status?: AdmissionStatus;
   /** Fee paid status */
   isFeePaid?: boolean;
   /** Finalization status */
   isFinalized?: boolean;
   /** Gender filter */
-  gender?: IdCardFilterDtoGender;
+  gender?: Gender;
 }
-
-export type SittingSlipStudentGender = (typeof SittingSlipStudentGender)[keyof typeof SittingSlipStudentGender];
-
-export const SittingSlipStudentGender = {
-  FEMALE: 'FEMALE',
-  MALE: 'MALE',
-} as const;
 
 export interface SittingSlipStudent {
   grNumber: string;
   name: string;
   fatherName: string;
-  gender: SittingSlipStudentGender;
+  gender: Gender;
 }
 
 export interface SittingSlipPreviewResponseDto {
@@ -2228,16 +2021,6 @@ export interface SittingSlipPreviewResponseDto {
   count: number;
   data: SittingSlipStudent[];
 }
-
-/**
- * Gender filter
- */
-export type SittingSlipFilterDtoGender = (typeof SittingSlipFilterDtoGender)[keyof typeof SittingSlipFilterDtoGender];
-
-export const SittingSlipFilterDtoGender = {
-  FEMALE: 'FEMALE',
-  MALE: 'MALE',
-} as const;
 
 export interface SittingSlipFilterDto {
   /** Specific admission IDs to generate slips for. When provided, other filters are ignored. */
@@ -2249,22 +2032,15 @@ export interface SittingSlipFilterDto {
   /** Area ID */
   areaId?: string;
   /** Gender filter */
-  gender?: SittingSlipFilterDtoGender;
+  gender?: Gender;
 }
-
-export type AttendanceStudentGender = (typeof AttendanceStudentGender)[keyof typeof AttendanceStudentGender];
-
-export const AttendanceStudentGender = {
-  FEMALE: 'FEMALE',
-  MALE: 'MALE',
-} as const;
 
 export interface AttendanceStudent {
   grNumber: string;
   name: string;
   fatherName: string;
   phone: string;
-  gender: AttendanceStudentGender;
+  gender: Gender;
   className: string;
   areaName: string;
   areaAlias: string;
@@ -2280,53 +2056,16 @@ export interface AttendanceSheetPreviewResponseDto {
   data: AttendanceStudent[];
 }
 
-/**
- * Gender filter
- */
-export type AttendanceSheetFilterDtoGender =
-  (typeof AttendanceSheetFilterDtoGender)[keyof typeof AttendanceSheetFilterDtoGender];
-
-export const AttendanceSheetFilterDtoGender = {
-  FEMALE: 'FEMALE',
-  MALE: 'MALE',
-} as const;
-
 export interface AttendanceSheetFilterDto {
   /** Session ID (required) */
   sessionId: string;
   /** Area ID (required - generates per area) */
   areaId: string;
   /** Gender filter */
-  gender?: AttendanceSheetFilterDtoGender;
+  gender?: Gender;
   /** Class level groups to include (default: MUHIBAN, NASIRAN) */
   classLevelGroups?: ClassLevelGroup[];
 }
-
-/**
- * Admission status filter
- */
-export type VerificationSlipFilterDtoStatus =
-  (typeof VerificationSlipFilterDtoStatus)[keyof typeof VerificationSlipFilterDtoStatus];
-
-export const VerificationSlipFilterDtoStatus = {
-  UNVERIFIED: 'UNVERIFIED',
-  VERIFIED: 'VERIFIED',
-  MANUAL_VERIFICATION_REQUIRED: 'MANUAL_VERIFICATION_REQUIRED',
-  CONFIRMED: 'CONFIRMED',
-  REJECTED: 'REJECTED',
-  DUPLICATE_MERGED: 'DUPLICATE_MERGED',
-} as const;
-
-/**
- * Gender filter
- */
-export type VerificationSlipFilterDtoGender =
-  (typeof VerificationSlipFilterDtoGender)[keyof typeof VerificationSlipFilterDtoGender];
-
-export const VerificationSlipFilterDtoGender = {
-  FEMALE: 'FEMALE',
-  MALE: 'MALE',
-} as const;
 
 export interface VerificationSlipFilterDto {
   /** Specific admission IDs to generate cards for. When provided, other filters are ignored. */
@@ -2344,13 +2083,13 @@ export interface VerificationSlipFilterDto {
   /** Class Level Group */
   classLevelGroup?: string;
   /** Admission status filter */
-  status?: VerificationSlipFilterDtoStatus;
+  status?: AdmissionStatus;
   /** Fee paid status */
   isFeePaid?: boolean;
   /** Finalization status */
   isFinalized?: boolean;
   /** Gender filter */
-  gender?: VerificationSlipFilterDtoGender;
+  gender?: Gender;
 }
 
 export interface VerificationSlipStudent {
@@ -2373,6 +2112,14 @@ export interface VerificationSlipPreviewResponseDto {
   /** Student data for verification slips */
   data: VerificationSlipStudent[];
 }
+
+export type CardPrintRequestStatus = (typeof CardPrintRequestStatus)[keyof typeof CardPrintRequestStatus];
+
+export const CardPrintRequestStatus = {
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+} as const;
 
 export interface CardPrintRequestStudentInfo {
   grNumber: string;
@@ -2401,19 +2148,10 @@ export interface CardPrintRequestAdmissionInfo {
   classLevel: CardPrintRequestClassLevelInfo;
 }
 
-export type CardPrintRequestEntityStatus =
-  (typeof CardPrintRequestEntityStatus)[keyof typeof CardPrintRequestEntityStatus];
-
-export const CardPrintRequestEntityStatus = {
-  PENDING: 'PENDING',
-  COMPLETED: 'COMPLETED',
-  CANCELLED: 'CANCELLED',
-} as const;
-
 export interface CardPrintRequestEntity {
   id: string;
   admissionId: string;
-  status: CardPrintRequestEntityStatus;
+  status: CardPrintRequestStatus;
   sessionId: string;
   branchId: string;
   requestedAt: string;
@@ -2445,25 +2183,13 @@ export interface CountCardPrintRequestsResponseDto {
   byStatus?: CountCardPrintRequestsResponseDtoByStatus;
 }
 
-/**
- * Status filter (defaults to PENDING)
- */
-export type ProcessCardPrintRequestsDtoStatus =
-  (typeof ProcessCardPrintRequestsDtoStatus)[keyof typeof ProcessCardPrintRequestsDtoStatus];
-
-export const ProcessCardPrintRequestsDtoStatus = {
-  PENDING: 'PENDING',
-  COMPLETED: 'COMPLETED',
-  CANCELLED: 'CANCELLED',
-} as const;
-
 export interface ProcessCardPrintRequestsDto {
   /** Session ID (required when admissionIds not provided) */
   sessionId?: string;
   /** Branch ID (required when admissionIds not provided) */
   branchId?: string;
   /** Status filter (defaults to PENDING) */
-  status?: ProcessCardPrintRequestsDtoStatus;
+  status?: CardPrintRequestStatus;
   /** Specific admission IDs to process. When provided, sessionId and branchId filters are ignored. */
   admissionIds?: string[];
 }
@@ -2942,7 +2668,7 @@ export type ClassLevelControllerFindAllParams = {
   /**
    * gender
    */
-  gender?: ClassLevelControllerFindAllGender;
+  gender?: Gender;
   /**
    * Sort by
    */
@@ -2955,14 +2681,6 @@ export type ClassLevelControllerFindAllSortOrder =
 export const ClassLevelControllerFindAllSortOrder = {
   asc: 'asc',
   desc: 'desc',
-} as const;
-
-export type ClassLevelControllerFindAllGender =
-  (typeof ClassLevelControllerFindAllGender)[keyof typeof ClassLevelControllerFindAllGender];
-
-export const ClassLevelControllerFindAllGender = {
-  FEMALE: 'FEMALE',
-  MALE: 'MALE',
 } as const;
 
 export type ClassLevelControllerFindAllSortBy =
@@ -3090,7 +2808,7 @@ export type AdmissionsControllerFindAllParams = {
    * classLevelGroup
    */
   classLevelGroup?: ClassLevelGroup;
-  status?: AdmissionsControllerFindAllStatus;
+  status?: AdmissionStatus;
   /**
    * isFeePaid
    */
@@ -3111,18 +2829,6 @@ export type AdmissionsControllerFindAllSortOrder =
 export const AdmissionsControllerFindAllSortOrder = {
   asc: 'asc',
   desc: 'desc',
-} as const;
-
-export type AdmissionsControllerFindAllStatus =
-  (typeof AdmissionsControllerFindAllStatus)[keyof typeof AdmissionsControllerFindAllStatus];
-
-export const AdmissionsControllerFindAllStatus = {
-  UNVERIFIED: 'UNVERIFIED',
-  VERIFIED: 'VERIFIED',
-  MANUAL_VERIFICATION_REQUIRED: 'MANUAL_VERIFICATION_REQUIRED',
-  CONFIRMED: 'CONFIRMED',
-  REJECTED: 'REJECTED',
-  DUPLICATE_MERGED: 'DUPLICATE_MERGED',
 } as const;
 
 export type AdmissionsControllerFindAllSortBy =
@@ -3211,7 +2917,7 @@ export type InteractionsControllerFindAllParams = {
   /**
    * Filter by gender
    */
-  gender?: InteractionsControllerFindAllGender;
+  gender?: Gender;
   /**
    * One search to query grNumber, name, phone
    */
@@ -3232,14 +2938,6 @@ export type InteractionsControllerFindAllSortOrder =
 export const InteractionsControllerFindAllSortOrder = {
   asc: 'asc',
   desc: 'desc',
-} as const;
-
-export type InteractionsControllerFindAllGender =
-  (typeof InteractionsControllerFindAllGender)[keyof typeof InteractionsControllerFindAllGender];
-
-export const InteractionsControllerFindAllGender = {
-  FEMALE: 'FEMALE',
-  MALE: 'MALE',
 } as const;
 
 export type InteractionsControllerFindAllSortBy =
@@ -3388,7 +3086,7 @@ export type PrintingControllerPreviewIdCardsParams = {
   /**
    * Admission status filter
    */
-  status?: PrintingControllerPreviewIdCardsStatus;
+  status?: AdmissionStatus;
   /**
    * Fee paid status
    */
@@ -3400,28 +3098,8 @@ export type PrintingControllerPreviewIdCardsParams = {
   /**
    * Gender filter
    */
-  gender?: PrintingControllerPreviewIdCardsGender;
+  gender?: Gender;
 };
-
-export type PrintingControllerPreviewIdCardsStatus =
-  (typeof PrintingControllerPreviewIdCardsStatus)[keyof typeof PrintingControllerPreviewIdCardsStatus];
-
-export const PrintingControllerPreviewIdCardsStatus = {
-  UNVERIFIED: 'UNVERIFIED',
-  VERIFIED: 'VERIFIED',
-  MANUAL_VERIFICATION_REQUIRED: 'MANUAL_VERIFICATION_REQUIRED',
-  CONFIRMED: 'CONFIRMED',
-  REJECTED: 'REJECTED',
-  DUPLICATE_MERGED: 'DUPLICATE_MERGED',
-} as const;
-
-export type PrintingControllerPreviewIdCardsGender =
-  (typeof PrintingControllerPreviewIdCardsGender)[keyof typeof PrintingControllerPreviewIdCardsGender];
-
-export const PrintingControllerPreviewIdCardsGender = {
-  FEMALE: 'FEMALE',
-  MALE: 'MALE',
-} as const;
 
 export type PrintingControllerPreviewSittingSlipsParams = {
   /**
@@ -3443,16 +3121,8 @@ export type PrintingControllerPreviewSittingSlipsParams = {
   /**
    * Gender filter
    */
-  gender?: PrintingControllerPreviewSittingSlipsGender;
+  gender?: Gender;
 };
-
-export type PrintingControllerPreviewSittingSlipsGender =
-  (typeof PrintingControllerPreviewSittingSlipsGender)[keyof typeof PrintingControllerPreviewSittingSlipsGender];
-
-export const PrintingControllerPreviewSittingSlipsGender = {
-  FEMALE: 'FEMALE',
-  MALE: 'MALE',
-} as const;
 
 export type PrintingControllerPreviewAttendanceSheetsParams = {
   /**
@@ -3466,20 +3136,12 @@ export type PrintingControllerPreviewAttendanceSheetsParams = {
   /**
    * Gender filter
    */
-  gender?: PrintingControllerPreviewAttendanceSheetsGender;
+  gender?: Gender;
   /**
    * Class level groups to include (default: MUHIBAN, NASIRAN)
    */
   classLevelGroups?: ClassLevelGroup[];
 };
-
-export type PrintingControllerPreviewAttendanceSheetsGender =
-  (typeof PrintingControllerPreviewAttendanceSheetsGender)[keyof typeof PrintingControllerPreviewAttendanceSheetsGender];
-
-export const PrintingControllerPreviewAttendanceSheetsGender = {
-  FEMALE: 'FEMALE',
-  MALE: 'MALE',
-} as const;
 
 export type PrintingControllerListCardPrintRequestsParams = {
   /**
@@ -3509,7 +3171,7 @@ export type PrintingControllerListCardPrintRequestsParams = {
   /**
    * Status filter
    */
-  status?: PrintingControllerListCardPrintRequestsStatus;
+  status?: CardPrintRequestStatus;
 };
 
 export type PrintingControllerListCardPrintRequestsSortOrder =
@@ -3518,15 +3180,6 @@ export type PrintingControllerListCardPrintRequestsSortOrder =
 export const PrintingControllerListCardPrintRequestsSortOrder = {
   asc: 'asc',
   desc: 'desc',
-} as const;
-
-export type PrintingControllerListCardPrintRequestsStatus =
-  (typeof PrintingControllerListCardPrintRequestsStatus)[keyof typeof PrintingControllerListCardPrintRequestsStatus];
-
-export const PrintingControllerListCardPrintRequestsStatus = {
-  PENDING: 'PENDING',
-  COMPLETED: 'COMPLETED',
-  CANCELLED: 'CANCELLED',
 } as const;
 
 export type PrintingControllerCountCardPrintRequestsParams = {
@@ -3541,14 +3194,5 @@ export type PrintingControllerCountCardPrintRequestsParams = {
   /**
    * Status filter
    */
-  status?: PrintingControllerCountCardPrintRequestsStatus;
+  status?: CardPrintRequestStatus;
 };
-
-export type PrintingControllerCountCardPrintRequestsStatus =
-  (typeof PrintingControllerCountCardPrintRequestsStatus)[keyof typeof PrintingControllerCountCardPrintRequestsStatus];
-
-export const PrintingControllerCountCardPrintRequestsStatus = {
-  PENDING: 'PENDING',
-  COMPLETED: 'COMPLETED',
-  CANCELLED: 'CANCELLED',
-} as const;

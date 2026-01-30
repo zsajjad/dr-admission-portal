@@ -9,8 +9,8 @@ import { DataTable } from '@/components/DataTable';
 import { VanChip } from '@/components/VanChip';
 
 import {
-  IdCardFilterDtoGender,
-  IdCardFilterDtoStatus,
+  Gender,
+  AdmissionStatus,
   IdCardStudent,
   PrintingControllerPreviewIdCardsParams,
 } from '@/providers/service/app.schemas';
@@ -34,7 +34,7 @@ interface FilterState {
   vanId?: string;
   classLevelId?: string;
   classLevelGroup?: string;
-  gender?: 'MALE' | 'FEMALE';
+  gender?: Gender;
   status?: string;
   isFeePaid?: boolean;
   isFinalized?: boolean;
@@ -67,8 +67,8 @@ export function IdCardsTab() {
         vanId: filters.vanId,
         classLevelId: filters.classLevelId,
         classLevelGroup: filters.classLevelGroup,
-        gender: filters.gender as IdCardFilterDtoGender,
-        status: filters.status as IdCardFilterDtoStatus,
+        gender: filters.gender as Gender,
+        status: filters.status as AdmissionStatus,
         isFeePaid: filters.isFeePaid,
         isFinalized: filters.isFinalized,
       }
@@ -99,8 +99,8 @@ export function IdCardsTab() {
         vanId: filters.vanId,
         classLevelId: filters.classLevelId,
         classLevelGroup: filters.classLevelGroup,
-        gender: filters.gender as IdCardFilterDtoGender,
-        status: filters.status as IdCardFilterDtoStatus,
+        gender: filters.gender as Gender,
+        status: filters.status as AdmissionStatus,
         isFeePaid: filters.isFeePaid,
         isFinalized: filters.isFinalized,
       },

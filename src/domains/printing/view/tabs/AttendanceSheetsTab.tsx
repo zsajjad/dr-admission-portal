@@ -9,7 +9,7 @@ import { DataTable } from '@/components/DataTable';
 
 import {
   ClassLevelGroup,
-  AttendanceSheetFilterDtoGender,
+  Gender,
   AttendanceStudent,
   PrintingControllerPreviewAttendanceSheetsParams,
 } from '@/providers/service/app.schemas';
@@ -29,7 +29,7 @@ import viewMessages from '../messages';
 interface FilterState {
   sessionId?: string;
   areaId?: string;
-  gender?: 'MALE' | 'FEMALE';
+  gender?: Gender;
   classLevelGroups?: string[];
 }
 
@@ -57,11 +57,8 @@ export function AttendanceSheetsTab() {
     ? {
         sessionId: filters.sessionId!,
         areaId: filters.areaId!,
-        gender: filters.gender as AttendanceSheetFilterDtoGender,
-        classLevelGroups: (filters.classLevelGroups || [
-          'MUHIBAN',
-          'NASIRAN',
-        ]) as ClassLevelGroup[],
+        gender: filters.gender as Gender,
+        classLevelGroups: (filters.classLevelGroups || ['MUHIBAN', 'NASIRAN']) as ClassLevelGroup[],
       }
     : undefined;
 
@@ -85,11 +82,8 @@ export function AttendanceSheetsTab() {
       data: {
         sessionId: filters.sessionId!,
         areaId: filters.areaId!,
-        gender: filters.gender as AttendanceSheetFilterDtoGender,
-        classLevelGroups: (filters.classLevelGroups || [
-          'MUHIBAN',
-          'NASIRAN',
-        ]) as ClassLevelGroup[],
+        gender: filters.gender as Gender,
+        classLevelGroups: (filters.classLevelGroups || ['MUHIBAN', 'NASIRAN']) as ClassLevelGroup[],
       },
     });
   };

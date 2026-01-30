@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 
-import { Autocomplete, CircularProgress, InputAdornment, TextField } from '@mui/material';
+import { Autocomplete, CircularProgress, TextField } from '@mui/material';
 
 import { Area } from '@/providers/service/app.schemas';
 import { useAreaControllerFindAll } from '@/providers/service/area/area';

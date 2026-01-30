@@ -43,7 +43,7 @@ import {
   Area,
   AssetsControllerUploadPublicType,
   Branch,
-  CreateAdmissionDtoGender,
+  Gender,
   LegacyStudentRow,
   Session,
 } from '@/providers/service/app.schemas';
@@ -77,7 +77,7 @@ interface CreateAdmissionFormValues {
   phone: string;
   alternatePhone?: string;
   dateOfBirth: string;
-  gender: CreateAdmissionDtoGender;
+  gender: Gender;
   address?: string;
   identityNumber?: string;
   schoolName?: string;
@@ -224,7 +224,7 @@ export function FromLegacyAdmission(): React.JSX.Element {
         phone: prefill?.phone || '',
         alternatePhone: prefill?.alternatePhone || '',
         dateOfBirth: prefill?.dateOfBirth ? format(new Date(prefill.dateOfBirth), 'yyyy-MM-dd') : '',
-        gender: (prefill?.gender as CreateAdmissionDtoGender) || CreateAdmissionDtoGender.MALE,
+        gender: (prefill?.gender as Gender) || Gender.MALE,
         address: prefill?.address || '',
         identityNumber: prefill?.identityNumber || '',
         schoolName: prefill?.schoolName || '',
@@ -709,10 +709,10 @@ export function FromLegacyAdmission(): React.JSX.Element {
                   error={touched.gender && Boolean(errors.gender)}
                   label={<FormattedMessage {...messages.genderLabel} />}
                 >
-                  <MenuItem value={CreateAdmissionDtoGender.MALE}>
+                  <MenuItem value={Gender.MALE}>
                     <FormattedMessage {...messages.male} />
                   </MenuItem>
-                  <MenuItem value={CreateAdmissionDtoGender.FEMALE}>
+                  <MenuItem value={Gender.FEMALE}>
                     <FormattedMessage {...messages.female} />
                   </MenuItem>
                 </TextField>

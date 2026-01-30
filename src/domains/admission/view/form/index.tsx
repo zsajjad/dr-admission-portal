@@ -14,7 +14,7 @@ import { FormSkeleton } from '@/components/Skeleton/FormSkeleton';
 import { SubmitButton } from '@/components/SubmitButton';
 
 import { useAdmissionsControllerUpdate } from '@/providers/service/admissions/admissions';
-import { Admission, AssetsControllerUploadPublicType, UpdateAdmissionDtoGender } from '@/providers/service/app.schemas';
+import { Admission, AssetsControllerUploadPublicType, Gender } from '@/providers/service/app.schemas';
 
 import { FormattedMessage, useFormattedMessage } from '@/theme/FormattedMessage';
 
@@ -38,7 +38,7 @@ interface FormValues {
   phone: string;
   alternatePhone?: string;
   dateOfBirth: string;
-  gender: UpdateAdmissionDtoGender;
+  gender: Gender;
   address?: string;
   identityNumber?: string;
   branchId: string;
@@ -98,7 +98,7 @@ export function AdmissionForm({ editItem, isLoading, isEditMode = false }: Admis
     phone: editItem?.student?.phone || '',
     alternatePhone: editItem?.student?.alternatePhone || '',
     dateOfBirth: editItem?.student?.dateOfBirth ? format(new Date(editItem.student.dateOfBirth), 'yyyy-MM-dd') : '',
-    gender: (editItem?.student?.gender as UpdateAdmissionDtoGender) || UpdateAdmissionDtoGender.MALE,
+    gender: (editItem?.student?.gender as Gender) || Gender.MALE,
     address: editItem?.student?.address || '',
     identityNumber: editItem?.student?.identityNumber || '',
     branchId: editItem?.branch?.id || '',
@@ -265,10 +265,10 @@ export function AdmissionForm({ editItem, isLoading, isEditMode = false }: Admis
             error={touched.gender && Boolean(errors.gender)}
             label={<FormattedMessage {...messages.genderLabel} />}
           >
-            <MenuItem value={UpdateAdmissionDtoGender.MALE}>
+            <MenuItem value={Gender.MALE}>
               <FormattedMessage {...messages.male} />
             </MenuItem>
-            <MenuItem value={UpdateAdmissionDtoGender.FEMALE}>
+            <MenuItem value={Gender.FEMALE}>
               <FormattedMessage {...messages.female} />
             </MenuItem>
           </TextField>

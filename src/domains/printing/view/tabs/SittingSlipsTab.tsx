@@ -9,7 +9,7 @@ import { DataTable } from '@/components/DataTable';
 
 import {
   PrintingControllerPreviewSittingSlipsParams,
-  SittingSlipFilterDtoGender,
+  Gender,
   SittingSlipStudent,
 } from '@/providers/service/app.schemas';
 import { usePrintingControllerPreviewSittingSlips } from '@/providers/service/printing/printing';
@@ -29,7 +29,7 @@ interface FilterState {
   sessionId?: string;
   branchId?: string;
   areaId?: string;
-  gender?: 'MALE' | 'FEMALE';
+  gender?: Gender;
 }
 
 export function SittingSlipsTab() {
@@ -51,7 +51,7 @@ export function SittingSlipsTab() {
         sessionId: filters.sessionId,
         branchId: filters.branchId,
         areaId: filters.areaId,
-        gender: filters.gender as SittingSlipFilterDtoGender,
+        gender: filters.gender as Gender,
       }
     : undefined;
 
@@ -77,7 +77,7 @@ export function SittingSlipsTab() {
         sessionId: filters.sessionId,
         branchId: filters.branchId,
         areaId: filters.areaId,
-        gender: filters.gender as SittingSlipFilterDtoGender,
+        gender: filters.gender as Gender,
       },
     });
   };

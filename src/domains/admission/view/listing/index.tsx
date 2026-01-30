@@ -45,7 +45,7 @@ import {
 import {
   Admission,
   AdmissionsControllerFindAllSortBy,
-  AdmissionsControllerFindAllStatus,
+  AdmissionStatus,  
   ClassLevelGroup,
   QuestionSet,
 } from '@/providers/service/app.schemas';
@@ -60,7 +60,12 @@ import { routes } from '@/router/routes';
 import { useQueryParams } from '@/router/useQueryParams';
 
 import { extractNetworkError } from '@/utils/extractNetworkError';
-import { printAdmissionSlipUSB, testPrint, AdmissionSlipData } from '@/utils/thermalPrint';
+import {
+  printAdmissionSlipUSB,
+  printAdmissionSlipBrowser,
+  WebUSBThermalPrinter,
+  AdmissionSlipData,
+} from '@/utils/thermalPrint';
 
 import { getSafeValue, stopPropagation } from '@/utils';
 
@@ -83,11 +88,11 @@ const getStatusColor = (status: string) => {
 
 // Status options for filter dropdown
 const statusOptions = [
-  { id: AdmissionsControllerFindAllStatus.UNVERIFIED, label: 'Unverified' },
-  { id: AdmissionsControllerFindAllStatus.VERIFIED, label: 'Verified' },
-  { id: AdmissionsControllerFindAllStatus.REJECTED, label: 'Rejected' },
-  { id: AdmissionsControllerFindAllStatus.DUPLICATE_MERGED, label: 'Duplicate Merged' },
-  { id: AdmissionsControllerFindAllStatus.MANUAL_VERIFICATION_REQUIRED, label: 'Manual Verification Required' },
+  { id: AdmissionStatus.UNVERIFIED, label: 'Unverified' },
+  { id: AdmissionStatus.VERIFIED, label: 'Verified' },
+  { id: AdmissionStatus.REJECTED, label: 'Rejected' },
+  { id: AdmissionStatus.DUPLICATE_MERGED, label: 'Duplicate Merged' },
+  { id: AdmissionStatus.MANUAL_VERIFICATION_REQUIRED, label: 'Manual Verification Required' },
 ];
 
 // Fee paid options for filter dropdown
@@ -163,17 +168,45 @@ export function AdmissionListing() {
     [markFeePaidMutation, queryClient],
   );
 
+  // Smart print function: tries WebUSB first (for thermal printers), falls back to browser print
+  const printAdmissionSlip = useCallback(async (slipData: AdmissionSlipData) => {
+    // Try WebUSB first (works on Mac, requires WinUSB driver on Windows)
+    if (WebUSBThermalPrinter.isSupported()) {
+      try {
+        await printAdmissionSlipUSB(slipData);
+        return; // Success with WebUSB
+      } catch (error) {
+        // If user cancelled selection, don't fall back
+        if (error instanceof Error && error.message.includes('No printer selected')) {
+          throw error;
+        }
+        console.warn('WebUSB printing failed, falling back to browser print:', error);
+      }
+    }
+
+    // Fallback to browser print dialog (works with regular printers)
+    await printAdmissionSlipBrowser(slipData);
+  }, []);
+
   // Test thermal print handler
   const handleTestPrint = useCallback(async () => {
     setTestPrinting(true);
     try {
-      await testPrint();
+      // Test print with sample data
+      const testData: AdmissionSlipData = {
+        name: 'Test Student',
+        fatherName: 'Test Father',
+        classLevelName: 'Test Class',
+        gender: 'Male',
+        grNumber: 'TEST-0000',
+      };
+      await printAdmissionSlip(testData);
     } catch (error) {
       console.error('Test print failed:', error);
     } finally {
       setTestPrinting(false);
     }
-  }, []);
+  }, [printAdmissionSlip]);
 
   // Print verification slip handler
   const handlePrintVerificationSlip = useCallback(
@@ -248,7 +281,7 @@ export function AdmissionListing() {
     [questionSetsData?.data],
   );
 
-  // QR Code printing handler - prints admission slip via WebUSB
+  // QR Code printing handler - prints admission slip (WebUSB first, then browser fallback)
   const handlePrintQR = useCallback(
     async (admission: Admission) => {
       const grNumber = admission.student?.grNumber;
@@ -264,14 +297,14 @@ export function AdmissionListing() {
           grNumber: grNumber,
           isInteractionRequired: checkInteractionRequired(admission),
         };
-        await printAdmissionSlipUSB(slipData);
+        await printAdmissionSlip(slipData);
       } catch (error) {
         console.error('Failed to print admission slip:', error);
       } finally {
         setPrintingQRId(null);
       }
     },
-    [checkInteractionRequired],
+    [checkInteractionRequired, printAdmissionSlip],
   );
 
   // Find selected values for controlled Autocomplete
@@ -322,7 +355,7 @@ export function AdmissionListing() {
       branchId: filters.branchId,
       sessionId: filters.sessionId,
       areaId: filters.areaId,
-      status: filters.status as AdmissionsControllerFindAllStatus,
+      status: filters.status,
       isFeePaid: filters.isFeePaid,
       grNumber: filters.grNumber,
       name: filters.name,
@@ -540,6 +573,7 @@ export function AdmissionListing() {
       formattedMessages.markAsPaid,
       formattedMessages.markAsUnpaid,
       formattedMessages.printVerificationSlip,
+      formattedMessages.verify,
       route,
       handleOpenDrawer,
       handlePrintQR,
