@@ -35,9 +35,8 @@ export function ClassLevelGroupFilter({
 }: ClassLevelGroupFilterProps) {
   const { filters, setFilter } = useListingFilters<ClassLevelGroupFilterState>();
 
-  // Fetch class levels for filter dropdown
-  const { data: classLevelsData, isLoading } = useClassLevelControllerFindAll({ take: 100 });
-  const classLevels = useMemo(() => classLevelsData?.data || [], [classLevelsData?.data]);
+  // For loading indicator
+  const { isLoading } = useClassLevelControllerFindAll({ take: 100 });
 
   const classLevelGroupData = useMemo(() => {
     return Object.values(ClassLevelGroup).map((classLevelGroup) => {
@@ -45,11 +44,11 @@ export function ClassLevelGroupFilter({
         group: classLevelGroup,
       };
     });
-  }, [classLevels]);
+  }, []);
 
   const selectedClassLevelGroup = useMemo(
     () => classLevelGroupData.find((c) => c.group === filters.classLevelGroup) || null,
-    [classLevels, filters.classLevelGroup],
+    [classLevelGroupData, filters.classLevelGroup],
   );
 
   const handleClassLevelGroupChange = (_: unknown, newValue: ClassLevelGroupData | null) => {
@@ -64,6 +63,7 @@ export function ClassLevelGroupFilter({
       sx={{ minWidth }}
       options={classLevelGroupData}
       getOptionLabel={(option) => option.group || ''}
+      isOptionEqualToValue={(option, value) => option.group === value.group}
       value={selectedClassLevelGroup}
       onChange={handleClassLevelGroupChange}
       renderOption={(props, option) => (
