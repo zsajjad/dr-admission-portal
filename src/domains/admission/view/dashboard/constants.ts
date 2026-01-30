@@ -18,4 +18,5 @@ export const STAT_COLORS = {
   feePaid: '#2E7D32',
   finalized: '#0277BD',
   interactions: '#7B1FA2',
+  rejected: '#C0392B',
 };

@@ -127,6 +127,13 @@ export function AdmissionDashboard() {
             color={STAT_COLORS.interactions}
           />
         </Grid>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <StatCard
+            title={<FormattedMessage {...messages.rejected} />}
+            value={funnel?.rejected || 0}
+            color={STAT_COLORS.rejected}
+          />
+        </Grid>
       </Grid>
 
       {/* Charts Row 1 - Distribution Charts */}

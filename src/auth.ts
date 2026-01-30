@@ -81,8 +81,17 @@ export const authConfig = {
         token.refreshToken = user.refreshToken;
         token.requiresPasswordChange = user.requiresPasswordChange;
       } else if (trigger === 'update' && session) {
-        // Update token if session is updated
-        return { ...token, ...session };
+        // Update token if session is updated (e.g., after token refresh)
+        if (session.accessToken) {
+          token.accessToken = session.accessToken;
+        }
+        if (session.refreshToken) {
+          token.refreshToken = session.refreshToken;
+        }
+        if (typeof session.requiresPasswordChange === 'boolean') {
+          token.requiresPasswordChange = session.requiresPasswordChange;
+        }
+        return token;
       }
       return token;
     },

@@ -2,8 +2,7 @@
 
 import React, { createContext, useCallback, useContext, useEffect } from 'react';
 
-import { signOut as nextAuthSignOut, signIn as nextAuthSignIn } from 'next-auth/react';
-import { useSession } from 'next-auth/react';
+import { signOut as nextAuthSignOut, signIn as nextAuthSignIn, useSession } from 'next-auth/react';
 
 import { useRouter } from 'next/navigation';
 
@@ -20,7 +19,12 @@ import { routes } from '@/router/routes';
 import { extractNetworkError } from '@/utils/extractNetworkError';
 
 import { config } from '@/config';
-import { getAuthenticationToken, removeAuthenticationHeader, setAuthenticationHeader } from '@/services';
+import {
+  getAuthenticationToken,
+  removeAuthenticationHeader,
+  setAuthenticationHeader,
+  setRefreshToken,
+} from '@/services';
 
 import { useSnackbarContext } from './SnackbarContext';
 
@@ -39,7 +43,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const AuthContextProvider: React.FC<AuthContextProps> = ({ children }) => {
-  const { data: session, status } = useSession();
+  const { data: session, status, update: updateSession } = useSession();
   const adminLogout = useAdminAuthControllerLogout();
 
   const snackbar = useSnackbarContext();
@@ -49,9 +53,15 @@ const AuthContextProvider: React.FC<AuthContextProps> = ({ children }) => {
 
   const previousToken = getAuthenticationToken();
   const currentToken = session?.accessToken;
+  const currentRefreshToken = session?.refreshToken;
 
   if (currentToken && previousToken !== `Bearer ${currentToken}`) {
     setAuthenticationHeader(currentToken);
+  }
+
+  // Set refresh token for automatic token refresh
+  if (currentRefreshToken) {
+    setRefreshToken(currentRefreshToken);
   }
 
   const signOut = async (): Promise<void> => {
@@ -122,10 +132,32 @@ const AuthContextProvider: React.FC<AuthContextProps> = ({ children }) => {
     [router, snackbar],
   );
 
+  // Listen for token refresh events and update the NextAuth session
   useEffect(() => {
-    const isTabActive = sessionStorage.getItem('isTabActive');
-    if (!isTabActive && session && typeof window !== 'undefined') {
-      signOut();
+    const handleTokenRefreshed = (event: Event) => {
+      const customEvent = event as CustomEvent<{ accessToken: string; refreshToken: string }>;
+      const { accessToken, refreshToken } = customEvent.detail;
+      // Update the NextAuth session with new tokens using the update function
+      updateSession({ accessToken, refreshToken }).catch((err) => {
+        console.error('Failed to update session:', err);
+      });
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('tokenRefreshed', handleTokenRefreshed);
+    }
+
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('tokenRefreshed', handleTokenRefreshed);
+      }
+    };
+  }, [updateSession]);
+
+  useEffect(() => {
+    // Set tab as active when session is available
+    if (session && typeof window !== 'undefined') {
+      sessionStorage.setItem('isTabActive', 'true');
     }
     if (session && session.requiresPasswordChange) {
       router.push(routes.auth.createPassword);
