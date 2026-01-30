@@ -85,13 +85,15 @@ export function useDashboardData({ branchId, sessionId }: UseDashboardDataProps)
   }, [dashboardData]);
 
   // Transform class fee stats to chart data format
+  // API returns: confirmed (paid), expected (total expected)
+  // We calculate: remaining = expected - confirmed
   const mapClassFeeStats = (classes: FeeCardClassStat[]): ClassFeeChartData[] => {
     return classes.map((stat, index) => ({
       name: stat.name || stat.code,
       code: stat.code,
       confirmed: stat.confirmed,
-      expected: stat.expected,
-      total: stat.confirmed + stat.expected,
+      remaining: stat.expected - stat.confirmed,
+      total: stat.expected,
       age: index, // Use index for ordering since API returns sorted data
     }));
   };
@@ -121,8 +123,8 @@ export function useDashboardData({ branchId, sessionId }: UseDashboardDataProps)
       name: stat.gender === 'MALE' ? 'Boys' : 'Girls',
       code: stat.gender,
       confirmed: stat.confirmed,
-      expected: stat.expected,
-      total: stat.confirmed + stat.expected,
+      remaining: stat.expected - stat.confirmed,
+      total: stat.expected,
       age: index,
     }));
   }, [dashboardData]);

@@ -12,8 +12,8 @@ export interface ClassFeeChartData {
   name: string;
   code: string;
   confirmed: number; // feePaidCount
-  expected: number; // feeNotPaidCount
-  total: number;
+  remaining: number; // expected - confirmed (not yet paid)
+  total: number; // total expected
   age: number;
 }
 
@@ -24,9 +24,9 @@ export interface ClassFeeBreakdownChartProps {
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
-// Colors for confirmed (green) and expected (orange)
+// Colors for confirmed (green) and remaining (orange)
 const CONFIRMED_COLOR = '#2E7D32';
-const EXPECTED_COLOR = '#E67E22';
+const REMAINING_COLOR = '#E67E22';
 
 export function ClassFeeBreakdownChart({ title, data }: ClassFeeBreakdownChartProps) {
   const chartRef = useRef<HTMLDivElement>(null);
@@ -99,29 +99,29 @@ export function ClassFeeBreakdownChart({ title, data }: ClassFeeBreakdownChartPr
       width: am5.percent(70),
     });
 
-    // Create Expected series (fee not paid)
-    const expectedSeries = chart.series.push(
+    // Create Remaining series (fee not paid)
+    const remainingSeries = chart.series.push(
       am5xy.ColumnSeries.new(root, {
-        name: 'Expected',
+        name: 'Remaining',
         xAxis: xAxis,
         yAxis: yAxis,
-        valueYField: 'expected',
+        valueYField: 'remaining',
         categoryXField: 'name',
         stacked: true,
-        fill: am5.color(EXPECTED_COLOR),
-        stroke: am5.color(EXPECTED_COLOR),
+        fill: am5.color(REMAINING_COLOR),
+        stroke: am5.color(REMAINING_COLOR),
       }),
     );
 
-    expectedSeries.columns.template.setAll({
-      tooltipText: '{name} - Expected: {valueY}',
+    remainingSeries.columns.template.setAll({
+      tooltipText: '{name} - Remaining: {valueY}',
       cornerRadiusTL: 4,
       cornerRadiusTR: 4,
       width: am5.percent(70),
     });
 
     // Add total labels on top of stacked bars
-    expectedSeries.bullets.push(function () {
+    remainingSeries.bullets.push(function () {
       return am5.Bullet.new(root, {
         locationY: 1,
         sprite: am5.Label.new(root, {
@@ -147,11 +147,11 @@ export function ClassFeeBreakdownChart({ title, data }: ClassFeeBreakdownChartPr
 
     // Set data
     confirmedSeries.data.setAll(data);
-    expectedSeries.data.setAll(data);
+    remainingSeries.data.setAll(data);
 
     // Animate
     confirmedSeries.appear(1000);
-    expectedSeries.appear(1000);
+    remainingSeries.appear(1000);
     chart.appear(1000, 100);
 
     return () => {

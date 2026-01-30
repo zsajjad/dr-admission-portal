@@ -8,7 +8,7 @@ import { GridColDef } from '@mui/x-data-grid';
 import { DataTable } from '@/components/DataTable';
 
 import {
-  AttendanceSheetFilterDtoClassLevelGroupsItem,
+  ClassLevelGroup,
   AttendanceSheetFilterDtoGender,
   AttendanceStudent,
   PrintingControllerPreviewAttendanceSheetsParams,
@@ -61,7 +61,7 @@ export function AttendanceSheetsTab() {
         classLevelGroups: (filters.classLevelGroups || [
           'MUHIBAN',
           'NASIRAN',
-        ]) as AttendanceSheetFilterDtoClassLevelGroupsItem[],
+        ]) as ClassLevelGroup[],
       }
     : undefined;
 
@@ -89,7 +89,7 @@ export function AttendanceSheetsTab() {
         classLevelGroups: (filters.classLevelGroups || [
           'MUHIBAN',
           'NASIRAN',
-        ]) as AttendanceSheetFilterDtoClassLevelGroupsItem[],
+        ]) as ClassLevelGroup[],
       },
     });
   };

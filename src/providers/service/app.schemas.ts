@@ -710,9 +710,9 @@ export interface StudentAttendanceHistoryResponseDto {
 /**
  * group
  */
-export type CreateClassLevelDtoGroup = (typeof CreateClassLevelDtoGroup)[keyof typeof CreateClassLevelDtoGroup];
+export type ClassLevelGroup = (typeof ClassLevelGroup)[keyof typeof ClassLevelGroup];
 
-export const CreateClassLevelDtoGroup = {
+export const ClassLevelGroup = {
   TIFLAN: 'TIFLAN',
   MUHIBAN: 'MUHIBAN',
   NASIRAN: 'NASIRAN',
@@ -730,7 +730,7 @@ export const CreateClassLevelDtoGender = {
 
 export interface CreateClassLevelDto {
   /** group */
-  group: CreateClassLevelDtoGroup;
+  group: ClassLevelGroup;
   /** age */
   age: number;
   /** code */
@@ -742,17 +742,6 @@ export interface CreateClassLevelDto {
   /** sortOrder */
   sortOrder?: number;
 }
-
-/**
- * group
- */
-export type ClassLevelGroup = (typeof ClassLevelGroup)[keyof typeof ClassLevelGroup];
-
-export const ClassLevelGroup = {
-  TIFLAN: 'TIFLAN',
-  MUHIBAN: 'MUHIBAN',
-  NASIRAN: 'NASIRAN',
-} as const;
 
 /**
  * gender
@@ -810,17 +799,6 @@ export interface DetailClassLevelsResponseDto {
 }
 
 /**
- * group
- */
-export type UpdateClassLevelDtoGroup = (typeof UpdateClassLevelDtoGroup)[keyof typeof UpdateClassLevelDtoGroup];
-
-export const UpdateClassLevelDtoGroup = {
-  TIFLAN: 'TIFLAN',
-  MUHIBAN: 'MUHIBAN',
-  NASIRAN: 'NASIRAN',
-} as const;
-
-/**
  * gender
  */
 export type UpdateClassLevelDtoGender = (typeof UpdateClassLevelDtoGender)[keyof typeof UpdateClassLevelDtoGender];
@@ -832,7 +810,7 @@ export const UpdateClassLevelDtoGender = {
 
 export interface UpdateClassLevelDto {
   /** group */
-  group?: UpdateClassLevelDtoGroup;
+  group?: ClassLevelGroup;
   /** age */
   age?: number;
   /** code */
@@ -1121,17 +1099,6 @@ export const AdmissionClassLevelGender = {
   MALE: 'MALE',
 } as const;
 
-/**
- * group
- */
-export type AdmissionClassLevelGroup = (typeof AdmissionClassLevelGroup)[keyof typeof AdmissionClassLevelGroup];
-
-export const AdmissionClassLevelGroup = {
-  TIFLAN: 'TIFLAN',
-  MUHIBAN: 'MUHIBAN',
-  NASIRAN: 'NASIRAN',
-} as const;
-
 export interface AdmissionClassLevel {
   /** id */
   id: string;
@@ -1144,7 +1111,7 @@ export interface AdmissionClassLevel {
   /** gender */
   gender: AdmissionClassLevelGender;
   /** group */
-  group: AdmissionClassLevelGroup;
+  group: ClassLevelGroup;
 }
 
 export type AdmissionStatus = (typeof AdmissionStatus)[keyof typeof AdmissionStatus];
@@ -1176,6 +1143,8 @@ export interface Admission {
   area: AdmissionArea;
   /** classLevel */
   classLevel: AdmissionClassLevel;
+  /** classLevelGroup */
+  classLevelGroup: ClassLevelGroup;
   /** schoolName */
   schoolName?: string;
   /** schoolClass */
@@ -1307,21 +1276,9 @@ export interface AdmissionsDashboardAreaStat {
   percentage: string;
 }
 
-/**
- * Class level group category
- */
-export type AdmissionsDashboardGroupStatGroup =
-  (typeof AdmissionsDashboardGroupStatGroup)[keyof typeof AdmissionsDashboardGroupStatGroup];
-
-export const AdmissionsDashboardGroupStatGroup = {
-  TIFLAN: 'TIFLAN',
-  MUHIBAN: 'MUHIBAN',
-  NASIRAN: 'NASIRAN',
-} as const;
-
 export interface AdmissionsDashboardGroupStat {
   /** Class level group category */
-  group: AdmissionsDashboardGroupStatGroup;
+  group: ClassLevelGroup;
   /** Number of male students in this group */
   maleCount: number;
   /** Number of female students in this group */
@@ -1348,12 +1305,12 @@ export interface AdmissionsDashboardClassFeeStats {
   code: string;
   /** Class level display name (e.g., "Kindergarten", "Grade 1") */
   name: string;
-  /** Number of students who have paid fee in this class level */
-  feePaidCount: number;
-  /** Number of students who have not paid fee in this class level */
-  feeNotPaidCount: number;
-  /** Total students in this class level */
-  totalStudents: number;
+  /** Total expected students in this class level */
+  expected: number;
+  /** Number of students who have paid fee (confirmed) */
+  feesPaid: number;
+  /** Number of students who have not paid fee yet (expected - feesPaid) */
+  remaining: number;
 }
 
 export interface FeeCardClassStat {
@@ -2160,21 +2117,14 @@ export interface IdCardBranch {
   defaultColorHex?: string;
 }
 
-export type IdCardClassLevelGroup = (typeof IdCardClassLevelGroup)[keyof typeof IdCardClassLevelGroup];
-
-export const IdCardClassLevelGroup = {
-  TIFLAN: 'TIFLAN',
-  MUHIBAN: 'MUHIBAN',
-  NASIRAN: 'NASIRAN',
-} as const;
-
 export interface IdCardClassLevel {
   code: string;
   name: string;
-  group: IdCardClassLevelGroup;
+  group: ClassLevelGroup;
 }
 
 export interface IdCardVan {
+  name: string;
   colorHex: string;
   colorName: string;
 }
@@ -2341,15 +2291,6 @@ export const AttendanceSheetFilterDtoGender = {
   MALE: 'MALE',
 } as const;
 
-export type AttendanceSheetFilterDtoClassLevelGroupsItem =
-  (typeof AttendanceSheetFilterDtoClassLevelGroupsItem)[keyof typeof AttendanceSheetFilterDtoClassLevelGroupsItem];
-
-export const AttendanceSheetFilterDtoClassLevelGroupsItem = {
-  TIFLAN: 'TIFLAN',
-  MUHIBAN: 'MUHIBAN',
-  NASIRAN: 'NASIRAN',
-} as const;
-
 export interface AttendanceSheetFilterDto {
   /** Session ID (required) */
   sessionId: string;
@@ -2358,7 +2299,7 @@ export interface AttendanceSheetFilterDto {
   /** Gender filter */
   gender?: AttendanceSheetFilterDtoGender;
   /** Class level groups to include (default: MUHIBAN, NASIRAN) */
-  classLevelGroups?: AttendanceSheetFilterDtoClassLevelGroupsItem[];
+  classLevelGroups?: ClassLevelGroup[];
 }
 
 /**
@@ -2412,15 +2353,6 @@ export interface VerificationSlipFilterDto {
   gender?: VerificationSlipFilterDtoGender;
 }
 
-export type VerificationSlipStudentClassLevelGroup =
-  (typeof VerificationSlipStudentClassLevelGroup)[keyof typeof VerificationSlipStudentClassLevelGroup];
-
-export const VerificationSlipStudentClassLevelGroup = {
-  TIFLAN: 'TIFLAN',
-  MUHIBAN: 'MUHIBAN',
-  NASIRAN: 'NASIRAN',
-} as const;
-
 export interface VerificationSlipStudent {
   admissionId: string;
   grNumber: string;
@@ -2429,7 +2361,7 @@ export interface VerificationSlipStudent {
   /** @nullable */
   dateOfBirth: string | null;
   className: string;
-  classLevelGroup: VerificationSlipStudentClassLevelGroup;
+  classLevelGroup: ClassLevelGroup;
   areaName: string;
   areaAlias: string;
   branchName: string;
@@ -3154,6 +3086,10 @@ export type AdmissionsControllerFindAllParams = {
    * classLevelId
    */
   classLevelId?: string;
+  /**
+   * classLevelGroup
+   */
+  classLevelGroup?: ClassLevelGroup;
   status?: AdmissionsControllerFindAllStatus;
   /**
    * isFeePaid
@@ -3534,7 +3470,7 @@ export type PrintingControllerPreviewAttendanceSheetsParams = {
   /**
    * Class level groups to include (default: MUHIBAN, NASIRAN)
    */
-  classLevelGroups?: PrintingControllerPreviewAttendanceSheetsClassLevelGroupsItem[];
+  classLevelGroups?: ClassLevelGroup[];
 };
 
 export type PrintingControllerPreviewAttendanceSheetsGender =
@@ -3543,15 +3479,6 @@ export type PrintingControllerPreviewAttendanceSheetsGender =
 export const PrintingControllerPreviewAttendanceSheetsGender = {
   FEMALE: 'FEMALE',
   MALE: 'MALE',
-} as const;
-
-export type PrintingControllerPreviewAttendanceSheetsClassLevelGroupsItem =
-  (typeof PrintingControllerPreviewAttendanceSheetsClassLevelGroupsItem)[keyof typeof PrintingControllerPreviewAttendanceSheetsClassLevelGroupsItem];
-
-export const PrintingControllerPreviewAttendanceSheetsClassLevelGroupsItem = {
-  TIFLAN: 'TIFLAN',
-  MUHIBAN: 'MUHIBAN',
-  NASIRAN: 'NASIRAN',
 } as const;
 
 export type PrintingControllerListCardPrintRequestsParams = {
