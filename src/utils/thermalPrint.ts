@@ -1466,6 +1466,8 @@ export interface AdmissionSlipData {
   classLevelName: string;
   gender: string;
   grNumber: string;
+  /** If true, shows "INTERACTION REQUIRED" in all caps on the slip */
+  isInteractionRequired?: boolean;
 }
 
 /**
@@ -1492,6 +1494,12 @@ export async function printAdmissionSlip(data: AdmissionSlipData): Promise<void>
   await printer.printKeyValue('Class:', data.classLevelName);
   await printer.printKeyValue('Gender:', data.gender);
   await printer.printKeyValue('GR Number:', data.grNumber);
+
+  // Show INTERACTION REQUIRED if flag is set
+  if (data.isInteractionRequired) {
+    await printer.printEmptyLine();
+    await printer.printLine('*** INTERACTION REQUIRED ***', { align: 'center', bold: true, size: 'double-height' });
+  }
 
   await printer.printEmptyLine();
   await printer.printSeparator('-');
@@ -1535,6 +1543,12 @@ export async function printMultipleAdmissionSlips(slips: AdmissionSlipData[]): P
     await printer.printKeyValue('Class:', data.classLevelName);
     await printer.printKeyValue('Gender:', data.gender);
     await printer.printKeyValue('GR Number:', data.grNumber);
+
+    // Show INTERACTION REQUIRED if flag is set
+    if (data.isInteractionRequired) {
+      await printer.printEmptyLine();
+      await printer.printLine('*** INTERACTION REQUIRED ***', { align: 'center', bold: true, size: 'double-height' });
+    }
 
     await printer.printEmptyLine();
     await printer.printSeparator('-');
@@ -1639,6 +1653,16 @@ export async function printAdmissionSlipBrowser(data: AdmissionSlipData): Promis
             margin-top: 10px;
             color: #666;
           }
+          .interaction-required {
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 10px 0;
+            padding: 8px;
+            background: #000;
+            color: #fff;
+            text-transform: uppercase;
+          }
           @media print {
             body {
               -webkit-print-color-adjust: exact;
@@ -1672,6 +1696,8 @@ export async function printAdmissionSlipBrowser(data: AdmissionSlipData): Promis
             <span class="value">${data.grNumber}</span>
           </div>
         </div>
+
+        ${data.isInteractionRequired ? '<div class="interaction-required">*** INTERACTION REQUIRED ***</div>' : ''}
 
         <div class="qr-section">
           <img class="qr-code" src="${qrDataUrl}" alt="QR Code" />
@@ -1725,6 +1751,12 @@ async function printAdmissionSlipContent(printer: WebUSBThermalPrinter, data: Ad
   await printer.printKeyValue('Class:', data.classLevelName);
   await printer.printKeyValue('Gender:', data.gender);
   await printer.printKeyValue('GR Number:', data.grNumber);
+
+  // Show INTERACTION REQUIRED if flag is set
+  if (data.isInteractionRequired) {
+    await printer.printEmptyLine();
+    await printer.printLine('*** INTERACTION REQUIRED ***', { align: 'center', bold: true, size: 'double-height' });
+  }
 
   await printer.printEmptyLine();
   await printer.printSeparator('-');

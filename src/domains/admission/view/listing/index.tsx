@@ -47,7 +47,9 @@ import {
   AdmissionsControllerFindAllSortBy,
   AdmissionsControllerFindAllStatus,
   ClassLevelGroup,
+  QuestionSet,
 } from '@/providers/service/app.schemas';
+import { useQuestionSetControllerFindAll } from '@/providers/service/question-set/question-set';
 
 import FormattedMessage, { useFormattedMessage } from '@/theme/FormattedMessage';
 
@@ -143,28 +145,6 @@ export function AdmissionListing() {
     setSelectedAdmission(null);
   }, []);
 
-  // QR Code printing handler - prints admission slip via WebUSB
-  const handlePrintQR = useCallback(async (admission: Admission) => {
-    const grNumber = admission.student?.grNumber;
-    if (!grNumber) return;
-
-    setPrintingQRId(admission.id);
-    try {
-      const slipData: AdmissionSlipData = {
-        name: admission.student?.name || '',
-        fatherName: admission.student?.fatherName || '',
-        classLevelName: admission.classLevel?.name || '',
-        gender: admission.student?.gender || '',
-        grNumber: grNumber,
-      };
-      await printAdmissionSlipUSB(slipData);
-    } catch (error) {
-      console.error('Failed to print admission slip:', error);
-    } finally {
-      setPrintingQRId(null);
-    }
-  }, []);
-
   // Mark fee as paid/unpaid handler
   const handleToggleFeePaid = useCallback(
     (admission: Admission) => {
@@ -244,6 +224,55 @@ export function AdmissionListing() {
 
   const { filters, setFilter, handleSortModelChange, handleFilterModelChange, handlePaginationModelChange } =
     useListingFilters<AdmissionFilters>();
+
+  // Fetch question sets for the current session to check if interaction is required
+  const { data: questionSetsData } = useQuestionSetControllerFindAll(
+    { sessionId: filters.sessionId },
+    // { query: { enabled: !!filters.sessionId } },
+  );
+
+  // Helper to check if interaction is required for an admission
+  // Returns true if a questionSet exists for this classLevel+gender and no interaction has been done yet
+  const checkInteractionRequired = useCallback(
+    (admission: Admission): boolean => {
+      // If interaction already exists, not required
+      if (admission.interaction) return false;
+
+      // Check if any questionSet matches this admission's classLevel and gender
+      const questionSets = questionSetsData?.data || [];
+      return questionSets.some(
+        (qs: QuestionSet) =>
+          qs.classLevel?.id === admission.classLevel?.id && qs.classLevel?.gender === admission.student?.gender,
+      );
+    },
+    [questionSetsData?.data],
+  );
+
+  // QR Code printing handler - prints admission slip via WebUSB
+  const handlePrintQR = useCallback(
+    async (admission: Admission) => {
+      const grNumber = admission.student?.grNumber;
+      if (!grNumber) return;
+
+      setPrintingQRId(admission.id);
+      try {
+        const slipData: AdmissionSlipData = {
+          name: admission.student?.name || '',
+          fatherName: admission.student?.fatherName || '',
+          classLevelName: admission.classLevel?.name || '',
+          gender: admission.student?.gender || '',
+          grNumber: grNumber,
+          isInteractionRequired: checkInteractionRequired(admission),
+        };
+        await printAdmissionSlipUSB(slipData);
+      } catch (error) {
+        console.error('Failed to print admission slip:', error);
+      } finally {
+        setPrintingQRId(null);
+      }
+    },
+    [checkInteractionRequired],
+  );
 
   // Find selected values for controlled Autocomplete
   const selectedStatus = useMemo(() => statusOptions.find((s) => s.id === filters.status) || null, [filters.status]);
