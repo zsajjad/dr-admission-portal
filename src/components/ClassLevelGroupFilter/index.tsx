@@ -28,7 +28,11 @@ interface ClassLevelGroupData {
   group: ClassLevelGroup;
 }
 
-export function ClassLevelGroupFilter({ size = 'small', minWidth = 280, onClassLevelGroupChange }: ClassLevelGroupFilterProps) {
+export function ClassLevelGroupFilter({
+  size = 'small',
+  minWidth = 280,
+  onClassLevelGroupChange,
+}: ClassLevelGroupFilterProps) {
   const { filters, setFilter } = useListingFilters<ClassLevelGroupFilterState>();
 
   // Fetch class levels for filter dropdown

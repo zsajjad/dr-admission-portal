@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  Stack,
-} from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Stack } from '@mui/material';
 
 import { AreaFilter } from '@/components/AreaFilter';
 import { BranchFilter } from '@/components/BranchFilter';
@@ -83,22 +76,31 @@ export function PrintingFilters({ documentType }: PrintingFiltersProps) {
   // Session is required for all except verification slips
   const showSession = documentType !== 'verificationSlips';
   // Branch filter for ID cards and sitting slips
-  const showBranch = documentType === 'idCards' || documentType === 'sittingSlips' || documentType === 'verificationSlips';
+  const showBranch =
+    documentType === 'idCards' || documentType === 'sittingSlips' || documentType === 'verificationSlips';
   // Area filter for ID cards, sitting slips, and attendance sheets (required for attendance)
-  const showArea = documentType === 'idCards' || documentType === 'sittingSlips' || documentType === 'attendanceSheets' || documentType === 'verificationSlips';
+  const showArea =
+    documentType === 'idCards' ||
+    documentType === 'sittingSlips' ||
+    documentType === 'attendanceSheets' ||
+    documentType === 'verificationSlips';
   // Van filter only for ID cards
   const showVan = documentType === 'idCards' || documentType === 'verificationSlips';
   // Class level filter only for ID cards
   const showClassLevel = documentType === 'idCards' || documentType === 'verificationSlips';
   // Gender filter for ID cards, sitting slips, and attendance sheets
   const showGender =
-    documentType === 'idCards' || documentType === 'sittingSlips' || documentType === 'attendanceSheets' || documentType === 'verificationSlips';
+    documentType === 'idCards' ||
+    documentType === 'sittingSlips' ||
+    documentType === 'attendanceSheets' ||
+    documentType === 'verificationSlips';
   // Status, fee paid, finalized filters only for ID cards
   const showStatus = documentType === 'idCards' || documentType === 'verificationSlips';
   const showFeePaid = documentType === 'idCards' || documentType === 'verificationSlips';
   const showFinalized = documentType === 'idCards' || documentType === 'verificationSlips';
   // Class level groups only for attendance sheets
-  const showClassLevelGroups = documentType === 'attendanceSheets' || documentType === 'verificationSlips' || documentType === 'idCards';
+  const showClassLevelGroups =
+    documentType === 'attendanceSheets' || documentType === 'verificationSlips' || documentType === 'idCards';
 
   return (
     <Stack direction="row" flexWrap="wrap" gap={2} sx={{ mb: 3 }}>

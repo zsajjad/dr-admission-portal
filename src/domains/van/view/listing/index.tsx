@@ -123,12 +123,7 @@ export default function VanListing() {
         flex: 1,
         sortable: false,
         filterable: false,
-        renderCell: (params) => (
-          <VanChip
-            colorName={params.row.colorName}
-            colorHex={params.row.colorHex}
-          />
-        ),
+        renderCell: (params) => <VanChip colorName={params.row.colorName} colorHex={params.row.colorHex} />,
       },
       {
         field: 'areas',
@@ -137,7 +132,16 @@ export default function VanListing() {
         sortable: false,
         filterable: false,
         renderCell: (params) => (
-          <Stack direction="row" spacing={0.5} flexWrap="wrap" sx={{ py: 0.5 }} flexDirection={"row"} justifyContent={"flex-start"} alignItems={"center"} height={"100%"}>
+          <Stack
+            direction="row"
+            spacing={0.5}
+            flexWrap="wrap"
+            sx={{ py: 0.5 }}
+            flexDirection={'row'}
+            justifyContent={'flex-start'}
+            alignItems={'center'}
+            height={'100%'}
+          >
             {params.row.areas?.map((area: { id: string; name: string }) => (
               <Chip key={area.id} label={area.name} size="small" variant="outlined" className="font-urdu" />
             )) || '-'}

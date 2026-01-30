@@ -143,12 +143,7 @@ export function IdCardsTab() {
         field: 'ribbonColorHex',
         headerName: formattedMessages.ribbonColorHeader,
         width: 120,
-        renderCell: (params) => (
-          <VanChip
-            colorName={params.row.ribbonColorName}
-            colorHex={params.row.ribbonColorHex}
-          />
-        ),
+        renderCell: (params) => <VanChip colorName={params.row.ribbonColorName} colorHex={params.row.ribbonColorHex} />,
       },
     ],
     [formattedMessages],

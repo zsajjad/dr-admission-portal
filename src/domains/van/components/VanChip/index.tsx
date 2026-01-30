@@ -41,10 +41,7 @@ export function VanChip({ areaId, branchId, classLevelName, hasVan, hasBoysVan }
   // 2. Class level is "nasiran" AND gender is MALE
   // 3. Area's hasVan is false (any gender)
   // 4. Gender is MALE AND area's hasBoysVan is false
-  const shouldUseBranchDefault =
-    classLevelName === ClassLevelGroup.TIFLAN ||
-    !hasVan ||
-    !hasBoysVan;
+  const shouldUseBranchDefault = classLevelName === ClassLevelGroup.TIFLAN || !hasVan || !hasBoysVan;
 
   if (shouldUseBranchDefault) {
     if (!branchDefaultColorHex) return null;
