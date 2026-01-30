@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { useQueryClient } from '@tanstack/react-query';
+
 import {
   CheckCircle as PaidIcon,
   Print as PrintIcon,
@@ -22,7 +24,6 @@ import {
   Tooltip,
 } from '@mui/material';
 import { GridColDef, GridPaginationModel } from '@mui/x-data-grid';
-import { useQueryClient } from '@tanstack/react-query';
 
 import { AssetsDrawer } from '@/domains/admission/components/AssetsDrawer';
 import { VanChip } from '@/domains/van/components/VanChip';
@@ -470,6 +471,7 @@ export function AdmissionListing() {
       formattedMessages.vanColumnName,
       formattedMessages.actionsColumnName,
       formattedMessages.printQRCode,
+      formattedMessages.printSlip,
       formattedMessages.markAsPaid,
       formattedMessages.markAsUnpaid,
       formattedMessages.printVerificationSlip,
