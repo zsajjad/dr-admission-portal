@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 
-import { Autocomplete, TextField } from '@mui/material';
+import { Autocomplete, CircularProgress, TextField } from '@mui/material';
 
 import { Van } from '@/providers/service/app.schemas';
 import { useVanControllerFindAll } from '@/providers/service/van/van';
@@ -29,7 +29,7 @@ export function VanFilter({ size = 'small', minWidth = 280, onVanChange }: VanFi
   const { filters, setFilter } = useListingFilters<VanFilterState>();
 
   // Fetch vans for filter dropdown (filtered by branchId if available)
-  const { data: vansData } = useVanControllerFindAll({
+  const { data: vansData, isLoading } = useVanControllerFindAll({
     take: 100,
     branchId: filters.branchId,
   });
@@ -60,7 +60,17 @@ export function VanFilter({ size = 'small', minWidth = 280, onVanChange }: VanFi
         <TextField
           {...params}
           label={<FormattedMessage {...messages.vanLabel} />}
-          inputProps={{ ...params.inputProps, className: `${params.inputProps?.className || ''} font-urdu` }}
+          slotProps={{
+            input: {
+              ...params.InputProps,
+              endAdornment: (
+                <>
+                  {isLoading ? <CircularProgress color="inherit" size={18} /> : null}
+                  {params.InputProps.endAdornment}
+                </>
+              ),
+            },
+          }}
         />
       )}
     />

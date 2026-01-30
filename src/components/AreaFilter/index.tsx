@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 
-import { Autocomplete, TextField } from '@mui/material';
+import { Autocomplete, CircularProgress, InputAdornment, TextField } from '@mui/material';
 
 import { Area } from '@/providers/service/app.schemas';
 import { useAreaControllerFindAll } from '@/providers/service/area/area';
@@ -29,7 +29,7 @@ export function AreaFilter({ size = 'small', minWidth = 280, onAreaChange }: Are
   const { filters, setFilter } = useListingFilters<AreaFilterState>();
 
   // Fetch areas for filter dropdown (filtered by branchId if available)
-  const { data: areasData } = useAreaControllerFindAll({
+  const { data: areasData, isLoading } = useAreaControllerFindAll({
     take: 100,
     branchId: filters.branchId,
   });
@@ -60,7 +60,17 @@ export function AreaFilter({ size = 'small', minWidth = 280, onAreaChange }: Are
         <TextField
           {...params}
           label={<FormattedMessage {...messages.areaLabel} />}
-          inputProps={{ ...params.inputProps, className: `${params.inputProps?.className || ''} font-urdu` }}
+          slotProps={{
+            input: {
+              ...params.InputProps,
+              endAdornment: (
+                <>
+                  {isLoading ? <CircularProgress color="inherit" size={18} /> : null}
+                  {params.InputProps.endAdornment}
+                </>
+              ),
+            },
+          }}
         />
       )}
     />

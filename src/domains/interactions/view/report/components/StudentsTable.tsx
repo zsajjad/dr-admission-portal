@@ -107,10 +107,18 @@ function StudentList({ students, groupType }: StudentListProps) {
       <Table size="small">
         <TableHead>
           <TableRow sx={tableHeaderStyle}>
-            <TableCell><FormattedMessage {...messages.grNumber} /></TableCell>
-            <TableCell><FormattedMessage {...messages.studentName} /></TableCell>
-            <TableCell><FormattedMessage {...messages.area} /></TableCell>
-            <TableCell align="center"><FormattedMessage {...messages.rating} /></TableCell>
+            <TableCell>
+              <FormattedMessage {...messages.grNumber} />
+            </TableCell>
+            <TableCell>
+              <FormattedMessage {...messages.studentName} />
+            </TableCell>
+            <TableCell>
+              <FormattedMessage {...messages.area} />
+            </TableCell>
+            <TableCell align="center">
+              <FormattedMessage {...messages.rating} />
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -147,9 +155,7 @@ function QuestionAccordion({ question }: { question: QuestionWithStudentGroups }
   const [activeTab, setActiveTab] = useState(0);
 
   const totalStudents =
-    question.studentsBest.length +
-    question.studentsAverage.length +
-    question.studentsNeedingAttention.length;
+    question.studentsBest.length + question.studentsAverage.length + question.studentsNeedingAttention.length;
 
   const tabGroups = [
     { label: 'Need Help', count: question.studentsNeedingAttention.length, type: 'attention' as const },
@@ -184,12 +190,7 @@ function QuestionAccordion({ question }: { question: QuestionWithStudentGroups }
         expandIcon={<ExpandMoreIcon sx={{ color: colors.purple[500] }} />}
         sx={accordionSummaryStyle(expanded)}
       >
-        <Typography
-          variant="body2"
-          fontWeight={500}
-          sx={{ flex: 1, color: 'text.primary' }}
-          className="font-urdu"
-        >
+        <Typography variant="body2" fontWeight={500} sx={{ flex: 1, color: 'text.primary' }} className="font-urdu">
           Q{question.sortOrder}: {question.prompt}
         </Typography>
         <AverageRatingChip rating={question.averageRating} />

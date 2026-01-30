@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 
-import { Autocomplete, TextField } from '@mui/material';
+import { Autocomplete, CircularProgress, TextField } from '@mui/material';
 
 import { Branch } from '@/providers/service/app.schemas';
 import { useBranchControllerFindAll } from '@/providers/service/branch/branch';
@@ -35,7 +35,7 @@ export function BranchFilter({
   const { filters, setFilter } = useListingFilters<BranchFilterState>();
 
   // Fetch branches for filter dropdown
-  const { data: branchesData } = useBranchControllerFindAll({ take: 100 });
+  const { data: branchesData, isLoading } = useBranchControllerFindAll({ take: 100 });
   const branches = useMemo(() => branchesData?.data || [], [branchesData?.data]);
 
   const selectedBranch = useMemo(
@@ -73,7 +73,17 @@ export function BranchFilter({
         <TextField
           {...params}
           label={<FormattedMessage {...messages.branchLabel} />}
-          inputProps={{ ...params.inputProps, className: `${params.inputProps?.className || ''} font-urdu` }}
+          slotProps={{
+            input: {
+              ...params.InputProps,
+              endAdornment: (
+                <>
+                  {isLoading ? <CircularProgress color="inherit" size={18} /> : null}
+                  {params.InputProps.endAdornment}
+                </>
+              ),
+            },
+          }}
         />
       )}
     />

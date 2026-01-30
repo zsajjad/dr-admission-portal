@@ -30,7 +30,7 @@ export interface ClassLevelChipProps {
   size?: 'small' | 'medium';
 }
 
-export function ClassLevelChip({ classLevelId, size = 'small' }: ClassLevelChipProps) {
+export function ClassLevelChip({ classLevelId, size = 'medium' }: ClassLevelChipProps) {
   // Fetch all class levels (cached by React Query)
   const { data: classLevelsData } = useClassLevelControllerFindAll({ take: 100 });
 

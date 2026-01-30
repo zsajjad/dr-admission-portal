@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 
-import { Autocomplete, TextField } from '@mui/material';
+import { Autocomplete, CircularProgress, TextField } from '@mui/material';
 
 import { ClassLevel } from '@/providers/service/app.schemas';
 import { useClassLevelControllerFindAll } from '@/providers/service/class-level/class-level';
@@ -28,7 +28,7 @@ export function ClassLevelFilter({ size = 'small', minWidth = 280, onClassLevelC
   const { filters, setFilter } = useListingFilters<ClassLevelFilterState>();
 
   // Fetch class levels for filter dropdown
-  const { data: classLevelsData } = useClassLevelControllerFindAll({ take: 100 });
+  const { data: classLevelsData, isLoading } = useClassLevelControllerFindAll({ take: 100 });
   const classLevels = useMemo(() => classLevelsData?.data || [], [classLevelsData?.data]);
 
   const selectedClassLevel = useMemo(
@@ -59,7 +59,17 @@ export function ClassLevelFilter({ size = 'small', minWidth = 280, onClassLevelC
         <TextField
           {...params}
           label={<FormattedMessage {...messages.classLevelLabel} />}
-          inputProps={{ ...params.inputProps, className: `${params.inputProps?.className || ''} font-urdu` }}
+          slotProps={{
+            input: {
+              ...params.InputProps,
+              endAdornment: (
+                <>
+                  {isLoading ? <CircularProgress color="inherit" size={18} /> : null}
+                  {params.InputProps.endAdornment}
+                </>
+              ),
+            },
+          }}
         />
       )}
     />

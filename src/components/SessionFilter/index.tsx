@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 
-import { Autocomplete, TextField } from '@mui/material';
+import { Autocomplete, CircularProgress, TextField } from '@mui/material';
 
 import { Session } from '@/providers/service/app.schemas';
 import { useSessionControllerFindAll } from '@/providers/service/session/session';
@@ -28,7 +28,7 @@ export function SessionFilter({ size = 'small', minWidth = 280, onSessionChange 
   const { filters, setFilter } = useListingFilters<SessionFilterState>();
 
   // Fetch sessions for filter dropdown
-  const { data: sessionsData } = useSessionControllerFindAll({ take: 100 });
+  const { data: sessionsData, isLoading } = useSessionControllerFindAll({ take: 100 });
   const sessions = useMemo(() => sessionsData?.data || [], [sessionsData?.data]);
 
   const selectedSession = useMemo(
@@ -59,7 +59,17 @@ export function SessionFilter({ size = 'small', minWidth = 280, onSessionChange 
         <TextField
           {...params}
           label={<FormattedMessage {...messages.sessionLabel} />}
-          inputProps={{ ...params.inputProps, className: `${params.inputProps?.className || ''} font-urdu` }}
+          slotProps={{
+            input: {
+              ...params.InputProps,
+              endAdornment: (
+                <>
+                  {isLoading ? <CircularProgress color="inherit" size={18} /> : null}
+                  {params.InputProps.endAdornment}
+                </>
+              ),
+            },
+          }}
         />
       )}
     />

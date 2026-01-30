@@ -31,20 +31,11 @@ export function EmptyState() {
         />
       </Box>
 
-      <Typography
-        variant="h6"
-        fontWeight={600}
-        color="text.primary"
-        gutterBottom
-      >
+      <Typography variant="h6" fontWeight={600} color="text.primary" gutterBottom>
         <FormattedMessage {...messages.selectFiltersPrompt} />
       </Typography>
 
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        sx={{ maxWidth: 360, mx: 'auto' }}
-      >
+      <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 360, mx: 'auto' }}>
         <FormattedMessage {...messages.selectFiltersDescription} />
       </Typography>
     </Box>
