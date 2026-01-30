@@ -6,6 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import {
   CheckCircle as PaidIcon,
+  FactCheck as VerifyIcon,
   Print as PrintIcon,
   QrCode as QrCodeIcon,
   RemoveCircle as UnpaidIcon,
@@ -71,6 +72,8 @@ const getStatusColor = (status: string) => {
       return 'error';
     case 'DUPLICATE_MERGED':
       return 'warning';
+    case 'MANUAL_VERIFICATION_REQUIRED':
+      return 'warning';
     default:
       return 'default';
   }
@@ -82,6 +85,7 @@ const statusOptions = [
   { id: AdmissionsControllerFindAllStatus.VERIFIED, label: 'Verified' },
   { id: AdmissionsControllerFindAllStatus.REJECTED, label: 'Rejected' },
   { id: AdmissionsControllerFindAllStatus.DUPLICATE_MERGED, label: 'Duplicate Merged' },
+  { id: AdmissionsControllerFindAllStatus.MANUAL_VERIFICATION_REQUIRED, label: 'Manual Verification Required' },
 ];
 
 // Fee paid options for filter dropdown
@@ -234,6 +238,7 @@ export function AdmissionListing() {
     printing: useFormattedMessage(messages.printing),
     testPrint: useFormattedMessage(messages.testPrint),
     testPrinting: useFormattedMessage(messages.testPrinting),
+    verify: useFormattedMessage(messages.verify),
   };
 
   const { filters, setFilter, handleSortModelChange, handleFilterModelChange, handlePaginationModelChange } =
@@ -265,6 +270,13 @@ export function AdmissionListing() {
     });
   }, [localGrNumber, localName, localFatherName, localPhone, setFilter]);
 
+  // Valid sortBy values for the API
+  const validSortBy = filters.sortBy as AdmissionsControllerFindAllSortBy;
+  const sortBy =
+    validSortBy && ['createdAt', 'updatedAt', 'status', 'isFeePaid'].includes(validSortBy)
+      ? validSortBy
+      : AdmissionsControllerFindAllSortBy.updatedAt;
+
   const {
     data: admissions,
     isLoading,
@@ -272,8 +284,8 @@ export function AdmissionListing() {
     error,
   } = useAdmissionsControllerFindAll(
     {
-      sortBy: filters.sortBy as AdmissionsControllerFindAllSortBy,
-      sortOrder: filters.sortOrder,
+      sortBy,
+      sortOrder: filters.sortOrder || 'desc',
       skip: filters.page * filters.pageSize,
       take: filters.pageSize,
       includeInActive: filters.includeInActive,
@@ -325,12 +337,14 @@ export function AdmissionListing() {
         field: 'name',
         headerName: formattedMessages.nameColumnName,
         flex: 1,
+        sortable: false,
         renderCell: (params) => getSafeValue(params.row.student?.name),
       },
       {
         field: 'fatherName',
         headerName: formattedMessages.fatherNameColumnName,
         flex: 1,
+        sortable: false,
         renderCell: (params) => getSafeValue(params.row.student?.fatherName),
       },
       {
@@ -338,12 +352,14 @@ export function AdmissionListing() {
         headerName: formattedMessages.phoneColumnName,
         flex: 1,
         maxWidth: 150,
+        sortable: false,
         renderCell: (params) => getSafeValue(params.row.student?.phone),
       },
       {
         field: 'branch',
         headerName: formattedMessages.branchColumnName,
         width: 60,
+        sortable: false,
         renderCell: (params) => getSafeValue(params.row.branch?.code),
       },
       {
@@ -351,6 +367,7 @@ export function AdmissionListing() {
         headerName: formattedMessages.statusColumnName,
         flex: 1,
         maxWidth: 100,
+        sortable: false,
         renderCell: (params) => (
           <Chip label={params.row.status} color={getStatusColor(params.row.status)} size="small" />
         ),
@@ -407,9 +424,24 @@ export function AdmissionListing() {
             generateVerificationSlipMutation.isPending &&
             generateVerificationSlipMutation.variables?.data.admissionIds?.includes(admission.id);
           const isPrintingQR = printingQRId === admission.id;
+          const canVerify =
+            admission.status === 'UNVERIFIED' || admission.status === 'MANUAL_VERIFICATION_REQUIRED';
 
           return (
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+              {/* Verify - Opens drawer for verification */}
+              {canVerify && (
+                <Tooltip title={formattedMessages.verify}>
+                  <IconButton
+                    size="small"
+                    color="warning"
+                    onClick={stopPropagation(() => handleOpenDrawer(admission))}
+                  >
+                    <VerifyIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              )}
+
               {/* Mark Fee Paid/Unpaid - Primary Action Button */}
               <Button
                 size="small"

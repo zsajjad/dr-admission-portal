@@ -152,4 +152,8 @@ export default defineMessages({
     id: `${scope}.feePaidColumnName`,
     defaultMessage: 'Fee Paid',
   },
+  verify: {
+    id: `${scope}.verify`,
+    defaultMessage: 'Verify',
+  },
 });
