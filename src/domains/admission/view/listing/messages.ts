@@ -82,6 +82,10 @@ export default defineMessages({
     id: `${scope}.feePaidFilterLabel`,
     defaultMessage: 'Fee Status',
   },
+  grNumberFilterLabel: {
+    id: `${scope}.grNumberFilterLabel`,
+    defaultMessage: 'GR Number',
+  },
   nameFilterLabel: {
     id: `${scope}.nameFilterLabel`,
     defaultMessage: 'Student Name',

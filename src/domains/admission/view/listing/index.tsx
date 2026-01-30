@@ -97,6 +97,7 @@ interface AdmissionFilters {
   areaId?: string;
   classLevelGroup?: ClassLevelGroup;
   isFeePaid?: boolean;
+  grNumber?: string;
   name?: string;
   phone?: string;
   fatherName?: string;
@@ -118,6 +119,7 @@ export function AdmissionListing() {
   const [testPrinting, setTestPrinting] = useState(false);
 
   // Local state for text search filters (applied on button click)
+  const [localGrNumber, setLocalGrNumber] = useState('');
   const [localName, setLocalName] = useState('');
   const [localFatherName, setLocalFatherName] = useState('');
   const [localPhone, setLocalPhone] = useState('');
@@ -246,20 +248,22 @@ export function AdmissionListing() {
 
   // Sync local text filter state with URL filters on initial load
   useEffect(() => {
+    setLocalGrNumber(filters.grNumber || '');
     setLocalName(filters.name || '');
     setLocalFatherName(filters.fatherName || '');
     setLocalPhone(filters.phone || '');
-  }, [filters.name, filters.fatherName, filters.phone]);
+  }, [filters.grNumber, filters.name, filters.fatherName, filters.phone]);
 
   // Apply text search filters
   const handleApplyTextFilters = useCallback(() => {
     setFilter({
+      grNumber: localGrNumber || undefined,
       name: localName || undefined,
       fatherName: localFatherName || undefined,
       phone: localPhone || undefined,
       page: 0,
     });
-  }, [localName, localFatherName, localPhone, setFilter]);
+  }, [localGrNumber, localName, localFatherName, localPhone, setFilter]);
 
   const {
     data: admissions,
@@ -278,6 +282,7 @@ export function AdmissionListing() {
       areaId: filters.areaId,
       status: filters.status as AdmissionsControllerFindAllStatus,
       isFeePaid: filters.isFeePaid,
+      grNumber: filters.grNumber,
       name: filters.name,
       phone: filters.phone,
       fatherName: filters.fatherName,
@@ -500,6 +505,14 @@ export function AdmissionListing() {
       <Box sx={cardStyle}>
         <Stack direction="row" spacing={2} flexWrap="wrap" useFlexGap alignItems="center">
           {/* Text Search Filters */}
+          <TextField
+            size="small"
+            sx={{ minWidth: 120 }}
+            label={<FormattedMessage {...messages.grNumberFilterLabel} />}
+            value={localGrNumber}
+            onChange={(e) => setLocalGrNumber(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleApplyTextFilters()}
+          />
           <TextField
             size="small"
             sx={{ minWidth: 150 }}
