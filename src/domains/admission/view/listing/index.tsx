@@ -45,7 +45,7 @@ import {
 import {
   Admission,
   AdmissionsControllerFindAllSortBy,
-  AdmissionStatus,  
+  AdmissionStatus,
   ClassLevelGroup,
   QuestionSet,
 } from '@/providers/service/app.schemas';
