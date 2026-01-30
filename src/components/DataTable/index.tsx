@@ -51,10 +51,7 @@ export function DataTable<T>({
   const finalColumns = useMemo(() => {
     return columns.map((col) => ({
       ...col,
-      filterOperators:
-        col.filterOperators && col.filterOperators.length > 0
-          ? col.filterOperators
-          : containsOnly,
+      filterOperators: col.filterOperators && col.filterOperators.length > 0 ? col.filterOperators : containsOnly,
     }));
   }, [columns]);
 

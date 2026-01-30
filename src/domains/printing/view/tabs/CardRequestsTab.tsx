@@ -436,7 +436,6 @@ export function CardRequestsTab() {
             onRowSelectionModelChange={handleSelectionChange}
             isRowSelectable={(params) => params.row.status === 'PENDING'}
             showPointer={false}
-            showInfoColumn={false}
           />
         </>
       )}
