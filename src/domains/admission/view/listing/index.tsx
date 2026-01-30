@@ -424,19 +424,14 @@ export function AdmissionListing() {
             generateVerificationSlipMutation.isPending &&
             generateVerificationSlipMutation.variables?.data.admissionIds?.includes(admission.id);
           const isPrintingQR = printingQRId === admission.id;
-          const canVerify =
-            admission.status === 'UNVERIFIED' || admission.status === 'MANUAL_VERIFICATION_REQUIRED';
+          const canVerify = admission.status === 'UNVERIFIED' || admission.status === 'MANUAL_VERIFICATION_REQUIRED';
 
           return (
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
               {/* Verify - Opens drawer for verification */}
               {canVerify && (
                 <Tooltip title={formattedMessages.verify}>
-                  <IconButton
-                    size="small"
-                    color="warning"
-                    onClick={stopPropagation(() => handleOpenDrawer(admission))}
-                  >
+                  <IconButton size="small" color="warning" onClick={stopPropagation(() => handleOpenDrawer(admission))}>
                     <VerifyIcon fontSize="small" />
                   </IconButton>
                 </Tooltip>
