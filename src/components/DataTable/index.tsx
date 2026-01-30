@@ -14,12 +14,12 @@ import {
   GridRowParams,
 } from '@mui/x-data-grid';
 
-import { createInfoColumn, InfoColumnOptions, TooltipRowData } from '@/components/DataTable/InfoTooltipColumn';
 import { NoSsr } from '@/components/NoSSR';
 
 import { colorSchemes } from '@/theme/color-schemes';
 
 const containsOnly = getGridStringOperators().filter((op) => op.value === 'contains');
+
 export interface DataTableProps<T> extends Partial<DataGridProps> {
   rows: T[];
   columns: GridColDef[];
@@ -27,8 +27,6 @@ export interface DataTableProps<T> extends Partial<DataGridProps> {
   height?: number | string;
   noDataFound?: string;
   rowClickUrl?: (row: T) => string;
-  showInfoColumn?: boolean;
-  infoColumnOptions?: InfoColumnOptions;
   isLoading?: boolean;
   showPointer?: boolean;
   filterModel?: GridFilterModel;
@@ -40,48 +38,25 @@ export function DataTable<T>({
   height,
   noDataFound = 'No Records Found',
   rowClickUrl,
-  showInfoColumn = true,
-  infoColumnOptions,
   isLoading,
   showPointer = true,
   filterModel,
   ...rest
-}: DataTableProps<T & Partial<TooltipRowData>>) {
+}: DataTableProps<T>) {
   const { light } = colorSchemes;
   const { palette } = light;
 
   const router = useRouter();
 
   const finalColumns = useMemo(() => {
-    // 🔹 inject default filterOperators
-    const colsWithFilters = columns.map((col) => ({
+    return columns.map((col) => ({
       ...col,
       filterOperators:
         col.filterOperators && col.filterOperators.length > 0
-          ? col.filterOperators // use passed ones if defined
-          : containsOnly, // otherwise default to contains
+          ? col.filterOperators
+          : containsOnly,
     }));
-
-    if (!showInfoColumn) return colsWithFilters;
-
-    const tooltipCheck = (row: T & Partial<TooltipRowData>) =>
-      Boolean(
-        infoColumnOptions?.tooltipProps?.createdAt ||
-          row?.createdAt ||
-          infoColumnOptions?.tooltipProps?.createdBy ||
-          row?.createdBy?.name ||
-          infoColumnOptions?.tooltipProps?.updatedAt ||
-          row?.updatedAt ||
-          infoColumnOptions?.tooltipProps?.updatedBy ||
-          row?.updatedBy?.name ||
-          infoColumnOptions?.tooltipProps?.isActive ||
-          typeof row?.isActive === 'boolean',
-      );
-
-    const shouldAddInfoColumn = rows.some(tooltipCheck);
-
-    return shouldAddInfoColumn ? [...colsWithFilters, createInfoColumn(infoColumnOptions)] : colsWithFilters;
-  }, [columns, showInfoColumn, infoColumnOptions, rows]);
+  }, [columns]);
 
   return (
     <NoSsr>
@@ -140,7 +115,7 @@ export function DataTable<T>({
               initialState={{
                 pagination: {
                   paginationModel: {
-                    pageSize: 10,
+                    pageSize: 50,
                     page: 0,
                   },
                 },
@@ -165,19 +140,3 @@ export function DataTable<T>({
     </NoSsr>
   );
 }
-
-// ✅ Will add column (because rows have createdAt)
-// <DataTable rows={rows} columns={columns} />
-
-// ❌ Will NOT add column (because rows have no createdAt |createdBy | updatedAt | updatedBy |isActive)
-// <DataTable rows={rowsWithoutTooltipKey} columns={columns} />
-
-// ✅ Will add column with custom width + override tooltip data
-// <DataTable
-//   rows={rows}
-//   columns={columns}
-//   infoColumnOptions={{
-//     width: 70,
-//     tooltipProps: { createdBy: 'System', status: false }
-//   }}
-// />

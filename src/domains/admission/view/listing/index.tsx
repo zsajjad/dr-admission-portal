@@ -387,6 +387,11 @@ export function AdmissionListing() {
     });
   }, [filters.page, filters.pageSize]);
 
+  const tooltipSlotProps = {
+    tooltip: { sx: { bgcolor: 'primary.dark', color: 'white' } },
+    arrow: { sx: { color: 'primary.dark' } },
+  };
+
   const columns: GridColDef[] = useMemo(
     () => [
       {
@@ -394,88 +399,137 @@ export function AdmissionListing() {
         headerName: formattedMessages.grNumberColumnName,
         width: 160,
         sortable: false,
-        renderCell: (params) => getSafeValue(params.row.student?.grNumber),
+        renderCell: (params) => {
+          const value = getSafeValue(params.row.student?.grNumber);
+          return (
+            <Tooltip title={value} arrow slotProps={tooltipSlotProps}>
+              <span>{value}</span>
+            </Tooltip>
+          );
+        },
       },
       {
         field: 'name',
         headerName: formattedMessages.nameColumnName,
-        flex: 1,
+        minWidth: 180,
         sortable: false,
-        renderCell: (params) => getSafeValue(params.row.student?.name),
+        renderCell: (params) => {
+          const value = getSafeValue(params.row.student?.name);
+          return (
+            <Tooltip title={value} arrow slotProps={tooltipSlotProps}>
+              <span>{value}</span>
+            </Tooltip>
+          );
+        },
       },
       {
         field: 'fatherName',
         headerName: formattedMessages.fatherNameColumnName,
-        flex: 1,
+        minWidth: 180,
         sortable: false,
-        renderCell: (params) => getSafeValue(params.row.student?.fatherName),
+        renderCell: (params) => {
+          const value = getSafeValue(params.row.student?.fatherName);
+          return (
+            <Tooltip title={value} arrow slotProps={tooltipSlotProps}>
+              <span>{value}</span>
+            </Tooltip>
+          );
+        },
       },
       {
         field: 'phone',
         headerName: formattedMessages.phoneColumnName,
-        flex: 1,
-        maxWidth: 150,
+        minWidth: 130,
         sortable: false,
-        renderCell: (params) => getSafeValue(params.row.student?.phone),
+        renderCell: (params) => {
+          const value = getSafeValue(params.row.student?.phone);
+          return (
+            <Tooltip title={value} arrow slotProps={tooltipSlotProps}>
+              <span>{value}</span>
+            </Tooltip>
+          );
+        },
       },
       {
         field: 'branch',
         headerName: formattedMessages.branchColumnName,
         width: 60,
         sortable: false,
-        renderCell: (params) => getSafeValue(params.row.branch?.code),
+        renderCell: (params) => {
+          const value = getSafeValue(params.row.branch?.code);
+          return (
+            <Tooltip title={value} arrow slotProps={tooltipSlotProps}>
+              <span>{value}</span>
+            </Tooltip>
+          );
+        },
       },
       {
         field: 'status',
         headerName: formattedMessages.statusColumnName,
-        flex: 1,
-        maxWidth: 100,
+        minWidth: 100,
         sortable: false,
         renderCell: (params) => (
-          <Chip label={params.row.status} color={getStatusColor(params.row.status)} size="small" />
+          <Tooltip title={params.row.status} arrow slotProps={tooltipSlotProps}>
+            <Chip label={params.row.status} color={getStatusColor(params.row.status)} size="small" />
+          </Tooltip>
         ),
       },
       {
         field: 'isFeePaid',
         headerName: formattedMessages.feePaidColumnName,
-        flex: 1,
-        maxWidth: 100,
+        minWidth: 100,
         sortable: false,
         filterable: false,
-        renderCell: (params) => (
-          <Chip
-            label={params.row.isFeePaid ? 'Paid' : 'Unpaid'}
-            color={params.row.isFeePaid ? 'success' : 'default'}
-            size="small"
-          />
-        ),
+        renderCell: (params) => {
+          const label = params.row.isFeePaid ? 'Paid' : 'Unpaid';
+          return (
+            <Tooltip title={label} arrow slotProps={tooltipSlotProps}>
+              <Chip label={label} color={params.row.isFeePaid ? 'success' : 'default'} size="small" />
+            </Tooltip>
+          );
+        },
       },
       {
         field: 'classLevel',
         headerName: formattedMessages.classLevelColumnName,
-        flex: 1,
-        maxWidth: 120,
+        minWidth: 170,
         sortable: false,
         filterable: false,
-        renderCell: (params) => <ClassLevelChip classLevelId={params.row.classLevel?.id} />,
+        renderCell: (params) => {
+          const classLevelName = getSafeValue(params.row.classLevel?.name);
+          return (
+            <Tooltip title={classLevelName} arrow slotProps={tooltipSlotProps}>
+              <span>
+                <ClassLevelChip classLevelId={params.row.classLevel?.id} />
+              </span>
+            </Tooltip>
+          );
+        },
       },
       {
         field: 'van',
         headerName: formattedMessages.vanColumnName,
-        flex: 1,
-        maxWidth: 120,
+        minWidth: 140,
         sortable: false,
         filterable: false,
-        renderCell: (params) => (
-          <VanChip
-            areaId={params.row.area?.id}
-            branchId={params.row.branch?.id}
-            gender={params.row.student?.gender}
-            classLevelName={params.row.classLevel?.name}
-            hasVan={params.row.area?.hasVan}
-            hasBoysVan={params.row.area?.hasBoysVan}
-          />
-        ),
+        renderCell: (params) => {
+          const areaName = getSafeValue(params.row.area?.name);
+          return (
+            <Tooltip title={areaName} arrow slotProps={tooltipSlotProps}>
+              <span>
+                <VanChip
+                  areaId={params.row.area?.id}
+                  branchId={params.row.branch?.id}
+                  gender={params.row.student?.gender}
+                  classLevelName={params.row.classLevel?.name}
+                  hasVan={params.row.area?.hasVan}
+                  hasBoysVan={params.row.area?.hasBoysVan}
+                />
+              </span>
+            </Tooltip>
+          );
+        },
       },
       {
         field: 'actions',
@@ -493,7 +547,7 @@ export function AdmissionListing() {
             admission.status === 'REJECTED';
 
           return (
-            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', justifyContent: 'flex-end' }}>
               {/* Verify - Opens drawer for verification */}
               {canVerify && (
                 <Tooltip title={formattedMessages.verify}>
@@ -554,7 +608,8 @@ export function AdmissionListing() {
         },
         filterable: false,
         sortable: false,
-        width: 340,
+        flex: 1,
+        // width: 340,
       },
     ],
     [
