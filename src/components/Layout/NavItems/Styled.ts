@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import Typography, { type TypographyProps } from '@mui/material/Typography';
 
 export const NavContainer = styled(Box)({
-  padding: '16px',
+  padding: '8px',
   overflow: 'auto',
   '&::-webkit-scrollbar': {
     width: '6px',
@@ -32,17 +32,17 @@ export const NavItemBox = styled(Box, {
 })<NavItemBoxProps>(({ theme, active, disabled }) => ({
   display: 'flex',
   alignItems: 'center',
-  gap: theme.spacing(1.5),
-  borderRadius: '999px',
+  justifyContent: 'center',
+  width: 48,
+  height: 48,
+  borderRadius: '12px',
   cursor: 'pointer',
-  padding: '12px 20px',
   position: 'relative',
   textDecoration: 'none',
-  whiteSpace: 'nowrap',
   transition: 'all 0.2s ease-in-out',
   '&:hover': {
     backgroundColor: active ? theme.palette.primary.dark : theme.palette.action.selected,
-    transform: active ? 'none' : 'translateX(4px)',
+    transform: active ? 'none' : 'scale(1.05)',
   },
   ...(disabled && {
     backgroundColor: 'var(--NavItem-disabled-background)',

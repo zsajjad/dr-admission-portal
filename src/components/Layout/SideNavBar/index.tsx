@@ -33,11 +33,11 @@ export function SideNavBar(): React.JSX.Element {
         <Box
           component={RouterLink}
           href={routes.home}
-          sx={{ display: 'flex', justifyContent: 'center', p: '28px 24px' }}
+          sx={{ display: 'flex', justifyContent: 'center', p: '16px 8px' }}
         >
-          <ImageWrapper src={images.LogoWithName} alt="logo" width="100%" objectFit="contain" />
+          <ImageWrapper src={images.Logo} alt="logo" width="40" height="40" objectFit="contain" />
         </Box>
-        <Divider sx={{ borderColor: palette.stroke, mx: 2 }} />
+        <Divider sx={{ borderColor: palette.stroke, mx: 1 }} />
         <NavList pathname={pathname} items={navItems} />
       </SideNav>
     </SideNavContainer>

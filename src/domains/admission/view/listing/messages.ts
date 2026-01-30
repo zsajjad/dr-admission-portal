@@ -78,4 +78,74 @@ export default defineMessages({
     id: `${scope}.statusFilterLabel`,
     defaultMessage: 'Status',
   },
+  feePaidFilterLabel: {
+    id: `${scope}.feePaidFilterLabel`,
+    defaultMessage: 'Fee Status',
+  },
+  nameFilterLabel: {
+    id: `${scope}.nameFilterLabel`,
+    defaultMessage: 'Student Name',
+  },
+  fatherNameFilterLabel: {
+    id: `${scope}.fatherNameFilterLabel`,
+    defaultMessage: 'Father Name',
+  },
+  phoneFilterLabel: {
+    id: `${scope}.phoneFilterLabel`,
+    defaultMessage: 'Phone',
+  },
+  applyFilters: {
+    id: `${scope}.applyFilters`,
+    defaultMessage: 'Search',
+  },
+
+  // Action Messages
+  printQRCode: {
+    id: `${scope}.printQRCode`,
+    defaultMessage: 'Print QR',
+  },
+  markAsPaid: {
+    id: `${scope}.markAsPaid`,
+    defaultMessage: 'Mark Paid',
+  },
+  markAsUnpaid: {
+    id: `${scope}.markAsUnpaid`,
+    defaultMessage: 'Mark Unpaid',
+  },
+  printVerificationSlip: {
+    id: `${scope}.printVerificationSlip`,
+    defaultMessage: 'Print Slip',
+  },
+  printSlip: {
+    id: `${scope}.printSlip`,
+    defaultMessage: 'Print Slip',
+  },
+  printing: {
+    id: `${scope}.printing`,
+    defaultMessage: 'Printing...',
+  },
+  testPrint: {
+    id: `${scope}.testPrint`,
+    defaultMessage: 'Test Print',
+  },
+  testPrinting: {
+    id: `${scope}.testPrinting`,
+    defaultMessage: 'Opening...',
+  },
+  updating: {
+    id: `${scope}.updating`,
+    defaultMessage: 'Updating...',
+  },
+  feePaidSuccess: {
+    id: `${scope}.feePaidSuccess`,
+    defaultMessage: 'Fee status updated successfully',
+  },
+  feePaidError: {
+    id: `${scope}.feePaidError`,
+    defaultMessage: 'Failed to update fee status',
+  },
+  feePaidColumnName: {
+    id: `${scope}.feePaidColumnName`,
+    defaultMessage: 'Fee Paid',
+  },
 });
