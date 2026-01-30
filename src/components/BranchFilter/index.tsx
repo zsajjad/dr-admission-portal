@@ -76,6 +76,7 @@ export function BranchFilter({
           slotProps={{
             input: {
               ...params.InputProps,
+              className: `${params.InputProps.className || ''} font-urdu`,
               endAdornment: (
                 <>
                   {isLoading ? <CircularProgress color="inherit" size={18} /> : null}

@@ -25,7 +25,7 @@ interface FilterQuery {
 }
 
 const defaultPaginationModel = {
-  pageSize: 10,
+  pageSize: 20,
   page: 0,
 };
 

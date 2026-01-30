@@ -44,6 +44,11 @@ export function GenderFilter({ size = 'small', minWidth = 150, onGenderChange }:
         value={filters.gender || ''}
         label={<FormattedMessage {...messages.genderLabel} />}
         onChange={handleChange}
+        slotProps={{
+          input: {
+            className: 'font-urdu',
+          },
+        }}
       >
         <MenuItem value="">{formattedMessages.all}</MenuItem>
         <MenuItem value="MALE">{formattedMessages.male}</MenuItem>

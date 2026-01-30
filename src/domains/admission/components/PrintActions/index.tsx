@@ -37,6 +37,7 @@ export function PrintActions({ admission }: PrintActionsProps) {
     generateVerificationSlipMutation.mutate({
       data: {
         admissionIds: [admission.id],
+        sessionId: admission.session.id,
       },
     });
   };

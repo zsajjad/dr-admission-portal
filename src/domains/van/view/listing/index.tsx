@@ -7,6 +7,7 @@ import { GridColDef, GridPaginationModel } from '@mui/x-data-grid';
 
 import { DataTable } from '@/components/DataTable';
 import { RowActions } from '@/components/RowActions';
+import { VanChip } from '@/components/VanChip';
 
 import { KEYS } from '@/providers/constants/key';
 import { Van, VanControllerFindAllSortBy } from '@/providers/service/app.schemas';
@@ -29,16 +30,6 @@ import { useQueryParams } from '@/router/useQueryParams';
 import { extractNetworkError } from '@/utils/extractNetworkError';
 
 import messages from './messages';
-
-// Helper function to determine text color based on background luminance
-function getContrastColor(hexColor: string): string {
-  if (!hexColor || !hexColor.startsWith('#')) return '#000000';
-  const r = parseInt(hexColor.slice(1, 3), 16);
-  const g = parseInt(hexColor.slice(3, 5), 16);
-  const b = parseInt(hexColor.slice(5, 7), 16);
-  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  return luminance > 0.5 ? '#000000' : '#FFFFFF';
-}
 
 interface VanFilters {
   branchId?: string;
@@ -133,13 +124,9 @@ export default function VanListing() {
         sortable: false,
         filterable: false,
         renderCell: (params) => (
-          <Chip
-            label={params.row.colorName}
-            size="small"
-            sx={{
-              backgroundColor: params.row.colorHex,
-              color: getContrastColor(params.row.colorHex),
-            }}
+          <VanChip
+            colorName={params.row.colorName}
+            colorHex={params.row.colorHex}
           />
         ),
       },
@@ -150,7 +137,7 @@ export default function VanListing() {
         sortable: false,
         filterable: false,
         renderCell: (params) => (
-          <Stack direction="row" spacing={0.5} flexWrap="wrap" sx={{ py: 0.5 }}>
+          <Stack direction="row" spacing={0.5} flexWrap="wrap" sx={{ py: 0.5 }} flexDirection={"row"} justifyContent={"flex-start"} alignItems={"center"} height={"100%"}>
             {params.row.areas?.map((area: { id: string; name: string }) => (
               <Chip key={area.id} label={area.name} size="small" variant="outlined" className="font-urdu" />
             )) || '-'}

@@ -2,6 +2,7 @@
 
 import { Chip } from '@mui/material';
 
+import { ClassLevelGroup } from '@/providers/service/app.schemas';
 import { useBranchControllerFindOne } from '@/providers/service/branch/branch';
 import { useVanControllerFindAll } from '@/providers/service/van/van';
 
@@ -19,12 +20,12 @@ interface VanChipProps {
   areaId?: string;
   branchId?: string;
   gender?: 'MALE' | 'FEMALE';
-  classLevelName?: string;
+  classLevelName?: ClassLevelGroup;
   hasVan?: boolean;
   hasBoysVan?: boolean;
 }
 
-export function VanChip({ areaId, branchId, gender, classLevelName, hasVan, hasBoysVan }: VanChipProps) {
+export function VanChip({ areaId, branchId, classLevelName, hasVan, hasBoysVan }: VanChipProps) {
   // Fetch vans for this branch
   const { data: vansData } = useVanControllerFindAll({ branchId, take: 100 }, { query: { enabled: !!branchId } });
 
@@ -41,10 +42,9 @@ export function VanChip({ areaId, branchId, gender, classLevelName, hasVan, hasB
   // 3. Area's hasVan is false (any gender)
   // 4. Gender is MALE AND area's hasBoysVan is false
   const shouldUseBranchDefault =
-    classLevelName?.toLowerCase() === 'muhiban' ||
-    (classLevelName?.toLowerCase() === 'nasiran' && gender === 'MALE') ||
+    classLevelName === ClassLevelGroup.TIFLAN ||
     !hasVan ||
-    (gender === 'MALE' && !hasBoysVan);
+    !hasBoysVan;
 
   if (shouldUseBranchDefault) {
     if (!branchDefaultColorHex) return null;

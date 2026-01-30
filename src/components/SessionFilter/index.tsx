@@ -62,6 +62,7 @@ export function SessionFilter({ size = 'small', minWidth = 280, onSessionChange 
           slotProps={{
             input: {
               ...params.InputProps,
+              className: `${params.InputProps.className || ''} font-urdu`,
               endAdornment: (
                 <>
                   {isLoading ? <CircularProgress color="inherit" size={18} /> : null}

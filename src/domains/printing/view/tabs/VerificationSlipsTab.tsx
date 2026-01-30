@@ -2,27 +2,43 @@
 
 import { useMemo, useState } from 'react';
 
-import { Alert, Button, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Button, Stack, Typography } from '@mui/material';
 import { GridColDef, GridRowId, GridRowSelectionModel } from '@mui/x-data-grid';
 
 import { DataTable } from '@/components/DataTable';
 
 import { useAdmissionsControllerFindAll } from '@/providers/service/admissions/admissions';
-import { Admission, VerificationSlipStudent } from '@/providers/service/app.schemas';
+import { Admission, ClassLevelGroup, VerificationSlipStudent } from '@/providers/service/app.schemas';
 import { usePrintingControllerPreviewVerificationSlips } from '@/providers/service/printing/printing';
 
 import FormattedMessage, { useFormattedMessage } from '@/theme/FormattedMessage';
 
+import { useListingFilters } from '@/hooks/useListingFilters';
 import { useGenerateVerificationSlips, usePreviewVerificationSlipDesign } from '@/hooks/usePrintingMutations';
 
 import { extractNetworkError } from '@/utils/extractNetworkError';
 
 import componentMessages from '../../components/messages';
+import { PrintingFilters } from '../../components/PrintingFilters';
 import viewMessages from '../messages';
+
+interface FilterState {
+  name?: string;
+  sessionId?: string;
+  branchId?: string;
+  areaId?: string;
+  vanId?: string;
+  classLevelId?: string;
+  classLevelGroup?: ClassLevelGroup;
+  gender?: 'MALE' | 'FEMALE';
+  status?: 'UNVERIFIED' | 'VERIFIED' | 'CONFIRMED' | 'REJECTED' | 'MANUAL_VERIFICATION_REQUIRED';
+  isFeePaid?: boolean;
+  isFinalized?: boolean;
+}
 
 export function VerificationSlipsTab() {
   const [selectedAdmissionIds, setSelectedAdmissionIds] = useState<string[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const { filters } = useListingFilters<FilterState>();
 
   const formattedMessages = {
     grNumberHeader: useFormattedMessage(viewMessages.grNumberHeader),
@@ -44,7 +60,14 @@ export function VerificationSlipsTab() {
     error: admissionsError,
   } = useAdmissionsControllerFindAll({
     take: 100,
-    name: searchQuery || undefined,
+    name: filters.name,
+    branchId: filters.branchId,
+    areaId: filters.areaId,
+    classLevelId: filters.classLevelId,
+    // classLevelGroup: filters.classLevelGroup,
+    // gender: filters.gender,
+    status: filters.status,
+    isFeePaid: filters.isFeePaid,
   });
 
   // Preview mutation for selected admissions
@@ -61,12 +84,14 @@ export function VerificationSlipsTab() {
 
   const handlePreview = () => {
     if (selectedAdmissionIds.length === 0) return;
-    previewMutation.mutate({ data: { admissionIds: selectedAdmissionIds } });
+    if (!filters.sessionId) return;
+    previewMutation.mutate({ data: { admissionIds: selectedAdmissionIds, sessionId: filters.sessionId } });
   };
 
   const handleGenerate = () => {
     if (selectedAdmissionIds.length === 0) return;
-    generateMutation.mutate({ data: { admissionIds: selectedAdmissionIds } });
+    if (!filters.sessionId) return;
+    generateMutation.mutate({ data: { admissionIds: selectedAdmissionIds, sessionId: filters.sessionId } });
   };
 
   const handlePreviewDesign = () => {
@@ -138,14 +163,7 @@ export function VerificationSlipsTab() {
     <Stack spacing={3}>
       {/* Search and Selection */}
       <Stack spacing={2}>
-        <TextField
-          size="small"
-          label="Search by name"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          sx={{ maxWidth: 300 }}
-        />
-
+        <PrintingFilters documentType="verificationSlips" />
         {isAdmissionsError && <Alert severity="error">{extractNetworkError(admissionsError)}</Alert>}
 
         <Typography variant="body2" color="text.secondary">

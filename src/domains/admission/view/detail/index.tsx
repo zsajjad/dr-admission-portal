@@ -283,7 +283,7 @@ export function AdmissionDetail({ admissionId }: { admissionId: string }) {
                   areaId={admissionDetail?.area?.id}
                   branchId={admissionDetail?.branch?.id}
                   gender={admissionDetail?.student?.gender}
-                  classLevelName={admissionDetail?.classLevel?.name}
+                  classLevelName={admissionDetail?.classLevel?.group}
                   hasVan={admissionDetail?.area?.hasVan}
                   hasBoysVan={admissionDetail?.area?.hasBoysVan}
                 />

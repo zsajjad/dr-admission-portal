@@ -63,6 +63,7 @@ export function AreaFilter({ size = 'small', minWidth = 280, onAreaChange }: Are
           slotProps={{
             input: {
               ...params.InputProps,
+              className: `${params.InputProps.className || ''} font-urdu`,
               endAdornment: (
                 <>
                   {isLoading ? <CircularProgress color="inherit" size={18} /> : null}

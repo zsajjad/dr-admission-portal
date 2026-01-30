@@ -2,10 +2,11 @@
 
 import { useMemo } from 'react';
 
-import { Alert, Box, Button, Stack, Typography } from '@mui/material';
+import { Alert, Button, Stack, Typography } from '@mui/material';
 import { GridColDef } from '@mui/x-data-grid';
 
 import { DataTable } from '@/components/DataTable';
+import { VanChip } from '@/components/VanChip';
 
 import {
   IdCardFilterDtoGender,
@@ -32,6 +33,7 @@ interface FilterState {
   areaId?: string;
   vanId?: string;
   classLevelId?: string;
+  classLevelGroup?: string;
   gender?: 'MALE' | 'FEMALE';
   status?: string;
   isFeePaid?: boolean;
@@ -64,6 +66,7 @@ export function IdCardsTab() {
         areaId: filters.areaId,
         vanId: filters.vanId,
         classLevelId: filters.classLevelId,
+        classLevelGroup: filters.classLevelGroup,
         gender: filters.gender as IdCardFilterDtoGender,
         status: filters.status as IdCardFilterDtoStatus,
         isFeePaid: filters.isFeePaid,
@@ -95,6 +98,7 @@ export function IdCardsTab() {
         areaId: filters.areaId,
         vanId: filters.vanId,
         classLevelId: filters.classLevelId,
+        classLevelGroup: filters.classLevelGroup,
         gender: filters.gender as IdCardFilterDtoGender,
         status: filters.status as IdCardFilterDtoStatus,
         isFeePaid: filters.isFeePaid,
@@ -124,14 +128,14 @@ export function IdCardsTab() {
       {
         field: 'branch',
         headerName: formattedMessages.branchHeader,
-        width: 120,
+        width: 80,
         cellClassName: 'font-urdu',
-        valueGetter: (_, row) => row.branch?.name,
+        valueGetter: (_, row) => row.branch?.code,
       },
       {
         field: 'classLevel',
         headerName: formattedMessages.classHeader,
-        width: 120,
+        width: 150,
         cellClassName: 'font-urdu',
         valueGetter: (_, row) => row.classLevel?.name,
       },
@@ -140,14 +144,9 @@ export function IdCardsTab() {
         headerName: formattedMessages.ribbonColorHeader,
         width: 120,
         renderCell: (params) => (
-          <Box
-            sx={{
-              width: 40,
-              height: 20,
-              backgroundColor: params.value,
-              borderRadius: 1,
-              border: '1px solid #ccc',
-            }}
+          <VanChip
+            colorName={params.row.ribbonColorName}
+            colorHex={params.row.ribbonColorHex}
           />
         ),
       },

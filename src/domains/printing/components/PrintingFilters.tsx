@@ -1,12 +1,9 @@
 'use client';
 
 import {
-  Checkbox,
   FormControl,
   InputLabel,
-  ListItemText,
   MenuItem,
-  OutlinedInput,
   Select,
   SelectChangeEvent,
   Stack,
@@ -15,6 +12,7 @@ import {
 import { AreaFilter } from '@/components/AreaFilter';
 import { BranchFilter } from '@/components/BranchFilter';
 import { ClassLevelFilter } from '@/components/ClassLevelFilter';
+import ClassLevelGroupFilter from '@/components/ClassLevelGroupFilter';
 import { GenderFilter } from '@/components/GenderFilter';
 import { SessionFilter } from '@/components/SessionFilter';
 import { VanFilter } from '@/components/VanFilter';
@@ -54,8 +52,6 @@ const STATUS_OPTIONS: AdmissionStatus[] = [
   'MANUAL_VERIFICATION_REQUIRED',
 ];
 
-const CLASS_LEVEL_GROUP_OPTIONS = ['TIFLAN', 'MUHIBAN', 'NASIRAN'];
-
 export function PrintingFilters({ documentType }: PrintingFiltersProps) {
   const { filters, setFilter } = useListingFilters<FilterState>();
 
@@ -67,9 +63,6 @@ export function PrintingFilters({ documentType }: PrintingFiltersProps) {
     no: useFormattedMessage(viewMessages.no),
     all: useFormattedMessage(viewMessages.all),
     classLevelGroups: useFormattedMessage(viewMessages.classLevelGroups),
-    tiflan: useFormattedMessage(viewMessages.tiflan),
-    muhiban: useFormattedMessage(viewMessages.muhiban),
-    nasiran: useFormattedMessage(viewMessages.nasiran),
   };
 
   const handleStatusChange = (event: SelectChangeEvent<string>) => {
@@ -87,47 +80,25 @@ export function PrintingFilters({ documentType }: PrintingFiltersProps) {
     setFilter({ isFinalized: value === '' ? undefined : value === 'true' });
   };
 
-  const handleClassLevelGroupsChange = (event: SelectChangeEvent<string[]>) => {
-    const value = event.target.value;
-    const groupsArray = typeof value === 'string' ? value.split(',') : value;
-    setFilter({ classLevelGroups: groupsArray.join(',') });
-  };
-
-  // Parse classLevelGroups from comma-separated string
-  const classLevelGroupsArray = filters.classLevelGroups ? filters.classLevelGroups.split(',') : ['MUHIBAN', 'NASIRAN'];
-
-  const getGroupLabel = (group: string) => {
-    switch (group) {
-      case 'TIFLAN':
-        return formattedMessages.tiflan;
-      case 'MUHIBAN':
-        return formattedMessages.muhiban;
-      case 'NASIRAN':
-        return formattedMessages.nasiran;
-      default:
-        return group;
-    }
-  };
-
   // Session is required for all except verification slips
   const showSession = documentType !== 'verificationSlips';
   // Branch filter for ID cards and sitting slips
-  const showBranch = documentType === 'idCards' || documentType === 'sittingSlips';
+  const showBranch = documentType === 'idCards' || documentType === 'sittingSlips' || documentType === 'verificationSlips';
   // Area filter for ID cards, sitting slips, and attendance sheets (required for attendance)
-  const showArea = documentType === 'idCards' || documentType === 'sittingSlips' || documentType === 'attendanceSheets';
+  const showArea = documentType === 'idCards' || documentType === 'sittingSlips' || documentType === 'attendanceSheets' || documentType === 'verificationSlips';
   // Van filter only for ID cards
-  const showVan = documentType === 'idCards';
+  const showVan = documentType === 'idCards' || documentType === 'verificationSlips';
   // Class level filter only for ID cards
-  const showClassLevel = documentType === 'idCards';
+  const showClassLevel = documentType === 'idCards' || documentType === 'verificationSlips';
   // Gender filter for ID cards, sitting slips, and attendance sheets
   const showGender =
-    documentType === 'idCards' || documentType === 'sittingSlips' || documentType === 'attendanceSheets';
+    documentType === 'idCards' || documentType === 'sittingSlips' || documentType === 'attendanceSheets' || documentType === 'verificationSlips';
   // Status, fee paid, finalized filters only for ID cards
-  const showStatus = documentType === 'idCards';
-  const showFeePaid = documentType === 'idCards';
-  const showFinalized = documentType === 'idCards';
+  const showStatus = documentType === 'idCards' || documentType === 'verificationSlips';
+  const showFeePaid = documentType === 'idCards' || documentType === 'verificationSlips';
+  const showFinalized = documentType === 'idCards' || documentType === 'verificationSlips';
   // Class level groups only for attendance sheets
-  const showClassLevelGroups = documentType === 'attendanceSheets';
+  const showClassLevelGroups = documentType === 'attendanceSheets' || documentType === 'verificationSlips' || documentType === 'idCards';
 
   return (
     <Stack direction="row" flexWrap="wrap" gap={2} sx={{ mb: 3 }}>
@@ -136,6 +107,7 @@ export function PrintingFilters({ documentType }: PrintingFiltersProps) {
       {showArea && <AreaFilter size="small" minWidth={200} />}
       {showVan && <VanFilter size="small" minWidth={200} />}
       {showClassLevel && <ClassLevelFilter size="small" minWidth={200} />}
+      {showClassLevelGroups && <ClassLevelGroupFilter size="small" minWidth={200} />}
       {showGender && <GenderFilter size="small" minWidth={150} />}
 
       {showStatus && (
@@ -184,28 +156,6 @@ export function PrintingFilters({ documentType }: PrintingFiltersProps) {
             <MenuItem value="">{formattedMessages.all}</MenuItem>
             <MenuItem value="true">{formattedMessages.yes}</MenuItem>
             <MenuItem value="false">{formattedMessages.no}</MenuItem>
-          </Select>
-        </FormControl>
-      )}
-
-      {showClassLevelGroups && (
-        <FormControl size="small" sx={{ minWidth: 200 }}>
-          <InputLabel>
-            <FormattedMessage {...viewMessages.classLevelGroups} />
-          </InputLabel>
-          <Select
-            multiple
-            value={classLevelGroupsArray}
-            onChange={handleClassLevelGroupsChange}
-            input={<OutlinedInput label={formattedMessages.classLevelGroups} />}
-            renderValue={(selected) => selected.map(getGroupLabel).join(', ')}
-          >
-            {CLASS_LEVEL_GROUP_OPTIONS.map((group) => (
-              <MenuItem key={group} value={group}>
-                <Checkbox checked={classLevelGroupsArray.includes(group)} />
-                <ListItemText primary={getGroupLabel(group)} />
-              </MenuItem>
-            ))}
           </Select>
         </FormControl>
       )}

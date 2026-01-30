@@ -46,7 +46,7 @@ export default defineMessages({
   },
   ribbonColorHeader: {
     id: `${scope}.ribbonColorHeader`,
-    defaultMessage: 'Ribbon Color',
+    defaultMessage: 'Ribbon',
   },
   statusFilter: {
     id: `${scope}.statusFilter`,
