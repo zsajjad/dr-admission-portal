@@ -34,6 +34,7 @@ import { BranchFilter } from '@/components/BranchFilter';
 import { ClassLevelChip } from '@/components/ClassLevelChip';
 import { ClassLevelGroupFilter } from '@/components/ClassLevelGroupFilter';
 import { DataTable } from '@/components/DataTable';
+import { GenderFilter } from '@/components/GenderFilter';
 import { RowActions } from '@/components/RowActions';
 import { SessionFilter } from '@/components/SessionFilter';
 
@@ -109,6 +110,7 @@ interface AdmissionFilters {
   areaId?: string;
   classLevelGroup?: ClassLevelGroup;
   isFeePaid?: boolean;
+  gender?: 'MALE' | 'FEMALE';
   grNumber?: string;
   name?: string;
   phone?: string;
@@ -357,6 +359,7 @@ export function AdmissionListing() {
       areaId: filters.areaId,
       status: filters.status,
       isFeePaid: filters.isFeePaid,
+      gender: filters.gender,
       grNumber: filters.grNumber,
       name: filters.name,
       phone: filters.phone,
@@ -694,6 +697,7 @@ export function AdmissionListing() {
           </Button>
           <AreaFilter />
           <ClassLevelGroupFilter />
+          <GenderFilter size="small" minWidth={150} />
           <Autocomplete
             size="small"
             sx={{ minWidth: 150 }}

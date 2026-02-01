@@ -22,6 +22,6 @@ export default defineMessages({
   },
   all: {
     id: `${scope}.all`,
-    defaultMessage: 'All',
+    defaultMessage: 'Any',
   },
 });
