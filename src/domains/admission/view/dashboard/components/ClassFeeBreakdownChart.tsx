@@ -125,7 +125,7 @@ export function ClassFeeBreakdownChart({ title, data }: ClassFeeBreakdownChartPr
       return am5.Bullet.new(root, {
         locationY: 1,
         sprite: am5.Label.new(root, {
-          text: '{total}',
+          text: '{confirmed} / {total}',
           fill: am5.color('#333'),
           centerY: am5.p100,
           centerX: am5.p50,
@@ -137,13 +137,13 @@ export function ClassFeeBreakdownChart({ title, data }: ClassFeeBreakdownChartPr
     });
 
     // Add legend
-    const legend = chart.children.push(
-      am5.Legend.new(root, {
-        centerX: am5.percent(50),
-        x: am5.percent(50),
-      }),
-    );
-    legend.data.setAll(chart.series.values);
+    // const legend = chart.children.push(
+    //   am5.Legend.new(root, {
+    //     centerX: am5.percent(50),
+    //     x: am5.percent(50),
+    //   }),
+    // );
+    // legend.data.setAll(chart.series.values);
 
     // Set data
     confirmedSeries.data.setAll(data);
@@ -160,8 +160,8 @@ export function ClassFeeBreakdownChart({ title, data }: ClassFeeBreakdownChartPr
   }, [data]);
 
   return (
-    <ChartCard title={title} minHeight={300}>
-      <div ref={chartRef} style={{ width: '100%', height: 300 }} />
+    <ChartCard title={title} minHeight={320}>
+      <div ref={chartRef} style={{ width: '100%', height: 320 }} />
     </ChartCard>
   );
 }
