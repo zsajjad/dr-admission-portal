@@ -9,6 +9,8 @@ import { useListingFilters } from '@/hooks/useListingFilters';
 import { extractNetworkError } from '@/utils/extractNetworkError';
 
 import {
+  AdmissionsAreaDistributionChart,
+  AdmissionsLegacyNewPieChart,
   EmptyState,
   InsightCards,
   QuestionMetricsChart,
@@ -38,6 +40,8 @@ export function InteractionReport() {
     insights,
     ratingDistributionData,
     questionMetricsData,
+    admissionsAreaDistributionData,
+    admissionsLegacyNewTotals,
     questionsWithStudents,
   } = useInteractionReport({
     sessionId: filters.sessionId,
@@ -66,6 +70,19 @@ export function InteractionReport() {
         </Alert>
       ) : (
         <Stack spacing={2.5}>
+          {/* Admissions distribution (from admissions) */}
+          <Grid container spacing={2.5}>
+            <Grid size={{ xs: 12, lg: 8 }}>
+              <AdmissionsAreaDistributionChart data={admissionsAreaDistributionData} />
+            </Grid>
+            <Grid size={{ xs: 12, lg: 4 }}>
+              <AdmissionsLegacyNewPieChart
+                legacyCount={admissionsLegacyNewTotals.legacyCount}
+                nonLegacyCount={admissionsLegacyNewTotals.nonLegacyCount}
+              />
+            </Grid>
+          </Grid>
+
           {/* Insight Cards */}
           <InsightCards
             totalInteractions={insights.totalInteractions}
@@ -102,6 +119,16 @@ function LoadingSkeleton() {
             <Skeleton variant="rectangular" height={100} sx={{ borderRadius: 3 }} />
           </Grid>
         ))}
+      </Grid>
+
+      {/* Admissions area distribution skeleton */}
+      <Grid container spacing={2.5}>
+        <Grid size={{ xs: 12, lg: 8 }}>
+          <Skeleton variant="rectangular" height={350} sx={{ borderRadius: 3 }} />
+        </Grid>
+        <Grid size={{ xs: 12, lg: 4 }}>
+          <Skeleton variant="rectangular" height={350} sx={{ borderRadius: 3 }} />
+        </Grid>
       </Grid>
 
       {/* Charts skeleton */}

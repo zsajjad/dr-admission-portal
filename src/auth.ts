@@ -6,7 +6,11 @@ import { adminAuthControllerLogin } from '@/providers/service/admin-auth/admin-a
 
 import { config } from '@/config';
 
-const isCaptchaEnabled = process.env.NEXT_PUBLIC_CAPTCHA_BYPASS !== 'true';
+// Keep captcha logic consistent between client UI and server authorize():
+// captcha is only enforced when a Turnstile site key exists AND bypass isn't enabled.
+const isCaptchaEnabled = Boolean(config.TURNSTILE_SITE_KEY) && config.CAPTCHA_BYPASS !== 'true';
+
+const LOGIN_TIMEOUT_MS = Number.parseInt(process.env.AUTH_LOGIN_TIMEOUT_MS ?? '15000', 10);
 
 const defaultCredentials = {
   username: { label: 'Username', type: 'text' },
@@ -38,11 +42,17 @@ export const authConfig = {
             return null;
           }
 
-          const response = await adminAuthControllerLogin({
-            email: username.toString(),
-            password: password.toString(),
-            captchaToken: isCaptchaEnabled ? (captchaToken?.toString() ?? '') : '',
-          });
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), LOGIN_TIMEOUT_MS);
+
+          const response = await adminAuthControllerLogin(
+            {
+              email: username.toString(),
+              password: password.toString(),
+              captchaToken: isCaptchaEnabled ? (captchaToken?.toString() ?? '') : '',
+            },
+            controller.signal,
+          ).finally(() => clearTimeout(timeoutId));
 
           if (response && response.accessToken && response.refreshToken) {
             const user: User = {
@@ -58,6 +68,10 @@ export const authConfig = {
 
           return null;
         } catch (error) {
+          if (error instanceof DOMException && error.name === 'AbortError') {
+            console.error(`Error in NextAuth authorize: login timed out after ${LOGIN_TIMEOUT_MS}ms`);
+            return null;
+          }
           console.error('Error in NextAuth authorize:', error);
           return null;
         }

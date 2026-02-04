@@ -5,6 +5,8 @@ import { useInteractionsControllerGetDashboard } from '@/providers/service/inter
 
 import { getRatingColor } from '../constants';
 
+import { useAdmissionsAreaDistribution } from './useAdmissionsAreaDistribution';
+
 export interface UseInteractionReportProps {
   sessionId?: string;
   branchId?: string;
@@ -50,7 +52,7 @@ export function useInteractionReport({ sessionId, branchId, classLevelId, areaId
 
   const {
     data: dashboardData,
-    isLoading,
+    isLoading: isInteractionsLoading,
     isError,
     error,
   } = useInteractionsControllerGetDashboard(
@@ -66,6 +68,13 @@ export function useInteractionReport({ sessionId, branchId, classLevelId, areaId
       },
     },
   );
+
+  const {
+    data: admissionsAreaDistributionData,
+    isLoading: isAdmissionsLoading,
+    isError: isAdmissionsError,
+    error: admissionsError,
+  } = useAdmissionsAreaDistribution({ sessionId, branchId, classLevelId });
 
   // Rating distribution chart data
   const ratingDistributionData: RatingDistributionData[] = useMemo(() => {
@@ -142,9 +151,9 @@ export function useInteractionReport({ sessionId, branchId, classLevelId, areaId
 
   return {
     // State
-    isLoading: hasRequiredFilters && isLoading,
-    isError,
-    error,
+    isLoading: hasRequiredFilters && (isInteractionsLoading || isAdmissionsLoading),
+    isError: isError || isAdmissionsError,
+    error: error || admissionsError,
     hasRequiredFilters,
     hasData: Boolean(dashboardData?.data),
 
@@ -157,6 +166,8 @@ export function useInteractionReport({ sessionId, branchId, classLevelId, areaId
     // Chart data
     ratingDistributionData,
     questionMetricsData,
+    admissionsAreaDistributionData: admissionsAreaDistributionData.byArea,
+    admissionsLegacyNewTotals: admissionsAreaDistributionData.totals,
 
     // Table data
     questionsWithStudents,

@@ -50,6 +50,14 @@ export default defineMessages({
     id: `${scope}.questionMetrics`,
     defaultMessage: 'Average Rating per Question',
   },
+  admissionsAreaDistribution: {
+    id: `${scope}.admissionsAreaDistribution`,
+    defaultMessage: 'Admissions Distribution by Area',
+  },
+  admissionsLegacyNew: {
+    id: `${scope}.admissionsLegacyNew`,
+    defaultMessage: 'Legacy vs New Admissions',
+  },
 
   // Table
   studentsTable: {

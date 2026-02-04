@@ -31,6 +31,7 @@ import { VanChip } from '@/domains/van/components/VanChip';
 
 import { AreaFilter } from '@/components/AreaFilter';
 import { BranchFilter } from '@/components/BranchFilter';
+import { ClassLevelFilter } from '@/components/ClassLevelFilter';
 import { ClassLevelChip } from '@/components/ClassLevelChip';
 import { ClassLevelGroupFilter } from '@/components/ClassLevelGroupFilter';
 import { DataTable } from '@/components/DataTable';
@@ -108,6 +109,7 @@ interface AdmissionFilters {
   sessionId?: string;
   status?: string;
   areaId?: string;
+  classLevelId?: string;
   classLevelGroup?: ClassLevelGroup;
   isFeePaid?: boolean;
   gender?: 'MALE' | 'FEMALE';
@@ -364,6 +366,7 @@ export function AdmissionListing() {
       name: filters.name,
       phone: filters.phone,
       fatherName: filters.fatherName,
+      classLevelId: filters.classLevelId,
       // classLevelGroup filter - will work once backend supports it
       ...(filters.classLevelGroup && { classLevelGroup: filters.classLevelGroup }),
     } as Parameters<typeof useAdmissionsControllerFindAll>[0],
@@ -696,6 +699,15 @@ export function AdmissionListing() {
             <FormattedMessage {...messages.applyFilters} />
           </Button>
           <AreaFilter />
+          <ClassLevelFilter
+            minWidth={200}
+            onClassLevelChange={(classLevelId) => {
+              // Avoid applying both group + specific level at once.
+              // IMPORTANT: include classLevelId here so we don't overwrite
+              // the URL state with a version that doesn't yet have it.
+              setFilter({ classLevelId, classLevelGroup: undefined, page: 0 });
+            }}
+          />
           <ClassLevelGroupFilter />
           <GenderFilter size="small" minWidth={150} />
           <Autocomplete

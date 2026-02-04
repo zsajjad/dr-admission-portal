@@ -5,6 +5,12 @@ export { EmptyState } from './EmptyState';
 
 export { InsightCards } from './InsightCards';
 
+export { AdmissionsAreaDistributionChart } from './AdmissionsAreaDistributionChart';
+export type { AdmissionsAreaDistributionChartProps } from './AdmissionsAreaDistributionChart';
+
+export { AdmissionsLegacyNewPieChart } from './AdmissionsLegacyNewPieChart';
+export type { AdmissionsLegacyNewPieChartProps } from './AdmissionsLegacyNewPieChart';
+
 export { QuestionMetricsChart } from './QuestionMetricsChart';
 export type { QuestionMetricsChartProps, QuestionMetricsData } from './QuestionMetricsChart';
 
