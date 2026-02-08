@@ -31,8 +31,8 @@ import { VanChip } from '@/domains/van/components/VanChip';
 
 import { AreaFilter } from '@/components/AreaFilter';
 import { BranchFilter } from '@/components/BranchFilter';
-import { ClassLevelFilter } from '@/components/ClassLevelFilter';
 import { ClassLevelChip } from '@/components/ClassLevelChip';
+import { ClassLevelFilter } from '@/components/ClassLevelFilter';
 import { ClassLevelGroupFilter } from '@/components/ClassLevelGroupFilter';
 import { DataTable } from '@/components/DataTable';
 import { GenderFilter } from '@/components/GenderFilter';

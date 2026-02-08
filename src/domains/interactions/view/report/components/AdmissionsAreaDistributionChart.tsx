@@ -8,9 +8,9 @@ import * as am5xy from '@amcharts/amcharts5/xy';
 
 import { FormattedMessage } from '@/theme/FormattedMessage';
 
+import type { AdmissionsAreaDistributionDatum } from '../hooks/useAdmissionsAreaDistribution';
 import messages from '../messages';
 import { chartColors, colors } from '../styles';
-import type { AdmissionsAreaDistributionDatum } from '../hooks/useAdmissionsAreaDistribution';
 
 import { ChartCard } from './ChartCard';
 
