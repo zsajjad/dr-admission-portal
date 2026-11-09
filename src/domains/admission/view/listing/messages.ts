@@ -128,14 +128,6 @@ export default defineMessages({
     id: `${scope}.printing`,
     defaultMessage: 'Printing...',
   },
-  testPrint: {
-    id: `${scope}.testPrint`,
-    defaultMessage: 'Test Print',
-  },
-  testPrinting: {
-    id: `${scope}.testPrinting`,
-    defaultMessage: 'Opening...',
-  },
   updating: {
     id: `${scope}.updating`,
     defaultMessage: 'Updating...',

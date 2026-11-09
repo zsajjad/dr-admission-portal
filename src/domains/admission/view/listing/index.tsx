@@ -38,6 +38,7 @@ import { DataTable } from '@/components/DataTable';
 import { GenderFilter } from '@/components/GenderFilter';
 import { RowActions } from '@/components/RowActions';
 import { SessionFilter } from '@/components/SessionFilter';
+import { PrinterStatus, useSlipPrinter } from '@/components/ThermalPrinter';
 
 import { KEYS } from '@/providers/constants/key';
 import {
@@ -62,12 +63,7 @@ import { routes } from '@/router/routes';
 import { useQueryParams } from '@/router/useQueryParams';
 
 import { extractNetworkError } from '@/utils/extractNetworkError';
-import {
-  printAdmissionSlipUSB,
-  printAdmissionSlipBrowser,
-  WebUSBThermalPrinter,
-  AdmissionSlipData,
-} from '@/utils/thermalPrint';
+import { AdmissionSlipData } from '@/utils/thermalPrinter';
 
 import { getSafeValue, stopPropagation } from '@/utils';
 
@@ -131,8 +127,7 @@ export function AdmissionListing() {
   const queryClient = useQueryClient();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedAdmission, setSelectedAdmission] = useState<Admission | null>(null);
-  const [printingQRId, setPrintingQRId] = useState<string | null>(null);
-  const [testPrinting, setTestPrinting] = useState(false);
+  const { printSlip, printingKey, errorDialog: slipErrorDialog } = useSlipPrinter();
 
   // Local state for text search filters (applied on button click)
   const [localGrNumber, setLocalGrNumber] = useState('');
@@ -172,45 +167,16 @@ export function AdmissionListing() {
     [markFeePaidMutation, queryClient],
   );
 
-  // Smart print function: tries WebUSB first (for thermal printers), falls back to browser print
-  const printAdmissionSlip = useCallback(async (slipData: AdmissionSlipData) => {
-    // Try WebUSB first (works on Mac, requires WinUSB driver on Windows)
-    if (WebUSBThermalPrinter.isSupported()) {
-      try {
-        await printAdmissionSlipUSB(slipData);
-        return; // Success with WebUSB
-      } catch (error) {
-        // If user cancelled selection, don't fall back
-        if (error instanceof Error && error.message.includes('No printer selected')) {
-          throw error;
-        }
-        console.warn('WebUSB printing failed, falling back to browser print:', error);
-      }
-    }
-
-    // Fallback to browser print dialog (works with regular printers)
-    await printAdmissionSlipBrowser(slipData);
-  }, []);
-
-  // Test thermal print handler
-  const handleTestPrint = useCallback(async () => {
-    setTestPrinting(true);
-    try {
-      // Test print with sample data
-      const testData: AdmissionSlipData = {
-        name: 'Test Student',
-        fatherName: 'Test Father',
-        classLevelName: 'Test Class',
-        gender: 'Male',
-        grNumber: 'TEST-0000',
-      };
-      await printAdmissionSlip(testData);
-    } catch (error) {
-      console.error('Test print failed:', error);
-    } finally {
-      setTestPrinting(false);
-    }
-  }, [printAdmissionSlip]);
+  // Test print: a sample slip, to check the printer before the queue starts
+  const handleTestPrint = useCallback(() => {
+    void printSlip('test', {
+      name: 'Test Student',
+      fatherName: 'Test Father',
+      classLevelName: 'Test Class',
+      gender: 'Male',
+      grNumber: 'TEST-0000',
+    });
+  }, [printSlip]);
 
   // Print verification slip handler
   const handlePrintVerificationSlip = useCallback(
@@ -254,8 +220,6 @@ export function AdmissionListing() {
     printVerificationSlip: useFormattedMessage(messages.printVerificationSlip),
     printSlip: useFormattedMessage(messages.printSlip),
     printing: useFormattedMessage(messages.printing),
-    testPrint: useFormattedMessage(messages.testPrint),
-    testPrinting: useFormattedMessage(messages.testPrinting),
     verify: useFormattedMessage(messages.verify),
   };
 
@@ -285,30 +249,23 @@ export function AdmissionListing() {
     [questionSetsData?.data],
   );
 
-  // QR Code printing handler - prints admission slip (WebUSB first, then browser fallback)
+  // Prints the admission slip on the receipt printer; failures open the print error dialog
   const handlePrintQR = useCallback(
-    async (admission: Admission) => {
+    (admission: Admission) => {
       const grNumber = admission.student?.grNumber;
       if (!grNumber) return;
 
-      setPrintingQRId(admission.id);
-      try {
-        const slipData: AdmissionSlipData = {
-          name: admission.student?.name || '',
-          fatherName: admission.student?.fatherName || '',
-          classLevelName: admission.classLevel?.name || '',
-          gender: admission.student?.gender || '',
-          grNumber: grNumber,
-          isInteractionRequired: checkInteractionRequired(admission),
-        };
-        await printAdmissionSlip(slipData);
-      } catch (error) {
-        console.error('Failed to print admission slip:', error);
-      } finally {
-        setPrintingQRId(null);
-      }
+      const slipData: AdmissionSlipData = {
+        name: admission.student?.name || '',
+        fatherName: admission.student?.fatherName || '',
+        classLevelName: admission.classLevel?.name || '',
+        gender: admission.student?.gender || '',
+        grNumber,
+        isInteractionRequired: checkInteractionRequired(admission),
+      };
+      void printSlip(admission.id, slipData);
     },
-    [checkInteractionRequired, printAdmissionSlip],
+    [checkInteractionRequired, printSlip],
   );
 
   // Find selected values for controlled Autocomplete
@@ -546,7 +503,7 @@ export function AdmissionListing() {
           const isPrintingSlip =
             generateVerificationSlipMutation.isPending &&
             generateVerificationSlipMutation.variables?.data.admissionIds?.includes(admission.id);
-          const isPrintingQR = printingQRId === admission.id;
+          const isPrintingQR = printingKey === admission.id;
           const canVerify =
             admission.status === 'UNVERIFIED' ||
             admission.status === 'MANUAL_VERIFICATION_REQUIRED' ||
@@ -644,7 +601,7 @@ export function AdmissionListing() {
       markFeePaidMutation.variables?.id,
       generateVerificationSlipMutation.isPending,
       generateVerificationSlipMutation.variables?.data.admissionIds,
-      printingQRId,
+      printingKey,
     ],
   );
 
@@ -736,15 +693,7 @@ export function AdmissionListing() {
               <TextField {...params} label={<FormattedMessage {...messages.feePaidFilterLabel} />} />
             )}
           />
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={handleTestPrint}
-            disabled={testPrinting}
-            startIcon={testPrinting ? <CircularProgress size={18} /> : <PrintIcon />}
-          >
-            {testPrinting ? formattedMessages.testPrinting : formattedMessages.testPrint}
-          </Button>
+          <PrinterStatus onTestPrint={handleTestPrint} isTestPrinting={printingKey === 'test'} />
         </Stack>
       </Box>
 
@@ -771,6 +720,8 @@ export function AdmissionListing() {
 
       {/* Assets Drawer */}
       <AssetsDrawer open={drawerOpen} onClose={handleCloseDrawer} admission={selectedAdmission} />
+
+      {slipErrorDialog}
     </Stack>
   );
 }
