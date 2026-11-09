@@ -37,17 +37,17 @@
     "@tanstack/react-query-devtools": "5.83.0",
     "@types/qrcode": "1.5.6",
     "@uiw/react-json-view": "1.12.2",
-    "axios": "1.12.2",
+    "axios": "1.21.0",
     "date-fns": "4.1.0",
     "dayjs": "1.11.19",
-    "formik": "2.4.6",
-    "lodash": "4.17.21",
+    "formik": "2.4.9",
+    "lodash": "4.18.1",
     "lottie-react": "2.4.1",
-    "next": "15.5.7",
-    "next-auth": "beta",
+    "next": "15.5.29",
+    "next-auth": "5.0.0-beta.32",
     "notistack": "3.0.2",
     "qrcode": "1.5.4",
-    "query-string": "9.2.2",
+    "query-string": "9.5.1",
     "quill": "2.0.3",
     "react": "19.1.0",
     "react-day-picker": "9.11.0",
@@ -79,14 +79,14 @@
     "fs-extra": "11.3.1",
     "globals": "16.3.0",
     "lefthook": "1.12.2",
-    "orval": "7.17.0",
+    "orval": "7.21.0",
     "prettier": "3.6.2",
     "ts-morph": "26.0.0",
     "typescript": "5",
     "typescript-eslint": "8.54.0"
   },
   "resolutions": {
-    "form-data": "4.0.4"
+    "form-data": "4.0.6"
   },
   "packageManager": "yarn@3.6.0"
 }
