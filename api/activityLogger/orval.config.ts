@@ -15,16 +15,19 @@ export default defineConfig({
       mode: 'tags-split',
       target: '../../src/providers/activityLogger/app.ts',
       client: 'react-query',
+      httpClient: 'axios',
       mock: false,
-      prettier: true,
+      formatter: 'prettier',
+      indexFiles: false,
       override: {
         mutator: {
           path: '../../src/services/activityLoggerService.ts',
           default: true,
           name: 'activityLogger',
         },
+        // orval 8 applies these flags to every HTTP method, so leave useQuery and
+        // useMutation unset: GET gets a query hook, other methods a mutation hook.
         query: {
-          useQuery: true,
           useInfinite: false,
         },
         operations: {},

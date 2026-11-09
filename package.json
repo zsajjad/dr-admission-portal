@@ -78,7 +78,7 @@
     "fs-extra": "11.3.1",
     "globals": "16.3.0",
     "lefthook": "1.12.2",
-    "orval": "7.21.0",
+    "orval": "8.47.0",
     "prettier": "3.6.2",
     "ts-morph": "26.0.0",
     "typescript": "5",

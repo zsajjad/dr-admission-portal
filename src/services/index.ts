@@ -142,7 +142,7 @@ export interface IAPArgs {
 
 type UpperHttpMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE' | 'PUT';
 
-async function service<T = any>(args: IAPArgs, isRetry = false): Promise<T> {
+async function request<T = any>(args: IAPArgs, isRetry: boolean): Promise<T> {
   const {
     url,
     method = 'GET',
@@ -198,7 +198,7 @@ async function service<T = any>(args: IAPArgs, isRetry = false): Promise<T> {
         const refreshSuccess = await handleTokenRefresh();
         if (refreshSuccess) {
           // Retry the original request with new token
-          return service<T>(args, true);
+          return request<T>(args, true);
         }
       }
       // Refresh failed or auth endpoint - throw 401 error
@@ -219,5 +219,11 @@ async function service<T = any>(args: IAPArgs, isRetry = false): Promise<T> {
   } catch (error) {
     throw error;
   }
+}
+
+// The orval mutator. It takes a single argument on purpose: orval adds a
+// `request` option to every generated hook when the mutator has a second one.
+function service<T = any>(args: IAPArgs): Promise<T> {
+  return request<T>(args, false);
 }
 export default service;
