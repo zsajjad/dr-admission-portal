@@ -8,6 +8,7 @@
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "ts:check": "tsc --noEmit --skipLibCheck",
+    "test": "node --test 'src/**/*.test.ts'",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "cspell": "cspell '**/*'",
     "commitlint": "commitlint --edit",
