@@ -40,6 +40,14 @@ export const routes = {
   interactionReport: {
     listing: '/interactions/report',
   },
+  trainings: {
+    home: '/trainings',
+    courses: '/trainings/courses',
+    courseCreate: '/trainings/courses/new',
+    course: (id: string) => `/trainings/courses/${id}`,
+    ageMatrix: '/trainings/age-matrix',
+    windows: '/trainings/windows',
+  },
   auth: {
     signIn: '/auth/sign-in',
     signUp: '/auth/sign-up',

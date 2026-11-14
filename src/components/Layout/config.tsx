@@ -16,6 +16,7 @@ const NAV_ORDER: ModuleKey[] = [
   'questionSets',
   'printing',
   'interactionReport',
+  'trainings',
 ];
 
 const toNavItem = (moduleKey: ModuleKey): NavItemConfig => {

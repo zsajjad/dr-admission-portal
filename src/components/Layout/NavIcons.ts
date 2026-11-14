@@ -14,6 +14,8 @@ import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
 import PrintRoundedIcon from '@mui/icons-material/PrintRounded';
 import QuizOutlinedIcon from '@mui/icons-material/QuizOutlined';
 import QuizRoundedIcon from '@mui/icons-material/QuizRounded';
+import SchoolOutlinedIcon from '@mui/icons-material/SchoolOutlined';
+import SchoolRoundedIcon from '@mui/icons-material/SchoolRounded';
 import SupervisedUserCircleOutlinedIcon from '@mui/icons-material/SupervisedUserCircleOutlined';
 import SupervisedUserCircleRoundedIcon from '@mui/icons-material/SupervisedUserCircleRounded';
 import type { OverridableComponent } from '@mui/material/OverridableComponent';
@@ -57,5 +59,9 @@ export const navIcons: Record<string, { filled: MuiIcon; outlined: MuiIcon }> = 
   interactionReport: {
     filled: BarChartRoundedIcon,
     outlined: BarChartOutlinedIcon,
+  },
+  trainings: {
+    filled: SchoolRoundedIcon,
+    outlined: SchoolOutlinedIcon,
   },
 };
