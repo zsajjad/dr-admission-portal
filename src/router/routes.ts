@@ -51,6 +51,7 @@ export const routes = {
     catalogTraining: (id: string) => `/trainings/catalog/${id}`,
     windows: '/trainings/windows',
     ledger: '/trainings/ledger',
+    reports: '/trainings/reports',
   },
   auth: {
     signIn: '/auth/sign-in',
