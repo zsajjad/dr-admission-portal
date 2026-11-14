@@ -64,7 +64,7 @@ export default defineMessages({
   dueNow: { id: `${scope}.dueNow`, defaultMessage: 'Balance due now: {due}' },
   moreThanDue: {
     id: `${scope}.moreThanDue`,
-    defaultMessage: 'This is more than the balance due ({due}); the extra is an advance.',
+    defaultMessage: 'This is more than the balance due ({due}). Payments can’t be above what’s due.',
   },
   adjustmentTitle: { id: `${scope}.adjustmentTitle`, defaultMessage: 'Add an adjustment' },
   adjustmentExplain: {

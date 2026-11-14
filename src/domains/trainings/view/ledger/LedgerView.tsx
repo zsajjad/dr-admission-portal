@@ -58,6 +58,7 @@ import { ActionDialog } from '../../components/ActionDialog';
 import { StaffFilter, UrlDateFilter, UrlSelect } from '../../components/Filters';
 import { LedgerKindLabel, LedgerStatusChip } from '../../components/LedgerChips';
 import { Section } from '../../components/Section';
+import { useStaffNames } from '../../components/StaffUserSelect';
 import { useNotify } from '../../components/useNotify';
 import common from '../../messages';
 import { useTrainingsAccess } from '../../permissions';
@@ -82,9 +83,10 @@ export function LedgerView() {
   const intl = useIntl();
   const notify = useNotify();
   const { canPayouts } = useTrainingsAccess();
+  const staffName = useStaffNames();
   const { filters, setFilter, handlePaginationModelChange } = useListingFilters<Record<string, string>>();
   const params: LedgerFilters = {
-    trainer: filters.trainer,
+    trainerStaffUserId: filters.trainer,
     kind: filters.kind as LedgerFilters['kind'],
     status: filters.status as LedgerFilters['status'],
     from: filters.from,
@@ -108,16 +110,16 @@ export function LedgerView() {
 
   const picked = selectedIds(selection, rows);
   const pickedAmount = rows.filter((r) => picked.includes(r.id)).reduce((s, r) => s + r.amount, 0);
-  const sum = (key: (typeof TOTAL_KEYS)[number]) => totals.reduce((s, t) => s + t[key], 0);
+  const sum = (key: (typeof TOTAL_KEYS)[number]) => totalsData?.totals?.[key] ?? 0;
 
   const approveAllFor = async (t: TrainerTotals) => {
     try {
-      const ids = await payableEntryIds(t.trainer.id);
+      const ids = await payableEntryIds(t.trainerStaffUserId);
       if (!ids.length) {
-        notify.success(intl.formatMessage(messages.approveNone, { name: t.trainer.name }));
+        notify.success(intl.formatMessage(messages.approveNone, { name: t.name }));
         return;
       }
-      setApproving({ ids, amount: t.awaitingApproval });
+      setApproving({ ids, amount: t.totals.awaitingApproval });
     } catch (err) {
       notify.error(err);
     }
@@ -166,7 +168,7 @@ export function LedgerView() {
         flex: 1,
         minWidth: 150,
         sortable: false,
-        valueGetter: (_v, row) => row.trainer.name,
+        valueGetter: (_v, row) => staffName(row.trainerStaffUserId) ?? '',
       },
       {
         field: 'kind',
@@ -203,7 +205,7 @@ export function LedgerView() {
               variant="body2"
               sx={{
                 fontWeight: 600,
-                textDecoration: row.status === 'VOID' || row.status === 'CANCELLED' ? 'line-through' : 'none',
+                textDecoration: row.status === 'VOIDED' || row.status === 'CANCELLED' ? 'line-through' : 'none',
                 color: row.kind === 'PAYMENT' ? 'success.dark' : row.amount < 0 ? 'error.main' : 'text.primary',
               }}
             >
@@ -235,7 +237,9 @@ export function LedgerView() {
         sortable: false,
         renderCell: ({ row }) => (
           <Stack sx={{ py: 0.75, lineHeight: 1.2 }}>
-            <Typography variant="body2">{[row.reference, row.reason, row.note].filter(Boolean).join(' · ')}</Typography>
+            <Typography variant="body2">
+              {[row.training?.code, row.reference, row.reason].filter(Boolean).join(' · ')}
+            </Typography>
             {row.voidedAt && (
               <Typography variant="caption" color="text.secondary">
                 {intl.formatMessage(messages.voided, {
@@ -255,7 +259,7 @@ export function LedgerView() {
               width: 90,
               sortable: false,
               renderCell: ({ row }: { row: LedgerEntry }) =>
-                row.kind !== 'PAYOUT' && row.status !== 'VOID' ? (
+                row.kind !== 'PAYOUT' && row.status !== 'VOIDED' ? (
                   <Button
                     size="small"
                     color="error"
@@ -271,7 +275,7 @@ export function LedgerView() {
           ]
         : []),
     ],
-    [intl, canPayouts],
+    [intl, canPayouts, staffName],
   );
 
   const hasFilters = FILTER_KEYS.some((k) => filters[k]);
@@ -332,15 +336,18 @@ export function LedgerView() {
               )}
               {totals.map((t) => (
                 <TableRow
-                  key={t.trainer.id}
+                  key={t.trainerStaffUserId}
                   hover
-                  selected={filters.trainer === t.trainer.id}
+                  selected={filters.trainer === t.trainerStaffUserId}
                   sx={{ cursor: 'pointer' }}
                   onClick={() =>
-                    setFilter({ trainer: filters.trainer === t.trainer.id ? undefined : t.trainer.id, page: 0 })
+                    setFilter({
+                      trainer: filters.trainer === t.trainerStaffUserId ? undefined : t.trainerStaffUserId,
+                      page: 0,
+                    })
                   }
                 >
-                  <TableCell sx={{ fontWeight: 600 }}>{t.trainer.name}</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>{t.name}</TableCell>
                   {TOTAL_KEYS.map((k) => (
                     <TableCell
                       key={k}
@@ -350,21 +357,21 @@ export function LedgerView() {
                         color:
                           k === 'projected'
                             ? 'text.secondary'
-                            : k === 'awaitingApproval' && t[k]
+                            : k === 'awaitingApproval' && t.totals[k]
                               ? 'warning.dark'
                               : undefined,
                       }}
                     >
-                      {formatAmount(t[k])}
+                      {formatAmount(t.totals[k])}
                     </TableCell>
                   ))}
                   <TableCell align="right" onClick={(e) => e.stopPropagation()}>
                     {canPayouts && (
                       <>
-                        <Button size="small" disabled={!t.awaitingApproval} onClick={() => approveAllFor(t)}>
+                        <Button size="small" disabled={!t.totals.awaitingApproval} onClick={() => approveAllFor(t)}>
                           <FormattedMessage {...messages.approveAll} />
                         </Button>
-                        <Button size="small" onClick={() => setPayment({ trainerId: t.trainer.id })}>
+                        <Button size="small" onClick={() => setPayment({ trainerId: t.trainerStaffUserId })}>
                           <FormattedMessage {...messages.recordPayment} />
                         </Button>
                       </>
@@ -440,7 +447,7 @@ export function LedgerView() {
         </Stack>
       )}
 
-      {error && (
+      {!!error && (
         <Alert severity="error">
           <FormattedMessage {...common.loadError} />: {extractNetworkError(error)}
         </Alert>

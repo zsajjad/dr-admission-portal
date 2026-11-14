@@ -13,7 +13,7 @@ import { FormattedMessage } from '@/theme/FormattedMessage';
 
 import { LedgerEntry, TrainerTotals, useAddAdjustment, useRecordPayment, useVoidEntry } from '../../api/ledger';
 import { ActionDialog } from '../../components/ActionDialog';
-import { ReasonField } from '../../components/ReasonField';
+import { ReasonField, reasonMissing } from '../../components/ReasonField';
 import { StaffUserSelect } from '../../components/StaffUserSelect';
 import { useNotify } from '../../components/useNotify';
 import common from '../../messages';
@@ -65,9 +65,10 @@ export function PaymentDialog({ open, onClose, trainerId: initialTrainer, totals
     setSubmitted(false);
   }, [open, initialTrainer]);
 
-  const due = totals.find((t) => t.trainer.id === trainerId)?.due;
+  const due = totals.find((t) => t.trainerStaffUserId === trainerId)?.totals.due;
   const amountOk = WHOLE.test(amount.trim()) && Number(amount) > 0;
-  const valid = !!trainerId && amountOk && !!paidAt;
+  const overDue = due !== undefined && amountOk && Number(amount) > due;
+  const valid = !!trainerId && amountOk && !!paidAt && !overDue;
 
   const handleSubmit = () => {
     setSubmitted(true);
@@ -127,8 +128,8 @@ export function PaymentDialog({ open, onClose, trainerId: initialTrainer, totals
             slotProps={{ inputLabel: { shrink: true } }}
           />
         </Stack>
-        {due !== undefined && amountOk && Number(amount) > due && (
-          <Alert severity="warning">
+        {overDue && (
+          <Alert severity="error">
             <FormattedMessage {...messages.moreThanDue} values={{ due: formatAmount(due) }} />
           </Alert>
         )}
@@ -177,7 +178,7 @@ export function AdjustmentDialog({
   }, [open, initialTrainer, initialEnrollment]);
 
   const amountOk = WHOLE.test(amount.trim()) && Number(amount) !== 0;
-  const valid = !!trainerId && amountOk && !!reason.trim();
+  const valid = !!trainerId && amountOk && !reasonMissing(reason);
 
   const handleSubmit = () => {
     setSubmitted(true);
@@ -252,7 +253,7 @@ export function VoidDialog({ entry, onClose }: { entry: LedgerEntry | null; onCl
 
   const handleSubmit = () => {
     setSubmitted(true);
-    if (!entry || !reason.trim()) return;
+    if (!entry || reasonMissing(reason)) return;
     mutation.mutate({ id: entry.id, reason: reason.trim() }, done);
   };
 
