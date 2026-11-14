@@ -5,13 +5,12 @@ import * as React from 'react';
 import RouterLink from 'next/link';
 
 import Stack from '@mui/material/Stack';
-import Tooltip from '@mui/material/Tooltip';
 
 import { navIcons } from '../NavIcons';
 import type { NavItemConfig } from '../types';
 import { isNavItemActive } from '../utils/isNavItemActive';
 
-import { NavContainer, NavItemBox } from './Styled';
+import { NavContainer, NavItemBox, NavItemText } from './Styled';
 
 interface NavListProps {
   items?: NavItemConfig[];
@@ -21,7 +20,7 @@ interface NavListProps {
 export function NavList({ items = [], pathname }: NavListProps): React.JSX.Element {
   return (
     <NavContainer>
-      <Stack component="ul" spacing={1} sx={{ listStyle: 'none', m: 0, p: 0, alignItems: 'center' }}>
+      <Stack component="ul" spacing={0.25} sx={{ listStyle: 'none', m: 0, p: 0 }}>
         {items.map(({ key, ...item }) => (
           <NavListItem key={key} pathname={pathname} {...item} />
         ))}
@@ -54,22 +53,25 @@ function NavListItem({
 
   return (
     <li>
-      <Tooltip title={title} placement="right" arrow>
-        <NavItemBox
-          {...(href
-            ? {
-                component: external ? 'a' : RouterLink,
-                href,
-              }
-            : { role: 'button' })}
-          active={active}
-          disabled={disabled}
-          aria-disabled={disabled || undefined}
-          tabIndex={disabled ? -1 : 0}
-        >
-          {IconComponent && <IconComponent sx={{ fontSize: 24, color: active ? 'common.white' : 'grey.900' }} />}
-        </NavItemBox>
-      </Tooltip>
+      <NavItemBox
+        {...(href
+          ? {
+              component: external ? 'a' : RouterLink,
+              href,
+            }
+          : { role: 'button' })}
+        active={active}
+        disabled={disabled}
+        aria-disabled={disabled || undefined}
+        tabIndex={disabled ? -1 : 0}
+      >
+        {IconComponent && (
+          <IconComponent sx={{ fontSize: 20, flexShrink: 0, color: active ? 'common.white' : 'text.secondary' }} />
+        )}
+        <NavItemText active={active} noWrap>
+          {title}
+        </NavItemText>
+      </NavItemBox>
     </li>
   );
 }

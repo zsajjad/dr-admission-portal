@@ -4,7 +4,10 @@ import Typography, { type TypographyProps } from '@mui/material/Typography';
 
 export const NavContainer = styled(Box)({
   padding: '8px',
-  overflow: 'auto',
+  // Fills the rest of the side nav and scrolls when the list is taller than the screen.
+  flex: '1 1 auto',
+  minHeight: 0,
+  overflowY: 'auto',
   '&::-webkit-scrollbar': {
     width: '6px',
     height: '6px',
@@ -32,17 +35,21 @@ export const NavItemBox = styled(Box, {
 })<NavItemBoxProps>(({ theme, active, disabled }) => ({
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'center',
-  width: 48,
-  height: 48,
-  borderRadius: '12px',
+  gap: 12,
+  width: '100%',
+  height: 36,
+  padding: '0 12px',
+  borderRadius: '10px',
   cursor: 'pointer',
   position: 'relative',
   textDecoration: 'none',
-  transition: 'all 0.2s ease-in-out',
+  transition: 'background-color 0.15s ease-in-out',
   '&:hover': {
-    backgroundColor: active ? theme.palette.primary.dark : theme.palette.action.selected,
-    transform: active ? 'none' : 'scale(1.05)',
+    backgroundColor: active ? theme.palette.primary.light : theme.palette.action.hover,
+  },
+  '&:focus-visible': {
+    outline: `2px solid ${theme.palette.secondary.main}`,
+    outlineOffset: 2,
   },
   ...(disabled && {
     backgroundColor: 'var(--NavItem-disabled-background)',
@@ -52,12 +59,7 @@ export const NavItemBox = styled(Box, {
   ...(active && {
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.common.white,
-    boxShadow: '0 4px 14px rgba(0,0,0,0.18)',
   }),
-  ...(!active &&
-    !disabled && {
-      backgroundColor: theme.palette.action.hover,
-    }),
 }));
 
 interface NavItemTextProps extends TypographyProps {
@@ -67,9 +69,8 @@ interface NavItemTextProps extends TypographyProps {
 export const NavItemText = styled(Typography, {
   shouldForwardProp: (prop) => prop !== 'active',
 })<NavItemTextProps>(({ theme, active }) => ({
-  color: active ? theme.palette.common.white : theme.palette.grey[900],
+  color: active ? theme.palette.common.white : theme.palette.text.primary,
   fontWeight: active ? 600 : 500,
-  lineHeight: '24px',
+  lineHeight: '20px',
   fontSize: '14px',
-  letterSpacing: '0.01em',
 }));

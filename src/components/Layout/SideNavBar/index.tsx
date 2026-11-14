@@ -8,7 +8,7 @@ import { usePathname } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 
-import { Logo } from '@/components/Logo';
+import { Brand } from '@/components/Logo';
 
 import { colorSchemes } from '@/theme/color-schemes';
 
@@ -32,9 +32,9 @@ export function SideNavBar(): React.JSX.Element {
         <Box
           component={RouterLink}
           href={routes.home}
-          sx={{ display: 'flex', justifyContent: 'center', p: '16px 8px' }}
+          sx={{ display: 'flex', flexShrink: 0, p: '18px 16px 14px', textDecoration: 'none' }}
         >
-          <Logo height="44px" label="Danishgah-e-Ramzan" />
+          <Brand logoHeight="36px" size="sm" />
         </Box>
         <Divider sx={{ borderColor: palette.stroke, mx: 1 }} />
         <NavList pathname={pathname} items={navItems} />
