@@ -82,7 +82,7 @@ const components: Components = {
     </TableCell>
   ),
   td: ({ children, style }) => (
-    <TableCell dir="auto" sx={{ textAlign: style?.textAlign }}>
+    <TableCell dir="auto" sx={{ whiteSpace: 'nowrap', textAlign: style?.textAlign }}>
       {children}
     </TableCell>
   ),

@@ -7,7 +7,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import KeyIcon from '@mui/icons-material/VpnKeyOutlined';
-import { Alert, Box, Button, Chip, Grid, Paper, Skeleton, Stack, Typography } from '@mui/material';
+import { Alert, Box, Button, Chip, Paper, Skeleton, Stack, Typography } from '@mui/material';
 
 import { Permission, RoleName } from '@/providers/service/app.schemas';
 import {
@@ -43,7 +43,7 @@ export function PlanningChat(): React.JSX.Element {
   const queryClient = useQueryClient();
   const [tokensOpen, setTokensOpen] = React.useState(false);
   const [requestError, setRequestError] = React.useState<string | null>(null);
-  const bottomRef = React.useRef<HTMLDivElement>(null);
+  const threadRef = React.useRef<HTMLDivElement>(null);
 
   const usage = useReportChatControllerUsage({ query: { enabled: canChat, refetchOnWindowFocus: true } });
   const detail = useReportChatControllerGetConversation(conversationId ?? '', {
@@ -55,8 +55,11 @@ export function PlanningChat(): React.JSX.Element {
   const conversation = conversationId ? detail.data?.data : undefined;
   const turns = (conversation?.turns ?? []).filter((t) => !(state.question && t.status === 'pending'));
 
+  // Keep the newest answer in view by scrolling the thread itself (scrollIntoView would also scroll
+  // the page and push the heading away).
   React.useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    const el = threadRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
   }, [turns.length, state.text, state.lookups.length, state.question]);
 
   const select = (id?: string) => {
@@ -148,17 +151,18 @@ export function PlanningChat(): React.JSX.Element {
         </Alert>
       ) : null}
 
-      <Grid container spacing={2} sx={{ flex: 1, minHeight: 0 }}>
-        <Grid size={{ xs: 12, md: 3 }} sx={{ height: { md: '100%' }, maxHeight: { xs: 240, md: 'none' } }}>
+      {/* Side by side from md up; stacked below, with a short conversation list so the box to ask in stays on screen. */}
+      <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ flex: 1, minHeight: 0 }}>
+        <Box sx={{ width: { md: '25%' }, flexShrink: 0, height: { xs: 160, md: '100%' } }}>
           <ConversationList
             selectedId={conversationId}
             onSelect={(id) => select(id)}
             onNew={() => select(undefined)}
             canSeeEveryone={isSuperAdmin}
           />
-        </Grid>
-        <Grid size={{ xs: 12, md: 9 }} sx={{ height: '100%', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-          <Box sx={{ flex: 1, overflowY: 'auto', pr: 1, pb: 2 }}>
+        </Box>
+        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, minWidth: 0 }}>
+          <Box ref={threadRef} sx={{ flex: 1, overflowY: 'auto', pr: 1, pb: 2 }}>
             {conversationId && detail.isLoading ? <Skeleton height={160} /> : null}
             {!conversationId && !state.question ? (
               <Paper variant="outlined" sx={{ p: 3 }}>
@@ -204,7 +208,6 @@ export function PlanningChat(): React.JSX.Element {
                 />
               ) : null}
             </Stack>
-            <div ref={bottomRef} />
           </Box>
           {requestError ? (
             <Alert severity="error" sx={{ mb: 1 }} onClose={() => setRequestError(null)}>
@@ -222,8 +225,8 @@ export function PlanningChat(): React.JSX.Element {
             onSend={(q) => void send(q)}
             onStop={stop}
           />
-        </Grid>
-      </Grid>
+        </Box>
+      </Stack>
       <ServiceTokensDialog open={tokensOpen} onClose={() => setTokensOpen(false)} />
     </Stack>
   );

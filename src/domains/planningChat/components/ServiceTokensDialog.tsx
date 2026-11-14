@@ -49,6 +49,8 @@ export function ServiceTokensDialog({ open, onClose }: { open: boolean; onClose:
   const [newToken, setNewToken] = React.useState<string | null>(null);
   const [copied, setCopied] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  // Revoking cuts a client off at once, so it takes a second click to confirm.
+  const [confirmRevoke, setConfirmRevoke] = React.useState<string | null>(null);
 
   const refresh = () => queryClient.invalidateQueries({ queryKey: getReportChatControllerListServiceTokensQueryKey() });
 
@@ -69,6 +71,7 @@ export function ServiceTokensDialog({ open, onClose }: { open: boolean; onClose:
 
   const handleClose = () => {
     setNewToken(null);
+    setConfirmRevoke(null);
     onClose();
   };
 
@@ -143,7 +146,9 @@ export function ServiceTokensDialog({ open, onClose }: { open: boolean; onClose:
                 <TableCell>
                   <FormattedMessage {...messages.tokenName} />
                 </TableCell>
-                <TableCell>Token</TableCell>
+                <TableCell>
+                  <FormattedMessage {...messages.tokenColumn} />
+                </TableCell>
                 <TableCell>
                   <FormattedMessage {...messages.dailyCallLimit} />
                 </TableCell>
@@ -184,13 +189,20 @@ export function ServiceTokensDialog({ open, onClose }: { open: boolean; onClose:
                       <Button
                         size="small"
                         color="error"
+                        variant={confirmRevoke === t.id ? 'contained' : 'text'}
                         disabled={revoke.isPending}
+                        sx={{ whiteSpace: 'nowrap' }}
                         onClick={async () => {
+                          if (confirmRevoke !== t.id) {
+                            setConfirmRevoke(t.id);
+                            return;
+                          }
+                          setConfirmRevoke(null);
                           await revoke.mutateAsync({ id: t.id });
                           await refresh();
                         }}
                       >
-                        <FormattedMessage {...messages.revoke} />
+                        <FormattedMessage {...(confirmRevoke === t.id ? messages.confirmRevoke : messages.revoke)} />
                       </Button>
                     )}
                   </TableCell>

@@ -88,6 +88,8 @@ export default defineMessages({
   copy: { id: `${scope}.copy`, defaultMessage: 'Copy' },
   copied: { id: `${scope}.copied`, defaultMessage: 'Copied' },
   revoke: { id: `${scope}.revoke`, defaultMessage: 'Revoke' },
+  confirmRevoke: { id: `${scope}.confirmRevoke`, defaultMessage: 'Click again to revoke' },
+  tokenColumn: { id: `${scope}.tokenColumn`, defaultMessage: 'Token' },
   revoked: { id: `${scope}.revoked`, defaultMessage: 'Revoked' },
   lastUsed: { id: `${scope}.lastUsed`, defaultMessage: 'Last used' },
   never: { id: `${scope}.never`, defaultMessage: 'Never' },

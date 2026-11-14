@@ -79,5 +79,7 @@
   "app.domains.planningChat.toolFinalResultsReport": "حتمی نتائج",
   "app.domains.planningChat.toolSkillStepsReport": "وضو اور نماز کے مراحل",
   "app.domains.planningChat.toolInterviewsReport": "انٹرویو کی ریٹنگ",
-  "app.domains.planningChat.toolRunReportQuery": "مخصوص رپورٹ کوئری"
+  "app.domains.planningChat.toolRunReportQuery": "مخصوص رپورٹ کوئری",
+  "app.domains.planningChat.confirmRevoke": "منسوخ کرنے کے لیے دوبارہ کلک کریں",
+  "app.domains.planningChat.tokenColumn": "ٹوکن"
 }
