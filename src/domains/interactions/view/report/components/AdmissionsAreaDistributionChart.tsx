@@ -59,7 +59,7 @@ export function AdmissionsAreaDistributionChart({ data }: AdmissionsAreaDistribu
       fontSize: 11,
       fill: am5.color(colors.purple[700]),
       // Equivalent of `.font-urdu` in our theme
-      fontFamily: 'var(--font-urdu), "Noto Nastaliq Urdu", serif',
+      fontFamily: 'var(--font-urdu), var(--font-inter), serif',
     });
 
     xAxis.get('renderer').grid.template.setAll({

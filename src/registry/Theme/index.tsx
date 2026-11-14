@@ -31,21 +31,25 @@ export function CustomThemeProvider({ children }: ThemeProviderProps): React.JSX
               '--MobileNav-width': '280px',
               '--MobileNav-zIndex': 1100,
             },
-            // Urdu font styles - apply to elements with lang="ur" attribute
-            '[lang="ur"]': {
-              fontFamily: 'var(--font-urdu), "Noto Nastaliq Urdu", serif !important',
-              direction: 'rtl',
+            // Text marked as Urdu prefers the Urdu font, even for digits and punctuation
+            '[lang="ur"], .font-urdu': {
+              fontFamily: 'var(--font-urdu), var(--font-inter), serif !important',
             },
-            // Utility class for Urdu text
-            '.font-urdu': {
-              fontFamily: 'var(--font-urdu), "Noto Nastaliq Urdu", serif !important',
-            },
-            // RTL layout when document is in Urdu
             'html[lang="ur"]': {
               direction: 'rtl',
             },
-            'html[lang="ur"] body': {
-              fontFamily: 'var(--font-urdu), "Noto Nastaliq Urdu", serif',
+            // Nastaliq is tall: give Urdu lines more room so wrapped lines don't overlap
+            'html[lang="ur"] .MuiTypography-root, html[lang="ur"] body': {
+              lineHeight: 1.9,
+            },
+            // Chips clip their label; let Urdu letters reach above and below the line instead
+            'html[lang="ur"] .MuiChip-root': {
+              height: 'auto',
+              minHeight: 24,
+            },
+            'html[lang="ur"] .MuiChip-label': {
+              overflow: 'visible',
+              lineHeight: 1.9,
             },
           }}
         />
