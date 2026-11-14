@@ -76,6 +76,10 @@ export default defineMessages({
     id: `${scope}.interactionReport`,
     defaultMessage: 'Interactions',
   },
+  trainings: {
+    id: `${scope}.trainings`,
+    defaultMessage: 'Fiqh trainings',
+  },
   signOut: {
     id: `${scope}.signOut`,
     defaultMessage: 'Sign Out',

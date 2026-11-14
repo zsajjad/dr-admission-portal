@@ -1,5 +1,7 @@
 import { ReactNode } from 'react';
 
+import { TRAININGS_READ } from '@/domains/trainings/permissions';
+
 import { Permission } from '@/providers/service/app.schemas';
 
 import { FormattedMessage } from '@/theme/FormattedMessage';
@@ -108,6 +110,12 @@ export const MODULE_REGISTRY = {
     title: <FormattedMessage {...messages.interactionReport} />,
     href: routes.interactionReport.listing,
     icon: 'interactionReport',
+  },
+  trainings: {
+    title: <FormattedMessage {...messages.trainings} />,
+    href: routes.trainings.home,
+    icon: 'trainings',
+    permissions: TRAININGS_READ,
   },
 } satisfies Record<string, ModuleConfig>;
 
