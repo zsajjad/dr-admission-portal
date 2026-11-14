@@ -59,7 +59,6 @@ export function TrainingsShell({ children }: { children: ReactNode }) {
                 label={<FormattedMessage {...tab.label} />}
                 component={Link}
                 href={tab.href}
-                sx={{ textTransform: 'none', fontWeight: 600 }}
               />
             ))}
           </Tabs>

@@ -3,7 +3,7 @@
 import { Alert, Box, Button, Stack, Tab, Tabs, Typography } from '@mui/material';
 
 import { SectionCard } from '@/domains/students/components/SectionCard';
-import { cardStyle, formatBirthDate } from '@/domains/students/utils';
+import { formatBirthDate } from '@/domains/students/utils';
 
 import { PageHeading } from '@/components/PageHeading';
 
@@ -64,7 +64,7 @@ export function StudentMergeView() {
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         <FormattedMessage {...messages.intro} />
       </Typography>
-      <Box sx={{ ...cardStyle, bgcolor: 'background.paper', px: 2, mb: 2 }}>
+      <Box sx={{ mb: 2, borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={tab} onChange={(_, v) => setFilter({ tab: v === 'history' ? 'history' : undefined })}>
           <Tab value="merge" label={<FormattedMessage {...messages.tabMerge} />} />
           <Tab value="history" label={<FormattedMessage {...messages.tabHistory} />} />

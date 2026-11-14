@@ -2,34 +2,32 @@ import type { Components } from '@mui/material/styles';
 
 import type { Theme } from '../types';
 
+/**
+ * Tabs are plain text on the page with a gold line under the open one.
+ * Buttons stay for actions, so a tab never looks like something that saves or sends.
+ */
 export const MuiTab = {
   styleOverrides: {
     root: ({ theme }) => ({
-      fontSize: '14px',
+      fontSize: '0.9375rem',
       fontWeight: 500,
-      lineHeight: 1.71,
-      minHeight: 36,
-      minWidth: 120,
+      lineHeight: 1.5,
+      minHeight: 44,
+      minWidth: 0,
       textTransform: 'none',
-      borderRadius: theme.shape.borderRadius,
-      paddingLeft: theme.spacing(2),
-      paddingRight: theme.spacing(2),
-      marginLeft: theme.spacing(0.5),
-      marginRight: theme.spacing(0.5),
+      padding: theme.spacing(1.25, 2),
+      color: 'var(--mui-palette-text-secondary)',
+      transition: 'color 120ms ease',
 
-      // default (unselected) state
-      border: `1px solid ${theme.palette.grey[400]}`,
-      backgroundColor: 'transparent',
-      color: theme.palette.text.primary,
-
-      // selected state
-      '&.Mui-selected': {
-        border: 'none',
-        backgroundColor: theme.palette.primary.main,
-        color: `${theme.palette.common.white} !important`,
+      '&:hover': {
+        color: 'var(--mui-palette-text-primary)',
       },
 
-      // disabled state
+      '&.Mui-selected': {
+        color: 'var(--mui-palette-primary-main)',
+        fontWeight: 600,
+      },
+
       '&.Mui-disabled': {
         opacity: 0.5,
         pointerEvents: 'none',
@@ -37,3 +35,14 @@ export const MuiTab = {
     }),
   },
 } satisfies Components<Theme>['MuiTab'];
+
+export const MuiTabs = {
+  styleOverrides: {
+    root: { minHeight: 44 },
+    indicator: {
+      height: 3,
+      borderRadius: '3px 3px 0 0',
+      backgroundColor: 'var(--mui-palette-brand-gold)',
+    },
+  },
+} satisfies Components<Theme>['MuiTabs'];
