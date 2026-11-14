@@ -60,6 +60,10 @@ export default defineMessages({
     id: `${scope}.results`,
     defaultMessage: 'Results',
   },
+  auditLog: {
+    id: `${scope}.auditLog`,
+    defaultMessage: 'Audit log',
+  },
   printing: {
     id: `${scope}.printing`,
     defaultMessage: 'Printing',

@@ -30,11 +30,14 @@ import {
   useAdminPermissionControllerListCatalogue,
   useAdminPermissionControllerListUsers,
 } from '@/providers/service/admin-permission/admin-permission';
-import { AdminUserWithPermissions, RoleName } from '@/providers/service/app.schemas';
+import { AdminUserWithPermissions, Permission, RoleName } from '@/providers/service/app.schemas';
 
 import { FormattedMessage } from '@/theme/FormattedMessage';
 
 import { useListingFilters } from '@/hooks/useListingFilters';
+import { usePermissions } from '@/hooks/usePermissions';
+
+import { routes } from '@/router/routes';
 
 import { extractNetworkError } from '@/utils/extractNetworkError';
 
@@ -49,6 +52,7 @@ import messages from '../messages';
 export function AdminPermissionsView() {
   const intl = useIntl();
   const { filters, setFilter } = useListingFilters<{ user?: string }>();
+  const { has } = usePermissions();
   const [search, setSearch] = useState('');
   const [showDeactivated, setShowDeactivated] = useState(false);
 
@@ -165,7 +169,14 @@ export function AdminPermissionsView() {
 
         <Grid size={{ xs: 12, md: 8 }}>
           {selected && catalogue.data ? (
-            <PermissionPanel key={selected.adminUserId} user={selected} catalogue={catalogue.data.data} />
+            <PermissionPanel
+              key={selected.adminUserId}
+              user={selected}
+              catalogue={catalogue.data.data}
+              historyHref={
+                has(Permission.auditview) ? routes.auditLog.record('AdminUser', selected.adminUserId) : undefined
+              }
+            />
           ) : (
             <Box sx={{ ...cardStyle, bgcolor: 'background.paper', p: 3 }}>
               <Typography variant="body2" color="text.secondary">

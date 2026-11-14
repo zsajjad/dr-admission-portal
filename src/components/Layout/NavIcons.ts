@@ -14,6 +14,8 @@ import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined';
 import ClassRoundedIcon from '@mui/icons-material/ClassRounded';
 import GradingOutlinedIcon from '@mui/icons-material/GradingOutlined';
 import GradingRoundedIcon from '@mui/icons-material/GradingRounded';
+import HistoryEduOutlinedIcon from '@mui/icons-material/HistoryEduOutlined';
+import HistoryEduRoundedIcon from '@mui/icons-material/HistoryEduRounded';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import PersonSearchOutlinedIcon from '@mui/icons-material/PersonSearchOutlined';
@@ -75,6 +77,10 @@ export const navIcons: Record<string, { filled: MuiIcon; outlined: MuiIcon }> = 
   results: {
     filled: GradingRoundedIcon,
     outlined: GradingOutlinedIcon,
+  },
+  auditLog: {
+    filled: HistoryEduRoundedIcon,
+    outlined: HistoryEduOutlinedIcon,
   },
   questionSets: {
     filled: QuizRoundedIcon,

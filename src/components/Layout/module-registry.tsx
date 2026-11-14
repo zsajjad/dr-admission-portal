@@ -82,6 +82,12 @@ export const MODULE_REGISTRY = {
     icon: 'results',
     permissions: [Permission.reportsview, Permission.resultsenter],
   },
+  auditLog: {
+    title: <FormattedMessage {...messages.auditLog} />,
+    href: routes.auditLog.listing,
+    icon: 'auditLog',
+    permissions: [Permission.auditview],
+  },
   questionSets: {
     title: <FormattedMessage {...messages.questionSets} />,
     href: routes.questions.listing,
