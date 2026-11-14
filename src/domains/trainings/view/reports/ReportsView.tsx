@@ -29,6 +29,7 @@ import {
   ResultsRow,
   usePayoutsReport,
   usePipelineReport,
+  useRechecksReport,
   useResultsReport,
   useTestersReport,
   useTrainersReport,
@@ -94,7 +95,7 @@ function ReportTable<T>({ columns, rows, total }: { columns: Column<T>[]; rows: 
 
 const num = (n?: number | null) => (n === undefined || n === null ? '--' : n.toLocaleString('en-PK'));
 
-/** The six trainings reports, sharing one filter bar; groupBy splits by gender, area or branch */
+/** The trainings reports, sharing one filter bar; groupBy splits by gender, area or branch */
 export function ReportsView() {
   const intl = useIntl();
   const t = (m: { id: string; defaultMessage: string }) => intl.formatMessage(m);
@@ -108,7 +109,8 @@ export function ReportsView() {
     to: filters.to,
     sessionId: filters.sessionId,
     trainingId: filters.trainingId,
-    trainerStaffUserId: filters.trainer,
+    // Rechecks have no trainer, so that report hides the trainer filter
+    trainerStaffUserId: report === 'rechecks' ? undefined : filters.trainer,
     testerStaffUserId: filters.tester,
     branchId: filters.branchId,
     areaId: filters.areaId,
@@ -120,6 +122,7 @@ export function ReportsView() {
   const pipeline = usePipelineReport(params, report === 'pipeline');
   const results = useResultsReport(params, report === 'results');
   const trainings = useTrainingsReport(params, report === 'trainings');
+  const rechecks = useRechecksReport(params, report === 'rechecks');
   const trainers = useTrainersReport(params, report === 'trainers');
   const testers = useTestersReport(params, report === 'testers');
   const payouts = usePayoutsReport(params, report === 'payouts');
@@ -127,6 +130,7 @@ export function ReportsView() {
     pipeline,
     results,
     trainings,
+    rechecks,
     trainers,
     testers,
     payouts,
@@ -224,6 +228,79 @@ export function ReportsView() {
             ]}
           />
         );
+      case 'rechecks': {
+        const groups = rechecks.data?.groups ?? [];
+        // `due` comes only for a session with no dates or tester filter
+        const showDue = groups.some((g) => g.trainings.some((r) => r.due !== null));
+        return (
+          <Stack spacing={2}>
+            <Typography variant="body2" color="text.secondary">
+              <FormattedMessage {...messages.rechecksHelp} />
+            </Typography>
+            {groups.map((g) => (
+              <Typography key={g.group} variant="body2" color="text.secondary">
+                <FormattedMessage
+                  {...messages.rechecksLine}
+                  values={{ group: groupLabel(g), graded: num(g.graded), passed: num(g.passed), failed: num(g.failed) }}
+                />
+              </Typography>
+            ))}
+            <Typography variant="subtitle2">
+              <FormattedMessage {...messages.perTraining} />
+            </Typography>
+            <ReportTable
+              rows={groups.flatMap((g) => g.trainings.map((r) => ({ ...r, g })))}
+              columns={[
+                { label: t(messages.group), value: (r) => groupLabel(r.g) },
+                { label: t(messages.training), value: (r) => `${r.code} · ${r.name}` },
+                ...(showDue
+                  ? [
+                      {
+                        label: (
+                          <Tooltip title={t(messages.dueHelp)}>
+                            <span>{t(messages.due)}</span>
+                          </Tooltip>
+                        ),
+                        align: 'right' as const,
+                        value: (r: { due: number | null }) => num(r.due),
+                      },
+                    ]
+                  : []),
+                { label: t(messages.rechecked), align: 'right', value: (r) => num(r.graded) },
+                { label: t(messages.passed), align: 'right', value: (r) => num(r.passed) },
+                { label: t(messages.failed), align: 'right', value: (r) => num(r.failed) },
+                { label: t(messages.passRate), align: 'right', value: (r) => formatPct(r.passRate) },
+                { label: t(messages.averagePct), align: 'right', value: (r) => formatPct(r.averagePct) },
+                {
+                  label: (
+                    <Tooltip title={t(messages.retrainedHelp)}>
+                      <span>{t(messages.retrained)}</span>
+                    </Tooltip>
+                  ),
+                  align: 'right',
+                  value: (r) => num(r.retrained),
+                },
+                { label: t(messages.passedAfterRetrain), align: 'right', value: (r) => num(r.passedAfterRetrain) },
+              ]}
+            />
+            <Typography variant="subtitle2">
+              <FormattedMessage {...messages.perTester} />
+            </Typography>
+            <ReportTable
+              rows={groups.flatMap((g) => g.testers.map((r) => ({ ...r, g })))}
+              columns={[
+                { label: t(messages.group), value: (r) => groupLabel(r.g) },
+                { label: t(common.tester), value: (r) => r.name },
+                { label: t(messages.rechecked), align: 'right', value: (r) => num(r.graded) },
+                { label: t(messages.passed), align: 'right', value: (r) => num(r.passed) },
+                { label: t(messages.averageGiven), align: 'right', value: (r) => formatPct(r.averagePct) },
+                { label: t(messages.overridden), align: 'right', value: (r) => num(r.overridden) },
+                { label: t(messages.lateGrades), align: 'right', value: (r) => num(r.lateGrade) },
+              ]}
+            />
+          </Stack>
+        );
+      }
       case 'trainers':
         return (
           <ReportTable
@@ -321,7 +398,9 @@ export function ReportsView() {
             <UrlDateFilter param="to" label={t(messages.to)} />
             <SessionFilter minWidth={180} />
             <TrainingFilter />
-            <StaffFilter param="trainer" role={StaffRole.TRAINER} label={t(common.trainer)} />
+            {report !== 'rechecks' && (
+              <StaffFilter param="trainer" role={StaffRole.TRAINER} label={t(common.trainer)} />
+            )}
             <StaffFilter param="tester" role={StaffRole.TESTER} label={t(common.tester)} />
             <BranchFilter minWidth={180} resetFiltersOnChange={['areaId']} />
             <AreaFilter minWidth={180} />

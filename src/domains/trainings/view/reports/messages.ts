@@ -9,6 +9,7 @@ export default defineMessages({
   pipeline: { id: `${scope}.pipeline`, defaultMessage: 'Pipeline' },
   results: { id: `${scope}.results`, defaultMessage: 'Results' },
   trainings: { id: `${scope}.trainings`, defaultMessage: 'Trainings' },
+  rechecks: { id: `${scope}.rechecks`, defaultMessage: 'Rechecks' },
   trainers: { id: `${scope}.trainers`, defaultMessage: 'Trainers' },
   testers: { id: `${scope}.testers`, defaultMessage: 'Testers' },
   payouts: { id: `${scope}.payouts`, defaultMessage: 'Payouts' },
@@ -62,4 +63,26 @@ export default defineMessages({
   paid: { id: `${scope}.paid`, defaultMessage: 'Paid' },
   training: { id: `${scope}.training`, defaultMessage: 'Training' },
   noData: { id: `${scope}.noData`, defaultMessage: 'No data for these filters' },
+  rechecksHelp: {
+    id: `${scope}.rechecksHelp`,
+    defaultMessage:
+      'Trainings passed in an earlier session, rechecked by a tester this session. A failed recheck is trained again. Dates filter on the recheck date.',
+  },
+  rechecksLine: {
+    id: `${scope}.rechecksLine`,
+    defaultMessage: '{group}: {graded} rechecked, {passed} passed, {failed} failed',
+  },
+  perTraining: { id: `${scope}.perTraining`, defaultMessage: 'Per training' },
+  perTester: { id: `${scope}.perTester`, defaultMessage: 'Per tester' },
+  rechecked: { id: `${scope}.rechecked`, defaultMessage: 'Rechecked' },
+  failed: { id: `${scope}.failed`, defaultMessage: 'Failed' },
+  due: { id: `${scope}.due`, defaultMessage: 'Still due' },
+  dueHelp: {
+    id: `${scope}.dueHelp`,
+    defaultMessage: 'Admitted students who passed before and aren’t rechecked or passed this session yet.',
+  },
+  retrained: { id: `${scope}.retrained`, defaultMessage: 'Retrained' },
+  retrainedHelp: { id: `${scope}.retrainedHelp`, defaultMessage: 'Failed rechecks now in an enrollment.' },
+  passedAfterRetrain: { id: `${scope}.passedAfterRetrain`, defaultMessage: 'Passed after retraining' },
+  lateGrades: { id: `${scope}.lateGrades`, defaultMessage: 'Late' },
 });

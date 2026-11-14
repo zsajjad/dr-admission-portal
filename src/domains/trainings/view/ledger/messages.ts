@@ -24,7 +24,7 @@ export default defineMessages({
   showEntries: { id: `${scope}.showEntries`, defaultMessage: 'Entries' },
   approveAll: { id: `${scope}.approveAll`, defaultMessage: 'Approve all' },
   recordPayment: { id: `${scope}.recordPayment`, defaultMessage: 'Record payment' },
-  improvement: { id: `${scope}.improvement`, defaultMessage: 'Improvement' },
+  routeRecheck: { id: `${scope}.routeRecheck`, defaultMessage: 'After a recheck' },
   addAmount: { id: `${scope}.addAmount`, defaultMessage: 'Add amount' },
   addAmountTitle: { id: `${scope}.addAmountTitle`, defaultMessage: 'Add an amount' },
   addAmountExplain: {

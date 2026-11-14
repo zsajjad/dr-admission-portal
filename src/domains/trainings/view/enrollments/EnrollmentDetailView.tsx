@@ -301,15 +301,16 @@ export function EnrollmentDetailBody({ enrollment: e }: { enrollment: Enrollment
                           }}
                         />
                       </Typography>
-                      {item.kind === 'IMPROVEMENT' && (
+                      {item.route === 'RECHECK' && (
                         <Typography variant="caption" color="info.main" sx={{ display: 'block' }}>
                           <FormattedMessage
-                            {...messages.improvingFrom}
+                            {...messages.retrainAfterRecheck}
                             values={{
-                              pct: formatPct(item.previousBestPct),
-                              band: formatAmount(item.previousBand),
+                              pct: formatPct(item.recheck?.scorePct),
+                              date: formatDate(item.recheck?.testedAt),
                             }}
                           />
+                          {item.recheck?.comment ? ` · ${item.recheck.comment}` : ''}
                         </Typography>
                       )}
                     </TableCell>

@@ -190,3 +190,34 @@ export function payTable(t: Pick<TrainingInput, 'maxMarks' | 'passMarks' | 'band
     };
   });
 }
+
+/** A recheck's result: the score % and passed when marks ≥ pass marks. A recheck pays nobody. */
+export function gradeRecheck(t: { maxMarks: number; passMarks: number }, marks: number): Omit<Graded, 'pay'> {
+  return { scorePct: round2((marks / t.maxMarks) * 100), passed: marks >= t.passMarks };
+}
+
+/**
+ * Where a training stands this session (trainings contract, "Retest every session"):
+ * - PASSED: passed this session (a passed recheck, or a passed attempt)
+ * - RECHECK_DUE: passed in an earlier session and not rechecked yet; a tester grades it directly
+ * - RECHECK_FAILED: its recheck failed, so it's trained this session
+ * - TO_TRAIN: never passed, so it's trained, then tested
+ * - NOT_DUE: nothing to do (e.g. its recheck passed and the pass was revoked since, and it isn't trainable)
+ */
+export type SessionStatus = 'PASSED' | 'RECHECK_DUE' | 'RECHECK_FAILED' | 'TO_TRAIN' | 'NOT_DUE';
+
+export interface SessionTrainingInput {
+  route: 'TRAIN' | 'RECHECK';
+  passedThisSession: boolean;
+  trainable: boolean;
+  recheck: { passed: boolean } | null;
+}
+
+export function sessionStatus(t: SessionTrainingInput): SessionStatus {
+  if (t.passedThisSession) return 'PASSED';
+  if (t.route === 'RECHECK') {
+    if (!t.recheck) return 'RECHECK_DUE';
+    if (!t.recheck.passed) return 'RECHECK_FAILED';
+  }
+  return t.trainable ? 'TO_TRAIN' : 'NOT_DUE';
+}
