@@ -61,7 +61,7 @@ export const branchControllerCreate = (createBranchDto: CreateBranchDto, signal?
 
 export const getBranchControllerCreateMutationKey = () => ['branchControllerCreate'] as const;
 
-export const getBranchControllerCreateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getBranchControllerCreateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof branchControllerCreate>>,
     TError,
@@ -95,10 +95,10 @@ export const getBranchControllerCreateMutationOptions = <TError = unknown, TCont
 
 export type BranchControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof branchControllerCreate>>>;
 export type BranchControllerCreateMutationBody = CreateBranchDto;
-export type BranchControllerCreateMutationError = unknown;
+export type BranchControllerCreateMutationError = void;
 export type BranchControllerCreateMutationVariables = { data: CreateBranchDto };
 
-export const useBranchControllerCreate = <TError = unknown, TContext = unknown>(
+export const useBranchControllerCreate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof branchControllerCreate>>,
@@ -319,7 +319,7 @@ export const branchControllerUpdate = (id: string, updateBranchDto: UpdateBranch
 
 export const getBranchControllerUpdateMutationKey = () => ['branchControllerUpdate'] as const;
 
-export const getBranchControllerUpdateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getBranchControllerUpdateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof branchControllerUpdate>>,
     TError,
@@ -353,10 +353,10 @@ export const getBranchControllerUpdateMutationOptions = <TError = unknown, TCont
 
 export type BranchControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof branchControllerUpdate>>>;
 export type BranchControllerUpdateMutationBody = UpdateBranchDto;
-export type BranchControllerUpdateMutationError = unknown;
+export type BranchControllerUpdateMutationError = void;
 export type BranchControllerUpdateMutationVariables = { id: string; data: UpdateBranchDto };
 
-export const useBranchControllerUpdate = <TError = unknown, TContext = unknown>(
+export const useBranchControllerUpdate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof branchControllerUpdate>>,
@@ -380,7 +380,7 @@ export const branchControllerRemove = (id: string, signal?: AbortSignal) => {
 
 export const getBranchControllerRemoveMutationKey = () => ['branchControllerRemove'] as const;
 
-export const getBranchControllerRemoveMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getBranchControllerRemoveMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof branchControllerRemove>>,
     TError,
@@ -414,10 +414,10 @@ export const getBranchControllerRemoveMutationOptions = <TError = unknown, TCont
 
 export type BranchControllerRemoveMutationResult = NonNullable<Awaited<ReturnType<typeof branchControllerRemove>>>;
 
-export type BranchControllerRemoveMutationError = unknown;
+export type BranchControllerRemoveMutationError = void;
 export type BranchControllerRemoveMutationVariables = { id: string };
 
-export const useBranchControllerRemove = <TError = unknown, TContext = unknown>(
+export const useBranchControllerRemove = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof branchControllerRemove>>,
@@ -441,7 +441,7 @@ export const branchControllerDeactivate = (id: string, signal?: AbortSignal) => 
 
 export const getBranchControllerDeactivateMutationKey = () => ['branchControllerDeactivate'] as const;
 
-export const getBranchControllerDeactivateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getBranchControllerDeactivateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof branchControllerDeactivate>>,
     TError,
@@ -477,10 +477,10 @@ export type BranchControllerDeactivateMutationResult = NonNullable<
   Awaited<ReturnType<typeof branchControllerDeactivate>>
 >;
 
-export type BranchControllerDeactivateMutationError = unknown;
+export type BranchControllerDeactivateMutationError = void;
 export type BranchControllerDeactivateMutationVariables = { id: string };
 
-export const useBranchControllerDeactivate = <TError = unknown, TContext = unknown>(
+export const useBranchControllerDeactivate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof branchControllerDeactivate>>,
@@ -504,7 +504,7 @@ export const branchControllerActivate = (id: string, signal?: AbortSignal) => {
 
 export const getBranchControllerActivateMutationKey = () => ['branchControllerActivate'] as const;
 
-export const getBranchControllerActivateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getBranchControllerActivateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof branchControllerActivate>>,
     TError,
@@ -538,10 +538,10 @@ export const getBranchControllerActivateMutationOptions = <TError = unknown, TCo
 
 export type BranchControllerActivateMutationResult = NonNullable<Awaited<ReturnType<typeof branchControllerActivate>>>;
 
-export type BranchControllerActivateMutationError = unknown;
+export type BranchControllerActivateMutationError = void;
 export type BranchControllerActivateMutationVariables = { id: string };
 
-export const useBranchControllerActivate = <TError = unknown, TContext = unknown>(
+export const useBranchControllerActivate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof branchControllerActivate>>,

@@ -2,15 +2,27 @@ export const colorSchemes = {
   light: {
     palette: {
       transparent: 'rgba(255, 255, 255, 0)',
+      // Danishgah-e-Ramzan brand (decided 14 Nov 2026), shared with the staff app: deep green,
+      // gold for ornament and highlights (goldText where gold must be read), ivory surfaces.
       primary: {
-        main: '#1E1033',
-        light: '#2E1065',
-        dark: '#14082B',
+        main: '#0F4D3A',
+        light: '#1D6B52',
+        dark: '#0A3528',
+        contrastText: '#FFFFFF',
       },
+      // The readable gold: focus rings and the odd highlight button. White text on it is 5.6:1.
       secondary: {
-        main: '#03A9F4',
-        light: '#94CCFF',
-        dark: '#0282BD',
+        main: '#8A6416',
+        light: '#B8892B',
+        dark: '#6B4D0F',
+        contrastText: '#FFFFFF',
+      },
+      brand: {
+        green: '#0F4D3A',
+        gold: '#B8892B',
+        goldText: '#8A6416',
+        goldSoft: 'rgba(184, 137, 43, 0.12)',
+        ivory: '#FAF6EC',
       },
       grey: {
         50: '#FFFFFF',
@@ -25,29 +37,30 @@ export const colorSchemes = {
         900: '#808080',
       },
       background: {
-        default: '#FFFFFF',
-        paper: '#FAFAFA',
+        default: '#FAF6EC',
+        paper: '#FFFFFF',
       },
       common: { black: '#000000', white: '#FFFFFF' },
-      stroke: '#EEEEEE',
+      stroke: '#E6DECB',
       text: {
-        primary: '#333333',
-        secondary: '#78828A',
+        primary: '#1E2B25',
+        secondary: '#55635B',
       },
       general_main: {
         1: '#FDFDFD',
-        2: '#F3E8FF',
-        3: '#FAF5FF',
+        2: '#E7F0EB',
+        3: '#F3F7F4',
       },
       error: {
         main: '#D32F2F',
         light: '#EF5350',
         dark: '#C62828',
       },
+      // Brighter and yellower than the primary green, so a success never looks like a button.
       success: {
-        main: '#2E7D32',
-        light: '#4CAF50',
-        dark: '#1B5E20',
+        main: '#33802A',
+        light: '#5DAA4F',
+        dark: '#25611E',
       },
       warning: {
         main: '#ED6C02',
@@ -72,14 +85,23 @@ export const colorSchemes = {
     palette: {
       transparent: 'rgba(0, 0, 0, 0)',
       primary: {
-        main: '#3B0764',
-        light: '#581C87',
-        dark: '#1E1033',
+        main: '#4CAF86',
+        light: '#7CC9A8',
+        dark: '#0F4D3A',
+        contrastText: '#08130E',
       },
       secondary: {
-        main: '#03A9F4',
-        light: '#94CCFF',
-        dark: '#0282BD',
+        main: '#D4AE5F',
+        light: '#E2C583',
+        dark: '#B8892B',
+        contrastText: '#08130E',
+      },
+      brand: {
+        green: '#0F4D3A',
+        gold: '#D4AE5F',
+        goldText: '#E2C583',
+        goldSoft: 'rgba(212, 174, 95, 0.14)',
+        ivory: '#FAF6EC',
       },
       grey: {
         50: '#101010',
@@ -94,19 +116,19 @@ export const colorSchemes = {
         900: '#696969',
       },
       background: {
-        default: '#0F0F0F',
-        paper: '#0F0F0F',
+        default: '#08130E',
+        paper: '#0F2119',
       },
       common: { black: '#000000', white: '#FFFFFF' },
-      stroke: '#323232',
+      stroke: '#1E3A2D',
       text: {
-        primary: '#E5E6EB',
-        secondary: '#B0B3B8',
+        primary: '#E8EFEA',
+        secondary: '#A0B3A8',
       },
       general_main: {
         1: '#1A1A1A',
-        2: '#2D1F3D',
-        3: '#1F1A2B',
+        2: '#123326',
+        3: '#0B1A13',
       },
       error: {
         main: '#D32F2F',
@@ -114,9 +136,9 @@ export const colorSchemes = {
         dark: '#C62828',
       },
       success: {
-        main: '#2E7D32',
-        light: '#4CAF50',
-        dark: '#1B5E20',
+        main: '#6CC05A',
+        light: '#8FD37F',
+        dark: '#33802A',
       },
       warning: {
         main: '#ED6C02',

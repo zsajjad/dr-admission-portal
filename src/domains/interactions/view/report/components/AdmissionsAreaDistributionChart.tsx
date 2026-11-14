@@ -182,4 +182,3 @@ export function AdmissionsAreaDistributionChart({ data }: AdmissionsAreaDistribu
     </ChartCard>
   );
 }
-

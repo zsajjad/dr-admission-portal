@@ -62,7 +62,7 @@ export const aclControllerCreate = (createAclRequestDto: CreateAclRequestDto, si
 
 export const getAclControllerCreateMutationKey = () => ['aclControllerCreate'] as const;
 
-export const getAclControllerCreateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAclControllerCreateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof aclControllerCreate>>,
     TError,
@@ -96,11 +96,11 @@ export const getAclControllerCreateMutationOptions = <TError = unknown, TContext
 
 export type AclControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof aclControllerCreate>>>;
 export type AclControllerCreateMutationBody = CreateAclRequestDto;
-export type AclControllerCreateMutationError = unknown;
+export type AclControllerCreateMutationError = void;
 export type AclControllerCreateMutationVariables = { data: CreateAclRequestDto };
 
 /** @summary Create a new application constant */
-export const useAclControllerCreate = <TError = unknown, TContext = unknown>(
+export const useAclControllerCreate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof aclControllerCreate>>,
@@ -131,7 +131,7 @@ export const getAclControllerFindAllQueryKey = (params?: AclControllerFindAllPar
 
 export const getAclControllerFindAllQueryOptions = <
   TData = Awaited<ReturnType<typeof aclControllerFindAll>>,
-  TError = ListAclResponseDto,
+  TError = void | ListAclResponseDto,
 >(
   params?: AclControllerFindAllParams,
   options?: { query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof aclControllerFindAll>>, TError, TData>> },
@@ -151,12 +151,12 @@ export const getAclControllerFindAllQueryOptions = <
 };
 
 export type AclControllerFindAllQueryResult = NonNullable<Awaited<ReturnType<typeof aclControllerFindAll>>>;
-export type AclControllerFindAllQueryError = ListAclResponseDto;
+export type AclControllerFindAllQueryError = void | ListAclResponseDto;
 
 /** @summary Get all application constants */
 export function useAclControllerFindAll<
   TData = Awaited<ReturnType<typeof aclControllerFindAll>>,
-  TError = ListAclResponseDto,
+  TError = void | ListAclResponseDto,
 >(
   params: undefined | AclControllerFindAllParams,
   options: {
@@ -175,7 +175,7 @@ export function useAclControllerFindAll<
 /** @summary Get all application constants */
 export function useAclControllerFindAll<
   TData = Awaited<ReturnType<typeof aclControllerFindAll>>,
-  TError = ListAclResponseDto,
+  TError = void | ListAclResponseDto,
 >(
   params?: AclControllerFindAllParams,
   options?: {
@@ -194,7 +194,7 @@ export function useAclControllerFindAll<
 /** @summary Get all application constants */
 export function useAclControllerFindAll<
   TData = Awaited<ReturnType<typeof aclControllerFindAll>>,
-  TError = ListAclResponseDto,
+  TError = void | ListAclResponseDto,
 >(
   params?: AclControllerFindAllParams,
   options?: { query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof aclControllerFindAll>>, TError, TData>> },
@@ -203,7 +203,7 @@ export function useAclControllerFindAll<
 /** @summary Get all application constants */
 export function useAclControllerFindAll<
   TData = Awaited<ReturnType<typeof aclControllerFindAll>>,
-  TError = ListAclResponseDto,
+  TError = void | ListAclResponseDto,
 >(
   params?: AclControllerFindAllParams,
   options?: { query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof aclControllerFindAll>>, TError, TData>> },
@@ -231,7 +231,7 @@ export const getAclControllerFindOneQueryKey = (key: string) => {
 
 export const getAclControllerFindOneQueryOptions = <
   TData = Awaited<ReturnType<typeof aclControllerFindOne>>,
-  TError = unknown,
+  TError = void,
 >(
   key: string,
   options?: { query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof aclControllerFindOne>>, TError, TData>> },
@@ -251,10 +251,10 @@ export const getAclControllerFindOneQueryOptions = <
 };
 
 export type AclControllerFindOneQueryResult = NonNullable<Awaited<ReturnType<typeof aclControllerFindOne>>>;
-export type AclControllerFindOneQueryError = unknown;
+export type AclControllerFindOneQueryError = void;
 
 /** @summary Get application constant by key */
-export function useAclControllerFindOne<TData = Awaited<ReturnType<typeof aclControllerFindOne>>, TError = unknown>(
+export function useAclControllerFindOne<TData = Awaited<ReturnType<typeof aclControllerFindOne>>, TError = void>(
   key: string,
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof aclControllerFindOne>>, TError, TData>> &
@@ -270,7 +270,7 @@ export function useAclControllerFindOne<TData = Awaited<ReturnType<typeof aclCon
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /** @summary Get application constant by key */
-export function useAclControllerFindOne<TData = Awaited<ReturnType<typeof aclControllerFindOne>>, TError = unknown>(
+export function useAclControllerFindOne<TData = Awaited<ReturnType<typeof aclControllerFindOne>>, TError = void>(
   key: string,
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof aclControllerFindOne>>, TError, TData>> &
@@ -286,13 +286,13 @@ export function useAclControllerFindOne<TData = Awaited<ReturnType<typeof aclCon
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /** @summary Get application constant by key */
-export function useAclControllerFindOne<TData = Awaited<ReturnType<typeof aclControllerFindOne>>, TError = unknown>(
+export function useAclControllerFindOne<TData = Awaited<ReturnType<typeof aclControllerFindOne>>, TError = void>(
   key: string,
   options?: { query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof aclControllerFindOne>>, TError, TData>> },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /** @summary Get application constant by key */
-export function useAclControllerFindOne<TData = Awaited<ReturnType<typeof aclControllerFindOne>>, TError = unknown>(
+export function useAclControllerFindOne<TData = Awaited<ReturnType<typeof aclControllerFindOne>>, TError = void>(
   key: string,
   options?: { query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof aclControllerFindOne>>, TError, TData>> },
   queryClient?: QueryClient,
@@ -321,7 +321,7 @@ export const aclControllerUpdate = (id: number, updateAclRequestDto: UpdateAclRe
 
 export const getAclControllerUpdateMutationKey = () => ['aclControllerUpdate'] as const;
 
-export const getAclControllerUpdateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAclControllerUpdateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof aclControllerUpdate>>,
     TError,
@@ -355,11 +355,11 @@ export const getAclControllerUpdateMutationOptions = <TError = unknown, TContext
 
 export type AclControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof aclControllerUpdate>>>;
 export type AclControllerUpdateMutationBody = UpdateAclRequestDto;
-export type AclControllerUpdateMutationError = unknown;
+export type AclControllerUpdateMutationError = void;
 export type AclControllerUpdateMutationVariables = { id: number; data: UpdateAclRequestDto };
 
 /** @summary Update an application constant */
-export const useAclControllerUpdate = <TError = unknown, TContext = unknown>(
+export const useAclControllerUpdate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof aclControllerUpdate>>,
@@ -386,7 +386,7 @@ export const aclControllerDeactivate = (id: number, signal?: AbortSignal) => {
 
 export const getAclControllerDeactivateMutationKey = () => ['aclControllerDeactivate'] as const;
 
-export const getAclControllerDeactivateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAclControllerDeactivateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof aclControllerDeactivate>>,
     TError,
@@ -420,11 +420,11 @@ export const getAclControllerDeactivateMutationOptions = <TError = unknown, TCon
 
 export type AclControllerDeactivateMutationResult = NonNullable<Awaited<ReturnType<typeof aclControllerDeactivate>>>;
 
-export type AclControllerDeactivateMutationError = unknown;
+export type AclControllerDeactivateMutationError = void;
 export type AclControllerDeactivateMutationVariables = { id: number };
 
 /** @summary Deactivate an application constant */
-export const useAclControllerDeactivate = <TError = unknown, TContext = unknown>(
+export const useAclControllerDeactivate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof aclControllerDeactivate>>,
@@ -451,7 +451,7 @@ export const aclControllerActivate = (id: number, signal?: AbortSignal) => {
 
 export const getAclControllerActivateMutationKey = () => ['aclControllerActivate'] as const;
 
-export const getAclControllerActivateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAclControllerActivateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof aclControllerActivate>>,
     TError,
@@ -485,11 +485,11 @@ export const getAclControllerActivateMutationOptions = <TError = unknown, TConte
 
 export type AclControllerActivateMutationResult = NonNullable<Awaited<ReturnType<typeof aclControllerActivate>>>;
 
-export type AclControllerActivateMutationError = unknown;
+export type AclControllerActivateMutationError = void;
 export type AclControllerActivateMutationVariables = { id: number };
 
 /** @summary Activate an application constant */
-export const useAclControllerActivate = <TError = unknown, TContext = unknown>(
+export const useAclControllerActivate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof aclControllerActivate>>,

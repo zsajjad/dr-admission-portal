@@ -35,3 +35,18 @@ export async function downloadFromResponse(response: Response, filename: string)
   const blob = await response.blob();
   downloadBlob(blob, filename);
 }
+
+/**
+ * Downloads a file from a link, such as a short-lived signed storage URL.
+ * The server sends it as an attachment, so the page stays where it is.
+ * @param url - The download link
+ * @param filename - The file name to suggest (used when the link is on this site)
+ */
+export function downloadFromUrl(url: string, filename?: string): void {
+  const a = document.createElement('a');
+  a.href = url;
+  if (filename) a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}

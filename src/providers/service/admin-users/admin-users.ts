@@ -60,7 +60,7 @@ export const adminUsersControllerCreate = (createAdminUserDto: CreateAdminUserDt
 
 export const getAdminUsersControllerCreateMutationKey = () => ['adminUsersControllerCreate'] as const;
 
-export const getAdminUsersControllerCreateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAdminUsersControllerCreateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof adminUsersControllerCreate>>,
     TError,
@@ -96,10 +96,10 @@ export type AdminUsersControllerCreateMutationResult = NonNullable<
   Awaited<ReturnType<typeof adminUsersControllerCreate>>
 >;
 export type AdminUsersControllerCreateMutationBody = CreateAdminUserDto;
-export type AdminUsersControllerCreateMutationError = unknown;
+export type AdminUsersControllerCreateMutationError = void;
 export type AdminUsersControllerCreateMutationVariables = { data: CreateAdminUserDto };
 
-export const useAdminUsersControllerCreate = <TError = unknown, TContext = unknown>(
+export const useAdminUsersControllerCreate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof adminUsersControllerCreate>>,
@@ -127,7 +127,7 @@ export const getAdminUsersControllerFindAllQueryKey = (params?: AdminUsersContro
 
 export const getAdminUsersControllerFindAllQueryOptions = <
   TData = Awaited<ReturnType<typeof adminUsersControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: AdminUsersControllerFindAllParams,
   options?: {
@@ -151,11 +151,11 @@ export const getAdminUsersControllerFindAllQueryOptions = <
 export type AdminUsersControllerFindAllQueryResult = NonNullable<
   Awaited<ReturnType<typeof adminUsersControllerFindAll>>
 >;
-export type AdminUsersControllerFindAllQueryError = unknown;
+export type AdminUsersControllerFindAllQueryError = void;
 
 export function useAdminUsersControllerFindAll<
   TData = Awaited<ReturnType<typeof adminUsersControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params: undefined | AdminUsersControllerFindAllParams,
   options: {
@@ -173,7 +173,7 @@ export function useAdminUsersControllerFindAll<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminUsersControllerFindAll<
   TData = Awaited<ReturnType<typeof adminUsersControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: AdminUsersControllerFindAllParams,
   options?: {
@@ -191,7 +191,7 @@ export function useAdminUsersControllerFindAll<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminUsersControllerFindAll<
   TData = Awaited<ReturnType<typeof adminUsersControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: AdminUsersControllerFindAllParams,
   options?: {
@@ -201,7 +201,7 @@ export function useAdminUsersControllerFindAll<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminUsersControllerFindAll<
   TData = Awaited<ReturnType<typeof adminUsersControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: AdminUsersControllerFindAllParams,
   options?: {
@@ -228,7 +228,7 @@ export const getAdminUsersControllerFindOneQueryKey = (id: string) => {
 
 export const getAdminUsersControllerFindOneQueryOptions = <
   TData = Awaited<ReturnType<typeof adminUsersControllerFindOne>>,
-  TError = unknown,
+  TError = void,
 >(
   id: string,
   options?: {
@@ -252,11 +252,11 @@ export const getAdminUsersControllerFindOneQueryOptions = <
 export type AdminUsersControllerFindOneQueryResult = NonNullable<
   Awaited<ReturnType<typeof adminUsersControllerFindOne>>
 >;
-export type AdminUsersControllerFindOneQueryError = unknown;
+export type AdminUsersControllerFindOneQueryError = void;
 
 export function useAdminUsersControllerFindOne<
   TData = Awaited<ReturnType<typeof adminUsersControllerFindOne>>,
-  TError = unknown,
+  TError = void,
 >(
   id: string,
   options: {
@@ -274,7 +274,7 @@ export function useAdminUsersControllerFindOne<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminUsersControllerFindOne<
   TData = Awaited<ReturnType<typeof adminUsersControllerFindOne>>,
-  TError = unknown,
+  TError = void,
 >(
   id: string,
   options?: {
@@ -292,7 +292,7 @@ export function useAdminUsersControllerFindOne<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminUsersControllerFindOne<
   TData = Awaited<ReturnType<typeof adminUsersControllerFindOne>>,
-  TError = unknown,
+  TError = void,
 >(
   id: string,
   options?: {
@@ -302,7 +302,7 @@ export function useAdminUsersControllerFindOne<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminUsersControllerFindOne<
   TData = Awaited<ReturnType<typeof adminUsersControllerFindOne>>,
-  TError = unknown,
+  TError = void,
 >(
   id: string,
   options?: {
@@ -335,7 +335,7 @@ export const adminUsersControllerUpdate = (
 
 export const getAdminUsersControllerUpdateMutationKey = () => ['adminUsersControllerUpdate'] as const;
 
-export const getAdminUsersControllerUpdateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAdminUsersControllerUpdateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof adminUsersControllerUpdate>>,
     TError,
@@ -371,10 +371,10 @@ export type AdminUsersControllerUpdateMutationResult = NonNullable<
   Awaited<ReturnType<typeof adminUsersControllerUpdate>>
 >;
 export type AdminUsersControllerUpdateMutationBody = UpdateAdminUserDto;
-export type AdminUsersControllerUpdateMutationError = unknown;
+export type AdminUsersControllerUpdateMutationError = void;
 export type AdminUsersControllerUpdateMutationVariables = { id: string; data: UpdateAdminUserDto };
 
-export const useAdminUsersControllerUpdate = <TError = unknown, TContext = unknown>(
+export const useAdminUsersControllerUpdate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof adminUsersControllerUpdate>>,
@@ -398,7 +398,7 @@ export const adminUsersControllerDeactivate = (id: string, signal?: AbortSignal)
 
 export const getAdminUsersControllerDeactivateMutationKey = () => ['adminUsersControllerDeactivate'] as const;
 
-export const getAdminUsersControllerDeactivateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAdminUsersControllerDeactivateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof adminUsersControllerDeactivate>>,
     TError,
@@ -434,10 +434,10 @@ export type AdminUsersControllerDeactivateMutationResult = NonNullable<
   Awaited<ReturnType<typeof adminUsersControllerDeactivate>>
 >;
 
-export type AdminUsersControllerDeactivateMutationError = unknown;
+export type AdminUsersControllerDeactivateMutationError = void;
 export type AdminUsersControllerDeactivateMutationVariables = { id: string };
 
-export const useAdminUsersControllerDeactivate = <TError = unknown, TContext = unknown>(
+export const useAdminUsersControllerDeactivate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof adminUsersControllerDeactivate>>,
@@ -461,7 +461,7 @@ export const adminUsersControllerActivate = (id: string, signal?: AbortSignal) =
 
 export const getAdminUsersControllerActivateMutationKey = () => ['adminUsersControllerActivate'] as const;
 
-export const getAdminUsersControllerActivateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAdminUsersControllerActivateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof adminUsersControllerActivate>>,
     TError,
@@ -497,10 +497,10 @@ export type AdminUsersControllerActivateMutationResult = NonNullable<
   Awaited<ReturnType<typeof adminUsersControllerActivate>>
 >;
 
-export type AdminUsersControllerActivateMutationError = unknown;
+export type AdminUsersControllerActivateMutationError = void;
 export type AdminUsersControllerActivateMutationVariables = { id: string };
 
-export const useAdminUsersControllerActivate = <TError = unknown, TContext = unknown>(
+export const useAdminUsersControllerActivate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof adminUsersControllerActivate>>,
@@ -524,7 +524,7 @@ export const adminUsersControllerReinvite = (id: string, signal?: AbortSignal) =
 
 export const getAdminUsersControllerReinviteMutationKey = () => ['adminUsersControllerReinvite'] as const;
 
-export const getAdminUsersControllerReinviteMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAdminUsersControllerReinviteMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof adminUsersControllerReinvite>>,
     TError,
@@ -560,10 +560,10 @@ export type AdminUsersControllerReinviteMutationResult = NonNullable<
   Awaited<ReturnType<typeof adminUsersControllerReinvite>>
 >;
 
-export type AdminUsersControllerReinviteMutationError = unknown;
+export type AdminUsersControllerReinviteMutationError = void;
 export type AdminUsersControllerReinviteMutationVariables = { id: string };
 
-export const useAdminUsersControllerReinvite = <TError = unknown, TContext = unknown>(
+export const useAdminUsersControllerReinvite = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof adminUsersControllerReinvite>>,

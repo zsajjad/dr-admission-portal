@@ -61,7 +61,7 @@ export const areaControllerCreate = (createAreaDto: CreateAreaDto, signal?: Abor
 
 export const getAreaControllerCreateMutationKey = () => ['areaControllerCreate'] as const;
 
-export const getAreaControllerCreateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAreaControllerCreateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof areaControllerCreate>>,
     TError,
@@ -95,10 +95,10 @@ export const getAreaControllerCreateMutationOptions = <TError = unknown, TContex
 
 export type AreaControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof areaControllerCreate>>>;
 export type AreaControllerCreateMutationBody = CreateAreaDto;
-export type AreaControllerCreateMutationError = unknown;
+export type AreaControllerCreateMutationError = void;
 export type AreaControllerCreateMutationVariables = { data: CreateAreaDto };
 
-export const useAreaControllerCreate = <TError = unknown, TContext = unknown>(
+export const useAreaControllerCreate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof areaControllerCreate>>,
@@ -295,7 +295,7 @@ export const areaControllerUpdate = (id: string, updateAreaDto: UpdateAreaDto, s
 
 export const getAreaControllerUpdateMutationKey = () => ['areaControllerUpdate'] as const;
 
-export const getAreaControllerUpdateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAreaControllerUpdateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof areaControllerUpdate>>,
     TError,
@@ -329,10 +329,10 @@ export const getAreaControllerUpdateMutationOptions = <TError = unknown, TContex
 
 export type AreaControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof areaControllerUpdate>>>;
 export type AreaControllerUpdateMutationBody = UpdateAreaDto;
-export type AreaControllerUpdateMutationError = unknown;
+export type AreaControllerUpdateMutationError = void;
 export type AreaControllerUpdateMutationVariables = { id: string; data: UpdateAreaDto };
 
-export const useAreaControllerUpdate = <TError = unknown, TContext = unknown>(
+export const useAreaControllerUpdate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof areaControllerUpdate>>,
@@ -356,7 +356,7 @@ export const areaControllerRemove = (id: string, signal?: AbortSignal) => {
 
 export const getAreaControllerRemoveMutationKey = () => ['areaControllerRemove'] as const;
 
-export const getAreaControllerRemoveMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAreaControllerRemoveMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof areaControllerRemove>>,
     TError,
@@ -390,10 +390,10 @@ export const getAreaControllerRemoveMutationOptions = <TError = unknown, TContex
 
 export type AreaControllerRemoveMutationResult = NonNullable<Awaited<ReturnType<typeof areaControllerRemove>>>;
 
-export type AreaControllerRemoveMutationError = unknown;
+export type AreaControllerRemoveMutationError = void;
 export type AreaControllerRemoveMutationVariables = { id: string };
 
-export const useAreaControllerRemove = <TError = unknown, TContext = unknown>(
+export const useAreaControllerRemove = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof areaControllerRemove>>,
@@ -417,7 +417,7 @@ export const areaControllerDeactivate = (id: string, signal?: AbortSignal) => {
 
 export const getAreaControllerDeactivateMutationKey = () => ['areaControllerDeactivate'] as const;
 
-export const getAreaControllerDeactivateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAreaControllerDeactivateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof areaControllerDeactivate>>,
     TError,
@@ -451,10 +451,10 @@ export const getAreaControllerDeactivateMutationOptions = <TError = unknown, TCo
 
 export type AreaControllerDeactivateMutationResult = NonNullable<Awaited<ReturnType<typeof areaControllerDeactivate>>>;
 
-export type AreaControllerDeactivateMutationError = unknown;
+export type AreaControllerDeactivateMutationError = void;
 export type AreaControllerDeactivateMutationVariables = { id: string };
 
-export const useAreaControllerDeactivate = <TError = unknown, TContext = unknown>(
+export const useAreaControllerDeactivate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof areaControllerDeactivate>>,
@@ -478,7 +478,7 @@ export const areaControllerActivate = (id: string, signal?: AbortSignal) => {
 
 export const getAreaControllerActivateMutationKey = () => ['areaControllerActivate'] as const;
 
-export const getAreaControllerActivateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAreaControllerActivateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof areaControllerActivate>>,
     TError,
@@ -512,10 +512,10 @@ export const getAreaControllerActivateMutationOptions = <TError = unknown, TCont
 
 export type AreaControllerActivateMutationResult = NonNullable<Awaited<ReturnType<typeof areaControllerActivate>>>;
 
-export type AreaControllerActivateMutationError = unknown;
+export type AreaControllerActivateMutationError = void;
 export type AreaControllerActivateMutationVariables = { id: string };
 
-export const useAreaControllerActivate = <TError = unknown, TContext = unknown>(
+export const useAreaControllerActivate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof areaControllerActivate>>,

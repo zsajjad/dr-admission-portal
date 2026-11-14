@@ -2,8 +2,8 @@
  * Custom hooks for printing mutations
  *
  * These hooks handle file download for printing endpoints.
- * The orval-generated hooks return void since the endpoints return files, not JSON.
- * These wrappers handle the actual blob download.
+ * Generating builds the file in a background job and downloads it from a short-lived link
+ * (runPrintingJob); design previews are small and still come back directly as files.
  */
 import { useMutation } from '@tanstack/react-query';
 import type { UseMutationOptions, UseMutationResult } from '@tanstack/react-query';
@@ -15,7 +15,7 @@ import {
   VerificationSlipFilterDto,
 } from '@/providers/service/app.schemas';
 
-import { fetchAndDownloadFile, FileDownloadResponse } from '@/services/printing';
+import { fetchAndDownloadFile, FileDownloadResponse, runPrintingJob } from '@/services/printing';
 
 // ========================================
 // ID Cards
@@ -30,7 +30,7 @@ export function useGenerateIdCards(options?: {
   return useMutation({
     mutationKey: ['printingControllerGenerateIdCards'],
     mutationFn: async ({ data }) => {
-      return fetchAndDownloadFile('/printing/id-cards/generate', 'POST', data, 'id-cards', 'pdf');
+      return runPrintingJob('id-cards', data);
     },
     ...options?.mutation,
   });
@@ -61,7 +61,7 @@ export function useGenerateSittingSlips(options?: {
   return useMutation({
     mutationKey: ['printingControllerGenerateSittingSlips'],
     mutationFn: async ({ data }) => {
-      return fetchAndDownloadFile('/printing/sitting-slips/generate', 'POST', data, 'sitting-slips', 'pdf');
+      return runPrintingJob('sitting-slips', data);
     },
     ...options?.mutation,
   });
@@ -98,7 +98,7 @@ export function useGenerateAttendanceSheets(options?: {
   return useMutation({
     mutationKey: ['printingControllerGenerateAttendanceSheets'],
     mutationFn: async ({ data }) => {
-      return fetchAndDownloadFile('/printing/attendance-sheets/generate', 'POST', data, 'attendance-sheets', 'xlsx');
+      return runPrintingJob('attendance-sheets', data);
     },
     ...options?.mutation,
   });
@@ -117,7 +117,7 @@ export function useGenerateVerificationSlips(options?: {
   return useMutation({
     mutationKey: ['printingControllerGenerateVerificationSlips'],
     mutationFn: async ({ data }) => {
-      return fetchAndDownloadFile('/printing/verification-slips/generate', 'POST', data, 'verification-slips', 'pdf');
+      return runPrintingJob('verification-slips', data);
     },
     ...options?.mutation,
   });

@@ -37,7 +37,7 @@ export const getAdminAuthPasswordControllerChangePasswordMutationKey = () =>
   ['adminAuthPasswordControllerChangePassword'] as const;
 
 export const getAdminAuthPasswordControllerChangePasswordMutationOptions = <
-  TError = unknown,
+  TError = void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -75,10 +75,10 @@ export type AdminAuthPasswordControllerChangePasswordMutationResult = NonNullabl
   Awaited<ReturnType<typeof adminAuthPasswordControllerChangePassword>>
 >;
 export type AdminAuthPasswordControllerChangePasswordMutationBody = AdminChangePasswordRequestDto;
-export type AdminAuthPasswordControllerChangePasswordMutationError = unknown;
+export type AdminAuthPasswordControllerChangePasswordMutationError = void;
 export type AdminAuthPasswordControllerChangePasswordMutationVariables = { data: AdminChangePasswordRequestDto };
 
-export const useAdminAuthPasswordControllerChangePassword = <TError = unknown, TContext = unknown>(
+export const useAdminAuthPasswordControllerChangePassword = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof adminAuthPasswordControllerChangePassword>>,
@@ -265,7 +265,7 @@ export const getAdminAuthPasswordControllerCreatePasswordMutationKey = () =>
   ['adminAuthPasswordControllerCreatePassword'] as const;
 
 export const getAdminAuthPasswordControllerCreatePasswordMutationOptions = <
-  TError = unknown,
+  TError = void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -303,10 +303,10 @@ export type AdminAuthPasswordControllerCreatePasswordMutationResult = NonNullabl
   Awaited<ReturnType<typeof adminAuthPasswordControllerCreatePassword>>
 >;
 export type AdminAuthPasswordControllerCreatePasswordMutationBody = AdminCreatePasswordRequestDto;
-export type AdminAuthPasswordControllerCreatePasswordMutationError = unknown;
+export type AdminAuthPasswordControllerCreatePasswordMutationError = void;
 export type AdminAuthPasswordControllerCreatePasswordMutationVariables = { data: AdminCreatePasswordRequestDto };
 
-export const useAdminAuthPasswordControllerCreatePassword = <TError = unknown, TContext = unknown>(
+export const useAdminAuthPasswordControllerCreatePassword = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof adminAuthPasswordControllerCreatePassword>>,

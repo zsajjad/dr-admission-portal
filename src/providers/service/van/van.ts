@@ -61,7 +61,7 @@ export const vanControllerCreate = (createVanDto: CreateVanDto, signal?: AbortSi
 
 export const getVanControllerCreateMutationKey = () => ['vanControllerCreate'] as const;
 
-export const getVanControllerCreateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getVanControllerCreateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof vanControllerCreate>>,
     TError,
@@ -95,10 +95,10 @@ export const getVanControllerCreateMutationOptions = <TError = unknown, TContext
 
 export type VanControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof vanControllerCreate>>>;
 export type VanControllerCreateMutationBody = CreateVanDto;
-export type VanControllerCreateMutationError = unknown;
+export type VanControllerCreateMutationError = void;
 export type VanControllerCreateMutationVariables = { data: CreateVanDto };
 
-export const useVanControllerCreate = <TError = unknown, TContext = unknown>(
+export const useVanControllerCreate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof vanControllerCreate>>,
@@ -295,7 +295,7 @@ export const vanControllerUpdate = (id: string, updateVanDto: UpdateVanDto, sign
 
 export const getVanControllerUpdateMutationKey = () => ['vanControllerUpdate'] as const;
 
-export const getVanControllerUpdateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getVanControllerUpdateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof vanControllerUpdate>>,
     TError,
@@ -329,10 +329,10 @@ export const getVanControllerUpdateMutationOptions = <TError = unknown, TContext
 
 export type VanControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof vanControllerUpdate>>>;
 export type VanControllerUpdateMutationBody = UpdateVanDto;
-export type VanControllerUpdateMutationError = unknown;
+export type VanControllerUpdateMutationError = void;
 export type VanControllerUpdateMutationVariables = { id: string; data: UpdateVanDto };
 
-export const useVanControllerUpdate = <TError = unknown, TContext = unknown>(
+export const useVanControllerUpdate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof vanControllerUpdate>>,
@@ -356,7 +356,7 @@ export const vanControllerRemove = (id: string, signal?: AbortSignal) => {
 
 export const getVanControllerRemoveMutationKey = () => ['vanControllerRemove'] as const;
 
-export const getVanControllerRemoveMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getVanControllerRemoveMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof vanControllerRemove>>,
     TError,
@@ -390,10 +390,10 @@ export const getVanControllerRemoveMutationOptions = <TError = unknown, TContext
 
 export type VanControllerRemoveMutationResult = NonNullable<Awaited<ReturnType<typeof vanControllerRemove>>>;
 
-export type VanControllerRemoveMutationError = unknown;
+export type VanControllerRemoveMutationError = void;
 export type VanControllerRemoveMutationVariables = { id: string };
 
-export const useVanControllerRemove = <TError = unknown, TContext = unknown>(
+export const useVanControllerRemove = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof vanControllerRemove>>,
@@ -417,7 +417,7 @@ export const vanControllerDeactivate = (id: string, signal?: AbortSignal) => {
 
 export const getVanControllerDeactivateMutationKey = () => ['vanControllerDeactivate'] as const;
 
-export const getVanControllerDeactivateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getVanControllerDeactivateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof vanControllerDeactivate>>,
     TError,
@@ -451,10 +451,10 @@ export const getVanControllerDeactivateMutationOptions = <TError = unknown, TCon
 
 export type VanControllerDeactivateMutationResult = NonNullable<Awaited<ReturnType<typeof vanControllerDeactivate>>>;
 
-export type VanControllerDeactivateMutationError = unknown;
+export type VanControllerDeactivateMutationError = void;
 export type VanControllerDeactivateMutationVariables = { id: string };
 
-export const useVanControllerDeactivate = <TError = unknown, TContext = unknown>(
+export const useVanControllerDeactivate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof vanControllerDeactivate>>,
@@ -478,7 +478,7 @@ export const vanControllerActivate = (id: string, signal?: AbortSignal) => {
 
 export const getVanControllerActivateMutationKey = () => ['vanControllerActivate'] as const;
 
-export const getVanControllerActivateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getVanControllerActivateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof vanControllerActivate>>,
     TError,
@@ -512,10 +512,10 @@ export const getVanControllerActivateMutationOptions = <TError = unknown, TConte
 
 export type VanControllerActivateMutationResult = NonNullable<Awaited<ReturnType<typeof vanControllerActivate>>>;
 
-export type VanControllerActivateMutationError = unknown;
+export type VanControllerActivateMutationError = void;
 export type VanControllerActivateMutationVariables = { id: string };
 
-export const useVanControllerActivate = <TError = unknown, TContext = unknown>(
+export const useVanControllerActivate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof vanControllerActivate>>,

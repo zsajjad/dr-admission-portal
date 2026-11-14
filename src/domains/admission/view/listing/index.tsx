@@ -7,6 +7,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import {
   CheckCircle as PaidIcon,
   FactCheck as VerifyIcon,
+  Person as ProfileIcon,
   Print as PrintIcon,
   QrCode as QrCodeIcon,
   RemoveCircle as UnpaidIcon,
@@ -221,6 +222,7 @@ export function AdmissionListing() {
     printSlip: useFormattedMessage(messages.printSlip),
     printing: useFormattedMessage(messages.printing),
     verify: useFormattedMessage(messages.verify),
+    studentProfile: useFormattedMessage(messages.studentProfile),
   };
 
   const { filters, setFilter, handleSortModelChange, handleFilterModelChange, handlePaginationModelChange } =
@@ -565,6 +567,17 @@ export function AdmissionListing() {
                   {isPrintingSlip ? <CircularProgress size={18} /> : <PrintIcon fontSize="small" />}
                 </IconButton>
               </Tooltip>
+              {admission.student?.id && (
+                <Tooltip title={formattedMessages.studentProfile}>
+                  <IconButton
+                    size="small"
+                    color="primary"
+                    onClick={stopPropagation(() => route({ url: routes.students.profile(admission.student.id) }))}
+                  >
+                    <ProfileIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              )}
               <RowActions onEdit={() => route({ url: routes.admission.edit(admission?.id) })} />
             </Box>
           );
@@ -592,6 +605,7 @@ export function AdmissionListing() {
       formattedMessages.markAsUnpaid,
       formattedMessages.printVerificationSlip,
       formattedMessages.verify,
+      formattedMessages.studentProfile,
       route,
       handleOpenDrawer,
       handlePrintQR,

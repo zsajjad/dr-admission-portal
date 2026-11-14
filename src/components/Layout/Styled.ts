@@ -1,15 +1,19 @@
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 
-export const Container = styled(Box)({
+export const Container = styled(Box)(({ theme }) => ({
   display: 'flex',
+  flexDirection: 'column',
   height: '100vh',
-  background: `
-    linear-gradient(135deg, rgba(99, 102, 241, 0.03) 0%, rgba(139, 92, 246, 0.02) 50%, rgba(236, 72, 153, 0.03) 100%),
-    linear-gradient(225deg, rgba(59, 130, 246, 0.04) 0%, transparent 50%),
-    linear-gradient(315deg, rgba(16, 185, 129, 0.02) 0%, transparent 40%)
-  `,
-  backgroundColor: '#f8fafc',
+  // The ivory page; cards sit on it in white.
+  backgroundColor: theme.palette.background.default,
+}));
+
+/** Everything under the top bar: the side nav and the page. */
+export const Body = styled(Box)({
+  display: 'flex',
+  flex: '1 1 auto',
+  minHeight: 0,
 });
 
 export const ContentContainer = styled(Box)(({ theme }) => ({
@@ -25,8 +29,7 @@ export const ContentContainer = styled(Box)(({ theme }) => ({
 
 export const Content = styled(Box)(() => ({
   height: '100%',
-  minHeight: 'calc(100vh - 64px)',
   flex: 1,
-  padding: '16px 24px 24px 24px',
+  padding: '24px 24px 24px 24px',
   overflow: 'auto',
 }));

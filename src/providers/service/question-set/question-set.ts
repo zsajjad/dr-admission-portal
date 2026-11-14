@@ -61,7 +61,7 @@ export const questionSetControllerCreate = (createQuestionSetDto: CreateQuestion
 
 export const getQuestionSetControllerCreateMutationKey = () => ['questionSetControllerCreate'] as const;
 
-export const getQuestionSetControllerCreateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getQuestionSetControllerCreateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof questionSetControllerCreate>>,
     TError,
@@ -97,10 +97,10 @@ export type QuestionSetControllerCreateMutationResult = NonNullable<
   Awaited<ReturnType<typeof questionSetControllerCreate>>
 >;
 export type QuestionSetControllerCreateMutationBody = CreateQuestionSetDto;
-export type QuestionSetControllerCreateMutationError = unknown;
+export type QuestionSetControllerCreateMutationError = void;
 export type QuestionSetControllerCreateMutationVariables = { data: CreateQuestionSetDto };
 
-export const useQuestionSetControllerCreate = <TError = unknown, TContext = unknown>(
+export const useQuestionSetControllerCreate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof questionSetControllerCreate>>,
@@ -345,7 +345,7 @@ export const questionSetControllerUpdate = (
 
 export const getQuestionSetControllerUpdateMutationKey = () => ['questionSetControllerUpdate'] as const;
 
-export const getQuestionSetControllerUpdateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getQuestionSetControllerUpdateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof questionSetControllerUpdate>>,
     TError,
@@ -381,10 +381,10 @@ export type QuestionSetControllerUpdateMutationResult = NonNullable<
   Awaited<ReturnType<typeof questionSetControllerUpdate>>
 >;
 export type QuestionSetControllerUpdateMutationBody = UpdateQuestionSetDto;
-export type QuestionSetControllerUpdateMutationError = unknown;
+export type QuestionSetControllerUpdateMutationError = void;
 export type QuestionSetControllerUpdateMutationVariables = { id: string; data: UpdateQuestionSetDto };
 
-export const useQuestionSetControllerUpdate = <TError = unknown, TContext = unknown>(
+export const useQuestionSetControllerUpdate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof questionSetControllerUpdate>>,
@@ -408,7 +408,7 @@ export const questionSetControllerRemove = (id: string, signal?: AbortSignal) =>
 
 export const getQuestionSetControllerRemoveMutationKey = () => ['questionSetControllerRemove'] as const;
 
-export const getQuestionSetControllerRemoveMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getQuestionSetControllerRemoveMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof questionSetControllerRemove>>,
     TError,
@@ -444,10 +444,10 @@ export type QuestionSetControllerRemoveMutationResult = NonNullable<
   Awaited<ReturnType<typeof questionSetControllerRemove>>
 >;
 
-export type QuestionSetControllerRemoveMutationError = unknown;
+export type QuestionSetControllerRemoveMutationError = void;
 export type QuestionSetControllerRemoveMutationVariables = { id: string };
 
-export const useQuestionSetControllerRemove = <TError = unknown, TContext = unknown>(
+export const useQuestionSetControllerRemove = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof questionSetControllerRemove>>,
@@ -471,7 +471,7 @@ export const questionSetControllerDeactivate = (id: string, signal?: AbortSignal
 
 export const getQuestionSetControllerDeactivateMutationKey = () => ['questionSetControllerDeactivate'] as const;
 
-export const getQuestionSetControllerDeactivateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getQuestionSetControllerDeactivateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof questionSetControllerDeactivate>>,
     TError,
@@ -507,10 +507,10 @@ export type QuestionSetControllerDeactivateMutationResult = NonNullable<
   Awaited<ReturnType<typeof questionSetControllerDeactivate>>
 >;
 
-export type QuestionSetControllerDeactivateMutationError = unknown;
+export type QuestionSetControllerDeactivateMutationError = void;
 export type QuestionSetControllerDeactivateMutationVariables = { id: string };
 
-export const useQuestionSetControllerDeactivate = <TError = unknown, TContext = unknown>(
+export const useQuestionSetControllerDeactivate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof questionSetControllerDeactivate>>,
@@ -534,7 +534,7 @@ export const questionSetControllerActivate = (id: string, signal?: AbortSignal) 
 
 export const getQuestionSetControllerActivateMutationKey = () => ['questionSetControllerActivate'] as const;
 
-export const getQuestionSetControllerActivateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getQuestionSetControllerActivateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof questionSetControllerActivate>>,
     TError,
@@ -570,10 +570,10 @@ export type QuestionSetControllerActivateMutationResult = NonNullable<
   Awaited<ReturnType<typeof questionSetControllerActivate>>
 >;
 
-export type QuestionSetControllerActivateMutationError = unknown;
+export type QuestionSetControllerActivateMutationError = void;
 export type QuestionSetControllerActivateMutationVariables = { id: string };
 
-export const useQuestionSetControllerActivate = <TError = unknown, TContext = unknown>(
+export const useQuestionSetControllerActivate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof questionSetControllerActivate>>,

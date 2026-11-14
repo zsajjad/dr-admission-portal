@@ -148,4 +148,8 @@ export default defineMessages({
     id: `${scope}.verify`,
     defaultMessage: 'Verify',
   },
+  studentProfile: {
+    id: `${scope}.studentProfile`,
+    defaultMessage: 'Student profile',
+  },
 });

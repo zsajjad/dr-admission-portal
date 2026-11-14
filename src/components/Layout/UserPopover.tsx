@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 
+import { GlobeIcon } from '@phosphor-icons/react/dist/ssr/Globe';
 import { LockKeyIcon } from '@phosphor-icons/react/dist/ssr/LockKey';
 import { SignOutIcon } from '@phosphor-icons/react/dist/ssr/SignOut';
 
@@ -17,6 +18,7 @@ import Typography from '@mui/material/Typography';
 import { FormattedMessage } from '@/theme/FormattedMessage';
 
 import { useAuthContext } from '@/contexts/AuthContext';
+import { useLocale } from '@/contexts/LocaleContext';
 
 import { routes } from '@/router/routes';
 
@@ -30,6 +32,7 @@ export interface UserPopoverProps {
 
 export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): React.JSX.Element {
   const { user, signOut } = useAuthContext();
+  const { locale, setLocale } = useLocale();
 
   return (
     <Popover
@@ -52,6 +55,17 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
             <LockKeyIcon fontSize="var(--icon-fontSize-md)" />
           </ListItemIcon>
           <FormattedMessage {...messages.changePassword} />
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            setLocale(locale === 'ur' ? 'en' : 'ur');
+            onClose();
+          }}
+        >
+          <ListItemIcon>
+            <GlobeIcon fontSize="var(--icon-fontSize-md)" />
+          </ListItemIcon>
+          {locale === 'ur' ? 'English' : 'اردو'}
         </MenuItem>
         <MenuItem onClick={signOut}>
           <ListItemIcon>

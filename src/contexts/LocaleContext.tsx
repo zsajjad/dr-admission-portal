@@ -1,12 +1,14 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState, ReactNode } from 'react';
 
 interface LocaleContextType {
   locale: string;
   setLocale: (locale: string) => void;
   availableLocales: string[];
 }
+
+const LOCALE_STORAGE_KEY = 'portal.locale';
 
 const LocaleContext = createContext<LocaleContextType | undefined>(undefined);
 
@@ -24,8 +26,19 @@ interface LocaleProviderProps {
 }
 
 export const LocaleProvider: React.FC<LocaleProviderProps> = ({ children, initialLocale = 'en' }) => {
-  const [locale, setLocale] = useState(initialLocale);
+  const [locale, setLocaleState] = useState(initialLocale);
   const availableLocales = ['en', 'ur'];
+
+  // Remember the admin's language on this browser
+  useEffect(() => {
+    const saved = window.localStorage.getItem(LOCALE_STORAGE_KEY);
+    if (saved && saved !== initialLocale && ['en', 'ur'].includes(saved)) setLocaleState(saved);
+  }, [initialLocale]);
+
+  const setLocale = useCallback((next: string) => {
+    setLocaleState(next);
+    window.localStorage.setItem(LOCALE_STORAGE_KEY, next);
+  }, []);
 
   const value: LocaleContextType = {
     locale,

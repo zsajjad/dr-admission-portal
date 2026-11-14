@@ -26,7 +26,7 @@ export function CustomThemeProvider({ children }: ThemeProviderProps): React.JSX
             body: {
               '--MainNav-height': '56px',
               '--MainNav-zIndex': 1000,
-              '--SideNav-width': '72px',
+              '--SideNav-width': '248px',
               '--SideNav-zIndex': 1100,
               '--MobileNav-width': '280px',
               '--MobileNav-zIndex': 1100,

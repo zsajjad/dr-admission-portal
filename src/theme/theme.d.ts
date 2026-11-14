@@ -18,12 +18,23 @@ declare module '@mui/material/styles' {
 
   type PartialColor = Partial<Color>;
 
+  /** Brand colors. Gold is for ornament and highlights; use goldText where gold must be read. */
+  interface BrandPalette {
+    green: string;
+    gold: string;
+    goldText: string;
+    goldSoft: string;
+    ivory: string;
+  }
+
   interface Palette {
     neutral: PartialColor;
+    brand: BrandPalette;
   }
 
   interface PaletteOptions {
     neutral?: PartialColor;
+    brand?: BrandPalette;
   }
 
   interface TypeBackground {

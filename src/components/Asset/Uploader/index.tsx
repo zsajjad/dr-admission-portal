@@ -94,7 +94,7 @@ export function AssetUploader(props: AssetUploaderProps) {
           });
         },
         onError: (error) => {
-          onError(error as Error);
+          onError(error as unknown as Error);
           snackbar.show({
             message: errorUpload,
             type: 'error',
@@ -121,7 +121,7 @@ export function AssetUploader(props: AssetUploaderProps) {
           });
         },
         onError: (error) => {
-          onError(error as Error);
+          onError(error as unknown as Error);
           snackbar.show({
             message: errorDelete,
             type: 'error',

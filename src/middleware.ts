@@ -39,9 +39,10 @@ export const config = {
      * Match all request paths except for the ones starting with:
      * - _next/static (static files)
      * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
+     * - the icons and web manifest (favicon.*, apple-touch-icon.png, web-app-manifest-*, site.webmanifest),
+     *   which the browser fetches before anyone signs in
      * - public folder
      */
-    '/((?!_next/static|_next/image|favicon.ico|public).*)',
+    '/((?!_next/static|_next/image|favicon|apple-touch-icon.png|web-app-manifest-|site.webmanifest|public).*)',
   ],
 };

@@ -25,6 +25,7 @@ import type {
   AdmissionsControllerFindAllParams,
   AdmissionsControllerFindOneParams,
   AdmissionsControllerGetDashboardParams,
+  AdmissionsControllerSearchLegacyAdminParams,
   AdmissionsControllerSearchLegacyParams,
   AdmissionsDashboardResponseDto,
   CreateAdmissionDto,
@@ -35,6 +36,7 @@ import type {
   ListAdmissionsResponseDto,
   MarkFeePaidDto,
   MarkFeePaidResponseDto,
+  SearchLegacyAdmissionsAdminResponseDto,
   SearchLegacyAdmissionsResponseDto,
   UpdateAdmissionDto,
   UpdateAdmissionResponseDto,
@@ -59,6 +61,10 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
+/**
+ * Exact matches only: a full mobile number (03XXXXXXXXX, +92…) or a full GR number. Returns at most 10 rows with the fields the admission form prefill needs. Rate limited to 30 requests per IP per 15 minutes.
+ * @summary Find last year’s records by a full phone number or GR number (public)
+ */
 export const admissionsControllerSearchLegacy = (
   params: AdmissionsControllerSearchLegacyParams,
   signal?: AbortSignal,
@@ -77,7 +83,7 @@ export const getAdmissionsControllerSearchLegacyQueryKey = (params?: AdmissionsC
 
 export const getAdmissionsControllerSearchLegacyQueryOptions = <
   TData = Awaited<ReturnType<typeof admissionsControllerSearchLegacy>>,
-  TError = unknown,
+  TError = void,
 >(
   params: AdmissionsControllerSearchLegacyParams,
   options?: {
@@ -101,11 +107,15 @@ export const getAdmissionsControllerSearchLegacyQueryOptions = <
 export type AdmissionsControllerSearchLegacyQueryResult = NonNullable<
   Awaited<ReturnType<typeof admissionsControllerSearchLegacy>>
 >;
-export type AdmissionsControllerSearchLegacyQueryError = unknown;
+export type AdmissionsControllerSearchLegacyQueryError = void;
 
+/**
+ * Exact matches only: a full mobile number (03XXXXXXXXX, +92…) or a full GR number. Returns at most 10 rows with the fields the admission form prefill needs. Rate limited to 30 requests per IP per 15 minutes.
+ * @summary Find last year’s records by a full phone number or GR number (public)
+ */
 export function useAdmissionsControllerSearchLegacy<
   TData = Awaited<ReturnType<typeof admissionsControllerSearchLegacy>>,
-  TError = unknown,
+  TError = void,
 >(
   params: AdmissionsControllerSearchLegacyParams,
   options: {
@@ -121,9 +131,13 @@ export function useAdmissionsControllerSearchLegacy<
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * Exact matches only: a full mobile number (03XXXXXXXXX, +92…) or a full GR number. Returns at most 10 rows with the fields the admission form prefill needs. Rate limited to 30 requests per IP per 15 minutes.
+ * @summary Find last year’s records by a full phone number or GR number (public)
+ */
 export function useAdmissionsControllerSearchLegacy<
   TData = Awaited<ReturnType<typeof admissionsControllerSearchLegacy>>,
-  TError = unknown,
+  TError = void,
 >(
   params: AdmissionsControllerSearchLegacyParams,
   options?: {
@@ -139,9 +153,13 @@ export function useAdmissionsControllerSearchLegacy<
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * Exact matches only: a full mobile number (03XXXXXXXXX, +92…) or a full GR number. Returns at most 10 rows with the fields the admission form prefill needs. Rate limited to 30 requests per IP per 15 minutes.
+ * @summary Find last year’s records by a full phone number or GR number (public)
+ */
 export function useAdmissionsControllerSearchLegacy<
   TData = Awaited<ReturnType<typeof admissionsControllerSearchLegacy>>,
-  TError = unknown,
+  TError = void,
 >(
   params: AdmissionsControllerSearchLegacyParams,
   options?: {
@@ -149,9 +167,13 @@ export function useAdmissionsControllerSearchLegacy<
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * Exact matches only: a full mobile number (03XXXXXXXXX, +92…) or a full GR number. Returns at most 10 rows with the fields the admission form prefill needs. Rate limited to 30 requests per IP per 15 minutes.
+ * @summary Find last year’s records by a full phone number or GR number (public)
+ */
 export function useAdmissionsControllerSearchLegacy<
   TData = Awaited<ReturnType<typeof admissionsControllerSearchLegacy>>,
-  TError = unknown,
+  TError = void,
 >(
   params: AdmissionsControllerSearchLegacyParams,
   options?: {
@@ -160,6 +182,124 @@ export function useAdmissionsControllerSearchLegacy<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getAdmissionsControllerSearchLegacyQueryOptions(params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+/**
+ * @summary Search last year’s records with all fields (admin portal)
+ */
+export const admissionsControllerSearchLegacyAdmin = (
+  params: AdmissionsControllerSearchLegacyAdminParams,
+  signal?: AbortSignal,
+) => {
+  return service<SearchLegacyAdmissionsAdminResponseDto>({
+    url: `/admissions/search/legacy/admin`,
+    method: 'GET',
+    params,
+    signal,
+  });
+};
+
+export const getAdmissionsControllerSearchLegacyAdminQueryKey = (
+  params?: AdmissionsControllerSearchLegacyAdminParams,
+) => {
+  return [`/admissions/search/legacy/admin`, ...(params ? [params] : [])] as const;
+};
+
+export const getAdmissionsControllerSearchLegacyAdminQueryOptions = <
+  TData = Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>,
+  TError = void,
+>(
+  params: AdmissionsControllerSearchLegacyAdminParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>, TError, TData>>;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAdmissionsControllerSearchLegacyAdminQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>> = ({ signal }) =>
+    admissionsControllerSearchLegacyAdmin(params, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AdmissionsControllerSearchLegacyAdminQueryResult = NonNullable<
+  Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>
+>;
+export type AdmissionsControllerSearchLegacyAdminQueryError = void;
+
+/** @summary Search last year’s records with all fields (admin portal) */
+export function useAdmissionsControllerSearchLegacyAdmin<
+  TData = Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>,
+  TError = void,
+>(
+  params: AdmissionsControllerSearchLegacyAdminParams,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>,
+          TError,
+          Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/** @summary Search last year’s records with all fields (admin portal) */
+export function useAdmissionsControllerSearchLegacyAdmin<
+  TData = Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>,
+  TError = void,
+>(
+  params: AdmissionsControllerSearchLegacyAdminParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>,
+          TError,
+          Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/** @summary Search last year’s records with all fields (admin portal) */
+export function useAdmissionsControllerSearchLegacyAdmin<
+  TData = Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>,
+  TError = void,
+>(
+  params: AdmissionsControllerSearchLegacyAdminParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/** @summary Search last year’s records with all fields (admin portal) */
+export function useAdmissionsControllerSearchLegacyAdmin<
+  TData = Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>,
+  TError = void,
+>(
+  params: AdmissionsControllerSearchLegacyAdminParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getAdmissionsControllerSearchLegacyAdminQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
@@ -247,7 +387,7 @@ export const getAdmissionsControllerFindAllQueryKey = (params?: AdmissionsContro
 
 export const getAdmissionsControllerFindAllQueryOptions = <
   TData = Awaited<ReturnType<typeof admissionsControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: AdmissionsControllerFindAllParams,
   options?: {
@@ -271,11 +411,11 @@ export const getAdmissionsControllerFindAllQueryOptions = <
 export type AdmissionsControllerFindAllQueryResult = NonNullable<
   Awaited<ReturnType<typeof admissionsControllerFindAll>>
 >;
-export type AdmissionsControllerFindAllQueryError = unknown;
+export type AdmissionsControllerFindAllQueryError = void;
 
 export function useAdmissionsControllerFindAll<
   TData = Awaited<ReturnType<typeof admissionsControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params: undefined | AdmissionsControllerFindAllParams,
   options: {
@@ -293,7 +433,7 @@ export function useAdmissionsControllerFindAll<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdmissionsControllerFindAll<
   TData = Awaited<ReturnType<typeof admissionsControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: AdmissionsControllerFindAllParams,
   options?: {
@@ -311,7 +451,7 @@ export function useAdmissionsControllerFindAll<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdmissionsControllerFindAll<
   TData = Awaited<ReturnType<typeof admissionsControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: AdmissionsControllerFindAllParams,
   options?: {
@@ -321,7 +461,7 @@ export function useAdmissionsControllerFindAll<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdmissionsControllerFindAll<
   TData = Awaited<ReturnType<typeof admissionsControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: AdmissionsControllerFindAllParams,
   options?: {
@@ -383,7 +523,7 @@ export const getAdmissionsControllerGetDashboardQueryKey = (params?: AdmissionsC
 
 export const getAdmissionsControllerGetDashboardQueryOptions = <
   TData = Awaited<ReturnType<typeof admissionsControllerGetDashboard>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: AdmissionsControllerGetDashboardParams,
   options?: {
@@ -407,7 +547,7 @@ export const getAdmissionsControllerGetDashboardQueryOptions = <
 export type AdmissionsControllerGetDashboardQueryResult = NonNullable<
   Awaited<ReturnType<typeof admissionsControllerGetDashboard>>
 >;
-export type AdmissionsControllerGetDashboardQueryError = unknown;
+export type AdmissionsControllerGetDashboardQueryError = void;
 
 /**
  * Returns comprehensive admission statistics and analytics for the admin dashboard.
@@ -443,7 +583,7 @@ export type AdmissionsControllerGetDashboardQueryError = unknown;
  */
 export function useAdmissionsControllerGetDashboard<
   TData = Awaited<ReturnType<typeof admissionsControllerGetDashboard>>,
-  TError = unknown,
+  TError = void,
 >(
   params: undefined | AdmissionsControllerGetDashboardParams,
   options: {
@@ -493,7 +633,7 @@ export function useAdmissionsControllerGetDashboard<
  */
 export function useAdmissionsControllerGetDashboard<
   TData = Awaited<ReturnType<typeof admissionsControllerGetDashboard>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: AdmissionsControllerGetDashboardParams,
   options?: {
@@ -543,7 +683,7 @@ export function useAdmissionsControllerGetDashboard<
  */
 export function useAdmissionsControllerGetDashboard<
   TData = Awaited<ReturnType<typeof admissionsControllerGetDashboard>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: AdmissionsControllerGetDashboardParams,
   options?: {
@@ -585,7 +725,7 @@ export function useAdmissionsControllerGetDashboard<
  */
 export function useAdmissionsControllerGetDashboard<
   TData = Awaited<ReturnType<typeof admissionsControllerGetDashboard>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: AdmissionsControllerGetDashboardParams,
   options?: {
@@ -728,7 +868,7 @@ export const admissionsControllerUpdate = (
 
 export const getAdmissionsControllerUpdateMutationKey = () => ['admissionsControllerUpdate'] as const;
 
-export const getAdmissionsControllerUpdateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAdmissionsControllerUpdateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof admissionsControllerUpdate>>,
     TError,
@@ -764,10 +904,10 @@ export type AdmissionsControllerUpdateMutationResult = NonNullable<
   Awaited<ReturnType<typeof admissionsControllerUpdate>>
 >;
 export type AdmissionsControllerUpdateMutationBody = UpdateAdmissionDto;
-export type AdmissionsControllerUpdateMutationError = unknown;
+export type AdmissionsControllerUpdateMutationError = void;
 export type AdmissionsControllerUpdateMutationVariables = { id: string; data: UpdateAdmissionDto };
 
-export const useAdmissionsControllerUpdate = <TError = unknown, TContext = unknown>(
+export const useAdmissionsControllerUpdate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof admissionsControllerUpdate>>,
@@ -791,7 +931,7 @@ export const admissionsControllerRemove = (id: string, signal?: AbortSignal) => 
 
 export const getAdmissionsControllerRemoveMutationKey = () => ['admissionsControllerRemove'] as const;
 
-export const getAdmissionsControllerRemoveMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAdmissionsControllerRemoveMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof admissionsControllerRemove>>,
     TError,
@@ -827,10 +967,10 @@ export type AdmissionsControllerRemoveMutationResult = NonNullable<
   Awaited<ReturnType<typeof admissionsControllerRemove>>
 >;
 
-export type AdmissionsControllerRemoveMutationError = unknown;
+export type AdmissionsControllerRemoveMutationError = void;
 export type AdmissionsControllerRemoveMutationVariables = { id: string };
 
-export const useAdmissionsControllerRemove = <TError = unknown, TContext = unknown>(
+export const useAdmissionsControllerRemove = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof admissionsControllerRemove>>,
@@ -864,7 +1004,7 @@ export const admissionsControllerUpdateStatus = (
 
 export const getAdmissionsControllerUpdateStatusMutationKey = () => ['admissionsControllerUpdateStatus'] as const;
 
-export const getAdmissionsControllerUpdateStatusMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAdmissionsControllerUpdateStatusMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof admissionsControllerUpdateStatus>>,
     TError,
@@ -900,10 +1040,10 @@ export type AdmissionsControllerUpdateStatusMutationResult = NonNullable<
   Awaited<ReturnType<typeof admissionsControllerUpdateStatus>>
 >;
 export type AdmissionsControllerUpdateStatusMutationBody = UpdateAdmissionStatusDto;
-export type AdmissionsControllerUpdateStatusMutationError = unknown;
+export type AdmissionsControllerUpdateStatusMutationError = void;
 export type AdmissionsControllerUpdateStatusMutationVariables = { id: string; data: UpdateAdmissionStatusDto };
 
-export const useAdmissionsControllerUpdateStatus = <TError = unknown, TContext = unknown>(
+export const useAdmissionsControllerUpdateStatus = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof admissionsControllerUpdateStatus>>,
@@ -933,7 +1073,7 @@ export const admissionsControllerMarkFeePaid = (id: string, markFeePaidDto: Mark
 
 export const getAdmissionsControllerMarkFeePaidMutationKey = () => ['admissionsControllerMarkFeePaid'] as const;
 
-export const getAdmissionsControllerMarkFeePaidMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAdmissionsControllerMarkFeePaidMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof admissionsControllerMarkFeePaid>>,
     TError,
@@ -969,10 +1109,10 @@ export type AdmissionsControllerMarkFeePaidMutationResult = NonNullable<
   Awaited<ReturnType<typeof admissionsControllerMarkFeePaid>>
 >;
 export type AdmissionsControllerMarkFeePaidMutationBody = MarkFeePaidDto;
-export type AdmissionsControllerMarkFeePaidMutationError = unknown;
+export type AdmissionsControllerMarkFeePaidMutationError = void;
 export type AdmissionsControllerMarkFeePaidMutationVariables = { id: string; data: MarkFeePaidDto };
 
-export const useAdmissionsControllerMarkFeePaid = <TError = unknown, TContext = unknown>(
+export const useAdmissionsControllerMarkFeePaid = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof admissionsControllerMarkFeePaid>>,
@@ -1006,7 +1146,7 @@ export const admissionsControllerFinalize = (
 
 export const getAdmissionsControllerFinalizeMutationKey = () => ['admissionsControllerFinalize'] as const;
 
-export const getAdmissionsControllerFinalizeMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAdmissionsControllerFinalizeMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof admissionsControllerFinalize>>,
     TError,
@@ -1042,10 +1182,10 @@ export type AdmissionsControllerFinalizeMutationResult = NonNullable<
   Awaited<ReturnType<typeof admissionsControllerFinalize>>
 >;
 export type AdmissionsControllerFinalizeMutationBody = FinalizeAdmissionDto;
-export type AdmissionsControllerFinalizeMutationError = unknown;
+export type AdmissionsControllerFinalizeMutationError = void;
 export type AdmissionsControllerFinalizeMutationVariables = { id: string; data: FinalizeAdmissionDto };
 
-export const useAdmissionsControllerFinalize = <TError = unknown, TContext = unknown>(
+export const useAdmissionsControllerFinalize = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof admissionsControllerFinalize>>,
@@ -1070,10 +1210,7 @@ export const admissionsControllerTestAdmissionStats = (signal?: AbortSignal) => 
 export const getAdmissionsControllerTestAdmissionStatsMutationKey = () =>
   ['admissionsControllerTestAdmissionStats'] as const;
 
-export const getAdmissionsControllerTestAdmissionStatsMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
+export const getAdmissionsControllerTestAdmissionStatsMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof admissionsControllerTestAdmissionStats>>,
     TError,
@@ -1099,9 +1236,9 @@ export type AdmissionsControllerTestAdmissionStatsMutationResult = NonNullable<
   Awaited<ReturnType<typeof admissionsControllerTestAdmissionStats>>
 >;
 
-export type AdmissionsControllerTestAdmissionStatsMutationError = unknown;
+export type AdmissionsControllerTestAdmissionStatsMutationError = void;
 
-export const useAdmissionsControllerTestAdmissionStats = <TError = unknown, TContext = unknown>(
+export const useAdmissionsControllerTestAdmissionStats = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof admissionsControllerTestAdmissionStats>>,

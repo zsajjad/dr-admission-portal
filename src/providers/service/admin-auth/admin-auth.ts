@@ -330,12 +330,12 @@ export const useAdminAuthControllerRefresh = <TError = unknown, TContext = unkno
   return useMutation(getAdminAuthControllerRefreshMutationOptions(options), queryClient);
 };
 export const adminAuthControllerLogout = (signal?: AbortSignal) => {
-  return service<void>({ url: `/admin/auth/logout`, method: 'POST', signal });
+  return service<unknown>({ url: `/admin/auth/logout`, method: 'POST', signal });
 };
 
 export const getAdminAuthControllerLogoutMutationKey = () => ['adminAuthControllerLogout'] as const;
 
-export const getAdminAuthControllerLogoutMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAdminAuthControllerLogoutMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<Awaited<ReturnType<typeof adminAuthControllerLogout>>, TError, void, TContext>;
 }): UseMutationOptions<Awaited<ReturnType<typeof adminAuthControllerLogout>>, TError, void, TContext> => {
   const mutationKey = getAdminAuthControllerLogoutMutationKey();
@@ -356,9 +356,9 @@ export type AdminAuthControllerLogoutMutationResult = NonNullable<
   Awaited<ReturnType<typeof adminAuthControllerLogout>>
 >;
 
-export type AdminAuthControllerLogoutMutationError = unknown;
+export type AdminAuthControllerLogoutMutationError = void;
 
-export const useAdminAuthControllerLogout = <TError = unknown, TContext = unknown>(
+export const useAdminAuthControllerLogout = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<Awaited<ReturnType<typeof adminAuthControllerLogout>>, TError, void, TContext>;
   },
@@ -376,7 +376,7 @@ export const getAdminAuthControllerGetAdminDetailsQueryKey = () => {
 
 export const getAdminAuthControllerGetAdminDetailsQueryOptions = <
   TData = Awaited<ReturnType<typeof adminAuthControllerGetAdminDetails>>,
-  TError = unknown,
+  TError = void,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminAuthControllerGetAdminDetails>>, TError, TData>>;
 }) => {
@@ -397,11 +397,11 @@ export const getAdminAuthControllerGetAdminDetailsQueryOptions = <
 export type AdminAuthControllerGetAdminDetailsQueryResult = NonNullable<
   Awaited<ReturnType<typeof adminAuthControllerGetAdminDetails>>
 >;
-export type AdminAuthControllerGetAdminDetailsQueryError = unknown;
+export type AdminAuthControllerGetAdminDetailsQueryError = void;
 
 export function useAdminAuthControllerGetAdminDetails<
   TData = Awaited<ReturnType<typeof adminAuthControllerGetAdminDetails>>,
-  TError = unknown,
+  TError = void,
 >(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminAuthControllerGetAdminDetails>>, TError, TData>> &
@@ -418,7 +418,7 @@ export function useAdminAuthControllerGetAdminDetails<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminAuthControllerGetAdminDetails<
   TData = Awaited<ReturnType<typeof adminAuthControllerGetAdminDetails>>,
-  TError = unknown,
+  TError = void,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminAuthControllerGetAdminDetails>>, TError, TData>> &
@@ -435,7 +435,7 @@ export function useAdminAuthControllerGetAdminDetails<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminAuthControllerGetAdminDetails<
   TData = Awaited<ReturnType<typeof adminAuthControllerGetAdminDetails>>,
-  TError = unknown,
+  TError = void,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminAuthControllerGetAdminDetails>>, TError, TData>>;
@@ -444,7 +444,7 @@ export function useAdminAuthControllerGetAdminDetails<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAdminAuthControllerGetAdminDetails<
   TData = Awaited<ReturnType<typeof adminAuthControllerGetAdminDetails>>,
-  TError = unknown,
+  TError = void,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminAuthControllerGetAdminDetails>>, TError, TData>>;
@@ -475,7 +475,7 @@ export const adminAuthControllerEnableLogin = (
 
 export const getAdminAuthControllerEnableLoginMutationKey = () => ['adminAuthControllerEnableLogin'] as const;
 
-export const getAdminAuthControllerEnableLoginMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAdminAuthControllerEnableLoginMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof adminAuthControllerEnableLogin>>,
     TError,
@@ -511,10 +511,10 @@ export type AdminAuthControllerEnableLoginMutationResult = NonNullable<
   Awaited<ReturnType<typeof adminAuthControllerEnableLogin>>
 >;
 export type AdminAuthControllerEnableLoginMutationBody = AdminEnableLoginRequestDto;
-export type AdminAuthControllerEnableLoginMutationError = unknown;
+export type AdminAuthControllerEnableLoginMutationError = void;
 export type AdminAuthControllerEnableLoginMutationVariables = { data: AdminEnableLoginRequestDto };
 
-export const useAdminAuthControllerEnableLogin = <TError = unknown, TContext = unknown>(
+export const useAdminAuthControllerEnableLogin = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof adminAuthControllerEnableLogin>>,

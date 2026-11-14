@@ -65,10 +65,7 @@ export const legacyStudentImportControllerImportCsv = (
 export const getLegacyStudentImportControllerImportCsvMutationKey = () =>
   ['legacyStudentImportControllerImportCsv'] as const;
 
-export const getLegacyStudentImportControllerImportCsvMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
+export const getLegacyStudentImportControllerImportCsvMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof legacyStudentImportControllerImportCsv>>,
     TError,
@@ -104,10 +101,10 @@ export type LegacyStudentImportControllerImportCsvMutationResult = NonNullable<
   Awaited<ReturnType<typeof legacyStudentImportControllerImportCsv>>
 >;
 export type LegacyStudentImportControllerImportCsvMutationBody = ImportLegacyStudentsRequestDto;
-export type LegacyStudentImportControllerImportCsvMutationError = unknown;
+export type LegacyStudentImportControllerImportCsvMutationError = void;
 export type LegacyStudentImportControllerImportCsvMutationVariables = { data: ImportLegacyStudentsRequestDto };
 
-export const useLegacyStudentImportControllerImportCsv = <TError = unknown, TContext = unknown>(
+export const useLegacyStudentImportControllerImportCsv = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof legacyStudentImportControllerImportCsv>>,
@@ -140,7 +137,7 @@ export const getLegacyStudentImportControllerFindAllQueryKey = (
 
 export const getLegacyStudentImportControllerFindAllQueryOptions = <
   TData = Awaited<ReturnType<typeof legacyStudentImportControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: LegacyStudentImportControllerFindAllParams,
   options?: {
@@ -164,11 +161,11 @@ export const getLegacyStudentImportControllerFindAllQueryOptions = <
 export type LegacyStudentImportControllerFindAllQueryResult = NonNullable<
   Awaited<ReturnType<typeof legacyStudentImportControllerFindAll>>
 >;
-export type LegacyStudentImportControllerFindAllQueryError = unknown;
+export type LegacyStudentImportControllerFindAllQueryError = void;
 
 export function useLegacyStudentImportControllerFindAll<
   TData = Awaited<ReturnType<typeof legacyStudentImportControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params: undefined | LegacyStudentImportControllerFindAllParams,
   options: {
@@ -186,7 +183,7 @@ export function useLegacyStudentImportControllerFindAll<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useLegacyStudentImportControllerFindAll<
   TData = Awaited<ReturnType<typeof legacyStudentImportControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: LegacyStudentImportControllerFindAllParams,
   options?: {
@@ -204,7 +201,7 @@ export function useLegacyStudentImportControllerFindAll<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useLegacyStudentImportControllerFindAll<
   TData = Awaited<ReturnType<typeof legacyStudentImportControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: LegacyStudentImportControllerFindAllParams,
   options?: {
@@ -214,7 +211,7 @@ export function useLegacyStudentImportControllerFindAll<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useLegacyStudentImportControllerFindAll<
   TData = Awaited<ReturnType<typeof legacyStudentImportControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: LegacyStudentImportControllerFindAllParams,
   options?: {
@@ -246,7 +243,7 @@ export const legacyStudentImportControllerClear = (
 
 export const getLegacyStudentImportControllerClearMutationKey = () => ['legacyStudentImportControllerClear'] as const;
 
-export const getLegacyStudentImportControllerClearMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getLegacyStudentImportControllerClearMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof legacyStudentImportControllerClear>>,
     TError,
@@ -282,10 +279,10 @@ export type LegacyStudentImportControllerClearMutationResult = NonNullable<
   Awaited<ReturnType<typeof legacyStudentImportControllerClear>>
 >;
 export type LegacyStudentImportControllerClearMutationBody = ClearLegacyStudentsRequestDto;
-export type LegacyStudentImportControllerClearMutationError = unknown;
+export type LegacyStudentImportControllerClearMutationError = void;
 export type LegacyStudentImportControllerClearMutationVariables = { data: ClearLegacyStudentsRequestDto };
 
-export const useLegacyStudentImportControllerClear = <TError = unknown, TContext = unknown>(
+export const useLegacyStudentImportControllerClear = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof legacyStudentImportControllerClear>>,
