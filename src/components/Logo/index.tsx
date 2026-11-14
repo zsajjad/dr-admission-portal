@@ -51,10 +51,12 @@ export interface BrandProps {
   logoHeight?: string;
   /** For dark backgrounds: white lettering and text. */
   inverse?: boolean;
+  /** 'sm' for narrow places such as the side nav. */
+  size?: 'md' | 'sm';
 }
 
 /** The logo with the program's name and "Admin portal", for the sign-in page and the mobile menu. */
-export function Brand({ logoHeight = '48px', inverse = false }: BrandProps): JSX.Element {
+export function Brand({ logoHeight = '48px', inverse = false, size = 'md' }: BrandProps): JSX.Element {
   return (
     <Stack direction="row" spacing={1.5} alignItems="center">
       <Logo height={logoHeight} lettersColor={inverse ? '#FFFFFF' : undefined} />
@@ -62,7 +64,7 @@ export function Brand({ logoHeight = '48px', inverse = false }: BrandProps): JSX
         <Typography
           sx={{
             fontWeight: 700,
-            fontSize: '1.05rem',
+            fontSize: size === 'sm' ? '0.95rem' : '1.05rem',
             lineHeight: 1.2,
             whiteSpace: 'nowrap',
             color: inverse ? 'common.white' : 'brand.navy',
@@ -72,7 +74,7 @@ export function Brand({ logoHeight = '48px', inverse = false }: BrandProps): JSX
         </Typography>
         <Typography
           sx={{
-            fontSize: '0.7rem',
+            fontSize: size === 'sm' ? '0.65rem' : '0.7rem',
             fontWeight: 600,
             letterSpacing: '0.14em',
             textTransform: 'uppercase',

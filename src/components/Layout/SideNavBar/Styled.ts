@@ -9,6 +9,7 @@ export const SideNav = styled(Box)(({ theme }) => ({
   borderRadius: 16,
   height: 'calc(100vh - 32px)',
   width: 'var(--SideNav-width)',
+  overflow: 'hidden',
   boxShadow: '0 4px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)',
   '&::-webkit-scrollbar': {
     display: 'none',
