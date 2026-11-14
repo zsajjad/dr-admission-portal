@@ -37,7 +37,8 @@ export function PageHeading({
         p: 2.5,
         bgcolor: 'background.paper',
         borderRadius: 4,
-        boxShadow: '0 4px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)',
+        border: '1px solid',
+        borderColor: 'divider',
       }}
     >
       <Typography
