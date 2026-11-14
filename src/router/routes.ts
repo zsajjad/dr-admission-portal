@@ -24,6 +24,10 @@ export const routes = {
     edit: (id: string) => `/admission/edit/${id}`,
     detail: (id: string) => `/admission/${id}`,
   },
+  students: {
+    listing: '/students',
+    profile: (id: string) => `/students/${id}`,
+  },
   questions: {
     listing: '/questions?includeInActive=true',
     create: '/questions/create',

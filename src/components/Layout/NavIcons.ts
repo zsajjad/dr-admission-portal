@@ -8,6 +8,8 @@ import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
 import BarChartRoundedIcon from '@mui/icons-material/BarChartRounded';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
+import PersonSearchOutlinedIcon from '@mui/icons-material/PersonSearchOutlined';
+import PersonSearchRoundedIcon from '@mui/icons-material/PersonSearchRounded';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
 import PrintRoundedIcon from '@mui/icons-material/PrintRounded';
 import QuizOutlinedIcon from '@mui/icons-material/QuizOutlined';
@@ -39,6 +41,10 @@ export const navIcons: Record<string, { filled: MuiIcon; outlined: MuiIcon }> = 
   admissions: {
     filled: AssignmentIndRoundedIcon,
     outlined: AssignmentIndOutlinedIcon,
+  },
+  students: {
+    filled: PersonSearchRoundedIcon,
+    outlined: PersonSearchOutlinedIcon,
   },
   questionSets: {
     filled: QuizRoundedIcon,

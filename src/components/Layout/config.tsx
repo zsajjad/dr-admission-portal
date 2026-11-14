@@ -8,6 +8,7 @@ const NAV_ORDER: ModuleKey[] = [
   'branches',
   'van',
   'admission',
+  'students',
   'questionSets',
   'printing',
   'interactionReport',
