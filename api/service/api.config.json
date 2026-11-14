@@ -12036,6 +12036,381 @@
           "results.override"
         ]
       }
+    },
+    "/staff/fee-desk/admissions": {
+      "get": {
+        "operationId": "StaffFeeDeskController_search",
+        "parameters": [
+          {
+            "name": "q",
+            "required": true,
+            "in": "query",
+            "description": "An exact GR (old GRs included), a phone number in any format, or part of a name",
+            "schema": {
+              "minLength": 2,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "At most 20, in the current session and your branches",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FeeDeskAdmissionSummary"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`code`: TOKEN_INVALID, TOKEN_EXPIRED or DEVICE_REVOKED"
+          },
+          "403": {
+            "description": "`code`: ROLE_REQUIRED, or NO_BRANCH when no branch is assigned\n\n`code`: ROLE_REQUIRED (needs FEE_DESK)"
+          },
+          "429": {
+            "description": "More than 30 searches a minute"
+          }
+        },
+        "security": [
+          {
+            "staff-jwt": []
+          },
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          }
+        ],
+        "tags": [
+          "Staff App: Fee Desk"
+        ]
+      }
+    },
+    "/staff/fee-desk/admissions/{id}": {
+      "get": {
+        "operationId": "StaffFeeDeskController_detail",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeeDeskAdmissionDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`code`: TOKEN_INVALID, TOKEN_EXPIRED or DEVICE_REVOKED"
+          },
+          "403": {
+            "description": "`code`: ROLE_REQUIRED, or NO_BRANCH when no branch is assigned\n\n`code`: ROLE_REQUIRED (needs FEE_DESK)"
+          },
+          "404": {
+            "description": "Not found, or not in your branches or the current session"
+          }
+        },
+        "security": [
+          {
+            "staff-jwt": []
+          },
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          }
+        ],
+        "tags": [
+          "Staff App: Fee Desk"
+        ]
+      }
+    },
+    "/staff/fee-desk/admissions/{id}/documents": {
+      "post": {
+        "operationId": "StaffFeeDeskController_uploadDocument",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/FeeDeskUploadDocumentBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeeDeskDocument"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`code`: TOKEN_INVALID, TOKEN_EXPIRED or DEVICE_REVOKED"
+          },
+          "403": {
+            "description": "`code`: ROLE_REQUIRED, or NO_BRANCH when no branch is assigned\n\n`code`: ROLE_REQUIRED (needs FEE_DESK)"
+          },
+          "413": {
+            "description": "Larger than 2 MB"
+          },
+          "415": {
+            "description": "`code`: FILE_TYPE (not JPEG, PNG or WebP by its content)"
+          }
+        },
+        "security": [
+          {
+            "staff-jwt": []
+          },
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          }
+        ],
+        "tags": [
+          "Staff App: Fee Desk"
+        ]
+      }
+    },
+    "/staff/fee-desk/admissions/{id}/verification": {
+      "post": {
+        "operationId": "StaffFeeDeskController_verify",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeeDeskVerificationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeeDeskAdmissionDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`code`: TOKEN_INVALID, TOKEN_EXPIRED or DEVICE_REVOKED"
+          },
+          "403": {
+            "description": "`code`: ROLE_REQUIRED, or NO_BRANCH when no branch is assigned\n\n`code`: ROLE_REQUIRED (needs FEE_DESK)"
+          },
+          "409": {
+            "description": "`code`: STALE, with the current `updatedAt`"
+          }
+        },
+        "security": [
+          {
+            "staff-jwt": []
+          },
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          }
+        ],
+        "tags": [
+          "Staff App: Fee Desk"
+        ]
+      }
+    },
+    "/staff/fee-desk/admissions/{id}/fee-paid": {
+      "post": {
+        "operationId": "StaffFeeDeskController_markFeePaid",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeeDeskFeePaidDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Also for a retry with the same idempotencyKey",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeeDeskFee"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`code`: TOKEN_INVALID, TOKEN_EXPIRED or DEVICE_REVOKED"
+          },
+          "403": {
+            "description": "`code`: ROLE_REQUIRED, or NO_BRANCH when no branch is assigned\n\n`code`: ROLE_REQUIRED (needs FEE_DESK)"
+          },
+          "409": {
+            "description": "`code`: ALREADY_PAID, with `paidAt` and `paidBy` at the top level; or NOT_PAYABLE for a rejected admission"
+          }
+        },
+        "security": [
+          {
+            "staff-jwt": []
+          },
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          }
+        ],
+        "tags": [
+          "Staff App: Fee Desk"
+        ]
+      }
+    },
+    "/staff/fee-desk/admissions/{id}/slip": {
+      "get": {
+        "operationId": "StaffFeeDeskController_slip",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeeDeskSlip"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`code`: TOKEN_INVALID, TOKEN_EXPIRED or DEVICE_REVOKED"
+          },
+          "403": {
+            "description": "`code`: ROLE_REQUIRED, or NO_BRANCH when no branch is assigned\n\n`code`: ROLE_REQUIRED (needs FEE_DESK)"
+          }
+        },
+        "security": [
+          {
+            "staff-jwt": []
+          },
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          }
+        ],
+        "tags": [
+          "Staff App: Fee Desk"
+        ]
+      }
+    },
+    "/staff/fee-desk/admissions/{id}/slip-printed": {
+      "post": {
+        "operationId": "StaffFeeDeskController_slipPrinted",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The print is recorded"
+          },
+          "401": {
+            "description": "`code`: TOKEN_INVALID, TOKEN_EXPIRED or DEVICE_REVOKED"
+          },
+          "403": {
+            "description": "`code`: ROLE_REQUIRED, or NO_BRANCH when no branch is assigned\n\n`code`: ROLE_REQUIRED (needs FEE_DESK)"
+          }
+        },
+        "security": [
+          {
+            "staff-jwt": []
+          },
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          }
+        ],
+        "tags": [
+          "Staff App: Fee Desk"
+        ]
+      }
     }
   },
   "info": {
@@ -15335,6 +15710,26 @@
           "group"
         ]
       },
+      "StaffUserBase": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "staffId": {
+            "type": "string",
+            "description": "The 5-digit staff ID on the card"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "staffId"
+        ]
+      },
       "Admission": {
         "type": "object",
         "properties": {
@@ -15464,6 +15859,14 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/AdminUserBase"
+              }
+            ]
+          },
+          "feePaidByStaffUser": {
+            "description": "Set instead of feePaidByAdmin when marked at the staff app fee desk",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StaffUserBase"
               }
             ]
           },
@@ -19253,6 +19656,14 @@
           "feePaidByAdmin": {
             "$ref": "#/components/schemas/AdminUserBase"
           },
+          "feePaidByStaffUser": {
+            "description": "Set instead of feePaidByAdmin when marked at the staff app fee desk",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StaffUserBase"
+              }
+            ]
+          },
           "isFinalized": {
             "type": "boolean"
           },
@@ -22472,6 +22883,13 @@
                 "$ref": "#/components/schemas/StaffLanguage"
               }
             ]
+          },
+          "branchIds": {
+            "description": "Branch IDs the user works for. Fee-desk staff see only these branches' admissions. On update, the list replaces the current one.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "required": [
@@ -22593,6 +23011,13 @@
           "isActive": {
             "type": "boolean"
           },
+          "branchIds": {
+            "description": "Branches the user works for (fee desk scope)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "activeDevices": {
             "type": "number",
             "description": "Phones logged in now"
@@ -22628,6 +23053,7 @@
           "roles",
           "language",
           "isActive",
+          "branchIds",
           "activeDevices",
           "createdAt",
           "devices",
@@ -22683,6 +23109,13 @@
           "isActive": {
             "type": "boolean"
           },
+          "branchIds": {
+            "description": "Branches the user works for (fee desk scope)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "activeDevices": {
             "type": "number",
             "description": "Phones logged in now"
@@ -22703,6 +23136,7 @@
           "roles",
           "language",
           "isActive",
+          "branchIds",
           "activeDevices",
           "createdAt"
         ]
@@ -22749,6 +23183,13 @@
                 "$ref": "#/components/schemas/StaffLanguage"
               }
             ]
+          },
+          "branchIds": {
+            "description": "Branch IDs the user works for. Fee-desk staff see only these branches' admissions. On update, the list replaces the current one.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       },
@@ -24803,6 +25244,312 @@
         },
         "required": [
           "result"
+        ]
+      },
+      "FeeDeskAdmissionSummary": {
+        "type": "object",
+        "properties": {
+          "admissionId": {
+            "type": "string"
+          },
+          "grNumber": {
+            "type": "string",
+            "description": "The current GR, also when an old GR was searched"
+          },
+          "name": {
+            "type": "string"
+          },
+          "fatherName": {
+            "type": "string"
+          },
+          "classLevelCode": {
+            "type": "string",
+            "example": "Muhibaan5-G"
+          },
+          "branchCode": {
+            "type": "string",
+            "example": "NK"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AdmissionStatus"
+              }
+            ]
+          },
+          "feePaid": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "admissionId",
+          "grNumber",
+          "name",
+          "fatherName",
+          "classLevelCode",
+          "branchCode",
+          "status",
+          "feePaid"
+        ]
+      },
+      "FeeDeskClassLevel": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "Muhibaan5-G"
+          },
+          "name": {
+            "type": "string",
+            "example": "Muhibaan 5"
+          }
+        },
+        "required": [
+          "code",
+          "name"
+        ]
+      },
+      "FeeDeskDocumentKind": {
+        "type": "string",
+        "enum": [
+          "IDENTITY_PROOF",
+          "PHOTO"
+        ]
+      },
+      "FeeDeskDocument": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Asset ID"
+          },
+          "kind": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FeeDeskDocumentKind"
+              }
+            ]
+          },
+          "thumbnailUrl": {
+            "type": "string",
+            "description": "Private and short-lived (5 minutes): fetch it, never store it"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "thumbnailUrl"
+        ]
+      },
+      "FeeDeskPaidBy": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "FeeDeskFee": {
+        "type": "object",
+        "properties": {
+          "paid": {
+            "type": "boolean"
+          },
+          "paidAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "paidBy": {
+            "nullable": true,
+            "description": "The admin or staff user who marked it",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FeeDeskPaidBy"
+              }
+            ]
+          }
+        },
+        "required": [
+          "paid"
+        ]
+      },
+      "FeeDeskAdmissionDetail": {
+        "type": "object",
+        "properties": {
+          "admissionId": {
+            "type": "string"
+          },
+          "grNumber": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "fatherName": {
+            "type": "string"
+          },
+          "gender": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Gender"
+              }
+            ]
+          },
+          "classLevel": {
+            "$ref": "#/components/schemas/FeeDeskClassLevel"
+          },
+          "branchCode": {
+            "type": "string",
+            "example": "NK"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AdmissionStatus"
+              }
+            ]
+          },
+          "documents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FeeDeskDocument"
+            }
+          },
+          "fee": {
+            "$ref": "#/components/schemas/FeeDeskFee"
+          },
+          "interviewRequired": {
+            "type": "boolean",
+            "description": "No interview yet, and the class has a question set this session"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Send it back as expectedUpdatedAt when verifying"
+          }
+        },
+        "required": [
+          "admissionId",
+          "grNumber",
+          "name",
+          "fatherName",
+          "gender",
+          "classLevel",
+          "branchCode",
+          "status",
+          "documents",
+          "fee",
+          "interviewRequired",
+          "updatedAt"
+        ]
+      },
+      "FeeDeskUploadDocumentBodyDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FeeDeskDocumentKind"
+              }
+            ]
+          },
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "description": "JPEG, PNG or WebP, at most 2 MB"
+          }
+        },
+        "required": [
+          "kind",
+          "file"
+        ]
+      },
+      "FeeDeskVerificationDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "VERIFIED",
+              "REJECTED"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "description": "Required when rejecting"
+          },
+          "expectedUpdatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The detail's updatedAt when the phone read it"
+          }
+        },
+        "required": [
+          "status",
+          "expectedUpdatedAt"
+        ]
+      },
+      "FeeDeskFeePaidDto": {
+        "type": "object",
+        "properties": {
+          "idempotencyKey": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Made on the phone; a retry sends the same one"
+          }
+        },
+        "required": [
+          "idempotencyKey"
+        ]
+      },
+      "FeeDeskSlip": {
+        "type": "object",
+        "properties": {
+          "grNumber": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "fatherName": {
+            "type": "string"
+          },
+          "classLevel": {
+            "type": "string",
+            "example": "Muhibaan 5",
+            "description": "Printable class name"
+          },
+          "branch": {
+            "type": "string",
+            "example": "New Karachi",
+            "description": "Printable branch name"
+          },
+          "sectionName": {
+            "type": "string",
+            "example": "Muhibaan5 A",
+            "description": "Only when the student is placed"
+          },
+          "interviewRequired": {
+            "type": "boolean"
+          },
+          "qrPayload": {
+            "type": "string",
+            "description": "For the QR code: the plain GR"
+          }
+        },
+        "required": [
+          "grNumber",
+          "name",
+          "fatherName",
+          "classLevel",
+          "branch",
+          "interviewRequired",
+          "qrPayload"
         ]
       }
     }

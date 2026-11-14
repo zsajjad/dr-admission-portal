@@ -1268,6 +1268,13 @@ export interface AdmissionClassLevel {
   group: ClassLevelGroup;
 }
 
+export interface StaffUserBase {
+  id: string;
+  name: string;
+  /** The 5-digit staff ID on the card */
+  staffId: string;
+}
+
 export interface Admission {
   /** id */
   id: string;
@@ -1312,6 +1319,8 @@ export interface Admission {
   feePaidAt?: string;
   /** feePaidByAdmin */
   feePaidByAdmin?: AdminUserBase;
+  /** Set instead of feePaidByAdmin when marked at the staff app fee desk */
+  feePaidByStaffUser?: StaffUserBase;
   /** legacyStudentId */
   legacyStudentId?: string;
   /** createdAt */
@@ -2615,6 +2624,8 @@ export interface StudentProfileAdmission {
   isFeePaid: boolean;
   feePaidAt?: string;
   feePaidByAdmin?: AdminUserBase;
+  /** Set instead of feePaidByAdmin when marked at the staff app fee desk */
+  feePaidByStaffUser?: StaffUserBase;
   isFinalized: boolean;
   finalizedAt?: string;
   finalizedByAdmin?: AdminUserBase;
@@ -3892,6 +3903,8 @@ export interface CreateStaffUserDto {
   phone?: string;
   roles: StaffRole[];
   language?: StaffLanguage;
+  /** Branch IDs the user works for. Fee-desk staff see only these branches' admissions. On update, the list replaces the current one. */
+  branchIds?: string[];
 }
 
 export interface StaffDeviceEntity {
@@ -3936,6 +3949,8 @@ export interface StaffUserDetail {
   roles: StaffRole[];
   language: StaffLanguage;
   isActive: boolean;
+  /** Branches the user works for (fee desk scope) */
+  branchIds: string[];
   /** Phones logged in now */
   activeDevices: number;
   createdAt: string;
@@ -3961,6 +3976,8 @@ export interface StaffUserEntity {
   roles: StaffRole[];
   language: StaffLanguage;
   isActive: boolean;
+  /** Branches the user works for (fee desk scope) */
+  branchIds: string[];
   /** Phones logged in now */
   activeDevices: number;
   createdAt: string;
@@ -3978,6 +3995,8 @@ export interface UpdateStaffUserDto {
   phone?: string;
   roles?: StaffRole[];
   language?: StaffLanguage;
+  /** Branch IDs the user works for. Fee-desk staff see only these branches' admissions. On update, the list replaces the current one. */
+  branchIds?: string[];
 }
 
 export interface StaffLogoutDto {
@@ -4783,6 +4802,112 @@ export interface EnterFinalResultDto {
   result: FinalResultStatus;
   /** Why, for the audit log */
   reason?: string;
+}
+
+export interface FeeDeskAdmissionSummary {
+  admissionId: string;
+  /** The current GR, also when an old GR was searched */
+  grNumber: string;
+  name: string;
+  fatherName: string;
+  classLevelCode: string;
+  branchCode: string;
+  status: AdmissionStatus;
+  feePaid: boolean;
+}
+
+export interface FeeDeskClassLevel {
+  code: string;
+  name: string;
+}
+
+export type FeeDeskDocumentKind = (typeof FeeDeskDocumentKind)[keyof typeof FeeDeskDocumentKind];
+
+export const FeeDeskDocumentKind = {
+  IDENTITY_PROOF: 'IDENTITY_PROOF',
+  PHOTO: 'PHOTO',
+} as const;
+
+export interface FeeDeskDocument {
+  /** Asset ID */
+  id: string;
+  kind: FeeDeskDocumentKind;
+  /** Private and short-lived (5 minutes): fetch it, never store it */
+  thumbnailUrl: string;
+}
+
+export interface FeeDeskPaidBy {
+  name: string;
+}
+
+export interface FeeDeskFee {
+  paid: boolean;
+  /** @nullable */
+  paidAt?: string | null;
+  /**
+   * The admin or staff user who marked it
+   * @nullable
+   */
+  paidBy?: FeeDeskPaidBy | null;
+}
+
+export interface FeeDeskAdmissionDetail {
+  admissionId: string;
+  grNumber: string;
+  name: string;
+  fatherName: string;
+  gender: Gender;
+  classLevel: FeeDeskClassLevel;
+  branchCode: string;
+  status: AdmissionStatus;
+  documents: FeeDeskDocument[];
+  fee: FeeDeskFee;
+  /** No interview yet, and the class has a question set this session */
+  interviewRequired: boolean;
+  /** Send it back as expectedUpdatedAt when verifying */
+  updatedAt: string;
+}
+
+export interface FeeDeskUploadDocumentBodyDto {
+  kind: FeeDeskDocumentKind;
+  /** JPEG, PNG or WebP, at most 2 MB */
+  file: Blob;
+}
+
+export type FeeDeskVerificationDtoStatus =
+  (typeof FeeDeskVerificationDtoStatus)[keyof typeof FeeDeskVerificationDtoStatus];
+
+export const FeeDeskVerificationDtoStatus = {
+  VERIFIED: 'VERIFIED',
+  REJECTED: 'REJECTED',
+} as const;
+
+export interface FeeDeskVerificationDto {
+  status: FeeDeskVerificationDtoStatus;
+  /** Required when rejecting */
+  reason?: string;
+  /** The detail's updatedAt when the phone read it */
+  expectedUpdatedAt: string;
+}
+
+export interface FeeDeskFeePaidDto {
+  /** Made on the phone; a retry sends the same one */
+  idempotencyKey: string;
+}
+
+export interface FeeDeskSlip {
+  grNumber: string;
+  name: string;
+  fatherName: string;
+  /** Printable class name */
+  classLevel: string;
+  /** Printable branch name */
+  branch: string;
+  /** Only when the student is placed */
+  sectionName?: string;
+  interviewRequired: boolean;
+  /** For the QR code: the plain GR */
+  qrPayload: string;
 }
 
 export type AssetsControllerUploadPublicParams = {
