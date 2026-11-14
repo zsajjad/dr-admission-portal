@@ -20,6 +20,8 @@ import {
 
 import { SessionFilter } from '@/components/SessionFilter';
 
+import { StaffRole } from '@/providers/service/app.schemas';
+
 import { FormattedMessage } from '@/theme/FormattedMessage';
 
 import { useListingFilters } from '@/hooks/useListingFilters';
@@ -28,6 +30,7 @@ import { extractNetworkError } from '@/utils/extractNetworkError';
 
 import { TestingWindow, useCloseWindow, useWindows, windowStatus } from '../../api/setup';
 import { ActionDialog } from '../../components/ActionDialog';
+import { useStaffByRole } from '../../components/StaffUserSelect';
 import { useSessions } from '../../components/useCurrentSession';
 import { useNotify } from '../../components/useNotify';
 import common from '../../messages';
@@ -50,6 +53,8 @@ export function WindowList() {
   const notify = useNotify();
   const { filters, setFilter } = useListingFilters<{ sessionId?: string }>();
   const { current } = useSessions();
+  const { staff: testers } = useStaffByRole(StaffRole.TESTER);
+  const testerNames = new Map(testers.map((t) => [t.id, t.name]));
   const sessionId = filters.sessionId;
 
   // Start on the current session
@@ -57,7 +62,7 @@ export function WindowList() {
     if (!sessionId && current) setFilter({ sessionId: current.id });
   }, [sessionId, current, setFilter]);
 
-  const { data, isLoading, error } = useWindows({ sessionId, take: 200 });
+  const { data, isLoading, error } = useWindows({ sessionId, take: 100 });
   const close = useCloseWindow();
   const [dialog, setDialog] = useState<{ window?: TestingWindow } | null>(null);
   const [closing, setClosing] = useState<TestingWindow | null>(null);
@@ -92,7 +97,7 @@ export function WindowList() {
         <FormattedMessage {...messages.help} />
       </Typography>
 
-      {error && (
+      {!!error && (
         <Alert severity="error">
           <FormattedMessage {...common.loadError} />: {extractNetworkError(error)}
         </Alert>
@@ -120,16 +125,13 @@ export function WindowList() {
               <TableCell>
                 <FormattedMessage {...messages.testers} />
               </TableCell>
-              <TableCell align="right">
-                <FormattedMessage {...messages.graded} />
-              </TableCell>
               {canManage && <TableCell />}
             </TableRow>
           </TableHead>
           <TableBody>
             {!sessionId && (
               <TableRow>
-                <TableCell colSpan={8}>
+                <TableCell colSpan={7}>
                   <Typography color="text.secondary" sx={{ py: 2, textAlign: 'center' }}>
                     <FormattedMessage {...messages.pickSession} />
                   </Typography>
@@ -140,14 +142,14 @@ export function WindowList() {
               isLoading &&
               Array.from({ length: 3 }).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell colSpan={8}>
+                  <TableCell colSpan={7}>
                     <Skeleton height={28} />
                   </TableCell>
                 </TableRow>
               ))}
             {sessionId && !isLoading && windows.length === 0 && (
               <TableRow>
-                <TableCell colSpan={8}>
+                <TableCell colSpan={7}>
                   <Typography color="text.secondary" sx={{ py: 2, textAlign: 'center' }}>
                     <FormattedMessage {...messages.noWindows} />
                   </Typography>
@@ -160,7 +162,7 @@ export function WindowList() {
               return (
                 <TableRow key={w.id} hover>
                   <TableCell sx={{ fontWeight: 600 }}>{w.name}</TableCell>
-                  <TableCell>{w.branch?.name ?? <FormattedMessage {...common.allBranches} />}</TableCell>
+                  <TableCell>{w.branchCode ?? <FormattedMessage {...common.allBranches} />}</TableCell>
                   <TableCell>{formatDateTime(w.opensAt)}</TableCell>
                   <TableCell>
                     {formatDateTime(w.closesAt)}
@@ -178,15 +180,14 @@ export function WindowList() {
                     />
                   </TableCell>
                   <TableCell sx={{ maxWidth: 260 }}>
-                    {w.testers.length ? (
-                      w.testers.map((t) => t.name).join(', ')
+                    {w.testerStaffUserIds.length ? (
+                      w.testerStaffUserIds.map((id) => testerNames.get(id) ?? id).join(', ')
                     ) : (
                       <Typography variant="body2" color="text.secondary">
                         <FormattedMessage {...messages.everyTester} />
                       </Typography>
                     )}
                   </TableCell>
-                  <TableCell align="right">{w.gradedCount ?? '--'}</TableCell>
                   {canManage && (
                     <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>
                       <Button size="small" onClick={() => setDialog({ window: w })}>

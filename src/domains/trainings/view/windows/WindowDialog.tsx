@@ -56,7 +56,7 @@ export function WindowDialog({ open, onClose, window: editing, defaultSessionId 
     setBranchId(editing?.branchId ?? ALL);
     setOpensAt(toLocalInput(editing?.opensAt));
     setClosesAt(toLocalInput(editing?.closesAt));
-    setTesterIds(editing?.testers.map((t) => t.id) ?? []);
+    setTesterIds(editing?.testerStaffUserIds ?? []);
     setSubmitted(false);
   }, [open, editing, defaultSessionId]);
 
@@ -73,7 +73,7 @@ export function WindowDialog({ open, onClose, window: editing, defaultSessionId 
     const data = {
       sessionId,
       name: name.trim(),
-      branchId: branchId === ALL ? null : branchId,
+      ...(branchId !== ALL && { branchId }),
       ...(opensIso && { opensAt: opensIso }),
       closesAt: closesIso,
       testerStaffUserIds: testerIds,

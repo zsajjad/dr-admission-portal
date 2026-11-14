@@ -117,7 +117,12 @@ export function AgeMatrixEditor() {
     if (issues.length) return;
     replace.mutate(
       {
-        rules: input.map((r) => ({ minAge: r.minAge, maxAge: r.maxAge, gender: r.gender, courseId: r.courseId })),
+        rules: input.map((r) => ({
+          minAge: r.minAge,
+          maxAge: r.maxAge,
+          ...(r.gender && { gender: r.gender }),
+          courseId: r.courseId,
+        })),
       },
       { onSuccess: () => notify.success(savedText), onError: notify.error },
     );
