@@ -61,15 +61,15 @@ export type LedgerEntry = TrainerLedgerEntryEntity;
 export type AttemptRow = TrainingAttemptRowEntity;
 
 /**
- * A required training in the enrollment. Improving a pass from an earlier session (below 90%) is
- * typed here until core's export has it: it pays only if it reaches a higher band.
+ * A training in the enrollment: REQUIRED, or an IMPROVEMENT of a pass below 90% from an earlier
+ * session, which pays only if it reaches a higher band than `previousBand`.
  */
-export type EnrollmentItem = EnrollmentItemEntity & { improvingFromPct?: number | null };
-export type EnrollmentDetail = Omit<TrainingEnrollmentDetailEntity, 'trainings'> & { trainings: EnrollmentItem[] };
+export type EnrollmentItem = EnrollmentItemEntity;
+export type EnrollmentDetail = TrainingEnrollmentDetailEntity;
 
-/** A pass, with whether it can still be improved in a later session (typed until core's export has it) */
-export type TrainingPass = TrainingPassEntity & { improvable?: boolean };
-export type StudentTrainings = Omit<StudentTrainingsDto, 'passed'> & { passed: TrainingPass[] };
+/** A pass for good, with its best score and whether it can still be improved */
+export type TrainingPass = TrainingPassEntity;
+export type StudentTrainings = StudentTrainingsDto;
 
 export type ItemProgress = 'DONE' | 'CAN_RETRAIN' | 'FAILED' | 'PENDING';
 
@@ -108,13 +108,11 @@ export const useRevokePass = () =>
   );
 
 /**
- * Enroll in this session: core answers 400 NOTHING_REQUIRED or 409 ALREADY_ENROLLED.
- * `improveTrainingIds` adds passes below 90% from earlier sessions (typed until core's export has it).
+ * Enroll in this session: core answers 400 NOTHING_REQUIRED, INVALID_IMPROVE_SET or 409 ALREADY_ENROLLED.
+ * `improveTrainingIds` adds passes below 90% from earlier sessions.
  */
 export const useEnroll = () =>
-  useTrainingsMutation((data: CreateTrainingEnrollmentDto & { improveTrainingIds?: string[] }) =>
-    trainingsAdminControllerEnroll(data),
-  );
+  useTrainingsMutation((data: CreateTrainingEnrollmentDto) => trainingsAdminControllerEnroll(data));
 
 /** Full reassignment: progress and the payout move. Refused on a closed enrollment. */
 export const useReassignTrainer = () =>

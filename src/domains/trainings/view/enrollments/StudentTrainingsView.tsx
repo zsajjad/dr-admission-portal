@@ -300,7 +300,7 @@ export function StudentTrainingsView({ studentId }: { studentId: string }) {
                       <TableCell sx={{ fontWeight: 600 }}>{[p.code, p.name].filter(Boolean).join(' · ')}</TableCell>
                       <TableCell>{formatDate(p.passedAt)}</TableCell>
                       <TableCell>
-                        {formatPct(p.scorePct)}
+                        {formatPct(p.bestScorePct)}
                         {p.improvable && (
                           <Chip
                             size="small"

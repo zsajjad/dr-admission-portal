@@ -90,7 +90,8 @@ export default defineMessages({
   ruleLine: { id: `${scope}.ruleLine`, defaultMessage: 'Pass {pass}/{max} · pays {floor}–{top}' },
   improvingFrom: {
     id: `${scope}.improvingFrom`,
-    defaultMessage: 'Improving from {pct}, passed in an earlier session. It pays only if it reaches a higher band.',
+    defaultMessage:
+      'Improving a pass from an earlier session ({pct}, band {band}). It pays only if it reaches a higher band.',
   },
   decisionDueV3: {
     id: `${scope}.decisionDueV3`,

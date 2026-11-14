@@ -301,11 +301,14 @@ export function EnrollmentDetailBody({ enrollment: e }: { enrollment: Enrollment
                           }}
                         />
                       </Typography>
-                      {item.improvingFromPct !== undefined && item.improvingFromPct !== null && (
+                      {item.kind === 'IMPROVEMENT' && (
                         <Typography variant="caption" color="info.main" sx={{ display: 'block' }}>
                           <FormattedMessage
                             {...messages.improvingFrom}
-                            values={{ pct: formatPct(item.improvingFromPct) }}
+                            values={{
+                              pct: formatPct(item.previousBestPct),
+                              band: formatAmount(item.previousBand),
+                            }}
                           />
                         </Typography>
                       )}

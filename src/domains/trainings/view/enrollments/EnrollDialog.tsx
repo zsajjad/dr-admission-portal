@@ -166,7 +166,7 @@ export function EnrollDialog({ open, onClose, studentId: givenStudentId }: Enrol
           >
             {improvable.map((p) => (
               <MenuItem key={p.trainingId} value={p.trainingId}>
-                {p.code} · {p.name} ({formatPct(p.scorePct)})
+                {p.code} · {p.name} ({formatPct(p.bestScorePct)})
               </MenuItem>
             ))}
           </TextField>
