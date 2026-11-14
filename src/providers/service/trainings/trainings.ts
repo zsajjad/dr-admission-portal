@@ -21,25 +21,26 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  AgeRulesResponseDto,
+  AddTrainingPassDto,
   ApproveLedgerDto,
   CloseTestingWindowDto,
   CreateTestingWindowDto,
-  CreateTrainingCourseDto,
+  CreateTrainingDto,
   CreateTrainingEnrollmentDto,
   LedgerActionResponseDto,
   ListLedgerResponseDto,
   ListLedgerTrainersResponseDto,
   ListTestingWindowsResponseDto,
-  ListTrainingCoursesResponseDto,
+  ListTrainingAttemptsResponseDto,
   ListTrainingEnrollmentsResponseDto,
+  ListTrainingsResponseDto,
   OverrideMarksDto,
   PayoutReportDto,
   PipelineReportDto,
   ReasonDto,
+  RecordAdhocDto,
   RecordAdjustmentDto,
   RecordPaymentDto,
-  ReplaceAgeRulesDto,
   ResultsReportDto,
   RunClockResponseDto,
   SetTesterDto,
@@ -48,24 +49,29 @@ import type {
   TesterReportDto,
   TestingWindowResponseDto,
   TrainerReportDto,
-  TrainingCourseResponseDto,
   TrainingEnrollmentResponseDto,
   TrainingLevelReportDto,
+  TrainingPassesResponseDto,
+  TrainingResponseDto,
+  TrainingSettingsResponseDto,
+  TrainingsAdminControllerAttemptsParams,
   TrainingsAdminControllerListParams,
+  TrainingsAdminControllerPassesParams,
   TrainingsAdminControllerPipelineParams,
-  TrainingsAdminControllerResolveParams,
+  TrainingsAdminControllerRequiredParams,
   TrainingsAdminControllerResultsParams,
   TrainingsAdminControllerTestersParams,
   TrainingsAdminControllerTrainersParams,
   TrainingsAdminControllerTrainingsParams,
-  TrainingsConfigControllerListCoursesParams,
+  TrainingsConfigControllerListParams,
   TrainingsConfigControllerListWindowsParams,
   TrainingsLedgerControllerExportParams,
   TrainingsLedgerControllerListParams,
   TrainingsLedgerControllerPayoutsParams,
   TrainingsLedgerControllerTrainersParams,
   UpdateTestingWindowDto,
-  UpdateTrainingCourseDto,
+  UpdateTrainingDto,
+  UpdateTrainingSettingsDto,
   VoidLedgerEntryDto,
 } from '../app.schemas';
 
@@ -86,104 +92,99 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export const trainingsConfigControllerListCourses = (
-  params?: TrainingsConfigControllerListCoursesParams,
-  signal?: AbortSignal,
-) => {
-  return service<ListTrainingCoursesResponseDto>({ url: `/trainings/courses`, method: 'GET', params, signal });
+export const trainingsConfigControllerList = (params?: TrainingsConfigControllerListParams, signal?: AbortSignal) => {
+  return service<ListTrainingsResponseDto>({ url: `/trainings/catalog`, method: 'GET', params, signal });
 };
 
-export const getTrainingsConfigControllerListCoursesQueryKey = (
-  params?: TrainingsConfigControllerListCoursesParams,
-) => {
-  return [`/trainings/courses`, ...(params ? [params] : [])] as const;
+export const getTrainingsConfigControllerListQueryKey = (params?: TrainingsConfigControllerListParams) => {
+  return [`/trainings/catalog`, ...(params ? [params] : [])] as const;
 };
 
-export const getTrainingsConfigControllerListCoursesQueryOptions = <
-  TData = Awaited<ReturnType<typeof trainingsConfigControllerListCourses>>,
+export const getTrainingsConfigControllerListQueryOptions = <
+  TData = Awaited<ReturnType<typeof trainingsConfigControllerList>>,
   TError = void,
 >(
-  params?: TrainingsConfigControllerListCoursesParams,
+  params?: TrainingsConfigControllerListParams,
   options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerListCourses>>, TError, TData>>;
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerList>>, TError, TData>>;
   },
 ) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getTrainingsConfigControllerListCoursesQueryKey(params);
+  const queryKey = queryOptions?.queryKey ?? getTrainingsConfigControllerListQueryKey(params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof trainingsConfigControllerListCourses>>> = ({ signal }) =>
-    trainingsConfigControllerListCourses(params, signal);
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof trainingsConfigControllerList>>> = ({ signal }) =>
+    trainingsConfigControllerList(params, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof trainingsConfigControllerListCourses>>,
+    Awaited<ReturnType<typeof trainingsConfigControllerList>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type TrainingsConfigControllerListCoursesQueryResult = NonNullable<
-  Awaited<ReturnType<typeof trainingsConfigControllerListCourses>>
+export type TrainingsConfigControllerListQueryResult = NonNullable<
+  Awaited<ReturnType<typeof trainingsConfigControllerList>>
 >;
-export type TrainingsConfigControllerListCoursesQueryError = void;
+export type TrainingsConfigControllerListQueryError = void;
 
-export function useTrainingsConfigControllerListCourses<
-  TData = Awaited<ReturnType<typeof trainingsConfigControllerListCourses>>,
+export function useTrainingsConfigControllerList<
+  TData = Awaited<ReturnType<typeof trainingsConfigControllerList>>,
   TError = void,
 >(
-  params: undefined | TrainingsConfigControllerListCoursesParams,
+  params: undefined | TrainingsConfigControllerListParams,
   options: {
-    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerListCourses>>, TError, TData>> &
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerList>>, TError, TData>> &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof trainingsConfigControllerListCourses>>,
+          Awaited<ReturnType<typeof trainingsConfigControllerList>>,
           TError,
-          Awaited<ReturnType<typeof trainingsConfigControllerListCourses>>
+          Awaited<ReturnType<typeof trainingsConfigControllerList>>
         >,
         'initialData'
       >;
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useTrainingsConfigControllerListCourses<
-  TData = Awaited<ReturnType<typeof trainingsConfigControllerListCourses>>,
+export function useTrainingsConfigControllerList<
+  TData = Awaited<ReturnType<typeof trainingsConfigControllerList>>,
   TError = void,
 >(
-  params?: TrainingsConfigControllerListCoursesParams,
+  params?: TrainingsConfigControllerListParams,
   options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerListCourses>>, TError, TData>> &
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerList>>, TError, TData>> &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof trainingsConfigControllerListCourses>>,
+          Awaited<ReturnType<typeof trainingsConfigControllerList>>,
           TError,
-          Awaited<ReturnType<typeof trainingsConfigControllerListCourses>>
+          Awaited<ReturnType<typeof trainingsConfigControllerList>>
         >,
         'initialData'
       >;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useTrainingsConfigControllerListCourses<
-  TData = Awaited<ReturnType<typeof trainingsConfigControllerListCourses>>,
+export function useTrainingsConfigControllerList<
+  TData = Awaited<ReturnType<typeof trainingsConfigControllerList>>,
   TError = void,
 >(
-  params?: TrainingsConfigControllerListCoursesParams,
+  params?: TrainingsConfigControllerListParams,
   options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerListCourses>>, TError, TData>>;
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerList>>, TError, TData>>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useTrainingsConfigControllerListCourses<
-  TData = Awaited<ReturnType<typeof trainingsConfigControllerListCourses>>,
+export function useTrainingsConfigControllerList<
+  TData = Awaited<ReturnType<typeof trainingsConfigControllerList>>,
   TError = void,
 >(
-  params?: TrainingsConfigControllerListCoursesParams,
+  params?: TrainingsConfigControllerListParams,
   options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerListCourses>>, TError, TData>>;
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerList>>, TError, TData>>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getTrainingsConfigControllerListCoursesQueryOptions(params, options);
+  const queryOptions = getTrainingsConfigControllerListQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
@@ -192,36 +193,32 @@ export function useTrainingsConfigControllerListCourses<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export const trainingsConfigControllerCreateCourse = (
-  createTrainingCourseDto: CreateTrainingCourseDto,
-  signal?: AbortSignal,
-) => {
-  return service<TrainingCourseResponseDto>({
-    url: `/trainings/courses`,
+export const trainingsConfigControllerCreate = (createTrainingDto: CreateTrainingDto, signal?: AbortSignal) => {
+  return service<TrainingResponseDto>({
+    url: `/trainings/catalog`,
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    data: createTrainingCourseDto,
+    data: createTrainingDto,
     signal,
   });
 };
 
-export const getTrainingsConfigControllerCreateCourseMutationKey = () =>
-  ['trainingsConfigControllerCreateCourse'] as const;
+export const getTrainingsConfigControllerCreateMutationKey = () => ['trainingsConfigControllerCreate'] as const;
 
-export const getTrainingsConfigControllerCreateCourseMutationOptions = <TError = void, TContext = unknown>(options?: {
+export const getTrainingsConfigControllerCreateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof trainingsConfigControllerCreateCourse>>,
+    Awaited<ReturnType<typeof trainingsConfigControllerCreate>>,
     TError,
-    TrainingsConfigControllerCreateCourseMutationVariables,
+    TrainingsConfigControllerCreateMutationVariables,
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof trainingsConfigControllerCreateCourse>>,
+  Awaited<ReturnType<typeof trainingsConfigControllerCreate>>,
   TError,
-  TrainingsConfigControllerCreateCourseMutationVariables,
+  TrainingsConfigControllerCreateMutationVariables,
   TContext
 > => {
-  const mutationKey = getTrainingsConfigControllerCreateCourseMutationKey();
+  const mutationKey = getTrainingsConfigControllerCreateMutationKey();
   const { mutation: mutationOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
@@ -229,135 +226,135 @@ export const getTrainingsConfigControllerCreateCourseMutationOptions = <TError =
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof trainingsConfigControllerCreateCourse>>,
-    TrainingsConfigControllerCreateCourseMutationVariables
+    Awaited<ReturnType<typeof trainingsConfigControllerCreate>>,
+    TrainingsConfigControllerCreateMutationVariables
   > = (props) => {
     const { data } = props ?? {};
 
-    return trainingsConfigControllerCreateCourse(data);
+    return trainingsConfigControllerCreate(data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type TrainingsConfigControllerCreateCourseMutationResult = NonNullable<
-  Awaited<ReturnType<typeof trainingsConfigControllerCreateCourse>>
+export type TrainingsConfigControllerCreateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof trainingsConfigControllerCreate>>
 >;
-export type TrainingsConfigControllerCreateCourseMutationBody = CreateTrainingCourseDto;
-export type TrainingsConfigControllerCreateCourseMutationError = void;
-export type TrainingsConfigControllerCreateCourseMutationVariables = { data: CreateTrainingCourseDto };
+export type TrainingsConfigControllerCreateMutationBody = CreateTrainingDto;
+export type TrainingsConfigControllerCreateMutationError = void;
+export type TrainingsConfigControllerCreateMutationVariables = { data: CreateTrainingDto };
 
-export const useTrainingsConfigControllerCreateCourse = <TError = void, TContext = unknown>(
+export const useTrainingsConfigControllerCreate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof trainingsConfigControllerCreateCourse>>,
+      Awaited<ReturnType<typeof trainingsConfigControllerCreate>>,
       TError,
-      TrainingsConfigControllerCreateCourseMutationVariables,
+      TrainingsConfigControllerCreateMutationVariables,
       TContext
     >;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof trainingsConfigControllerCreateCourse>>,
+  Awaited<ReturnType<typeof trainingsConfigControllerCreate>>,
   TError,
-  TrainingsConfigControllerCreateCourseMutationVariables,
+  TrainingsConfigControllerCreateMutationVariables,
   TContext
 > => {
-  return useMutation(getTrainingsConfigControllerCreateCourseMutationOptions(options), queryClient);
+  return useMutation(getTrainingsConfigControllerCreateMutationOptions(options), queryClient);
 };
-export const trainingsConfigControllerGetCourse = (id: string, signal?: AbortSignal) => {
-  return service<TrainingCourseResponseDto>({ url: `/trainings/courses/${id}`, method: 'GET', signal });
-};
-
-export const getTrainingsConfigControllerGetCourseQueryKey = (id: string) => {
-  return [`/trainings/courses/${id}`] as const;
+export const trainingsConfigControllerGet = (id: string, signal?: AbortSignal) => {
+  return service<TrainingResponseDto>({ url: `/trainings/catalog/${id}`, method: 'GET', signal });
 };
 
-export const getTrainingsConfigControllerGetCourseQueryOptions = <
-  TData = Awaited<ReturnType<typeof trainingsConfigControllerGetCourse>>,
+export const getTrainingsConfigControllerGetQueryKey = (id: string) => {
+  return [`/trainings/catalog/${id}`] as const;
+};
+
+export const getTrainingsConfigControllerGetQueryOptions = <
+  TData = Awaited<ReturnType<typeof trainingsConfigControllerGet>>,
   TError = void,
 >(
   id: string,
   options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerGetCourse>>, TError, TData>>;
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerGet>>, TError, TData>>;
   },
 ) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getTrainingsConfigControllerGetCourseQueryKey(id);
+  const queryKey = queryOptions?.queryKey ?? getTrainingsConfigControllerGetQueryKey(id);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof trainingsConfigControllerGetCourse>>> = ({ signal }) =>
-    trainingsConfigControllerGetCourse(id, signal);
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof trainingsConfigControllerGet>>> = ({ signal }) =>
+    trainingsConfigControllerGet(id, signal);
 
   return { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof trainingsConfigControllerGetCourse>>,
+    Awaited<ReturnType<typeof trainingsConfigControllerGet>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type TrainingsConfigControllerGetCourseQueryResult = NonNullable<
-  Awaited<ReturnType<typeof trainingsConfigControllerGetCourse>>
+export type TrainingsConfigControllerGetQueryResult = NonNullable<
+  Awaited<ReturnType<typeof trainingsConfigControllerGet>>
 >;
-export type TrainingsConfigControllerGetCourseQueryError = void;
+export type TrainingsConfigControllerGetQueryError = void;
 
-export function useTrainingsConfigControllerGetCourse<
-  TData = Awaited<ReturnType<typeof trainingsConfigControllerGetCourse>>,
+export function useTrainingsConfigControllerGet<
+  TData = Awaited<ReturnType<typeof trainingsConfigControllerGet>>,
   TError = void,
 >(
   id: string,
   options: {
-    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerGetCourse>>, TError, TData>> &
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerGet>>, TError, TData>> &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof trainingsConfigControllerGetCourse>>,
+          Awaited<ReturnType<typeof trainingsConfigControllerGet>>,
           TError,
-          Awaited<ReturnType<typeof trainingsConfigControllerGetCourse>>
+          Awaited<ReturnType<typeof trainingsConfigControllerGet>>
         >,
         'initialData'
       >;
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useTrainingsConfigControllerGetCourse<
-  TData = Awaited<ReturnType<typeof trainingsConfigControllerGetCourse>>,
+export function useTrainingsConfigControllerGet<
+  TData = Awaited<ReturnType<typeof trainingsConfigControllerGet>>,
   TError = void,
 >(
   id: string,
   options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerGetCourse>>, TError, TData>> &
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerGet>>, TError, TData>> &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof trainingsConfigControllerGetCourse>>,
+          Awaited<ReturnType<typeof trainingsConfigControllerGet>>,
           TError,
-          Awaited<ReturnType<typeof trainingsConfigControllerGetCourse>>
+          Awaited<ReturnType<typeof trainingsConfigControllerGet>>
         >,
         'initialData'
       >;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useTrainingsConfigControllerGetCourse<
-  TData = Awaited<ReturnType<typeof trainingsConfigControllerGetCourse>>,
+export function useTrainingsConfigControllerGet<
+  TData = Awaited<ReturnType<typeof trainingsConfigControllerGet>>,
   TError = void,
 >(
   id: string,
   options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerGetCourse>>, TError, TData>>;
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerGet>>, TError, TData>>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useTrainingsConfigControllerGetCourse<
-  TData = Awaited<ReturnType<typeof trainingsConfigControllerGetCourse>>,
+export function useTrainingsConfigControllerGet<
+  TData = Awaited<ReturnType<typeof trainingsConfigControllerGet>>,
   TError = void,
 >(
   id: string,
   options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerGetCourse>>, TError, TData>>;
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerGet>>, TError, TData>>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getTrainingsConfigControllerGetCourseQueryOptions(id, options);
+  const queryOptions = getTrainingsConfigControllerGetQueryOptions(id, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
@@ -366,37 +363,36 @@ export function useTrainingsConfigControllerGetCourse<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export const trainingsConfigControllerUpdateCourse = (
+export const trainingsConfigControllerUpdate = (
   id: string,
-  updateTrainingCourseDto: UpdateTrainingCourseDto,
+  updateTrainingDto: UpdateTrainingDto,
   signal?: AbortSignal,
 ) => {
-  return service<TrainingCourseResponseDto>({
-    url: `/trainings/courses/${id}`,
+  return service<TrainingResponseDto>({
+    url: `/trainings/catalog/${id}`,
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
-    data: updateTrainingCourseDto,
+    data: updateTrainingDto,
     signal,
   });
 };
 
-export const getTrainingsConfigControllerUpdateCourseMutationKey = () =>
-  ['trainingsConfigControllerUpdateCourse'] as const;
+export const getTrainingsConfigControllerUpdateMutationKey = () => ['trainingsConfigControllerUpdate'] as const;
 
-export const getTrainingsConfigControllerUpdateCourseMutationOptions = <TError = void, TContext = unknown>(options?: {
+export const getTrainingsConfigControllerUpdateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof trainingsConfigControllerUpdateCourse>>,
+    Awaited<ReturnType<typeof trainingsConfigControllerUpdate>>,
     TError,
-    TrainingsConfigControllerUpdateCourseMutationVariables,
+    TrainingsConfigControllerUpdateMutationVariables,
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof trainingsConfigControllerUpdateCourse>>,
+  Awaited<ReturnType<typeof trainingsConfigControllerUpdate>>,
   TError,
-  TrainingsConfigControllerUpdateCourseMutationVariables,
+  TrainingsConfigControllerUpdateMutationVariables,
   TContext
 > => {
-  const mutationKey = getTrainingsConfigControllerUpdateCourseMutationKey();
+  const mutationKey = getTrainingsConfigControllerUpdateMutationKey();
   const { mutation: mutationOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
@@ -404,63 +400,62 @@ export const getTrainingsConfigControllerUpdateCourseMutationOptions = <TError =
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof trainingsConfigControllerUpdateCourse>>,
-    TrainingsConfigControllerUpdateCourseMutationVariables
+    Awaited<ReturnType<typeof trainingsConfigControllerUpdate>>,
+    TrainingsConfigControllerUpdateMutationVariables
   > = (props) => {
     const { id, data } = props ?? {};
 
-    return trainingsConfigControllerUpdateCourse(id, data);
+    return trainingsConfigControllerUpdate(id, data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type TrainingsConfigControllerUpdateCourseMutationResult = NonNullable<
-  Awaited<ReturnType<typeof trainingsConfigControllerUpdateCourse>>
+export type TrainingsConfigControllerUpdateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof trainingsConfigControllerUpdate>>
 >;
-export type TrainingsConfigControllerUpdateCourseMutationBody = UpdateTrainingCourseDto;
-export type TrainingsConfigControllerUpdateCourseMutationError = void;
-export type TrainingsConfigControllerUpdateCourseMutationVariables = { id: string; data: UpdateTrainingCourseDto };
+export type TrainingsConfigControllerUpdateMutationBody = UpdateTrainingDto;
+export type TrainingsConfigControllerUpdateMutationError = void;
+export type TrainingsConfigControllerUpdateMutationVariables = { id: string; data: UpdateTrainingDto };
 
-export const useTrainingsConfigControllerUpdateCourse = <TError = void, TContext = unknown>(
+export const useTrainingsConfigControllerUpdate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof trainingsConfigControllerUpdateCourse>>,
+      Awaited<ReturnType<typeof trainingsConfigControllerUpdate>>,
       TError,
-      TrainingsConfigControllerUpdateCourseMutationVariables,
+      TrainingsConfigControllerUpdateMutationVariables,
       TContext
     >;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof trainingsConfigControllerUpdateCourse>>,
+  Awaited<ReturnType<typeof trainingsConfigControllerUpdate>>,
   TError,
-  TrainingsConfigControllerUpdateCourseMutationVariables,
+  TrainingsConfigControllerUpdateMutationVariables,
   TContext
 > => {
-  return useMutation(getTrainingsConfigControllerUpdateCourseMutationOptions(options), queryClient);
+  return useMutation(getTrainingsConfigControllerUpdateMutationOptions(options), queryClient);
 };
-export const trainingsConfigControllerActivateCourse = (id: string, signal?: AbortSignal) => {
-  return service<TrainingCourseResponseDto>({ url: `/trainings/courses/${id}/activate`, method: 'PATCH', signal });
+export const trainingsConfigControllerActivate = (id: string, signal?: AbortSignal) => {
+  return service<TrainingResponseDto>({ url: `/trainings/catalog/${id}/activate`, method: 'PATCH', signal });
 };
 
-export const getTrainingsConfigControllerActivateCourseMutationKey = () =>
-  ['trainingsConfigControllerActivateCourse'] as const;
+export const getTrainingsConfigControllerActivateMutationKey = () => ['trainingsConfigControllerActivate'] as const;
 
-export const getTrainingsConfigControllerActivateCourseMutationOptions = <TError = void, TContext = unknown>(options?: {
+export const getTrainingsConfigControllerActivateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof trainingsConfigControllerActivateCourse>>,
+    Awaited<ReturnType<typeof trainingsConfigControllerActivate>>,
     TError,
-    TrainingsConfigControllerActivateCourseMutationVariables,
+    TrainingsConfigControllerActivateMutationVariables,
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof trainingsConfigControllerActivateCourse>>,
+  Awaited<ReturnType<typeof trainingsConfigControllerActivate>>,
   TError,
-  TrainingsConfigControllerActivateCourseMutationVariables,
+  TrainingsConfigControllerActivateMutationVariables,
   TContext
 > => {
-  const mutationKey = getTrainingsConfigControllerActivateCourseMutationKey();
+  const mutationKey = getTrainingsConfigControllerActivateMutationKey();
   const { mutation: mutationOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
@@ -468,66 +463,62 @@ export const getTrainingsConfigControllerActivateCourseMutationOptions = <TError
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof trainingsConfigControllerActivateCourse>>,
-    TrainingsConfigControllerActivateCourseMutationVariables
+    Awaited<ReturnType<typeof trainingsConfigControllerActivate>>,
+    TrainingsConfigControllerActivateMutationVariables
   > = (props) => {
     const { id } = props ?? {};
 
-    return trainingsConfigControllerActivateCourse(id);
+    return trainingsConfigControllerActivate(id);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type TrainingsConfigControllerActivateCourseMutationResult = NonNullable<
-  Awaited<ReturnType<typeof trainingsConfigControllerActivateCourse>>
+export type TrainingsConfigControllerActivateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof trainingsConfigControllerActivate>>
 >;
 
-export type TrainingsConfigControllerActivateCourseMutationError = void;
-export type TrainingsConfigControllerActivateCourseMutationVariables = { id: string };
+export type TrainingsConfigControllerActivateMutationError = void;
+export type TrainingsConfigControllerActivateMutationVariables = { id: string };
 
-export const useTrainingsConfigControllerActivateCourse = <TError = void, TContext = unknown>(
+export const useTrainingsConfigControllerActivate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof trainingsConfigControllerActivateCourse>>,
+      Awaited<ReturnType<typeof trainingsConfigControllerActivate>>,
       TError,
-      TrainingsConfigControllerActivateCourseMutationVariables,
+      TrainingsConfigControllerActivateMutationVariables,
       TContext
     >;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof trainingsConfigControllerActivateCourse>>,
+  Awaited<ReturnType<typeof trainingsConfigControllerActivate>>,
   TError,
-  TrainingsConfigControllerActivateCourseMutationVariables,
+  TrainingsConfigControllerActivateMutationVariables,
   TContext
 > => {
-  return useMutation(getTrainingsConfigControllerActivateCourseMutationOptions(options), queryClient);
+  return useMutation(getTrainingsConfigControllerActivateMutationOptions(options), queryClient);
 };
-export const trainingsConfigControllerDeactivateCourse = (id: string, signal?: AbortSignal) => {
-  return service<TrainingCourseResponseDto>({ url: `/trainings/courses/${id}/deactivate`, method: 'DELETE', signal });
+export const trainingsConfigControllerDeactivate = (id: string, signal?: AbortSignal) => {
+  return service<TrainingResponseDto>({ url: `/trainings/catalog/${id}/deactivate`, method: 'DELETE', signal });
 };
 
-export const getTrainingsConfigControllerDeactivateCourseMutationKey = () =>
-  ['trainingsConfigControllerDeactivateCourse'] as const;
+export const getTrainingsConfigControllerDeactivateMutationKey = () => ['trainingsConfigControllerDeactivate'] as const;
 
-export const getTrainingsConfigControllerDeactivateCourseMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
+export const getTrainingsConfigControllerDeactivateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof trainingsConfigControllerDeactivateCourse>>,
+    Awaited<ReturnType<typeof trainingsConfigControllerDeactivate>>,
     TError,
-    TrainingsConfigControllerDeactivateCourseMutationVariables,
+    TrainingsConfigControllerDeactivateMutationVariables,
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof trainingsConfigControllerDeactivateCourse>>,
+  Awaited<ReturnType<typeof trainingsConfigControllerDeactivate>>,
   TError,
-  TrainingsConfigControllerDeactivateCourseMutationVariables,
+  TrainingsConfigControllerDeactivateMutationVariables,
   TContext
 > => {
-  const mutationKey = getTrainingsConfigControllerDeactivateCourseMutationKey();
+  const mutationKey = getTrainingsConfigControllerDeactivateMutationKey();
   const { mutation: mutationOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
@@ -535,128 +526,128 @@ export const getTrainingsConfigControllerDeactivateCourseMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof trainingsConfigControllerDeactivateCourse>>,
-    TrainingsConfigControllerDeactivateCourseMutationVariables
+    Awaited<ReturnType<typeof trainingsConfigControllerDeactivate>>,
+    TrainingsConfigControllerDeactivateMutationVariables
   > = (props) => {
     const { id } = props ?? {};
 
-    return trainingsConfigControllerDeactivateCourse(id);
+    return trainingsConfigControllerDeactivate(id);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type TrainingsConfigControllerDeactivateCourseMutationResult = NonNullable<
-  Awaited<ReturnType<typeof trainingsConfigControllerDeactivateCourse>>
+export type TrainingsConfigControllerDeactivateMutationResult = NonNullable<
+  Awaited<ReturnType<typeof trainingsConfigControllerDeactivate>>
 >;
 
-export type TrainingsConfigControllerDeactivateCourseMutationError = void;
-export type TrainingsConfigControllerDeactivateCourseMutationVariables = { id: string };
+export type TrainingsConfigControllerDeactivateMutationError = void;
+export type TrainingsConfigControllerDeactivateMutationVariables = { id: string };
 
-export const useTrainingsConfigControllerDeactivateCourse = <TError = void, TContext = unknown>(
+export const useTrainingsConfigControllerDeactivate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof trainingsConfigControllerDeactivateCourse>>,
+      Awaited<ReturnType<typeof trainingsConfigControllerDeactivate>>,
       TError,
-      TrainingsConfigControllerDeactivateCourseMutationVariables,
+      TrainingsConfigControllerDeactivateMutationVariables,
       TContext
     >;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof trainingsConfigControllerDeactivateCourse>>,
+  Awaited<ReturnType<typeof trainingsConfigControllerDeactivate>>,
   TError,
-  TrainingsConfigControllerDeactivateCourseMutationVariables,
+  TrainingsConfigControllerDeactivateMutationVariables,
   TContext
 > => {
-  return useMutation(getTrainingsConfigControllerDeactivateCourseMutationOptions(options), queryClient);
+  return useMutation(getTrainingsConfigControllerDeactivateMutationOptions(options), queryClient);
 };
-export const trainingsConfigControllerListAgeRules = (signal?: AbortSignal) => {
-  return service<AgeRulesResponseDto>({ url: `/trainings/age-rules`, method: 'GET', signal });
-};
-
-export const getTrainingsConfigControllerListAgeRulesQueryKey = () => {
-  return [`/trainings/age-rules`] as const;
+export const trainingsConfigControllerGetSettings = (signal?: AbortSignal) => {
+  return service<TrainingSettingsResponseDto>({ url: `/trainings/settings`, method: 'GET', signal });
 };
 
-export const getTrainingsConfigControllerListAgeRulesQueryOptions = <
-  TData = Awaited<ReturnType<typeof trainingsConfigControllerListAgeRules>>,
+export const getTrainingsConfigControllerGetSettingsQueryKey = () => {
+  return [`/trainings/settings`] as const;
+};
+
+export const getTrainingsConfigControllerGetSettingsQueryOptions = <
+  TData = Awaited<ReturnType<typeof trainingsConfigControllerGetSettings>>,
   TError = void,
 >(options?: {
-  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerListAgeRules>>, TError, TData>>;
+  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerGetSettings>>, TError, TData>>;
 }) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getTrainingsConfigControllerListAgeRulesQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getTrainingsConfigControllerGetSettingsQueryKey();
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof trainingsConfigControllerListAgeRules>>> = ({ signal }) =>
-    trainingsConfigControllerListAgeRules(signal);
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof trainingsConfigControllerGetSettings>>> = ({ signal }) =>
+    trainingsConfigControllerGetSettings(signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof trainingsConfigControllerListAgeRules>>,
+    Awaited<ReturnType<typeof trainingsConfigControllerGetSettings>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type TrainingsConfigControllerListAgeRulesQueryResult = NonNullable<
-  Awaited<ReturnType<typeof trainingsConfigControllerListAgeRules>>
+export type TrainingsConfigControllerGetSettingsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof trainingsConfigControllerGetSettings>>
 >;
-export type TrainingsConfigControllerListAgeRulesQueryError = void;
+export type TrainingsConfigControllerGetSettingsQueryError = void;
 
-export function useTrainingsConfigControllerListAgeRules<
-  TData = Awaited<ReturnType<typeof trainingsConfigControllerListAgeRules>>,
+export function useTrainingsConfigControllerGetSettings<
+  TData = Awaited<ReturnType<typeof trainingsConfigControllerGetSettings>>,
   TError = void,
 >(
   options: {
-    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerListAgeRules>>, TError, TData>> &
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerGetSettings>>, TError, TData>> &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof trainingsConfigControllerListAgeRules>>,
+          Awaited<ReturnType<typeof trainingsConfigControllerGetSettings>>,
           TError,
-          Awaited<ReturnType<typeof trainingsConfigControllerListAgeRules>>
+          Awaited<ReturnType<typeof trainingsConfigControllerGetSettings>>
         >,
         'initialData'
       >;
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useTrainingsConfigControllerListAgeRules<
-  TData = Awaited<ReturnType<typeof trainingsConfigControllerListAgeRules>>,
+export function useTrainingsConfigControllerGetSettings<
+  TData = Awaited<ReturnType<typeof trainingsConfigControllerGetSettings>>,
   TError = void,
 >(
   options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerListAgeRules>>, TError, TData>> &
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerGetSettings>>, TError, TData>> &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof trainingsConfigControllerListAgeRules>>,
+          Awaited<ReturnType<typeof trainingsConfigControllerGetSettings>>,
           TError,
-          Awaited<ReturnType<typeof trainingsConfigControllerListAgeRules>>
+          Awaited<ReturnType<typeof trainingsConfigControllerGetSettings>>
         >,
         'initialData'
       >;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useTrainingsConfigControllerListAgeRules<
-  TData = Awaited<ReturnType<typeof trainingsConfigControllerListAgeRules>>,
+export function useTrainingsConfigControllerGetSettings<
+  TData = Awaited<ReturnType<typeof trainingsConfigControllerGetSettings>>,
   TError = void,
 >(
   options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerListAgeRules>>, TError, TData>>;
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerGetSettings>>, TError, TData>>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useTrainingsConfigControllerListAgeRules<
-  TData = Awaited<ReturnType<typeof trainingsConfigControllerListAgeRules>>,
+export function useTrainingsConfigControllerGetSettings<
+  TData = Awaited<ReturnType<typeof trainingsConfigControllerGetSettings>>,
   TError = void,
 >(
   options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerListAgeRules>>, TError, TData>>;
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsConfigControllerGetSettings>>, TError, TData>>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getTrainingsConfigControllerListAgeRulesQueryOptions(options);
+  const queryOptions = getTrainingsConfigControllerGetSettingsQueryOptions(options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
@@ -665,39 +656,36 @@ export function useTrainingsConfigControllerListAgeRules<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export const trainingsConfigControllerReplaceAgeRules = (
-  replaceAgeRulesDto: ReplaceAgeRulesDto,
+export const trainingsConfigControllerUpdateSettings = (
+  updateTrainingSettingsDto: UpdateTrainingSettingsDto,
   signal?: AbortSignal,
 ) => {
-  return service<AgeRulesResponseDto>({
-    url: `/trainings/age-rules`,
+  return service<TrainingSettingsResponseDto>({
+    url: `/trainings/settings`,
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    data: replaceAgeRulesDto,
+    data: updateTrainingSettingsDto,
     signal,
   });
 };
 
-export const getTrainingsConfigControllerReplaceAgeRulesMutationKey = () =>
-  ['trainingsConfigControllerReplaceAgeRules'] as const;
+export const getTrainingsConfigControllerUpdateSettingsMutationKey = () =>
+  ['trainingsConfigControllerUpdateSettings'] as const;
 
-export const getTrainingsConfigControllerReplaceAgeRulesMutationOptions = <
-  TError = void,
-  TContext = unknown,
->(options?: {
+export const getTrainingsConfigControllerUpdateSettingsMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
-    Awaited<ReturnType<typeof trainingsConfigControllerReplaceAgeRules>>,
+    Awaited<ReturnType<typeof trainingsConfigControllerUpdateSettings>>,
     TError,
-    TrainingsConfigControllerReplaceAgeRulesMutationVariables,
+    TrainingsConfigControllerUpdateSettingsMutationVariables,
     TContext
   >;
 }): UseMutationOptions<
-  Awaited<ReturnType<typeof trainingsConfigControllerReplaceAgeRules>>,
+  Awaited<ReturnType<typeof trainingsConfigControllerUpdateSettings>>,
   TError,
-  TrainingsConfigControllerReplaceAgeRulesMutationVariables,
+  TrainingsConfigControllerUpdateSettingsMutationVariables,
   TContext
 > => {
-  const mutationKey = getTrainingsConfigControllerReplaceAgeRulesMutationKey();
+  const mutationKey = getTrainingsConfigControllerUpdateSettingsMutationKey();
   const { mutation: mutationOptions } = options
     ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
       ? options
@@ -705,41 +693,41 @@ export const getTrainingsConfigControllerReplaceAgeRulesMutationOptions = <
     : { mutation: { mutationKey } };
 
   const mutationFn: MutationFunction<
-    Awaited<ReturnType<typeof trainingsConfigControllerReplaceAgeRules>>,
-    TrainingsConfigControllerReplaceAgeRulesMutationVariables
+    Awaited<ReturnType<typeof trainingsConfigControllerUpdateSettings>>,
+    TrainingsConfigControllerUpdateSettingsMutationVariables
   > = (props) => {
     const { data } = props ?? {};
 
-    return trainingsConfigControllerReplaceAgeRules(data);
+    return trainingsConfigControllerUpdateSettings(data);
   };
 
   return { mutationFn, ...mutationOptions };
 };
 
-export type TrainingsConfigControllerReplaceAgeRulesMutationResult = NonNullable<
-  Awaited<ReturnType<typeof trainingsConfigControllerReplaceAgeRules>>
+export type TrainingsConfigControllerUpdateSettingsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof trainingsConfigControllerUpdateSettings>>
 >;
-export type TrainingsConfigControllerReplaceAgeRulesMutationBody = ReplaceAgeRulesDto;
-export type TrainingsConfigControllerReplaceAgeRulesMutationError = void;
-export type TrainingsConfigControllerReplaceAgeRulesMutationVariables = { data: ReplaceAgeRulesDto };
+export type TrainingsConfigControllerUpdateSettingsMutationBody = UpdateTrainingSettingsDto;
+export type TrainingsConfigControllerUpdateSettingsMutationError = void;
+export type TrainingsConfigControllerUpdateSettingsMutationVariables = { data: UpdateTrainingSettingsDto };
 
-export const useTrainingsConfigControllerReplaceAgeRules = <TError = void, TContext = unknown>(
+export const useTrainingsConfigControllerUpdateSettings = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
-      Awaited<ReturnType<typeof trainingsConfigControllerReplaceAgeRules>>,
+      Awaited<ReturnType<typeof trainingsConfigControllerUpdateSettings>>,
       TError,
-      TrainingsConfigControllerReplaceAgeRulesMutationVariables,
+      TrainingsConfigControllerUpdateSettingsMutationVariables,
       TContext
     >;
   },
   queryClient?: QueryClient,
 ): UseMutationResult<
-  Awaited<ReturnType<typeof trainingsConfigControllerReplaceAgeRules>>,
+  Awaited<ReturnType<typeof trainingsConfigControllerUpdateSettings>>,
   TError,
-  TrainingsConfigControllerReplaceAgeRulesMutationVariables,
+  TrainingsConfigControllerUpdateSettingsMutationVariables,
   TContext
 > => {
-  return useMutation(getTrainingsConfigControllerReplaceAgeRulesMutationOptions(options), queryClient);
+  return useMutation(getTrainingsConfigControllerUpdateSettingsMutationOptions(options), queryClient);
 };
 export const trainingsConfigControllerListWindows = (
   params?: TrainingsConfigControllerListWindowsParams,
@@ -1547,102 +1535,102 @@ export function useTrainingsAdminControllerStudent<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
-export const trainingsAdminControllerResolve = (
-  params: TrainingsAdminControllerResolveParams,
+export const trainingsAdminControllerRequired = (
+  params: TrainingsAdminControllerRequiredParams,
   signal?: AbortSignal,
 ) => {
-  return service<StudentTrainingsResponseDto>({ url: `/trainings/age-rules/resolve`, method: 'GET', params, signal });
+  return service<StudentTrainingsResponseDto>({ url: `/trainings/required`, method: 'GET', params, signal });
 };
 
-export const getTrainingsAdminControllerResolveQueryKey = (params?: TrainingsAdminControllerResolveParams) => {
-  return [`/trainings/age-rules/resolve`, ...(params ? [params] : [])] as const;
+export const getTrainingsAdminControllerRequiredQueryKey = (params?: TrainingsAdminControllerRequiredParams) => {
+  return [`/trainings/required`, ...(params ? [params] : [])] as const;
 };
 
-export const getTrainingsAdminControllerResolveQueryOptions = <
-  TData = Awaited<ReturnType<typeof trainingsAdminControllerResolve>>,
+export const getTrainingsAdminControllerRequiredQueryOptions = <
+  TData = Awaited<ReturnType<typeof trainingsAdminControllerRequired>>,
   TError = void,
 >(
-  params: TrainingsAdminControllerResolveParams,
+  params: TrainingsAdminControllerRequiredParams,
   options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerResolve>>, TError, TData>>;
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerRequired>>, TError, TData>>;
   },
 ) => {
   const { query: queryOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getTrainingsAdminControllerResolveQueryKey(params);
+  const queryKey = queryOptions?.queryKey ?? getTrainingsAdminControllerRequiredQueryKey(params);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof trainingsAdminControllerResolve>>> = ({ signal }) =>
-    trainingsAdminControllerResolve(params, signal);
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof trainingsAdminControllerRequired>>> = ({ signal }) =>
+    trainingsAdminControllerRequired(params, signal);
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof trainingsAdminControllerResolve>>,
+    Awaited<ReturnType<typeof trainingsAdminControllerRequired>>,
     TError,
     TData
   > & { queryKey: DataTag<QueryKey, TData, TError> };
 };
 
-export type TrainingsAdminControllerResolveQueryResult = NonNullable<
-  Awaited<ReturnType<typeof trainingsAdminControllerResolve>>
+export type TrainingsAdminControllerRequiredQueryResult = NonNullable<
+  Awaited<ReturnType<typeof trainingsAdminControllerRequired>>
 >;
-export type TrainingsAdminControllerResolveQueryError = void;
+export type TrainingsAdminControllerRequiredQueryError = void;
 
-export function useTrainingsAdminControllerResolve<
-  TData = Awaited<ReturnType<typeof trainingsAdminControllerResolve>>,
+export function useTrainingsAdminControllerRequired<
+  TData = Awaited<ReturnType<typeof trainingsAdminControllerRequired>>,
   TError = void,
 >(
-  params: TrainingsAdminControllerResolveParams,
+  params: TrainingsAdminControllerRequiredParams,
   options: {
-    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerResolve>>, TError, TData>> &
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerRequired>>, TError, TData>> &
       Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof trainingsAdminControllerResolve>>,
+          Awaited<ReturnType<typeof trainingsAdminControllerRequired>>,
           TError,
-          Awaited<ReturnType<typeof trainingsAdminControllerResolve>>
+          Awaited<ReturnType<typeof trainingsAdminControllerRequired>>
         >,
         'initialData'
       >;
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useTrainingsAdminControllerResolve<
-  TData = Awaited<ReturnType<typeof trainingsAdminControllerResolve>>,
+export function useTrainingsAdminControllerRequired<
+  TData = Awaited<ReturnType<typeof trainingsAdminControllerRequired>>,
   TError = void,
 >(
-  params: TrainingsAdminControllerResolveParams,
+  params: TrainingsAdminControllerRequiredParams,
   options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerResolve>>, TError, TData>> &
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerRequired>>, TError, TData>> &
       Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof trainingsAdminControllerResolve>>,
+          Awaited<ReturnType<typeof trainingsAdminControllerRequired>>,
           TError,
-          Awaited<ReturnType<typeof trainingsAdminControllerResolve>>
+          Awaited<ReturnType<typeof trainingsAdminControllerRequired>>
         >,
         'initialData'
       >;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useTrainingsAdminControllerResolve<
-  TData = Awaited<ReturnType<typeof trainingsAdminControllerResolve>>,
+export function useTrainingsAdminControllerRequired<
+  TData = Awaited<ReturnType<typeof trainingsAdminControllerRequired>>,
   TError = void,
 >(
-  params: TrainingsAdminControllerResolveParams,
+  params: TrainingsAdminControllerRequiredParams,
   options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerResolve>>, TError, TData>>;
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerRequired>>, TError, TData>>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-export function useTrainingsAdminControllerResolve<
-  TData = Awaited<ReturnType<typeof trainingsAdminControllerResolve>>,
+export function useTrainingsAdminControllerRequired<
+  TData = Awaited<ReturnType<typeof trainingsAdminControllerRequired>>,
   TError = void,
 >(
-  params: TrainingsAdminControllerResolveParams,
+  params: TrainingsAdminControllerRequiredParams,
   options?: {
-    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerResolve>>, TError, TData>>;
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerRequired>>, TError, TData>>;
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-  const queryOptions = getTrainingsAdminControllerResolveQueryOptions(params, options);
+  const queryOptions = getTrainingsAdminControllerRequiredQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
@@ -1651,6 +1639,245 @@ export function useTrainingsAdminControllerResolve<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
+export const trainingsAdminControllerPasses = (params: TrainingsAdminControllerPassesParams, signal?: AbortSignal) => {
+  return service<TrainingPassesResponseDto>({ url: `/trainings/passes`, method: 'GET', params, signal });
+};
+
+export const getTrainingsAdminControllerPassesQueryKey = (params?: TrainingsAdminControllerPassesParams) => {
+  return [`/trainings/passes`, ...(params ? [params] : [])] as const;
+};
+
+export const getTrainingsAdminControllerPassesQueryOptions = <
+  TData = Awaited<ReturnType<typeof trainingsAdminControllerPasses>>,
+  TError = void,
+>(
+  params: TrainingsAdminControllerPassesParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerPasses>>, TError, TData>>;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getTrainingsAdminControllerPassesQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof trainingsAdminControllerPasses>>> = ({ signal }) =>
+    trainingsAdminControllerPasses(params, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof trainingsAdminControllerPasses>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TrainingsAdminControllerPassesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof trainingsAdminControllerPasses>>
+>;
+export type TrainingsAdminControllerPassesQueryError = void;
+
+export function useTrainingsAdminControllerPasses<
+  TData = Awaited<ReturnType<typeof trainingsAdminControllerPasses>>,
+  TError = void,
+>(
+  params: TrainingsAdminControllerPassesParams,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerPasses>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof trainingsAdminControllerPasses>>,
+          TError,
+          Awaited<ReturnType<typeof trainingsAdminControllerPasses>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useTrainingsAdminControllerPasses<
+  TData = Awaited<ReturnType<typeof trainingsAdminControllerPasses>>,
+  TError = void,
+>(
+  params: TrainingsAdminControllerPassesParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerPasses>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof trainingsAdminControllerPasses>>,
+          TError,
+          Awaited<ReturnType<typeof trainingsAdminControllerPasses>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useTrainingsAdminControllerPasses<
+  TData = Awaited<ReturnType<typeof trainingsAdminControllerPasses>>,
+  TError = void,
+>(
+  params: TrainingsAdminControllerPassesParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerPasses>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useTrainingsAdminControllerPasses<
+  TData = Awaited<ReturnType<typeof trainingsAdminControllerPasses>>,
+  TError = void,
+>(
+  params: TrainingsAdminControllerPassesParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerPasses>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getTrainingsAdminControllerPassesQueryOptions(params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export const trainingsAdminControllerAddPass = (addTrainingPassDto: AddTrainingPassDto, signal?: AbortSignal) => {
+  return service<TrainingPassesResponseDto>({
+    url: `/trainings/passes`,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    data: addTrainingPassDto,
+    signal,
+  });
+};
+
+export const getTrainingsAdminControllerAddPassMutationKey = () => ['trainingsAdminControllerAddPass'] as const;
+
+export const getTrainingsAdminControllerAddPassMutationOptions = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof trainingsAdminControllerAddPass>>,
+    TError,
+    TrainingsAdminControllerAddPassMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof trainingsAdminControllerAddPass>>,
+  TError,
+  TrainingsAdminControllerAddPassMutationVariables,
+  TContext
+> => {
+  const mutationKey = getTrainingsAdminControllerAddPassMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof trainingsAdminControllerAddPass>>,
+    TrainingsAdminControllerAddPassMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return trainingsAdminControllerAddPass(data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type TrainingsAdminControllerAddPassMutationResult = NonNullable<
+  Awaited<ReturnType<typeof trainingsAdminControllerAddPass>>
+>;
+export type TrainingsAdminControllerAddPassMutationBody = AddTrainingPassDto;
+export type TrainingsAdminControllerAddPassMutationError = void;
+export type TrainingsAdminControllerAddPassMutationVariables = { data: AddTrainingPassDto };
+
+export const useTrainingsAdminControllerAddPass = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof trainingsAdminControllerAddPass>>,
+      TError,
+      TrainingsAdminControllerAddPassMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof trainingsAdminControllerAddPass>>,
+  TError,
+  TrainingsAdminControllerAddPassMutationVariables,
+  TContext
+> => {
+  return useMutation(getTrainingsAdminControllerAddPassMutationOptions(options), queryClient);
+};
+export const trainingsAdminControllerRevokePass = (id: string, reasonDto: ReasonDto, signal?: AbortSignal) => {
+  return service<TrainingPassesResponseDto>({
+    url: `/trainings/passes/${id}/revoke`,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    data: reasonDto,
+    signal,
+  });
+};
+
+export const getTrainingsAdminControllerRevokePassMutationKey = () => ['trainingsAdminControllerRevokePass'] as const;
+
+export const getTrainingsAdminControllerRevokePassMutationOptions = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof trainingsAdminControllerRevokePass>>,
+    TError,
+    TrainingsAdminControllerRevokePassMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof trainingsAdminControllerRevokePass>>,
+  TError,
+  TrainingsAdminControllerRevokePassMutationVariables,
+  TContext
+> => {
+  const mutationKey = getTrainingsAdminControllerRevokePassMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof trainingsAdminControllerRevokePass>>,
+    TrainingsAdminControllerRevokePassMutationVariables
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return trainingsAdminControllerRevokePass(id, data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type TrainingsAdminControllerRevokePassMutationResult = NonNullable<
+  Awaited<ReturnType<typeof trainingsAdminControllerRevokePass>>
+>;
+export type TrainingsAdminControllerRevokePassMutationBody = ReasonDto;
+export type TrainingsAdminControllerRevokePassMutationError = void;
+export type TrainingsAdminControllerRevokePassMutationVariables = { id: string; data: ReasonDto };
+
+export const useTrainingsAdminControllerRevokePass = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof trainingsAdminControllerRevokePass>>,
+      TError,
+      TrainingsAdminControllerRevokePassMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof trainingsAdminControllerRevokePass>>,
+  TError,
+  TrainingsAdminControllerRevokePassMutationVariables,
+  TContext
+> => {
+  return useMutation(getTrainingsAdminControllerRevokePassMutationOptions(options), queryClient);
+};
 export const trainingsAdminControllerSetTrainer = (id: string, setTrainerDto: SetTrainerDto, signal?: AbortSignal) => {
   return service<TrainingEnrollmentResponseDto>({
     url: `/trainings/enrollments/${id}/trainer`,
@@ -1927,6 +2154,110 @@ export const useTrainingsAdminControllerReopen = <TError = void, TContext = unkn
 > => {
   return useMutation(getTrainingsAdminControllerReopenMutationOptions(options), queryClient);
 };
+export const trainingsAdminControllerAttempts = (
+  params?: TrainingsAdminControllerAttemptsParams,
+  signal?: AbortSignal,
+) => {
+  return service<ListTrainingAttemptsResponseDto>({ url: `/trainings/attempts`, method: 'GET', params, signal });
+};
+
+export const getTrainingsAdminControllerAttemptsQueryKey = (params?: TrainingsAdminControllerAttemptsParams) => {
+  return [`/trainings/attempts`, ...(params ? [params] : [])] as const;
+};
+
+export const getTrainingsAdminControllerAttemptsQueryOptions = <
+  TData = Awaited<ReturnType<typeof trainingsAdminControllerAttempts>>,
+  TError = void,
+>(
+  params?: TrainingsAdminControllerAttemptsParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerAttempts>>, TError, TData>>;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getTrainingsAdminControllerAttemptsQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof trainingsAdminControllerAttempts>>> = ({ signal }) =>
+    trainingsAdminControllerAttempts(params, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof trainingsAdminControllerAttempts>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TrainingsAdminControllerAttemptsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof trainingsAdminControllerAttempts>>
+>;
+export type TrainingsAdminControllerAttemptsQueryError = void;
+
+export function useTrainingsAdminControllerAttempts<
+  TData = Awaited<ReturnType<typeof trainingsAdminControllerAttempts>>,
+  TError = void,
+>(
+  params: undefined | TrainingsAdminControllerAttemptsParams,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerAttempts>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof trainingsAdminControllerAttempts>>,
+          TError,
+          Awaited<ReturnType<typeof trainingsAdminControllerAttempts>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useTrainingsAdminControllerAttempts<
+  TData = Awaited<ReturnType<typeof trainingsAdminControllerAttempts>>,
+  TError = void,
+>(
+  params?: TrainingsAdminControllerAttemptsParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerAttempts>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof trainingsAdminControllerAttempts>>,
+          TError,
+          Awaited<ReturnType<typeof trainingsAdminControllerAttempts>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useTrainingsAdminControllerAttempts<
+  TData = Awaited<ReturnType<typeof trainingsAdminControllerAttempts>>,
+  TError = void,
+>(
+  params?: TrainingsAdminControllerAttemptsParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerAttempts>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useTrainingsAdminControllerAttempts<
+  TData = Awaited<ReturnType<typeof trainingsAdminControllerAttempts>>,
+  TError = void,
+>(
+  params?: TrainingsAdminControllerAttemptsParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerAttempts>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getTrainingsAdminControllerAttemptsQueryOptions(params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
 export const trainingsAdminControllerOverride = (
   id: string,
   overrideMarksDto: OverrideMarksDto,
@@ -3072,6 +3403,75 @@ export const useTrainingsLedgerControllerAdjustment = <TError = void, TContext =
   TContext
 > => {
   return useMutation(getTrainingsLedgerControllerAdjustmentMutationOptions(options), queryClient);
+};
+export const trainingsLedgerControllerAdhoc = (recordAdhocDto: RecordAdhocDto, signal?: AbortSignal) => {
+  return service<LedgerActionResponseDto>({
+    url: `/trainings/ledger/adhoc`,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    data: recordAdhocDto,
+    signal,
+  });
+};
+
+export const getTrainingsLedgerControllerAdhocMutationKey = () => ['trainingsLedgerControllerAdhoc'] as const;
+
+export const getTrainingsLedgerControllerAdhocMutationOptions = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof trainingsLedgerControllerAdhoc>>,
+    TError,
+    TrainingsLedgerControllerAdhocMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof trainingsLedgerControllerAdhoc>>,
+  TError,
+  TrainingsLedgerControllerAdhocMutationVariables,
+  TContext
+> => {
+  const mutationKey = getTrainingsLedgerControllerAdhocMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof trainingsLedgerControllerAdhoc>>,
+    TrainingsLedgerControllerAdhocMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return trainingsLedgerControllerAdhoc(data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type TrainingsLedgerControllerAdhocMutationResult = NonNullable<
+  Awaited<ReturnType<typeof trainingsLedgerControllerAdhoc>>
+>;
+export type TrainingsLedgerControllerAdhocMutationBody = RecordAdhocDto;
+export type TrainingsLedgerControllerAdhocMutationError = void;
+export type TrainingsLedgerControllerAdhocMutationVariables = { data: RecordAdhocDto };
+
+export const useTrainingsLedgerControllerAdhoc = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof trainingsLedgerControllerAdhoc>>,
+      TError,
+      TrainingsLedgerControllerAdhocMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof trainingsLedgerControllerAdhoc>>,
+  TError,
+  TrainingsLedgerControllerAdhocMutationVariables,
+  TContext
+> => {
+  return useMutation(getTrainingsLedgerControllerAdhocMutationOptions(options), queryClient);
 };
 export const trainingsLedgerControllerVoid = (
   id: string,

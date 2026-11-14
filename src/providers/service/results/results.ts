@@ -34,6 +34,9 @@ import type {
   LockResultsDto,
   LockResultsResponseDto,
   ResultPart,
+  ResultsControllerTheoryPassMarksParams,
+  SetTheoryPassMarksDto,
+  TheoryPassMarksResponseDto,
 } from '../app.schemas';
 
 import service from '../../../services/index';
@@ -344,6 +347,10 @@ export const useResultsControllerUnlock = <TError = void, TContext = unknown>(
 > => {
   return useMutation(getResultsControllerUnlockMutationOptions(options), queryClient);
 };
+/**
+ * Pass: Wazu ≥ 75% and Namaz ≥ 75%, each on its own; undecided while either is missing. Positions only for students who passed, per branch and class level: theory %, then practical %, then attendance %. TERMINATED, locked and 2026-imported results keep their pass or fail; imported ranks are kept.
+ * @summary Work out pass or fail and positions for a session
+ */
 export const resultsControllerComputeRanks = (computeRanksDto: ComputeRanksDto, signal?: AbortSignal) => {
   return service<ComputeRanksResponseDto>({
     url: `/results/ranks/compute`,
@@ -395,6 +402,10 @@ export type ResultsControllerComputeRanksMutationBody = ComputeRanksDto;
 export type ResultsControllerComputeRanksMutationError = void;
 export type ResultsControllerComputeRanksMutationVariables = { data: ComputeRanksDto };
 
+/**
+ * Pass: Wazu ≥ 75% and Namaz ≥ 75%, each on its own; undecided while either is missing. Positions only for students who passed, per branch and class level: theory %, then practical %, then attendance %. TERMINATED, locked and 2026-imported results keep their pass or fail; imported ranks are kept.
+ * @summary Work out pass or fail and positions for a session
+ */
 export const useResultsControllerComputeRanks = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
@@ -412,6 +423,182 @@ export const useResultsControllerComputeRanks = <TError = void, TContext = unkno
   TContext
 > => {
   return useMutation(getResultsControllerComputeRanksMutationOptions(options), queryClient);
+};
+export const resultsControllerTheoryPassMarks = (
+  params: ResultsControllerTheoryPassMarksParams,
+  signal?: AbortSignal,
+) => {
+  return service<TheoryPassMarksResponseDto>({ url: `/results/theory-pass-marks`, method: 'GET', params, signal });
+};
+
+export const getResultsControllerTheoryPassMarksQueryKey = (params?: ResultsControllerTheoryPassMarksParams) => {
+  return [`/results/theory-pass-marks`, ...(params ? [params] : [])] as const;
+};
+
+export const getResultsControllerTheoryPassMarksQueryOptions = <
+  TData = Awaited<ReturnType<typeof resultsControllerTheoryPassMarks>>,
+  TError = void,
+>(
+  params: ResultsControllerTheoryPassMarksParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof resultsControllerTheoryPassMarks>>, TError, TData>>;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getResultsControllerTheoryPassMarksQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof resultsControllerTheoryPassMarks>>> = ({ signal }) =>
+    resultsControllerTheoryPassMarks(params, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof resultsControllerTheoryPassMarks>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ResultsControllerTheoryPassMarksQueryResult = NonNullable<
+  Awaited<ReturnType<typeof resultsControllerTheoryPassMarks>>
+>;
+export type ResultsControllerTheoryPassMarksQueryError = void;
+
+export function useResultsControllerTheoryPassMarks<
+  TData = Awaited<ReturnType<typeof resultsControllerTheoryPassMarks>>,
+  TError = void,
+>(
+  params: ResultsControllerTheoryPassMarksParams,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof resultsControllerTheoryPassMarks>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof resultsControllerTheoryPassMarks>>,
+          TError,
+          Awaited<ReturnType<typeof resultsControllerTheoryPassMarks>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useResultsControllerTheoryPassMarks<
+  TData = Awaited<ReturnType<typeof resultsControllerTheoryPassMarks>>,
+  TError = void,
+>(
+  params: ResultsControllerTheoryPassMarksParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof resultsControllerTheoryPassMarks>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof resultsControllerTheoryPassMarks>>,
+          TError,
+          Awaited<ReturnType<typeof resultsControllerTheoryPassMarks>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useResultsControllerTheoryPassMarks<
+  TData = Awaited<ReturnType<typeof resultsControllerTheoryPassMarks>>,
+  TError = void,
+>(
+  params: ResultsControllerTheoryPassMarksParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof resultsControllerTheoryPassMarks>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useResultsControllerTheoryPassMarks<
+  TData = Awaited<ReturnType<typeof resultsControllerTheoryPassMarks>>,
+  TError = void,
+>(
+  params: ResultsControllerTheoryPassMarksParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof resultsControllerTheoryPassMarks>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getResultsControllerTheoryPassMarksQueryOptions(params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export const resultsControllerSetTheoryPassMarks = (
+  setTheoryPassMarksDto: SetTheoryPassMarksDto,
+  signal?: AbortSignal,
+) => {
+  return service<TheoryPassMarksResponseDto>({
+    url: `/results/theory-pass-marks`,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    data: setTheoryPassMarksDto,
+    signal,
+  });
+};
+
+export const getResultsControllerSetTheoryPassMarksMutationKey = () => ['resultsControllerSetTheoryPassMarks'] as const;
+
+export const getResultsControllerSetTheoryPassMarksMutationOptions = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof resultsControllerSetTheoryPassMarks>>,
+    TError,
+    ResultsControllerSetTheoryPassMarksMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof resultsControllerSetTheoryPassMarks>>,
+  TError,
+  ResultsControllerSetTheoryPassMarksMutationVariables,
+  TContext
+> => {
+  const mutationKey = getResultsControllerSetTheoryPassMarksMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof resultsControllerSetTheoryPassMarks>>,
+    ResultsControllerSetTheoryPassMarksMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return resultsControllerSetTheoryPassMarks(data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ResultsControllerSetTheoryPassMarksMutationResult = NonNullable<
+  Awaited<ReturnType<typeof resultsControllerSetTheoryPassMarks>>
+>;
+export type ResultsControllerSetTheoryPassMarksMutationBody = SetTheoryPassMarksDto;
+export type ResultsControllerSetTheoryPassMarksMutationError = void;
+export type ResultsControllerSetTheoryPassMarksMutationVariables = { data: SetTheoryPassMarksDto };
+
+export const useResultsControllerSetTheoryPassMarks = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof resultsControllerSetTheoryPassMarks>>,
+      TError,
+      ResultsControllerSetTheoryPassMarksMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof resultsControllerSetTheoryPassMarks>>,
+  TError,
+  ResultsControllerSetTheoryPassMarksMutationVariables,
+  TContext
+> => {
+  return useMutation(getResultsControllerSetTheoryPassMarksMutationOptions(options), queryClient);
 };
 export const resultsControllerFindForSection = (sectionId: string, signal?: AbortSignal) => {
   return service<ListSectionResultsResponseDto>({ url: `/results/sections/${sectionId}`, method: 'GET', signal });

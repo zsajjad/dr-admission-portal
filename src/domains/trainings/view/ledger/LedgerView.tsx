@@ -161,7 +161,7 @@ export function LedgerView() {
         headerName: intl.formatMessage(messages.date),
         width: 120,
         sortable: false,
-        valueGetter: (_v, row) => formatDate(row.kind === 'PAYMENT' ? (row.paidAt ?? row.createdAt) : row.createdAt),
+        valueGetter: (_v, row) => formatDate(row.date ?? row.createdAt),
       },
       {
         field: 'trainer',
@@ -183,7 +183,19 @@ export function LedgerView() {
         headerName: intl.formatMessage(common.training),
         width: 110,
         sortable: false,
-        valueGetter: (_v, row) => row.training?.code ?? '',
+        renderCell: ({ row }) =>
+          row.training ? (
+            <Stack sx={{ py: 0.75, lineHeight: 1.2 }}>
+              <span>{row.training.code}</span>
+              {row.itemKind === 'IMPROVEMENT' && (
+                <Typography variant="caption" color="info.main">
+                  {intl.formatMessage(messages.improvement)}
+                </Typography>
+              )}
+            </Stack>
+          ) : (
+            ''
+          ),
       },
       {
         field: 'student',

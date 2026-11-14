@@ -44,6 +44,7 @@ export type IssueCode =
   | 'BAND_PCT_DUPLICATE'
   | 'BAND_BELOW_FLOOR'
   | 'MAX_ATTEMPTS_RANGE'
+  | 'RETRAIN_PCT_RANGE'
   | 'AUTO_CLOSE_RANGE'
   | 'REMINDER_RANGE'
   | 'REMINDER_DUPLICATE';
@@ -105,6 +106,8 @@ export function validateTraining(t: TrainingInput): Issue[] {
 
 export interface SettingsInput {
   maxAttempts: number;
+  /** A training scored below this can be retrained in the same session, even if passed */
+  retrainBelowPct: number;
   autoCloseDays: number;
   reminderDays: number[];
 }
@@ -114,6 +117,9 @@ export function validateSettings(s: SettingsInput): Issue[] {
   const issues: Issue[] = [];
   if (!Number.isInteger(s.maxAttempts) || s.maxAttempts < 1 || s.maxAttempts > LIMITS.maxAttempts) {
     issues.push({ code: 'MAX_ATTEMPTS_RANGE', path: 'maxAttempts', values: { max: String(LIMITS.maxAttempts) } });
+  }
+  if (!isNum(s.retrainBelowPct) || s.retrainBelowPct < 0 || s.retrainBelowPct > 100) {
+    issues.push({ code: 'RETRAIN_PCT_RANGE', path: 'retrainBelowPct' });
   }
   const autoCloseOk =
     Number.isInteger(s.autoCloseDays) && s.autoCloseDays >= 1 && s.autoCloseDays <= LIMITS.autoCloseDays;

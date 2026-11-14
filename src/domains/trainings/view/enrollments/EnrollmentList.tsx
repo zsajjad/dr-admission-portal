@@ -34,13 +34,11 @@ import {
 } from '../../api/operations';
 import { StaffFilter, UrlSelect, UrlTextFilter } from '../../components/Filters';
 import { PayoutChip } from '../../components/PayoutChip';
-import { useStaffNames } from '../../components/StaffUserSelect';
 import { StateChip } from '../../components/StateChip';
-import { useSessions } from '../../components/useCurrentSession';
 import { useNotify } from '../../components/useNotify';
 import common from '../../messages';
 import { useTrainingsAccess } from '../../permissions';
-import { cardStyle, formatAmount, formatDate, formatPct } from '../../utils';
+import { cardStyle, daysSince, formatAmount, formatDate } from '../../utils';
 
 import { EnrollDialog } from './EnrollDialog';
 import messages from './messages';
@@ -75,9 +73,10 @@ export function EnrollmentList() {
       trainer: t(common.trainer),
       tester: t(common.tester),
       attempts: t(messages.attempts),
-      best: t(messages.bestPct),
+      best: t(messages.trainingsPassed),
       payout: t(messages.payout),
-      enrolled: t(messages.enrolled_col),
+      lastActivity: t(messages.lastActivity),
+      today: t(messages.today),
       autoCloseAt: t(messages.autoCloseAt),
       unassigned: t(common.unassigned),
       noRows: t(messages.noEnrollments),
@@ -100,8 +99,6 @@ export function EnrollmentList() {
   };
   const { data, isLoading, error } = useEnrollments(params);
   const hasFilters = FILTER_KEYS.some((k) => filters[k]);
-  const staffName = useStaffNames();
-  const { sessions } = useSessions();
 
   const columns: GridColDef<EnrollmentListItem>[] = useMemo(
     () => [
@@ -128,9 +125,7 @@ export function EnrollmentList() {
               {row.name}
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              {[row.branchCode, row.classLevelCode, sessions.find((x) => x.id === row.sessionId)?.name]
-                .filter(Boolean)
-                .join(' · ')}
+              {[row.branchCode, row.areaName, row.classLevelCode, row.sessionName].filter(Boolean).join(' · ')}
             </Typography>
           </Stack>
         ),
@@ -161,7 +156,7 @@ export function EnrollmentList() {
         flex: 0.8,
         minWidth: 120,
         sortable: false,
-        valueGetter: (_v, row) => staffName(row.testerStaffUserId) ?? '',
+        valueGetter: (_v, row) => row.testerName ?? '',
       },
       {
         field: 'attemptsUsed',
@@ -170,15 +165,16 @@ export function EnrollmentList() {
         sortable: false,
         align: 'center',
         headerAlign: 'center',
+        valueGetter: (_v, row) => `${row.attemptsUsed}/${row.maxAttempts}`,
       },
       {
-        field: 'bestPct',
+        field: 'passedCount',
         headerName: text.best,
         width: 90,
         sortable: false,
-        align: 'right',
-        headerAlign: 'right',
-        valueGetter: (_v, row) => formatPct(row.bestPct),
+        align: 'center',
+        headerAlign: 'center',
+        valueGetter: (_v, row) => `${row.passedCount}/${row.trainingCount}`,
       },
       {
         field: 'payout',
@@ -196,11 +192,22 @@ export function EnrollmentList() {
           ),
       },
       {
-        field: 'createdAt',
-        headerName: text.enrolled,
+        field: 'lastActivityAt',
+        headerName: text.lastActivity,
         width: 120,
         sortable: false,
-        valueGetter: (_v, row) => formatDate(row.createdAt),
+        renderCell: ({ row }) => {
+          const days = daysSince(row.lastActivityAt);
+          return (
+            <Typography
+              variant="body2"
+              component="span"
+              color={row.state !== 'CLOSED' && days >= 7 ? 'error' : 'text.primary'}
+            >
+              {days === 0 ? text.today : `${days}d`}
+            </Typography>
+          );
+        },
       },
       {
         field: 'autoCloseAt',
@@ -210,7 +217,7 @@ export function EnrollmentList() {
         valueGetter: (_v, row) => (row.state === 'CLOSED' ? '' : formatDate(row.autoCloseAt)),
       },
     ],
-    [text, staffName, sessions],
+    [text],
   );
 
   const handleRunAutoClose = () =>

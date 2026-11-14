@@ -18,7 +18,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
   TableRow,
   TextField,
   Typography,
@@ -33,8 +32,8 @@ import { routes } from '@/router/routes';
 import { extractNetworkError } from '@/utils/extractNetworkError';
 
 import {
-  bestAttempt,
   EnrollmentListItem,
+  itemProgress,
   TrainingPass,
   useAddPass,
   useEnrollment,
@@ -56,12 +55,8 @@ import { EnrollDialog } from './EnrollDialog';
 import messages from './messages';
 
 function EnrollmentCard({ item }: { item: EnrollmentListItem }) {
-  const { sessions } = useSessions();
   const { data } = useEnrollment(item.id);
   const e = data?.data;
-  const trainings = e ? [...e.rules.trainings].sort((a, b) => a.sortOrder - b.sortOrder) : [];
-  const best = e ? bestAttempt(e.attempts) : undefined;
-  const sessionName = sessions.find((s) => s.id === item.sessionId)?.name ?? item.sessionId;
   return (
     <Card sx={cardStyle}>
       <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
@@ -69,7 +64,7 @@ function EnrollmentCard({ item }: { item: EnrollmentListItem }) {
           <Box>
             <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
               <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-                {sessionName} · {item.course.code} · {item.course.name}
+                {item.sessionName}
               </Typography>
               <StateChip state={item.state} closureReason={item.closureReason} />
               <PayoutChip status={item.payout.status} />
@@ -77,8 +72,7 @@ function EnrollmentCard({ item }: { item: EnrollmentListItem }) {
             <Typography variant="body2" color="text.secondary">
               {[
                 item.trainerName,
-                `${item.attemptsUsed}/${e?.rules.maxAttempts ?? '--'}`,
-                item.bestPct !== undefined ? formatPct(item.bestPct) : null,
+                `${item.passedCount}/${item.trainingCount}`,
                 item.payout.amount !== null ? formatAmount(item.payout.amount) : null,
                 item.closedAt ? formatDate(item.closedAt) : null,
               ]
@@ -90,80 +84,32 @@ function EnrollmentCard({ item }: { item: EnrollmentListItem }) {
             <FormattedMessage {...messages.openEnrollment} />
           </Button>
         </Stack>
-
-        {!e && <Skeleton height={80} />}
+        {!e && <Skeleton height={60} />}
         {e && (
-          <Box sx={{ overflowX: 'auto', mt: 1 }}>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell />
-                  {trainings.map((t) => (
-                    <TableCell key={t.trainingId} align="right">
-                      {t.code}
-                    </TableCell>
-                  ))}
-                  <TableCell align="right">
-                    <FormattedMessage {...messages.weightedPct} />
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {e.state !== 'CLOSED' && (
-                  <TableRow>
+          <Table size="small" sx={{ mt: 1 }}>
+            <TableBody>
+              {e.trainings.map((t) => {
+                const progress = itemProgress(t);
+                return (
+                  <TableRow key={t.trainingId}>
                     <TableCell>
-                      <FormattedMessage {...messages.round} values={{ round: String(e.round) }} />
+                      {t.code} · {t.name}
                     </TableCell>
-                    {trainings.map((t) => {
-                      const done = (e.trainings ?? []).find((p) => p.trainingId === t.trainingId)?.completed;
-                      return (
-                        <TableCell key={t.trainingId} align="right">
-                          {done ? (
-                            <Chip size="small" color="success" label={<FormattedMessage {...messages.done} />} />
-                          ) : (
-                            <Chip size="small" variant="outlined" label={<FormattedMessage {...messages.pending} />} />
-                          )}
-                        </TableCell>
-                      );
-                    })}
-                    <TableCell />
+                    <TableCell>
+                      <Chip
+                        size="small"
+                        variant="outlined"
+                        color={progress === 'DONE' ? 'success' : progress === 'FAILED' ? 'error' : 'default'}
+                        label={<FormattedMessage {...messages[`progress_${progress}`]} />}
+                      />
+                    </TableCell>
+                    <TableCell align="right">{t.best ? formatPct(t.best.scorePct) : '--'}</TableCell>
+                    <TableCell align="right">{formatAmount(t.payout)}</TableCell>
                   </TableRow>
-                )}
-                {[...e.attempts]
-                  .sort((a, b) => a.attemptNo - b.attemptNo)
-                  .map((a) => (
-                    <TableRow key={a.attemptId}>
-                      <TableCell>
-                        <FormattedMessage {...messages.attemptNo} values={{ n: String(a.attemptNo) }} />
-                        {best?.attemptId === a.attemptId && (
-                          <Chip
-                            size="small"
-                            color="success"
-                            sx={{ ml: 1 }}
-                            label={<FormattedMessage {...messages.best} />}
-                          />
-                        )}
-                      </TableCell>
-                      {trainings.map((t) => {
-                        const m = a.marks.find((x) => x.trainingId === t.trainingId);
-                        return (
-                          <TableCell
-                            key={t.trainingId}
-                            align="right"
-                            sx={{ color: m && !m.passed ? 'error.main' : undefined }}
-                          >
-                            {m?.marks ?? '--'}
-                          </TableCell>
-                        );
-                      })}
-                      <TableCell align="right" sx={{ fontWeight: 600 }}>
-                        {formatPct(a.weightedPct)}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </Box>
+                );
+              })}
+            </TableBody>
+          </Table>
         )}
       </CardContent>
     </Card>
@@ -334,7 +280,7 @@ export function StudentTrainingsView({ studentId }: { studentId: string }) {
             ) : (
               <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
                 {trainings.required.map((t) => (
-                  <Chip key={t.trainingId ?? t.id ?? t.code} label={`${t.code} · ${t.name}`} />
+                  <Chip key={t.trainingId} label={`${t.code} · ${t.name}`} />
                 ))}
               </Stack>
             )}
@@ -353,6 +299,18 @@ export function StudentTrainingsView({ studentId }: { studentId: string }) {
                     <TableRow key={p.id}>
                       <TableCell sx={{ fontWeight: 600 }}>{[p.code, p.name].filter(Boolean).join(' · ')}</TableCell>
                       <TableCell>{formatDate(p.passedAt)}</TableCell>
+                      <TableCell>
+                        {formatPct(p.bestScorePct)}
+                        {p.improvable && (
+                          <Chip
+                            size="small"
+                            color="info"
+                            variant="outlined"
+                            sx={{ ml: 1 }}
+                            label={<FormattedMessage {...messages.improvable} />}
+                          />
+                        )}
+                      </TableCell>
                       <TableCell>
                         {p.sessionName ?? sessions.find((x) => x.id === p.sessionId)?.name ?? p.sessionId ?? ''}
                       </TableCell>

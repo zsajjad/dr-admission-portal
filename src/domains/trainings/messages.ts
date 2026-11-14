@@ -10,6 +10,7 @@ export default defineMessages({
 
   // Tabs
   tabEnrollments: { id: `${scope}.tabEnrollments`, defaultMessage: 'Enrollments' },
+  tabGrades: { id: `${scope}.tabGrades`, defaultMessage: 'Grades to review' },
   tabCatalog: { id: `${scope}.tabCatalog`, defaultMessage: 'Training catalog' },
   tabWindows: { id: `${scope}.tabWindows`, defaultMessage: 'Testing windows' },
   tabLedger: { id: `${scope}.tabLedger`, defaultMessage: 'Trainer ledger' },
@@ -63,6 +64,8 @@ export default defineMessages({
 
   // Closure reasons
   PASSED: { id: `${scope}.PASSED`, defaultMessage: 'Passed' },
+  ALL_PASSED: { id: `${scope}.ALL_PASSED`, defaultMessage: 'All passed' },
+  SESSION_ENDED: { id: `${scope}.SESSION_ENDED`, defaultMessage: 'Session ended' },
   TRAINER_CLOSED: { id: `${scope}.TRAINER_CLOSED`, defaultMessage: 'Closed by trainer' },
   ATTEMPTS_USED: { id: `${scope}.ATTEMPTS_USED`, defaultMessage: 'Attempts used' },
   AUTO_CLOSED: { id: `${scope}.AUTO_CLOSED`, defaultMessage: 'Auto-closed' },
