@@ -21,7 +21,6 @@ export default defineMessages({
   testers: { id: `${scope}.testers`, defaultMessage: 'Testers' },
   testersHelp: { id: `${scope}.testersHelp`, defaultMessage: 'Leave empty to let every tester grade' },
   everyTester: { id: `${scope}.everyTester`, defaultMessage: 'Every tester' },
-  graded: { id: `${scope}.graded`, defaultMessage: 'Graded' },
   status: { id: `${scope}.status`, defaultMessage: 'Status' },
   SCHEDULED: { id: `${scope}.SCHEDULED`, defaultMessage: 'Scheduled' },
   OPEN: { id: `${scope}.OPEN`, defaultMessage: 'Open' },

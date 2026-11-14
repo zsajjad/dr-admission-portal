@@ -33,11 +33,14 @@ import {
   useRunAutoClose,
 } from '../../api/operations';
 import { CourseFilter, StaffFilter, UrlSelect, UrlTextFilter } from '../../components/Filters';
+import { PayoutChip } from '../../components/PayoutChip';
+import { useStaffNames } from '../../components/StaffUserSelect';
 import { StateChip } from '../../components/StateChip';
+import { useSessions } from '../../components/useCurrentSession';
 import { useNotify } from '../../components/useNotify';
 import common from '../../messages';
 import { useTrainingsAccess } from '../../permissions';
-import { cardStyle, daysSince, formatAmount, formatDate, formatPct } from '../../utils';
+import { cardStyle, formatAmount, formatDate, formatPct } from '../../utils';
 
 import { EnrollDialog } from './EnrollDialog';
 import messages from './messages';
@@ -76,9 +79,7 @@ export function EnrollmentList() {
       attempts: t(messages.attempts),
       best: t(messages.bestPct),
       payout: t(messages.payout),
-      projected: t(messages.projected),
-      lastActivity: t(messages.lastActivity),
-      today: t(messages.today),
+      enrolled: t(messages.enrolled_col),
       autoCloseAt: t(messages.autoCloseAt),
       unassigned: t(common.unassigned),
       noRows: t(messages.noEnrollments),
@@ -87,31 +88,39 @@ export function EnrollmentList() {
   }, [intl]);
 
   const params: EnrollmentFilters = {
-    ...Object.fromEntries(FILTER_KEYS.map((k) => [k, filters[k]])),
-    stuckDays: filters.stuckDays ? Number(filters.stuckDays) : undefined,
+    sessionId: filters.sessionId,
     state: filters.state as EnrollmentState | undefined,
+    courseId: filters.courseId,
+    trainerStaffUserId: filters.trainer,
+    testerStaffUserId: filters.tester,
+    branchId: filters.branchId,
+    areaId: filters.areaId,
     gender: filters.gender as EnrollmentFilters['gender'],
+    q: filters.q,
+    stuckDays: filters.stuckDays ? Number(filters.stuckDays) : undefined,
     skip: filters.page * filters.pageSize,
     take: filters.pageSize,
   };
   const { data, isLoading, error } = useEnrollments(params);
   const hasFilters = FILTER_KEYS.some((k) => filters[k]);
+  const staffName = useStaffNames();
+  const { sessions } = useSessions();
 
   const columns: GridColDef<EnrollmentListItem>[] = useMemo(
     () => [
       {
-        field: 'gr',
+        field: 'grNumber',
         headerName: text.gr,
         width: 170,
         sortable: false,
         renderCell: ({ row }) => (
           <Box component="span" sx={{ fontFamily: 'monospace' }} dir="ltr">
-            {row.student.grNumber}
+            {row.grNumber}
           </Box>
         ),
       },
       {
-        field: 'student',
+        field: 'name',
         headerName: text.student,
         flex: 1.2,
         minWidth: 180,
@@ -119,10 +128,12 @@ export function EnrollmentList() {
         renderCell: ({ row }) => (
           <Stack sx={{ py: 0.75, lineHeight: 1.2 }}>
             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-              {row.student.name}
+              {row.name}
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              {[row.student.branch?.code, row.student.area?.name, row.session.name].filter(Boolean).join(' · ')}
+              {[row.branchCode, row.classLevelCode, sessions.find((x) => x.id === row.sessionId)?.name]
+                .filter(Boolean)
+                .join(' · ')}
             </Typography>
           </Stack>
         ),
@@ -148,7 +159,7 @@ export function EnrollmentList() {
         minWidth: 140,
         sortable: false,
         renderCell: ({ row }) =>
-          row.trainer?.name ?? (
+          row.trainerName ?? (
             <Typography variant="body2" color="warning.dark" component="span">
               {text.unassigned}
             </Typography>
@@ -160,16 +171,15 @@ export function EnrollmentList() {
         flex: 0.8,
         minWidth: 120,
         sortable: false,
-        valueGetter: (_v, row) => row.tester?.name ?? '',
+        valueGetter: (_v, row) => staffName(row.testerStaffUserId) ?? '',
       },
       {
-        field: 'attempts',
+        field: 'attemptsUsed',
         headerName: text.attempts,
         width: 90,
         sortable: false,
         align: 'center',
         headerAlign: 'center',
-        valueGetter: (_v, row) => `${row.attemptsUsed}/${row.maxAttempts}`,
       },
       {
         field: 'bestPct',
@@ -183,38 +193,24 @@ export function EnrollmentList() {
       {
         field: 'payout',
         headerName: text.payout,
-        width: 120,
+        width: 150,
         sortable: false,
-        align: 'right',
-        headerAlign: 'right',
         renderCell: ({ row }) =>
-          row.state === 'CLOSED' ? (
-            formatAmount(row.payoutAmount)
-          ) : row.projectedPayout !== null ? (
-            <Stack sx={{ py: 0.75, lineHeight: 1.2, alignItems: 'flex-end' }}>
-              <span>{formatAmount(row.projectedPayout)}</span>
-              <Typography variant="caption" color="text.secondary">
-                {text.projected}
-              </Typography>
-            </Stack>
-          ) : (
+          row.payout.amount === null ? (
             '--'
+          ) : (
+            <Stack direction="row" spacing={1} alignItems="center" sx={{ height: '100%' }}>
+              <span>{formatAmount(row.payout.amount)}</span>
+              <PayoutChip status={row.payout.status} />
+            </Stack>
           ),
       },
       {
-        field: 'lastActivityAt',
-        headerName: text.lastActivity,
-        width: 130,
+        field: 'createdAt',
+        headerName: text.enrolled,
+        width: 120,
         sortable: false,
-        renderCell: ({ row }) => {
-          const days = daysSince(row.lastActivityAt);
-          const stuck = row.state !== 'CLOSED' && days >= 7;
-          return (
-            <Typography variant="body2" component="span" color={stuck ? 'error' : 'text.primary'}>
-              {days === 0 ? text.today : `${days}d`}
-            </Typography>
-          );
-        },
+        valueGetter: (_v, row) => formatDate(row.createdAt),
       },
       {
         field: 'autoCloseAt',
@@ -224,7 +220,7 @@ export function EnrollmentList() {
         valueGetter: (_v, row) => (row.state === 'CLOSED' ? '' : formatDate(row.autoCloseAt)),
       },
     ],
-    [text],
+    [text, staffName, sessions],
   );
 
   const handleRunAutoClose = () =>
@@ -290,7 +286,7 @@ export function EnrollmentList() {
         </Stack>
       )}
 
-      {error && (
+      {!!error && (
         <Alert severity="error">
           <FormattedMessage {...common.loadError} />: {extractNetworkError(error)}
         </Alert>

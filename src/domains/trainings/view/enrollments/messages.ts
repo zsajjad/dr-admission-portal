@@ -25,9 +25,7 @@ export default defineMessages({
   bestPct: { id: `${scope}.bestPct`, defaultMessage: 'Best %' },
   payout: { id: `${scope}.payout`, defaultMessage: 'Payout' },
   projected: { id: `${scope}.projected`, defaultMessage: 'projected' },
-  lastActivity: { id: `${scope}.lastActivity`, defaultMessage: 'Last activity' },
-  daysAgo: { id: `${scope}.daysAgo`, defaultMessage: '{days}d ago' },
-  today: { id: `${scope}.today`, defaultMessage: 'today' },
+  enrolled_col: { id: `${scope}.enrolled_col`, defaultMessage: 'Enrolled' },
   autoCloseAt: { id: `${scope}.autoCloseAt`, defaultMessage: 'Auto-closes' },
   noEnrollments: { id: `${scope}.noEnrollments`, defaultMessage: 'No enrollments match' },
 
@@ -74,6 +72,19 @@ export default defineMessages({
   flag_SENT_AFTER_LOGOUT: {
     id: `${scope}.flag_SENT_AFTER_LOGOUT`,
     defaultMessage: 'Sent after the phone was logged out',
+  },
+  lateGrade: { id: `${scope}.lateGrade`, defaultMessage: 'Late grade' },
+  wrongSteps: { id: `${scope}.wrongSteps`, defaultMessage: 'Wrong steps: {steps}' },
+  repeatReason: { id: `${scope}.repeatReason`, defaultMessage: 'Enrolled again: {reason}' },
+  decisionDue: {
+    id: `${scope}.decisionDue`,
+    defaultMessage:
+      'The trainer’s decision after attempt {n} is due. Closing now pays {now}; a retest could pay {ifAllPass} if every training passes, up to {max}.',
+  },
+  decisionDueRetrain: {
+    id: `${scope}.decisionDueRetrain`,
+    defaultMessage:
+      'A training failed in attempt {n}, so Retrain is suggested. Closing now pays {now}; a retest could pay {ifAllPass} if every training passes, up to {max}.',
   },
   flagOther: { id: `${scope}.flagOther`, defaultMessage: 'Flagged: {code}' },
   rulesTitle: { id: `${scope}.rulesTitle`, defaultMessage: 'Rules at enrollment' },

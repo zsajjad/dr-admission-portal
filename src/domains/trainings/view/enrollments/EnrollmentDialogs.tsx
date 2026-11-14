@@ -12,6 +12,7 @@ import { FormattedMessage, useFormattedMessage } from '@/theme/FormattedMessage'
 
 import {
   Attempt,
+  bestAttempt,
   EnrollmentDetail,
   useAssignTester,
   useCloseEnrollment,
@@ -20,7 +21,7 @@ import {
   useReopenEnrollment,
 } from '../../api/operations';
 import { ActionDialog } from '../../components/ActionDialog';
-import { ReasonField } from '../../components/ReasonField';
+import { ReasonField, reasonMissing } from '../../components/ReasonField';
 import { StaffUserSelect } from '../../components/StaffUserSelect';
 import { useNotify } from '../../components/useNotify';
 import { bandFor, payoutFor, weightedPct } from '../../rules';
@@ -44,7 +45,7 @@ function useReason(open: boolean) {
       setSubmitted(false);
     }
   }, [open]);
-  return { reason, setReason, submitted, setSubmitted, missing: !reason.trim() };
+  return { reason, setReason, submitted, setSubmitted, missing: reasonMissing(reason) };
 }
 
 function useDone(onClose: () => void) {
@@ -64,7 +65,7 @@ export function ReassignTrainerDialog({ open, onClose, enrollment }: DialogProps
   const done = useDone(onClose);
   const r = useReason(open);
   const [trainerId, setTrainerId] = useState<string | null>(null);
-  const same = trainerId === (enrollment.trainer?.id ?? null);
+  const same = trainerId === (enrollment.trainerStaffUserId ?? null);
 
   useEffect(() => {
     if (open) setTrainerId(null);
@@ -82,13 +83,17 @@ export function ReassignTrainerDialog({ open, onClose, enrollment }: DialogProps
       onClose={onClose}
       onSubmit={handleSubmit}
       isSubmitting={mutation.isPending}
-      title={<FormattedMessage {...(enrollment.trainer ? messages.reassignTrainer : messages.assignTrainer)} />}
-      submitLabel={<FormattedMessage {...(enrollment.trainer ? messages.reassignTrainer : messages.assignTrainer)} />}
+      title={
+        <FormattedMessage {...(enrollment.trainerStaffUserId ? messages.reassignTrainer : messages.assignTrainer)} />
+      }
+      submitLabel={
+        <FormattedMessage {...(enrollment.trainerStaffUserId ? messages.reassignTrainer : messages.assignTrainer)} />
+      }
     >
       <Stack spacing={2}>
         <Alert severity="warning">
-          {enrollment.trainer ? (
-            <FormattedMessage {...messages.reassignExplain} values={{ current: enrollment.trainer.name }} />
+          {enrollment.trainerStaffUserId ? (
+            <FormattedMessage {...messages.reassignExplain} values={{ current: enrollment.trainerName ?? '--' }} />
           ) : (
             <FormattedMessage {...messages.reassignExplainNone} />
           )}
@@ -98,7 +103,7 @@ export function ReassignTrainerDialog({ open, onClose, enrollment }: DialogProps
           label={<FormattedMessage {...messages.newTrainer} />}
           value={trainerId}
           onChange={setTrainerId}
-          excludeIds={enrollment.trainer ? [enrollment.trainer.id] : []}
+          excludeIds={enrollment.trainerStaffUserId ? [enrollment.trainerStaffUserId] : []}
           error={r.submitted && same}
           helperText={
             r.submitted && same ? (
@@ -121,16 +126,16 @@ export function AssignTesterDialog({ open, onClose, enrollment }: DialogProps) {
   const [testerId, setTesterId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (open) setTesterId(enrollment.tester?.id ?? null);
-  }, [open, enrollment.tester]);
+    if (open) setTesterId(enrollment.testerStaffUserId ?? null);
+  }, [open, enrollment.testerStaffUserId]);
 
   // A tester can't grade their own trainee, including a past one
   const excludeIds = useMemo(() => {
     const ids = new Set<string>();
-    if (enrollment.trainer) ids.add(enrollment.trainer.id);
+    if (enrollment.trainerStaffUserId) ids.add(enrollment.trainerStaffUserId);
     enrollment.assignments.forEach((a) => {
-      if (a.from) ids.add(a.from.id);
-      if (a.to) ids.add(a.to.id);
+      if (a.fromTrainerStaffUserId) ids.add(a.fromTrainerStaffUserId);
+      if (a.toTrainerStaffUserId) ids.add(a.toTrainerStaffUserId);
     });
     return [...ids];
   }, [enrollment]);
@@ -163,7 +168,7 @@ export function CloseEnrollmentDialog({ open, onClose, enrollment }: DialogProps
   const mutation = useCloseEnrollment();
   const done = useDone(onClose);
   const r = useReason(open);
-  const best = enrollment.attempts.find((a) => a.id === enrollment.bestAttemptId);
+  const best = bestAttempt(enrollment.attempts);
 
   const handleSubmit = () => {
     r.setSubmitted(true);
@@ -186,7 +191,7 @@ export function CloseEnrollmentDialog({ open, onClose, enrollment }: DialogProps
           {best ? (
             <FormattedMessage
               {...messages.closeExplain}
-              values={{ trainer: enrollment.trainer?.name ?? '--', amount: formatAmount(best.payout) }}
+              values={{ trainer: enrollment.trainerName ?? '--', amount: formatAmount(best.payout) }}
             />
           ) : (
             <FormattedMessage {...messages.closeExplainUntested} />
@@ -250,11 +255,11 @@ export function OverrideMarksDialog({ open, onClose, enrollment, attempt }: Dial
   if (!attempt) return null;
 
   const invalid = (t: (typeof ordered)[number]) => {
-    const v = marks[t.id] ?? '';
+    const v = marks[t.trainingId] ?? '';
     return !MARKS_PATTERN.test(v.trim()) || Number(v) > t.maxMarks;
   };
   const anyInvalid = ordered.some(invalid);
-  const values = ordered.map((t) => Number(marks[t.id]));
+  const values = ordered.map((t) => Number(marks[t.trainingId]));
   const changed = attempt.marks.some((m) => Number(marks[m.trainingId]) !== m.marks);
 
   const preview = (() => {
@@ -270,8 +275,8 @@ export function OverrideMarksDialog({ open, onClose, enrollment, attempt }: Dial
     if (r.missing || anyInvalid || !changed) return;
     mutation.mutate(
       {
-        attemptId: attempt.id,
-        marks: ordered.map((t, i) => ({ trainingId: t.id, marks: values[i] })),
+        attemptId: attempt.attemptId,
+        marks: ordered.map((t, i) => ({ trainingId: t.trainingId, marks: values[i] })),
         reason: r.reason.trim(),
       },
       done,
@@ -299,11 +304,11 @@ export function OverrideMarksDialog({ open, onClose, enrollment, attempt }: Dial
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
           {ordered.map((t) => (
             <TextField
-              key={t.id}
+              key={t.trainingId}
               size="small"
               label={`${t.code} · ${t.name}`}
-              value={marks[t.id] ?? ''}
-              onChange={(e) => setMarks((m) => ({ ...m, [t.id]: e.target.value }))}
+              value={marks[t.trainingId] ?? ''}
+              onChange={(e) => setMarks((m) => ({ ...m, [t.trainingId]: e.target.value }))}
               error={invalid(t)}
               helperText={
                 invalid(t)
