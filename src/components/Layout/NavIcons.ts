@@ -12,6 +12,8 @@ import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
 import BarChartRoundedIcon from '@mui/icons-material/BarChartRounded';
 import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined';
 import ClassRoundedIcon from '@mui/icons-material/ClassRounded';
+import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
+import ForumRoundedIcon from '@mui/icons-material/ForumRounded';
 import GradingOutlinedIcon from '@mui/icons-material/GradingOutlined';
 import GradingRoundedIcon from '@mui/icons-material/GradingRounded';
 import HistoryEduOutlinedIcon from '@mui/icons-material/HistoryEduOutlined';
@@ -109,5 +111,9 @@ export const navIcons: Record<string, { filled: MuiIcon; outlined: MuiIcon }> = 
   resultRules: {
     filled: RuleRoundedIcon,
     outlined: RuleOutlinedIcon,
+  },
+  planningChat: {
+    filled: ForumRoundedIcon,
+    outlined: ForumOutlinedIcon,
   },
 };

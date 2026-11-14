@@ -25,6 +25,7 @@ const NAV_ORDER: ModuleKey[] = [
   'interactionReport',
   'trainings',
   'resultRules',
+  'planningChat',
 ];
 
 const toNavItem = (moduleKey: ModuleKey): NavItemConfig => {

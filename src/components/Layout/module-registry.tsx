@@ -122,6 +122,12 @@ export const MODULE_REGISTRY = {
     href: routes.results.passMarks,
     icon: 'resultRules',
   },
+  planningChat: {
+    title: <FormattedMessage {...messages.planningChat} />,
+    href: routes.planningChat.listing,
+    icon: 'planningChat',
+    permissions: [Permission.reportschat],
+  },
 } satisfies Record<string, ModuleConfig>;
 
 export type ModuleKey = keyof typeof MODULE_REGISTRY;

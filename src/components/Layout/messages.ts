@@ -72,6 +72,10 @@ export default defineMessages({
     id: `${scope}.printing`,
     defaultMessage: 'Printing',
   },
+  planningChat: {
+    id: `${scope}.planningChat`,
+    defaultMessage: 'Planning chat',
+  },
   interactionReport: {
     id: `${scope}.interactionReport`,
     defaultMessage: 'Interactions',
