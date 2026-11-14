@@ -25,6 +25,7 @@ import type {
   AdmissionsControllerFindAllParams,
   AdmissionsControllerFindOneParams,
   AdmissionsControllerGetDashboardParams,
+  AdmissionsControllerSearchLegacyAdminParams,
   AdmissionsControllerSearchLegacyParams,
   AdmissionsDashboardResponseDto,
   CreateAdmissionDto,
@@ -35,6 +36,7 @@ import type {
   ListAdmissionsResponseDto,
   MarkFeePaidDto,
   MarkFeePaidResponseDto,
+  SearchLegacyAdmissionsAdminResponseDto,
   SearchLegacyAdmissionsResponseDto,
   UpdateAdmissionDto,
   UpdateAdmissionResponseDto,
@@ -59,6 +61,10 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
+/**
+ * Exact matches only: a full mobile number (03XXXXXXXXX, +92…) or a full GR number. Returns at most 10 rows with the fields the admission form prefill needs. Rate limited to 30 requests per IP per 15 minutes.
+ * @summary Find last year’s records by a full phone number or GR number (public)
+ */
 export const admissionsControllerSearchLegacy = (
   params: AdmissionsControllerSearchLegacyParams,
   signal?: AbortSignal,
@@ -77,7 +83,7 @@ export const getAdmissionsControllerSearchLegacyQueryKey = (params?: AdmissionsC
 
 export const getAdmissionsControllerSearchLegacyQueryOptions = <
   TData = Awaited<ReturnType<typeof admissionsControllerSearchLegacy>>,
-  TError = unknown,
+  TError = void,
 >(
   params: AdmissionsControllerSearchLegacyParams,
   options?: {
@@ -101,11 +107,15 @@ export const getAdmissionsControllerSearchLegacyQueryOptions = <
 export type AdmissionsControllerSearchLegacyQueryResult = NonNullable<
   Awaited<ReturnType<typeof admissionsControllerSearchLegacy>>
 >;
-export type AdmissionsControllerSearchLegacyQueryError = unknown;
+export type AdmissionsControllerSearchLegacyQueryError = void;
 
+/**
+ * Exact matches only: a full mobile number (03XXXXXXXXX, +92…) or a full GR number. Returns at most 10 rows with the fields the admission form prefill needs. Rate limited to 30 requests per IP per 15 minutes.
+ * @summary Find last year’s records by a full phone number or GR number (public)
+ */
 export function useAdmissionsControllerSearchLegacy<
   TData = Awaited<ReturnType<typeof admissionsControllerSearchLegacy>>,
-  TError = unknown,
+  TError = void,
 >(
   params: AdmissionsControllerSearchLegacyParams,
   options: {
@@ -121,9 +131,13 @@ export function useAdmissionsControllerSearchLegacy<
   },
   queryClient?: QueryClient,
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * Exact matches only: a full mobile number (03XXXXXXXXX, +92…) or a full GR number. Returns at most 10 rows with the fields the admission form prefill needs. Rate limited to 30 requests per IP per 15 minutes.
+ * @summary Find last year’s records by a full phone number or GR number (public)
+ */
 export function useAdmissionsControllerSearchLegacy<
   TData = Awaited<ReturnType<typeof admissionsControllerSearchLegacy>>,
-  TError = unknown,
+  TError = void,
 >(
   params: AdmissionsControllerSearchLegacyParams,
   options?: {
@@ -139,9 +153,13 @@ export function useAdmissionsControllerSearchLegacy<
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * Exact matches only: a full mobile number (03XXXXXXXXX, +92…) or a full GR number. Returns at most 10 rows with the fields the admission form prefill needs. Rate limited to 30 requests per IP per 15 minutes.
+ * @summary Find last year’s records by a full phone number or GR number (public)
+ */
 export function useAdmissionsControllerSearchLegacy<
   TData = Awaited<ReturnType<typeof admissionsControllerSearchLegacy>>,
-  TError = unknown,
+  TError = void,
 >(
   params: AdmissionsControllerSearchLegacyParams,
   options?: {
@@ -149,9 +167,13 @@ export function useAdmissionsControllerSearchLegacy<
   },
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * Exact matches only: a full mobile number (03XXXXXXXXX, +92…) or a full GR number. Returns at most 10 rows with the fields the admission form prefill needs. Rate limited to 30 requests per IP per 15 minutes.
+ * @summary Find last year’s records by a full phone number or GR number (public)
+ */
 export function useAdmissionsControllerSearchLegacy<
   TData = Awaited<ReturnType<typeof admissionsControllerSearchLegacy>>,
-  TError = unknown,
+  TError = void,
 >(
   params: AdmissionsControllerSearchLegacyParams,
   options?: {
@@ -160,6 +182,124 @@ export function useAdmissionsControllerSearchLegacy<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getAdmissionsControllerSearchLegacyQueryOptions(params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+/**
+ * @summary Search last year’s records with all fields (admin portal)
+ */
+export const admissionsControllerSearchLegacyAdmin = (
+  params: AdmissionsControllerSearchLegacyAdminParams,
+  signal?: AbortSignal,
+) => {
+  return service<SearchLegacyAdmissionsAdminResponseDto>({
+    url: `/admissions/search/legacy/admin`,
+    method: 'GET',
+    params,
+    signal,
+  });
+};
+
+export const getAdmissionsControllerSearchLegacyAdminQueryKey = (
+  params?: AdmissionsControllerSearchLegacyAdminParams,
+) => {
+  return [`/admissions/search/legacy/admin`, ...(params ? [params] : [])] as const;
+};
+
+export const getAdmissionsControllerSearchLegacyAdminQueryOptions = <
+  TData = Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>,
+  TError = unknown,
+>(
+  params: AdmissionsControllerSearchLegacyAdminParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>, TError, TData>>;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAdmissionsControllerSearchLegacyAdminQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>> = ({ signal }) =>
+    admissionsControllerSearchLegacyAdmin(params, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AdmissionsControllerSearchLegacyAdminQueryResult = NonNullable<
+  Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>
+>;
+export type AdmissionsControllerSearchLegacyAdminQueryError = unknown;
+
+/** @summary Search last year’s records with all fields (admin portal) */
+export function useAdmissionsControllerSearchLegacyAdmin<
+  TData = Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>,
+  TError = unknown,
+>(
+  params: AdmissionsControllerSearchLegacyAdminParams,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>,
+          TError,
+          Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/** @summary Search last year’s records with all fields (admin portal) */
+export function useAdmissionsControllerSearchLegacyAdmin<
+  TData = Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>,
+  TError = unknown,
+>(
+  params: AdmissionsControllerSearchLegacyAdminParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>,
+          TError,
+          Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/** @summary Search last year’s records with all fields (admin portal) */
+export function useAdmissionsControllerSearchLegacyAdmin<
+  TData = Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>,
+  TError = unknown,
+>(
+  params: AdmissionsControllerSearchLegacyAdminParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/** @summary Search last year’s records with all fields (admin portal) */
+export function useAdmissionsControllerSearchLegacyAdmin<
+  TData = Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>,
+  TError = unknown,
+>(
+  params: AdmissionsControllerSearchLegacyAdminParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof admissionsControllerSearchLegacyAdmin>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getAdmissionsControllerSearchLegacyAdminQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;
