@@ -26939,6 +26939,7 @@
           "MARKS_INVALID",
           "INVALID_RETRAIN_SET",
           "NOT_DUE",
+          "INVALID_IMPROVE_SET",
           "SENT_AFTER_LOGOUT",
           "LATE_DAY",
           "LATE_GRADE",
@@ -29431,6 +29432,13 @@
           "trainings"
         ]
       },
+      "TrainingItemKind": {
+        "type": "string",
+        "enum": [
+          "REQUIRED",
+          "IMPROVEMENT"
+        ]
+      },
       "TrainingItemStatus": {
         "type": "string",
         "enum": [
@@ -29489,6 +29497,23 @@
             "nullable": true,
             "description": "Graded step by step with these step codes (GET /staff/results/steps)"
           },
+          "kind": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrainingItemKind"
+              }
+            ]
+          },
+          "previousBestPct": {
+            "type": "number",
+            "nullable": true,
+            "description": "IMPROVEMENT: the best score before this enrollment"
+          },
+          "previousBand": {
+            "type": "number",
+            "nullable": true,
+            "description": "IMPROVEMENT: that score's band; the item pays only a higher band"
+          },
           "status": {
             "allOf": [
               {
@@ -29535,6 +29560,9 @@
           "maxMarks",
           "passMarks",
           "stepSkill",
+          "kind",
+          "previousBestPct",
+          "previousBand",
           "status",
           "completed",
           "completedAt",
@@ -29949,6 +29977,15 @@
               }
             ]
           },
+          "itemKind": {
+            "type": "string",
+            "enum": [
+              "REQUIRED",
+              "IMPROVEMENT"
+            ],
+            "nullable": true,
+            "description": "Payouts: whether the training was required, or an improvement of an earlier pass"
+          },
           "title": {
             "type": "string",
             "nullable": true,
@@ -29999,6 +30036,7 @@
           "student",
           "reason",
           "training",
+          "itemKind",
           "title",
           "reference",
           "date",
@@ -30288,9 +30326,14 @@
             "type": "string",
             "description": "TRAINING (graded) or ADMIN (recorded by hand)"
           },
-          "scorePct": {
+          "bestScorePct": {
             "type": "number",
-            "nullable": true
+            "nullable": true,
+            "description": "The best score on it in any session (null if recorded by hand)"
+          },
+          "improvable": {
+            "type": "boolean",
+            "description": "Best score below the threshold (90%): the trainer may pick it to improve when registering"
           },
           "reason": {
             "type": "string"
@@ -30306,7 +30349,8 @@
           "sessionId",
           "sessionName",
           "source",
-          "scorePct"
+          "bestScorePct",
+          "improvable"
         ]
       },
       "StudentTrainingsDto": {
@@ -30440,6 +30484,13 @@
           },
           "trainerStaffUserId": {
             "type": "string"
+          },
+          "improveTrainingIds": {
+            "description": "Passed trainings with a best score below 90% to improve this session (400 INVALID_IMPROVE_SET otherwise)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       },

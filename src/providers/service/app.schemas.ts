@@ -4240,6 +4240,7 @@ export const StaffSyncReasonCode = {
   MARKS_INVALID: 'MARKS_INVALID',
   INVALID_RETRAIN_SET: 'INVALID_RETRAIN_SET',
   NOT_DUE: 'NOT_DUE',
+  INVALID_IMPROVE_SET: 'INVALID_IMPROVE_SET',
   SENT_AFTER_LOGOUT: 'SENT_AFTER_LOGOUT',
   LATE_DAY: 'LATE_DAY',
   LATE_GRADE: 'LATE_GRADE',
@@ -5226,6 +5227,13 @@ export interface EnrollmentRulesEntity {
   trainings: RulesTrainingEntity[];
 }
 
+export type TrainingItemKind = (typeof TrainingItemKind)[keyof typeof TrainingItemKind];
+
+export const TrainingItemKind = {
+  REQUIRED: 'REQUIRED',
+  IMPROVEMENT: 'IMPROVEMENT',
+} as const;
+
 export type TrainingItemStatus = (typeof TrainingItemStatus)[keyof typeof TrainingItemStatus];
 
 export const TrainingItemStatus = {
@@ -5266,6 +5274,17 @@ export interface EnrollmentItemEntity {
    * @nullable
    */
   stepSkill: EnrollmentItemEntityStepSkill;
+  kind: TrainingItemKind;
+  /**
+   * IMPROVEMENT: the best score before this enrollment
+   * @nullable
+   */
+  previousBestPct: number | null;
+  /**
+   * IMPROVEMENT: that score's band; the item pays only a higher band
+   * @nullable
+   */
+  previousBand: number | null;
   status: TrainingItemStatus;
   /** Marked complete in the current round */
   completed: boolean;
@@ -5416,6 +5435,19 @@ export interface LedgerTrainingEntity {
   nameUr: string | null;
 }
 
+/**
+ * Payouts: whether the training was required, or an improvement of an earlier pass
+ * @nullable
+ */
+export type TrainerLedgerEntryEntityItemKind =
+  | (typeof TrainerLedgerEntryEntityItemKind)[keyof typeof TrainerLedgerEntryEntityItemKind]
+  | null;
+
+export const TrainerLedgerEntryEntityItemKind = {
+  REQUIRED: 'REQUIRED',
+  IMPROVEMENT: 'IMPROVEMENT',
+} as const;
+
 export interface TrainerLedgerEntryEntity {
   id: string;
   trainerStaffUserId: string;
@@ -5437,6 +5469,11 @@ export interface TrainerLedgerEntryEntity {
    * @nullable
    */
   training: LedgerTrainingEntity | null;
+  /**
+   * Payouts: whether the training was required, or an improvement of an earlier pass
+   * @nullable
+   */
+  itemKind: TrainerLedgerEntryEntityItemKind;
   /**
    * Ad hoc amounts: what it is for
    * @nullable
@@ -5556,8 +5593,13 @@ export interface TrainingPassEntity {
   sessionName: string | null;
   /** TRAINING (graded) or ADMIN (recorded by hand) */
   source: string;
-  /** @nullable */
-  scorePct: number | null;
+  /**
+   * The best score on it in any session (null if recorded by hand)
+   * @nullable
+   */
+  bestScorePct: number | null;
+  /** Best score below the threshold (90%): the trainer may pick it to improve when registering */
+  improvable: boolean;
   reason?: string;
 }
 
@@ -5611,6 +5653,8 @@ export interface CreateTrainingEnrollmentDto {
   grNumber?: string;
   studentId?: string;
   trainerStaffUserId?: string;
+  /** Passed trainings with a best score below 90% to improve this session (400 INVALID_IMPROVE_SET otherwise) */
+  improveTrainingIds?: string[];
 }
 
 export interface SetTrainerDto {
