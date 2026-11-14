@@ -2,9 +2,15 @@
 
 import { useMemo } from 'react';
 
-import { Box, Card, CardContent, Chip, Grid, Stack, Typography } from '@mui/material';
+import { useIntl } from 'react-intl';
+
+import Link from 'next/link';
+
+import { Person as ProfileIcon } from '@mui/icons-material';
+import { Box, Button, Card, CardContent, Chip, Grid, Stack, Typography } from '@mui/material';
 
 import { PrintActions } from '@/domains/admission/components/PrintActions';
+import { formatDateTime } from '@/domains/students/utils';
 import { VanChip } from '@/domains/van/components/VanChip';
 
 import { DataNotFound } from '@/components/DataNotFound';
@@ -19,6 +25,8 @@ import { useAdmissionsControllerFindOne } from '@/providers/service/admissions/a
 import { FormattedMessage, useFormattedMessage } from '@/theme/FormattedMessage';
 
 import { useEntityDetailHandler } from '@/hooks/useEntityDetailHandler';
+
+import { routes } from '@/router/routes';
 
 import messages from './messages';
 
@@ -116,6 +124,8 @@ export function AdmissionDetail({ admissionId }: { admissionId: string }) {
     ];
   }, [admissionDetail]);
 
+  const intl = useIntl();
+
   const additionalFields: { value?: string | number | boolean; label: keyof typeof messages; isBoolean?: boolean }[] =
     useMemo(() => {
       return [
@@ -156,8 +166,26 @@ export function AdmissionDetail({ admissionId }: { admissionId: string }) {
           value: admissionDetail?.isFeePaid,
           isBoolean: true,
         },
+        // Marked by an admin in the portal, or by a staff user at the staff app fee desk
+        ...(admissionDetail?.isFeePaid && (admissionDetail.feePaidByStaffUser || admissionDetail.feePaidByAdmin)
+          ? [
+              {
+                label: 'feePaidByLabel' as const,
+                value: admissionDetail.feePaidByStaffUser
+                  ? intl.formatMessage(messages.feePaidByStaffApp, {
+                      name: admissionDetail.feePaidByStaffUser.name,
+                      staffId: admissionDetail.feePaidByStaffUser.staffId,
+                      date: formatDateTime(admissionDetail.feePaidAt),
+                    })
+                  : intl.formatMessage(messages.feePaidByAdmin, {
+                      name: admissionDetail.feePaidByAdmin?.name ?? '',
+                      date: formatDateTime(admissionDetail.feePaidAt),
+                    }),
+              },
+            ]
+          : []),
       ];
-    }, [admissionDetail]);
+    }, [admissionDetail, intl]);
 
   const formattedMessages = {
     failToFetch: useFormattedMessage(messages.failToFetch),
@@ -199,7 +227,18 @@ export function AdmissionDetail({ admissionId }: { admissionId: string }) {
               <Chip label={admissionDetail?.status} color={getStatusColor(admissionDetail?.status)} size="small" />
             </Grid>
             <Grid size={{ xs: 12, md: 6, lg: 9 }}>
-              <Stack direction="row" justifyContent={{ xs: 'flex-start', md: 'flex-end' }}>
+              <Stack direction="row" spacing={1} justifyContent={{ xs: 'flex-start', md: 'flex-end' }}>
+                {admissionDetail?.student?.id && (
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    component={Link}
+                    href={routes.students.profile(admissionDetail.student.id)}
+                    startIcon={<ProfileIcon />}
+                  >
+                    <FormattedMessage {...messages.studentProfile} />
+                  </Button>
+                )}
                 <PrintActions admission={admissionDetail} />
               </Stack>
             </Grid>

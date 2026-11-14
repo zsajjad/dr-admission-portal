@@ -5,6 +5,10 @@ export const routes = {
     create: '/admin-users?create=true',
     edit: (key: string) => `/admin-users?edit=${key}`,
   },
+  adminPermissions: {
+    listing: '/admin-permissions',
+    user: (adminUserId: string) => `/admin-permissions?user=${adminUserId}`,
+  },
   branches: {
     listing: '/branches?includeInActive=true',
     create: '/branches/create',
@@ -24,6 +28,37 @@ export const routes = {
     edit: (id: string) => `/admission/edit/${id}`,
     detail: (id: string) => `/admission/${id}`,
   },
+  students: {
+    listing: '/students',
+    profile: (id: string) => `/students/${id}`,
+  },
+  studentMerge: {
+    listing: '/students/merge',
+    withRecord: (studentId: string) => `/students/merge?a=${studentId}`,
+    history: '/students/merge?tab=history',
+  },
+  staffUsers: {
+    listing: '/staff-users',
+    detail: (id: string) => `/staff-users/${id}`,
+    cards: (ids?: string[]) => (ids?.length ? `/staff-users/cards?ids=${ids.join(',')}` : '/staff-users/cards'),
+  },
+  sections: {
+    listing: '/sections',
+    detail: (id: string) => `/sections/${id}`,
+    classOverride: '/sections/class-override',
+  },
+  syncReview: {
+    listing: '/sync-review',
+  },
+  results: {
+    listing: '/results',
+    passMarks: '/results/pass-marks',
+  },
+  auditLog: {
+    listing: '/audit-log',
+    record: (entityType: string, entityId: string) =>
+      `/audit-log?entityType=${encodeURIComponent(entityType)}&entityId=${encodeURIComponent(entityId)}`,
+  },
   questions: {
     listing: '/questions?includeInActive=true',
     create: '/questions/create',
@@ -35,6 +70,23 @@ export const routes = {
   },
   interactionReport: {
     listing: '/interactions/report',
+  },
+  trainings: {
+    home: '/trainings',
+    enrollments: '/trainings/enrollments',
+    enrollment: (id: string) => `/trainings/enrollments/${id}`,
+    student: (studentId: string) => `/trainings/students/${studentId}`,
+    grades: '/trainings/grades',
+    catalog: '/trainings/catalog',
+    catalogCreate: '/trainings/catalog/new',
+    catalogTraining: (id: string) => `/trainings/catalog/${id}`,
+    windows: '/trainings/windows',
+    ledger: '/trainings/ledger',
+    reports: '/trainings/reports',
+  },
+  planningChat: {
+    listing: '/planning-chat',
+    conversation: (id: string) => `/planning-chat?c=${id}`,
   },
   auth: {
     signIn: '/auth/sign-in',

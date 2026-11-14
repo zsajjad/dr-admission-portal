@@ -35,6 +35,8 @@ import type {
   PrintingControllerPreviewAttendanceSheetsParams,
   PrintingControllerPreviewIdCardsParams,
   PrintingControllerPreviewSittingSlipsParams,
+  PrintingJobStartedDto,
+  PrintingJobStatusDto,
   ProcessCardPrintRequestsDto,
   ProcessCardPrintRequestsResponseDto,
   SittingSlipFilterDto,
@@ -73,7 +75,7 @@ export const getPrintingControllerPreviewIdCardsQueryKey = (params?: PrintingCon
 
 export const getPrintingControllerPreviewIdCardsQueryOptions = <
   TData = Awaited<ReturnType<typeof printingControllerPreviewIdCards>>,
-  TError = unknown,
+  TError = void,
 >(
   params: PrintingControllerPreviewIdCardsParams,
   options?: {
@@ -97,11 +99,11 @@ export const getPrintingControllerPreviewIdCardsQueryOptions = <
 export type PrintingControllerPreviewIdCardsQueryResult = NonNullable<
   Awaited<ReturnType<typeof printingControllerPreviewIdCards>>
 >;
-export type PrintingControllerPreviewIdCardsQueryError = unknown;
+export type PrintingControllerPreviewIdCardsQueryError = void;
 
 export function usePrintingControllerPreviewIdCards<
   TData = Awaited<ReturnType<typeof printingControllerPreviewIdCards>>,
-  TError = unknown,
+  TError = void,
 >(
   params: PrintingControllerPreviewIdCardsParams,
   options: {
@@ -119,7 +121,7 @@ export function usePrintingControllerPreviewIdCards<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function usePrintingControllerPreviewIdCards<
   TData = Awaited<ReturnType<typeof printingControllerPreviewIdCards>>,
-  TError = unknown,
+  TError = void,
 >(
   params: PrintingControllerPreviewIdCardsParams,
   options?: {
@@ -137,7 +139,7 @@ export function usePrintingControllerPreviewIdCards<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function usePrintingControllerPreviewIdCards<
   TData = Awaited<ReturnType<typeof printingControllerPreviewIdCards>>,
-  TError = unknown,
+  TError = void,
 >(
   params: PrintingControllerPreviewIdCardsParams,
   options?: {
@@ -147,7 +149,7 @@ export function usePrintingControllerPreviewIdCards<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function usePrintingControllerPreviewIdCards<
   TData = Awaited<ReturnType<typeof printingControllerPreviewIdCards>>,
-  TError = unknown,
+  TError = void,
 >(
   params: PrintingControllerPreviewIdCardsParams,
   options?: {
@@ -165,7 +167,7 @@ export function usePrintingControllerPreviewIdCards<
 }
 
 export const printingControllerPreviewIdCardDesign = (signal?: AbortSignal) => {
-  return service<void>({ url: `/printing/id-cards/preview-design`, method: 'GET', signal });
+  return service<unknown>({ url: `/printing/id-cards/preview-design`, method: 'GET', signal });
 };
 
 export const getPrintingControllerPreviewIdCardDesignQueryKey = () => {
@@ -174,7 +176,7 @@ export const getPrintingControllerPreviewIdCardDesignQueryKey = () => {
 
 export const getPrintingControllerPreviewIdCardDesignQueryOptions = <
   TData = Awaited<ReturnType<typeof printingControllerPreviewIdCardDesign>>,
-  TError = unknown,
+  TError = void,
 >(options?: {
   query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof printingControllerPreviewIdCardDesign>>, TError, TData>>;
 }) => {
@@ -195,11 +197,11 @@ export const getPrintingControllerPreviewIdCardDesignQueryOptions = <
 export type PrintingControllerPreviewIdCardDesignQueryResult = NonNullable<
   Awaited<ReturnType<typeof printingControllerPreviewIdCardDesign>>
 >;
-export type PrintingControllerPreviewIdCardDesignQueryError = unknown;
+export type PrintingControllerPreviewIdCardDesignQueryError = void;
 
 export function usePrintingControllerPreviewIdCardDesign<
   TData = Awaited<ReturnType<typeof printingControllerPreviewIdCardDesign>>,
-  TError = unknown,
+  TError = void,
 >(
   options: {
     query: Partial<UseQueryOptions<Awaited<ReturnType<typeof printingControllerPreviewIdCardDesign>>, TError, TData>> &
@@ -216,7 +218,7 @@ export function usePrintingControllerPreviewIdCardDesign<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function usePrintingControllerPreviewIdCardDesign<
   TData = Awaited<ReturnType<typeof printingControllerPreviewIdCardDesign>>,
-  TError = unknown,
+  TError = void,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof printingControllerPreviewIdCardDesign>>, TError, TData>> &
@@ -233,7 +235,7 @@ export function usePrintingControllerPreviewIdCardDesign<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function usePrintingControllerPreviewIdCardDesign<
   TData = Awaited<ReturnType<typeof printingControllerPreviewIdCardDesign>>,
-  TError = unknown,
+  TError = void,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof printingControllerPreviewIdCardDesign>>, TError, TData>>;
@@ -242,7 +244,7 @@ export function usePrintingControllerPreviewIdCardDesign<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function usePrintingControllerPreviewIdCardDesign<
   TData = Awaited<ReturnType<typeof printingControllerPreviewIdCardDesign>>,
-  TError = unknown,
+  TError = void,
 >(
   options?: {
     query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof printingControllerPreviewIdCardDesign>>, TError, TData>>;
@@ -259,7 +261,7 @@ export function usePrintingControllerPreviewIdCardDesign<
 }
 
 export const printingControllerGenerateIdCards = (idCardFilterDto: IdCardFilterDto, signal?: AbortSignal) => {
-  return service<void>({
+  return service<unknown>({
     url: `/printing/id-cards/generate`,
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -270,7 +272,7 @@ export const printingControllerGenerateIdCards = (idCardFilterDto: IdCardFilterD
 
 export const getPrintingControllerGenerateIdCardsMutationKey = () => ['printingControllerGenerateIdCards'] as const;
 
-export const getPrintingControllerGenerateIdCardsMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getPrintingControllerGenerateIdCardsMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof printingControllerGenerateIdCards>>,
     TError,
@@ -306,10 +308,10 @@ export type PrintingControllerGenerateIdCardsMutationResult = NonNullable<
   Awaited<ReturnType<typeof printingControllerGenerateIdCards>>
 >;
 export type PrintingControllerGenerateIdCardsMutationBody = IdCardFilterDto;
-export type PrintingControllerGenerateIdCardsMutationError = unknown;
+export type PrintingControllerGenerateIdCardsMutationError = void;
 export type PrintingControllerGenerateIdCardsMutationVariables = { data: IdCardFilterDto };
 
-export const usePrintingControllerGenerateIdCards = <TError = unknown, TContext = unknown>(
+export const usePrintingControllerGenerateIdCards = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof printingControllerGenerateIdCards>>,
@@ -347,7 +349,7 @@ export const getPrintingControllerPreviewSittingSlipsQueryKey = (
 
 export const getPrintingControllerPreviewSittingSlipsQueryOptions = <
   TData = Awaited<ReturnType<typeof printingControllerPreviewSittingSlips>>,
-  TError = unknown,
+  TError = void,
 >(
   params: PrintingControllerPreviewSittingSlipsParams,
   options?: {
@@ -371,11 +373,11 @@ export const getPrintingControllerPreviewSittingSlipsQueryOptions = <
 export type PrintingControllerPreviewSittingSlipsQueryResult = NonNullable<
   Awaited<ReturnType<typeof printingControllerPreviewSittingSlips>>
 >;
-export type PrintingControllerPreviewSittingSlipsQueryError = unknown;
+export type PrintingControllerPreviewSittingSlipsQueryError = void;
 
 export function usePrintingControllerPreviewSittingSlips<
   TData = Awaited<ReturnType<typeof printingControllerPreviewSittingSlips>>,
-  TError = unknown,
+  TError = void,
 >(
   params: PrintingControllerPreviewSittingSlipsParams,
   options: {
@@ -393,7 +395,7 @@ export function usePrintingControllerPreviewSittingSlips<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function usePrintingControllerPreviewSittingSlips<
   TData = Awaited<ReturnType<typeof printingControllerPreviewSittingSlips>>,
-  TError = unknown,
+  TError = void,
 >(
   params: PrintingControllerPreviewSittingSlipsParams,
   options?: {
@@ -411,7 +413,7 @@ export function usePrintingControllerPreviewSittingSlips<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function usePrintingControllerPreviewSittingSlips<
   TData = Awaited<ReturnType<typeof printingControllerPreviewSittingSlips>>,
-  TError = unknown,
+  TError = void,
 >(
   params: PrintingControllerPreviewSittingSlipsParams,
   options?: {
@@ -421,7 +423,7 @@ export function usePrintingControllerPreviewSittingSlips<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function usePrintingControllerPreviewSittingSlips<
   TData = Awaited<ReturnType<typeof printingControllerPreviewSittingSlips>>,
-  TError = unknown,
+  TError = void,
 >(
   params: PrintingControllerPreviewSittingSlipsParams,
   options?: {
@@ -439,7 +441,7 @@ export function usePrintingControllerPreviewSittingSlips<
 }
 
 export const printingControllerPreviewSittingSlipDesign = (signal?: AbortSignal) => {
-  return service<void>({ url: `/printing/sitting-slips/preview-design`, method: 'GET', signal });
+  return service<unknown>({ url: `/printing/sitting-slips/preview-design`, method: 'GET', signal });
 };
 
 export const getPrintingControllerPreviewSittingSlipDesignQueryKey = () => {
@@ -448,7 +450,7 @@ export const getPrintingControllerPreviewSittingSlipDesignQueryKey = () => {
 
 export const getPrintingControllerPreviewSittingSlipDesignQueryOptions = <
   TData = Awaited<ReturnType<typeof printingControllerPreviewSittingSlipDesign>>,
-  TError = unknown,
+  TError = void,
 >(options?: {
   query?: Partial<
     UseQueryOptions<Awaited<ReturnType<typeof printingControllerPreviewSittingSlipDesign>>, TError, TData>
@@ -471,11 +473,11 @@ export const getPrintingControllerPreviewSittingSlipDesignQueryOptions = <
 export type PrintingControllerPreviewSittingSlipDesignQueryResult = NonNullable<
   Awaited<ReturnType<typeof printingControllerPreviewSittingSlipDesign>>
 >;
-export type PrintingControllerPreviewSittingSlipDesignQueryError = unknown;
+export type PrintingControllerPreviewSittingSlipDesignQueryError = void;
 
 export function usePrintingControllerPreviewSittingSlipDesign<
   TData = Awaited<ReturnType<typeof printingControllerPreviewSittingSlipDesign>>,
-  TError = unknown,
+  TError = void,
 >(
   options: {
     query: Partial<
@@ -494,7 +496,7 @@ export function usePrintingControllerPreviewSittingSlipDesign<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function usePrintingControllerPreviewSittingSlipDesign<
   TData = Awaited<ReturnType<typeof printingControllerPreviewSittingSlipDesign>>,
-  TError = unknown,
+  TError = void,
 >(
   options?: {
     query?: Partial<
@@ -513,7 +515,7 @@ export function usePrintingControllerPreviewSittingSlipDesign<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function usePrintingControllerPreviewSittingSlipDesign<
   TData = Awaited<ReturnType<typeof printingControllerPreviewSittingSlipDesign>>,
-  TError = unknown,
+  TError = void,
 >(
   options?: {
     query?: Partial<
@@ -524,7 +526,7 @@ export function usePrintingControllerPreviewSittingSlipDesign<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function usePrintingControllerPreviewSittingSlipDesign<
   TData = Awaited<ReturnType<typeof printingControllerPreviewSittingSlipDesign>>,
-  TError = unknown,
+  TError = void,
 >(
   options?: {
     query?: Partial<
@@ -546,7 +548,7 @@ export const printingControllerGenerateSittingSlips = (
   sittingSlipFilterDto: SittingSlipFilterDto,
   signal?: AbortSignal,
 ) => {
-  return service<void>({
+  return service<unknown>({
     url: `/printing/sitting-slips/generate`,
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -558,10 +560,7 @@ export const printingControllerGenerateSittingSlips = (
 export const getPrintingControllerGenerateSittingSlipsMutationKey = () =>
   ['printingControllerGenerateSittingSlips'] as const;
 
-export const getPrintingControllerGenerateSittingSlipsMutationOptions = <
-  TError = unknown,
-  TContext = unknown,
->(options?: {
+export const getPrintingControllerGenerateSittingSlipsMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof printingControllerGenerateSittingSlips>>,
     TError,
@@ -597,10 +596,10 @@ export type PrintingControllerGenerateSittingSlipsMutationResult = NonNullable<
   Awaited<ReturnType<typeof printingControllerGenerateSittingSlips>>
 >;
 export type PrintingControllerGenerateSittingSlipsMutationBody = SittingSlipFilterDto;
-export type PrintingControllerGenerateSittingSlipsMutationError = unknown;
+export type PrintingControllerGenerateSittingSlipsMutationError = void;
 export type PrintingControllerGenerateSittingSlipsMutationVariables = { data: SittingSlipFilterDto };
 
-export const usePrintingControllerGenerateSittingSlips = <TError = unknown, TContext = unknown>(
+export const usePrintingControllerGenerateSittingSlips = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof printingControllerGenerateSittingSlips>>,
@@ -638,7 +637,7 @@ export const getPrintingControllerPreviewAttendanceSheetsQueryKey = (
 
 export const getPrintingControllerPreviewAttendanceSheetsQueryOptions = <
   TData = Awaited<ReturnType<typeof printingControllerPreviewAttendanceSheets>>,
-  TError = unknown,
+  TError = void,
 >(
   params: PrintingControllerPreviewAttendanceSheetsParams,
   options?: {
@@ -664,11 +663,11 @@ export const getPrintingControllerPreviewAttendanceSheetsQueryOptions = <
 export type PrintingControllerPreviewAttendanceSheetsQueryResult = NonNullable<
   Awaited<ReturnType<typeof printingControllerPreviewAttendanceSheets>>
 >;
-export type PrintingControllerPreviewAttendanceSheetsQueryError = unknown;
+export type PrintingControllerPreviewAttendanceSheetsQueryError = void;
 
 export function usePrintingControllerPreviewAttendanceSheets<
   TData = Awaited<ReturnType<typeof printingControllerPreviewAttendanceSheets>>,
-  TError = unknown,
+  TError = void,
 >(
   params: PrintingControllerPreviewAttendanceSheetsParams,
   options: {
@@ -688,7 +687,7 @@ export function usePrintingControllerPreviewAttendanceSheets<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function usePrintingControllerPreviewAttendanceSheets<
   TData = Awaited<ReturnType<typeof printingControllerPreviewAttendanceSheets>>,
-  TError = unknown,
+  TError = void,
 >(
   params: PrintingControllerPreviewAttendanceSheetsParams,
   options?: {
@@ -708,7 +707,7 @@ export function usePrintingControllerPreviewAttendanceSheets<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function usePrintingControllerPreviewAttendanceSheets<
   TData = Awaited<ReturnType<typeof printingControllerPreviewAttendanceSheets>>,
-  TError = unknown,
+  TError = void,
 >(
   params: PrintingControllerPreviewAttendanceSheetsParams,
   options?: {
@@ -720,7 +719,7 @@ export function usePrintingControllerPreviewAttendanceSheets<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function usePrintingControllerPreviewAttendanceSheets<
   TData = Awaited<ReturnType<typeof printingControllerPreviewAttendanceSheets>>,
-  TError = unknown,
+  TError = void,
 >(
   params: PrintingControllerPreviewAttendanceSheetsParams,
   options?: {
@@ -743,7 +742,7 @@ export const printingControllerGenerateAttendanceSheets = (
   attendanceSheetFilterDto: AttendanceSheetFilterDto,
   signal?: AbortSignal,
 ) => {
-  return service<void>({
+  return service<unknown>({
     url: `/printing/attendance-sheets/generate`,
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -756,7 +755,7 @@ export const getPrintingControllerGenerateAttendanceSheetsMutationKey = () =>
   ['printingControllerGenerateAttendanceSheets'] as const;
 
 export const getPrintingControllerGenerateAttendanceSheetsMutationOptions = <
-  TError = unknown,
+  TError = void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -794,10 +793,10 @@ export type PrintingControllerGenerateAttendanceSheetsMutationResult = NonNullab
   Awaited<ReturnType<typeof printingControllerGenerateAttendanceSheets>>
 >;
 export type PrintingControllerGenerateAttendanceSheetsMutationBody = AttendanceSheetFilterDto;
-export type PrintingControllerGenerateAttendanceSheetsMutationError = unknown;
+export type PrintingControllerGenerateAttendanceSheetsMutationError = void;
 export type PrintingControllerGenerateAttendanceSheetsMutationVariables = { data: AttendanceSheetFilterDto };
 
-export const usePrintingControllerGenerateAttendanceSheets = <TError = unknown, TContext = unknown>(
+export const usePrintingControllerGenerateAttendanceSheets = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof printingControllerGenerateAttendanceSheets>>,
@@ -832,7 +831,7 @@ export const getPrintingControllerPreviewVerificationSlipsMutationKey = () =>
   ['printingControllerPreviewVerificationSlips'] as const;
 
 export const getPrintingControllerPreviewVerificationSlipsMutationOptions = <
-  TError = unknown,
+  TError = void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -870,10 +869,10 @@ export type PrintingControllerPreviewVerificationSlipsMutationResult = NonNullab
   Awaited<ReturnType<typeof printingControllerPreviewVerificationSlips>>
 >;
 export type PrintingControllerPreviewVerificationSlipsMutationBody = VerificationSlipFilterDto;
-export type PrintingControllerPreviewVerificationSlipsMutationError = unknown;
+export type PrintingControllerPreviewVerificationSlipsMutationError = void;
 export type PrintingControllerPreviewVerificationSlipsMutationVariables = { data: VerificationSlipFilterDto };
 
-export const usePrintingControllerPreviewVerificationSlips = <TError = unknown, TContext = unknown>(
+export const usePrintingControllerPreviewVerificationSlips = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof printingControllerPreviewVerificationSlips>>,
@@ -892,7 +891,7 @@ export const usePrintingControllerPreviewVerificationSlips = <TError = unknown, 
   return useMutation(getPrintingControllerPreviewVerificationSlipsMutationOptions(options), queryClient);
 };
 export const printingControllerPreviewVerificationSlipDesign = (signal?: AbortSignal) => {
-  return service<void>({ url: `/printing/verification-slips/preview-design`, method: 'GET', signal });
+  return service<unknown>({ url: `/printing/verification-slips/preview-design`, method: 'GET', signal });
 };
 
 export const getPrintingControllerPreviewVerificationSlipDesignQueryKey = () => {
@@ -901,7 +900,7 @@ export const getPrintingControllerPreviewVerificationSlipDesignQueryKey = () => 
 
 export const getPrintingControllerPreviewVerificationSlipDesignQueryOptions = <
   TData = Awaited<ReturnType<typeof printingControllerPreviewVerificationSlipDesign>>,
-  TError = unknown,
+  TError = void,
 >(options?: {
   query?: Partial<
     UseQueryOptions<Awaited<ReturnType<typeof printingControllerPreviewVerificationSlipDesign>>, TError, TData>
@@ -925,11 +924,11 @@ export const getPrintingControllerPreviewVerificationSlipDesignQueryOptions = <
 export type PrintingControllerPreviewVerificationSlipDesignQueryResult = NonNullable<
   Awaited<ReturnType<typeof printingControllerPreviewVerificationSlipDesign>>
 >;
-export type PrintingControllerPreviewVerificationSlipDesignQueryError = unknown;
+export type PrintingControllerPreviewVerificationSlipDesignQueryError = void;
 
 export function usePrintingControllerPreviewVerificationSlipDesign<
   TData = Awaited<ReturnType<typeof printingControllerPreviewVerificationSlipDesign>>,
-  TError = unknown,
+  TError = void,
 >(
   options: {
     query: Partial<
@@ -948,7 +947,7 @@ export function usePrintingControllerPreviewVerificationSlipDesign<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function usePrintingControllerPreviewVerificationSlipDesign<
   TData = Awaited<ReturnType<typeof printingControllerPreviewVerificationSlipDesign>>,
-  TError = unknown,
+  TError = void,
 >(
   options?: {
     query?: Partial<
@@ -967,7 +966,7 @@ export function usePrintingControllerPreviewVerificationSlipDesign<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function usePrintingControllerPreviewVerificationSlipDesign<
   TData = Awaited<ReturnType<typeof printingControllerPreviewVerificationSlipDesign>>,
-  TError = unknown,
+  TError = void,
 >(
   options?: {
     query?: Partial<
@@ -978,7 +977,7 @@ export function usePrintingControllerPreviewVerificationSlipDesign<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function usePrintingControllerPreviewVerificationSlipDesign<
   TData = Awaited<ReturnType<typeof printingControllerPreviewVerificationSlipDesign>>,
-  TError = unknown,
+  TError = void,
 >(
   options?: {
     query?: Partial<
@@ -1000,7 +999,7 @@ export const printingControllerGenerateVerificationSlips = (
   verificationSlipFilterDto: VerificationSlipFilterDto,
   signal?: AbortSignal,
 ) => {
-  return service<void>({
+  return service<unknown>({
     url: `/printing/verification-slips/generate`,
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -1013,7 +1012,7 @@ export const getPrintingControllerGenerateVerificationSlipsMutationKey = () =>
   ['printingControllerGenerateVerificationSlips'] as const;
 
 export const getPrintingControllerGenerateVerificationSlipsMutationOptions = <
-  TError = unknown,
+  TError = void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -1051,10 +1050,10 @@ export type PrintingControllerGenerateVerificationSlipsMutationResult = NonNulla
   Awaited<ReturnType<typeof printingControllerGenerateVerificationSlips>>
 >;
 export type PrintingControllerGenerateVerificationSlipsMutationBody = VerificationSlipFilterDto;
-export type PrintingControllerGenerateVerificationSlipsMutationError = unknown;
+export type PrintingControllerGenerateVerificationSlipsMutationError = void;
 export type PrintingControllerGenerateVerificationSlipsMutationVariables = { data: VerificationSlipFilterDto };
 
-export const usePrintingControllerGenerateVerificationSlips = <TError = unknown, TContext = unknown>(
+export const usePrintingControllerGenerateVerificationSlips = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof printingControllerGenerateVerificationSlips>>,
@@ -1087,7 +1086,7 @@ export const getPrintingControllerListCardPrintRequestsQueryKey = (
 
 export const getPrintingControllerListCardPrintRequestsQueryOptions = <
   TData = Awaited<ReturnType<typeof printingControllerListCardPrintRequests>>,
-  TError = unknown,
+  TError = void,
 >(
   params: PrintingControllerListCardPrintRequestsParams,
   options?: {
@@ -1113,11 +1112,11 @@ export const getPrintingControllerListCardPrintRequestsQueryOptions = <
 export type PrintingControllerListCardPrintRequestsQueryResult = NonNullable<
   Awaited<ReturnType<typeof printingControllerListCardPrintRequests>>
 >;
-export type PrintingControllerListCardPrintRequestsQueryError = unknown;
+export type PrintingControllerListCardPrintRequestsQueryError = void;
 
 export function usePrintingControllerListCardPrintRequests<
   TData = Awaited<ReturnType<typeof printingControllerListCardPrintRequests>>,
-  TError = unknown,
+  TError = void,
 >(
   params: PrintingControllerListCardPrintRequestsParams,
   options: {
@@ -1137,7 +1136,7 @@ export function usePrintingControllerListCardPrintRequests<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function usePrintingControllerListCardPrintRequests<
   TData = Awaited<ReturnType<typeof printingControllerListCardPrintRequests>>,
-  TError = unknown,
+  TError = void,
 >(
   params: PrintingControllerListCardPrintRequestsParams,
   options?: {
@@ -1157,7 +1156,7 @@ export function usePrintingControllerListCardPrintRequests<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function usePrintingControllerListCardPrintRequests<
   TData = Awaited<ReturnType<typeof printingControllerListCardPrintRequests>>,
-  TError = unknown,
+  TError = void,
 >(
   params: PrintingControllerListCardPrintRequestsParams,
   options?: {
@@ -1169,7 +1168,7 @@ export function usePrintingControllerListCardPrintRequests<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function usePrintingControllerListCardPrintRequests<
   TData = Awaited<ReturnType<typeof printingControllerListCardPrintRequests>>,
-  TError = unknown,
+  TError = void,
 >(
   params: PrintingControllerListCardPrintRequestsParams,
   options?: {
@@ -1208,7 +1207,7 @@ export const getPrintingControllerCountCardPrintRequestsQueryKey = (
 
 export const getPrintingControllerCountCardPrintRequestsQueryOptions = <
   TData = Awaited<ReturnType<typeof printingControllerCountCardPrintRequests>>,
-  TError = unknown,
+  TError = void,
 >(
   params: PrintingControllerCountCardPrintRequestsParams,
   options?: {
@@ -1234,11 +1233,11 @@ export const getPrintingControllerCountCardPrintRequestsQueryOptions = <
 export type PrintingControllerCountCardPrintRequestsQueryResult = NonNullable<
   Awaited<ReturnType<typeof printingControllerCountCardPrintRequests>>
 >;
-export type PrintingControllerCountCardPrintRequestsQueryError = unknown;
+export type PrintingControllerCountCardPrintRequestsQueryError = void;
 
 export function usePrintingControllerCountCardPrintRequests<
   TData = Awaited<ReturnType<typeof printingControllerCountCardPrintRequests>>,
-  TError = unknown,
+  TError = void,
 >(
   params: PrintingControllerCountCardPrintRequestsParams,
   options: {
@@ -1258,7 +1257,7 @@ export function usePrintingControllerCountCardPrintRequests<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function usePrintingControllerCountCardPrintRequests<
   TData = Awaited<ReturnType<typeof printingControllerCountCardPrintRequests>>,
-  TError = unknown,
+  TError = void,
 >(
   params: PrintingControllerCountCardPrintRequestsParams,
   options?: {
@@ -1278,7 +1277,7 @@ export function usePrintingControllerCountCardPrintRequests<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function usePrintingControllerCountCardPrintRequests<
   TData = Awaited<ReturnType<typeof printingControllerCountCardPrintRequests>>,
-  TError = unknown,
+  TError = void,
 >(
   params: PrintingControllerCountCardPrintRequestsParams,
   options?: {
@@ -1290,7 +1289,7 @@ export function usePrintingControllerCountCardPrintRequests<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function usePrintingControllerCountCardPrintRequests<
   TData = Awaited<ReturnType<typeof printingControllerCountCardPrintRequests>>,
-  TError = unknown,
+  TError = void,
 >(
   params: PrintingControllerCountCardPrintRequestsParams,
   options?: {
@@ -1326,7 +1325,7 @@ export const getPrintingControllerProcessCardPrintRequestsMutationKey = () =>
   ['printingControllerProcessCardPrintRequests'] as const;
 
 export const getPrintingControllerProcessCardPrintRequestsMutationOptions = <
-  TError = unknown,
+  TError = void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -1364,10 +1363,10 @@ export type PrintingControllerProcessCardPrintRequestsMutationResult = NonNullab
   Awaited<ReturnType<typeof printingControllerProcessCardPrintRequests>>
 >;
 export type PrintingControllerProcessCardPrintRequestsMutationBody = ProcessCardPrintRequestsDto;
-export type PrintingControllerProcessCardPrintRequestsMutationError = unknown;
+export type PrintingControllerProcessCardPrintRequestsMutationError = void;
 export type PrintingControllerProcessCardPrintRequestsMutationVariables = { data: ProcessCardPrintRequestsDto };
 
-export const usePrintingControllerProcessCardPrintRequests = <TError = unknown, TContext = unknown>(
+export const usePrintingControllerProcessCardPrintRequests = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof printingControllerProcessCardPrintRequests>>,
@@ -1402,7 +1401,7 @@ export const getPrintingControllerCreateCardPrintRequestsMutationKey = () =>
   ['printingControllerCreateCardPrintRequests'] as const;
 
 export const getPrintingControllerCreateCardPrintRequestsMutationOptions = <
-  TError = unknown,
+  TError = void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -1440,10 +1439,10 @@ export type PrintingControllerCreateCardPrintRequestsMutationResult = NonNullabl
   Awaited<ReturnType<typeof printingControllerCreateCardPrintRequests>>
 >;
 export type PrintingControllerCreateCardPrintRequestsMutationBody = CreateCardPrintRequestDto;
-export type PrintingControllerCreateCardPrintRequestsMutationError = unknown;
+export type PrintingControllerCreateCardPrintRequestsMutationError = void;
 export type PrintingControllerCreateCardPrintRequestsMutationVariables = { data: CreateCardPrintRequestDto };
 
-export const usePrintingControllerCreateCardPrintRequests = <TError = unknown, TContext = unknown>(
+export const usePrintingControllerCreateCardPrintRequests = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof printingControllerCreateCardPrintRequests>>,
@@ -1473,7 +1472,7 @@ export const getPrintingControllerCancelCardPrintRequestMutationKey = () =>
   ['printingControllerCancelCardPrintRequest'] as const;
 
 export const getPrintingControllerCancelCardPrintRequestMutationOptions = <
-  TError = unknown,
+  TError = void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -1511,10 +1510,10 @@ export type PrintingControllerCancelCardPrintRequestMutationResult = NonNullable
   Awaited<ReturnType<typeof printingControllerCancelCardPrintRequest>>
 >;
 
-export type PrintingControllerCancelCardPrintRequestMutationError = unknown;
+export type PrintingControllerCancelCardPrintRequestMutationError = void;
 export type PrintingControllerCancelCardPrintRequestMutationVariables = { id: string };
 
-export const usePrintingControllerCancelCardPrintRequest = <TError = unknown, TContext = unknown>(
+export const usePrintingControllerCancelCardPrintRequest = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof printingControllerCancelCardPrintRequest>>,
@@ -1532,3 +1531,397 @@ export const usePrintingControllerCancelCardPrintRequest = <TError = unknown, TC
 > => {
   return useMutation(getPrintingControllerCancelCardPrintRequestMutationOptions(options), queryClient);
 };
+export const printingJobsControllerStartIdCards = (idCardFilterDto: IdCardFilterDto, signal?: AbortSignal) => {
+  return service<PrintingJobStartedDto>({
+    url: `/printing/id-cards/jobs`,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    data: idCardFilterDto,
+    signal,
+  });
+};
+
+export const getPrintingJobsControllerStartIdCardsMutationKey = () => ['printingJobsControllerStartIdCards'] as const;
+
+export const getPrintingJobsControllerStartIdCardsMutationOptions = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof printingJobsControllerStartIdCards>>,
+    TError,
+    PrintingJobsControllerStartIdCardsMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof printingJobsControllerStartIdCards>>,
+  TError,
+  PrintingJobsControllerStartIdCardsMutationVariables,
+  TContext
+> => {
+  const mutationKey = getPrintingJobsControllerStartIdCardsMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof printingJobsControllerStartIdCards>>,
+    PrintingJobsControllerStartIdCardsMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return printingJobsControllerStartIdCards(data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PrintingJobsControllerStartIdCardsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof printingJobsControllerStartIdCards>>
+>;
+export type PrintingJobsControllerStartIdCardsMutationBody = IdCardFilterDto;
+export type PrintingJobsControllerStartIdCardsMutationError = void;
+export type PrintingJobsControllerStartIdCardsMutationVariables = { data: IdCardFilterDto };
+
+export const usePrintingJobsControllerStartIdCards = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof printingJobsControllerStartIdCards>>,
+      TError,
+      PrintingJobsControllerStartIdCardsMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof printingJobsControllerStartIdCards>>,
+  TError,
+  PrintingJobsControllerStartIdCardsMutationVariables,
+  TContext
+> => {
+  return useMutation(getPrintingJobsControllerStartIdCardsMutationOptions(options), queryClient);
+};
+export const printingJobsControllerStartSittingSlips = (
+  sittingSlipFilterDto: SittingSlipFilterDto,
+  signal?: AbortSignal,
+) => {
+  return service<PrintingJobStartedDto>({
+    url: `/printing/sitting-slips/jobs`,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    data: sittingSlipFilterDto,
+    signal,
+  });
+};
+
+export const getPrintingJobsControllerStartSittingSlipsMutationKey = () =>
+  ['printingJobsControllerStartSittingSlips'] as const;
+
+export const getPrintingJobsControllerStartSittingSlipsMutationOptions = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof printingJobsControllerStartSittingSlips>>,
+    TError,
+    PrintingJobsControllerStartSittingSlipsMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof printingJobsControllerStartSittingSlips>>,
+  TError,
+  PrintingJobsControllerStartSittingSlipsMutationVariables,
+  TContext
+> => {
+  const mutationKey = getPrintingJobsControllerStartSittingSlipsMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof printingJobsControllerStartSittingSlips>>,
+    PrintingJobsControllerStartSittingSlipsMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return printingJobsControllerStartSittingSlips(data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PrintingJobsControllerStartSittingSlipsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof printingJobsControllerStartSittingSlips>>
+>;
+export type PrintingJobsControllerStartSittingSlipsMutationBody = SittingSlipFilterDto;
+export type PrintingJobsControllerStartSittingSlipsMutationError = void;
+export type PrintingJobsControllerStartSittingSlipsMutationVariables = { data: SittingSlipFilterDto };
+
+export const usePrintingJobsControllerStartSittingSlips = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof printingJobsControllerStartSittingSlips>>,
+      TError,
+      PrintingJobsControllerStartSittingSlipsMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof printingJobsControllerStartSittingSlips>>,
+  TError,
+  PrintingJobsControllerStartSittingSlipsMutationVariables,
+  TContext
+> => {
+  return useMutation(getPrintingJobsControllerStartSittingSlipsMutationOptions(options), queryClient);
+};
+export const printingJobsControllerStartAttendanceSheets = (
+  attendanceSheetFilterDto: AttendanceSheetFilterDto,
+  signal?: AbortSignal,
+) => {
+  return service<PrintingJobStartedDto>({
+    url: `/printing/attendance-sheets/jobs`,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    data: attendanceSheetFilterDto,
+    signal,
+  });
+};
+
+export const getPrintingJobsControllerStartAttendanceSheetsMutationKey = () =>
+  ['printingJobsControllerStartAttendanceSheets'] as const;
+
+export const getPrintingJobsControllerStartAttendanceSheetsMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof printingJobsControllerStartAttendanceSheets>>,
+    TError,
+    PrintingJobsControllerStartAttendanceSheetsMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof printingJobsControllerStartAttendanceSheets>>,
+  TError,
+  PrintingJobsControllerStartAttendanceSheetsMutationVariables,
+  TContext
+> => {
+  const mutationKey = getPrintingJobsControllerStartAttendanceSheetsMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof printingJobsControllerStartAttendanceSheets>>,
+    PrintingJobsControllerStartAttendanceSheetsMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return printingJobsControllerStartAttendanceSheets(data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PrintingJobsControllerStartAttendanceSheetsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof printingJobsControllerStartAttendanceSheets>>
+>;
+export type PrintingJobsControllerStartAttendanceSheetsMutationBody = AttendanceSheetFilterDto;
+export type PrintingJobsControllerStartAttendanceSheetsMutationError = void;
+export type PrintingJobsControllerStartAttendanceSheetsMutationVariables = { data: AttendanceSheetFilterDto };
+
+export const usePrintingJobsControllerStartAttendanceSheets = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof printingJobsControllerStartAttendanceSheets>>,
+      TError,
+      PrintingJobsControllerStartAttendanceSheetsMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof printingJobsControllerStartAttendanceSheets>>,
+  TError,
+  PrintingJobsControllerStartAttendanceSheetsMutationVariables,
+  TContext
+> => {
+  return useMutation(getPrintingJobsControllerStartAttendanceSheetsMutationOptions(options), queryClient);
+};
+export const printingJobsControllerStartVerificationSlips = (
+  verificationSlipFilterDto: VerificationSlipFilterDto,
+  signal?: AbortSignal,
+) => {
+  return service<PrintingJobStartedDto>({
+    url: `/printing/verification-slips/jobs`,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    data: verificationSlipFilterDto,
+    signal,
+  });
+};
+
+export const getPrintingJobsControllerStartVerificationSlipsMutationKey = () =>
+  ['printingJobsControllerStartVerificationSlips'] as const;
+
+export const getPrintingJobsControllerStartVerificationSlipsMutationOptions = <
+  TError = void,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof printingJobsControllerStartVerificationSlips>>,
+    TError,
+    PrintingJobsControllerStartVerificationSlipsMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof printingJobsControllerStartVerificationSlips>>,
+  TError,
+  PrintingJobsControllerStartVerificationSlipsMutationVariables,
+  TContext
+> => {
+  const mutationKey = getPrintingJobsControllerStartVerificationSlipsMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof printingJobsControllerStartVerificationSlips>>,
+    PrintingJobsControllerStartVerificationSlipsMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return printingJobsControllerStartVerificationSlips(data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PrintingJobsControllerStartVerificationSlipsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof printingJobsControllerStartVerificationSlips>>
+>;
+export type PrintingJobsControllerStartVerificationSlipsMutationBody = VerificationSlipFilterDto;
+export type PrintingJobsControllerStartVerificationSlipsMutationError = void;
+export type PrintingJobsControllerStartVerificationSlipsMutationVariables = { data: VerificationSlipFilterDto };
+
+export const usePrintingJobsControllerStartVerificationSlips = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof printingJobsControllerStartVerificationSlips>>,
+      TError,
+      PrintingJobsControllerStartVerificationSlipsMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof printingJobsControllerStartVerificationSlips>>,
+  TError,
+  PrintingJobsControllerStartVerificationSlipsMutationVariables,
+  TContext
+> => {
+  return useMutation(getPrintingJobsControllerStartVerificationSlipsMutationOptions(options), queryClient);
+};
+export const printingJobsControllerStatus = (id: string, signal?: AbortSignal) => {
+  return service<PrintingJobStatusDto>({ url: `/printing/jobs/${id}`, method: 'GET', signal });
+};
+
+export const getPrintingJobsControllerStatusQueryKey = (id: string) => {
+  return [`/printing/jobs/${id}`] as const;
+};
+
+export const getPrintingJobsControllerStatusQueryOptions = <
+  TData = Awaited<ReturnType<typeof printingJobsControllerStatus>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof printingJobsControllerStatus>>, TError, TData>>;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getPrintingJobsControllerStatusQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof printingJobsControllerStatus>>> = ({ signal }) =>
+    printingJobsControllerStatus(id, signal);
+
+  return { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof printingJobsControllerStatus>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type PrintingJobsControllerStatusQueryResult = NonNullable<
+  Awaited<ReturnType<typeof printingJobsControllerStatus>>
+>;
+export type PrintingJobsControllerStatusQueryError = void;
+
+export function usePrintingJobsControllerStatus<
+  TData = Awaited<ReturnType<typeof printingJobsControllerStatus>>,
+  TError = void,
+>(
+  id: string,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof printingJobsControllerStatus>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof printingJobsControllerStatus>>,
+          TError,
+          Awaited<ReturnType<typeof printingJobsControllerStatus>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePrintingJobsControllerStatus<
+  TData = Awaited<ReturnType<typeof printingJobsControllerStatus>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof printingJobsControllerStatus>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof printingJobsControllerStatus>>,
+          TError,
+          Awaited<ReturnType<typeof printingJobsControllerStatus>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePrintingJobsControllerStatus<
+  TData = Awaited<ReturnType<typeof printingJobsControllerStatus>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof printingJobsControllerStatus>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function usePrintingJobsControllerStatus<
+  TData = Awaited<ReturnType<typeof printingJobsControllerStatus>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof printingJobsControllerStatus>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getPrintingJobsControllerStatusQueryOptions(id, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}

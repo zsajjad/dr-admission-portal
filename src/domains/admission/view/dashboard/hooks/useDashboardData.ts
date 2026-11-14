@@ -23,19 +23,26 @@ import { GENDER_COLORS, STATUS_COLORS } from '../constants';
 export interface UseDashboardDataProps {
   branchId?: string;
   sessionId?: string;
+  /** Hold the request until the session is known (default true) */
+  enabled?: boolean;
 }
 
-export function useDashboardData({ branchId, sessionId }: UseDashboardDataProps) {
+export function useDashboardData({ branchId, sessionId, enabled = true }: UseDashboardDataProps) {
   const {
     data: dashboardData,
-    isLoading,
+    isLoading: isQueryLoading,
     isError,
     error,
-  } = useAdmissionsControllerGetDashboard({
-    days: 30,
-    branchId: branchId || undefined,
-    sessionId: sessionId || undefined,
-  });
+  } = useAdmissionsControllerGetDashboard(
+    {
+      days: 30,
+      branchId: branchId || undefined,
+      sessionId: sessionId || undefined,
+    },
+    { query: { enabled } },
+  );
+  // a held request isn't loading in react-query's terms, but the page has nothing to show yet
+  const isLoading = !enabled || isQueryLoading;
 
   // Status chart data
   const statusChartData: StatusChartData[] = useMemo(() => {

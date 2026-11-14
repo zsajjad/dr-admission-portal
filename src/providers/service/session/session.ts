@@ -61,7 +61,7 @@ export const sessionControllerCreate = (createSessionDto: CreateSessionDto, sign
 
 export const getSessionControllerCreateMutationKey = () => ['sessionControllerCreate'] as const;
 
-export const getSessionControllerCreateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getSessionControllerCreateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof sessionControllerCreate>>,
     TError,
@@ -95,10 +95,10 @@ export const getSessionControllerCreateMutationOptions = <TError = unknown, TCon
 
 export type SessionControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof sessionControllerCreate>>>;
 export type SessionControllerCreateMutationBody = CreateSessionDto;
-export type SessionControllerCreateMutationError = unknown;
+export type SessionControllerCreateMutationError = void;
 export type SessionControllerCreateMutationVariables = { data: CreateSessionDto };
 
-export const useSessionControllerCreate = <TError = unknown, TContext = unknown>(
+export const useSessionControllerCreate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof sessionControllerCreate>>,
@@ -319,7 +319,7 @@ export const sessionControllerUpdate = (id: string, updateSessionDto: UpdateSess
 
 export const getSessionControllerUpdateMutationKey = () => ['sessionControllerUpdate'] as const;
 
-export const getSessionControllerUpdateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getSessionControllerUpdateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof sessionControllerUpdate>>,
     TError,
@@ -353,10 +353,10 @@ export const getSessionControllerUpdateMutationOptions = <TError = unknown, TCon
 
 export type SessionControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof sessionControllerUpdate>>>;
 export type SessionControllerUpdateMutationBody = UpdateSessionDto;
-export type SessionControllerUpdateMutationError = unknown;
+export type SessionControllerUpdateMutationError = void;
 export type SessionControllerUpdateMutationVariables = { id: string; data: UpdateSessionDto };
 
-export const useSessionControllerUpdate = <TError = unknown, TContext = unknown>(
+export const useSessionControllerUpdate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof sessionControllerUpdate>>,
@@ -380,7 +380,7 @@ export const sessionControllerRemove = (id: string, signal?: AbortSignal) => {
 
 export const getSessionControllerRemoveMutationKey = () => ['sessionControllerRemove'] as const;
 
-export const getSessionControllerRemoveMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getSessionControllerRemoveMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof sessionControllerRemove>>,
     TError,
@@ -414,10 +414,10 @@ export const getSessionControllerRemoveMutationOptions = <TError = unknown, TCon
 
 export type SessionControllerRemoveMutationResult = NonNullable<Awaited<ReturnType<typeof sessionControllerRemove>>>;
 
-export type SessionControllerRemoveMutationError = unknown;
+export type SessionControllerRemoveMutationError = void;
 export type SessionControllerRemoveMutationVariables = { id: string };
 
-export const useSessionControllerRemove = <TError = unknown, TContext = unknown>(
+export const useSessionControllerRemove = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof sessionControllerRemove>>,
@@ -441,7 +441,7 @@ export const sessionControllerDeactivate = (id: string, signal?: AbortSignal) =>
 
 export const getSessionControllerDeactivateMutationKey = () => ['sessionControllerDeactivate'] as const;
 
-export const getSessionControllerDeactivateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getSessionControllerDeactivateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof sessionControllerDeactivate>>,
     TError,
@@ -477,10 +477,10 @@ export type SessionControllerDeactivateMutationResult = NonNullable<
   Awaited<ReturnType<typeof sessionControllerDeactivate>>
 >;
 
-export type SessionControllerDeactivateMutationError = unknown;
+export type SessionControllerDeactivateMutationError = void;
 export type SessionControllerDeactivateMutationVariables = { id: string };
 
-export const useSessionControllerDeactivate = <TError = unknown, TContext = unknown>(
+export const useSessionControllerDeactivate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof sessionControllerDeactivate>>,
@@ -504,7 +504,7 @@ export const sessionControllerActivate = (id: string, signal?: AbortSignal) => {
 
 export const getSessionControllerActivateMutationKey = () => ['sessionControllerActivate'] as const;
 
-export const getSessionControllerActivateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getSessionControllerActivateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof sessionControllerActivate>>,
     TError,
@@ -540,10 +540,10 @@ export type SessionControllerActivateMutationResult = NonNullable<
   Awaited<ReturnType<typeof sessionControllerActivate>>
 >;
 
-export type SessionControllerActivateMutationError = unknown;
+export type SessionControllerActivateMutationError = void;
 export type SessionControllerActivateMutationVariables = { id: string };
 
-export const useSessionControllerActivate = <TError = unknown, TContext = unknown>(
+export const useSessionControllerActivate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof sessionControllerActivate>>,

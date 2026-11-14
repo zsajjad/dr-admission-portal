@@ -24,6 +24,10 @@ export default defineMessages({
     id: `${scope}.branches`,
     defaultMessage: 'Branches',
   },
+  students: {
+    id: `${scope}.students`,
+    defaultMessage: 'Students',
+  },
   van: {
     id: `${scope}.van`,
     defaultMessage: 'Vans',
@@ -36,13 +40,53 @@ export default defineMessages({
     id: `${scope}.questionSets`,
     defaultMessage: 'Question Sets',
   },
+  adminPermissions: {
+    id: `${scope}.adminPermissions`,
+    defaultMessage: 'Admin permissions',
+  },
+  studentMerge: {
+    id: `${scope}.studentMerge`,
+    defaultMessage: 'Merge students',
+  },
+  staffUsers: {
+    id: `${scope}.staffUsers`,
+    defaultMessage: 'Staff app users',
+  },
+  sections: {
+    id: `${scope}.sections`,
+    defaultMessage: 'Sections',
+  },
+  syncReview: {
+    id: `${scope}.syncReview`,
+    defaultMessage: 'Flagged staff app work',
+  },
+  results: {
+    id: `${scope}.results`,
+    defaultMessage: 'Results',
+  },
+  auditLog: {
+    id: `${scope}.auditLog`,
+    defaultMessage: 'Audit log',
+  },
   printing: {
     id: `${scope}.printing`,
     defaultMessage: 'Printing',
   },
+  planningChat: {
+    id: `${scope}.planningChat`,
+    defaultMessage: 'Planning chat',
+  },
   interactionReport: {
     id: `${scope}.interactionReport`,
     defaultMessage: 'Interactions',
+  },
+  trainings: {
+    id: `${scope}.trainings`,
+    defaultMessage: 'Fiqh trainings',
+  },
+  resultRules: {
+    id: `${scope}.resultRules`,
+    defaultMessage: 'Pass marks',
   },
   signOut: {
     id: `${scope}.signOut`,
