@@ -10,7 +10,7 @@ export default function BranchDetailPage({ params }: { params: Promise<{ id: str
 
   return (
     <Stack>
-      <Heading headingType="detail" showEditButton />
+      <Heading headingType="detail" />
       <BranchDetail branchId={id} />
     </Stack>
   );

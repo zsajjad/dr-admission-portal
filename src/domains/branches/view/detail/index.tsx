@@ -1,13 +1,9 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { Stack } from '@mui/material';
 
-import { Card, CardContent, CircularProgress, FormControlLabel, Grid, Stack, Switch } from '@mui/material';
-
-import InfoTooltip from '@/components/DataTable/InfoTooltipColumn/Tooltip';
-import { DetailItem } from '@/components/DetailItem';
+import { DetailHeader } from '@/components/DetailHeader';
 import { DetailNotFound } from '@/components/DetailNotFound';
-import { DetailTooltipWrapper } from '@/components/DetailTooltipWrapper';
 import { DetailSkeleton } from '@/components/Skeleton/DetailSkeleton';
 
 import { KEYS } from '@/providers/constants/key';
@@ -24,9 +20,13 @@ import { useActivationHandlers } from '@/hooks/useActivationHandlers';
 import { useEntityDetailHandler } from '@/hooks/useEntityDetailHandler';
 import { useMutationHandlers } from '@/hooks/useMutationHandlers';
 
+import { routes } from '@/router/routes';
+import { useQueryParams } from '@/router/useQueryParams';
+
 import messages from './messages';
 
 export function BranchDetail({ branchId }: { branchId: string }) {
+  const { route } = useQueryParams();
   const activateBranch = useBranchControllerActivate();
   const deactivateBranch = useBranchControllerDeactivate();
   const {
@@ -55,23 +55,6 @@ export function BranchDetail({ branchId }: { branchId: string }) {
     errorUpdate: useFormattedMessage(messages.errorUpdate),
   };
 
-  const branchDetailFields: { label: keyof typeof messages; value?: string | number }[] = useMemo(() => {
-    return [
-      {
-        label: 'idLabel',
-        value: branch?.id,
-      },
-      {
-        label: 'codeLabel',
-        value: branch?.code,
-      },
-      {
-        label: 'nameLabel',
-        value: branch?.name,
-      },
-    ];
-  }, [branch]);
-
   const { onSuccess, onError } = useMutationHandlers({
     queryKey: [KEYS.BRANCH_DETAIL, branchId],
     messages: {
@@ -85,17 +68,6 @@ export function BranchDetail({ branchId }: { branchId: string }) {
     deactivateBranch,
     onSuccess,
     onError,
-  );
-
-  const handleCheck = useCallback(
-    (checked: boolean) => {
-      if (branch) {
-        if (checked) {
-          handleActivate(branch);
-        } else handleDeactivate(branch);
-      }
-    },
-    [handleActivate, handleDeactivate, branch],
   );
 
   useEntityDetailHandler({
@@ -115,41 +87,19 @@ export function BranchDetail({ branchId }: { branchId: string }) {
 
   return (
     <Stack spacing={2}>
-      <Card>
-        <CardContent>
-          <DetailTooltipWrapper>
-            <InfoTooltip
-              createdAt={branch?.createdAt}
-              createdBy={branch?.createdBy?.name}
-              updatedAt={branch?.updatedAt}
-              updatedBy={branch?.updatedBy?.name}
-              isActive={branch?.isActive}
-            />
-          </DetailTooltipWrapper>
-          <Grid container spacing={2}>
-            {branchDetailFields?.map((field, idx) => (
-              <DetailItem
-                key={`branch-${idx}`}
-                label={<FormattedMessage {...messages?.[field.label]} />}
-                value={field.value}
-              />
-            ))}
-
-            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-              <FormControlLabel
-                control={
-                  activateBranch.isPending || deactivateBranch.isPending || isFetching || isLoading ? (
-                    <CircularProgress size={26} sx={{ mr: 2 }} />
-                  ) : (
-                    <Switch checked={branch?.isActive || false} onChange={(e) => handleCheck(e.target.checked)} />
-                  )
-                }
-                label={<FormattedMessage {...(branch?.isActive ? messages.deactivate : messages.activate)} />}
-              />
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
+      <DetailHeader
+        mark={branch.code}
+        title={branch.name}
+        isActive={branch.isActive}
+        fields={[{ key: 'code', label: <FormattedMessage {...messages.codeLabel} />, value: branch.code, dir: 'ltr' }]}
+        createdAt={branch.createdAt}
+        createdBy={branch.createdBy?.name}
+        updatedAt={branch.updatedAt}
+        updatedBy={branch.updatedBy?.name}
+        onEdit={() => route({ url: routes.branches.edit(branch.id) })}
+        onToggleActive={() => (branch.isActive ? handleDeactivate(branch) : handleActivate(branch))}
+        isToggling={activateBranch.isPending || deactivateBranch.isPending || isFetching}
+      />
     </Stack>
   );
 }

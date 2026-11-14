@@ -10,7 +10,7 @@ export default function QuestionSetDetailPage({ params }: { params: Promise<{ id
 
   return (
     <Stack>
-      <Heading headingType="detail" showEditButton />
+      <Heading headingType="detail" />
       <QuestionSetDetail questionSetId={id} />
     </Stack>
   );

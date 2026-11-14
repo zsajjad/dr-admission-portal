@@ -1,16 +1,10 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
-
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import {
   Card,
   CardContent,
-  CircularProgress,
-  FormControlLabel,
-  Grid,
   Stack,
-  Switch,
   Typography,
   Box,
   Chip,
@@ -22,10 +16,9 @@ import {
   ListItemIcon,
 } from '@mui/material';
 
-import InfoTooltip from '@/components/DataTable/InfoTooltipColumn/Tooltip';
-import { DetailItem } from '@/components/DetailItem';
+import { DetailHeader } from '@/components/DetailHeader';
+import headerMessages from '@/components/DetailHeader/messages';
 import { DetailNotFound } from '@/components/DetailNotFound';
-import { DetailTooltipWrapper } from '@/components/DetailTooltipWrapper';
 import { DetailSkeleton } from '@/components/Skeleton/DetailSkeleton';
 
 import { KEYS } from '@/providers/constants/key';
@@ -42,9 +35,13 @@ import { useActivationHandlers } from '@/hooks/useActivationHandlers';
 import { useEntityDetailHandler } from '@/hooks/useEntityDetailHandler';
 import { useMutationHandlers } from '@/hooks/useMutationHandlers';
 
+import { routes } from '@/router/routes';
+import { useQueryParams } from '@/router/useQueryParams';
+
 import messages from './messages';
 
 export function QuestionSetDetail({ questionSetId }: { questionSetId: string }) {
+  const { route } = useQueryParams();
   const activateQuestionSet = useQuestionSetControllerActivate();
   const deactivateQuestionSet = useQuestionSetControllerDeactivate();
   const {
@@ -74,31 +71,6 @@ export function QuestionSetDetail({ questionSetId }: { questionSetId: string }) 
     noQuestions: useFormattedMessage(messages.noQuestions),
   };
 
-  const questionSetDetailFields: { label: keyof typeof messages; value?: string | number }[] = useMemo(() => {
-    return [
-      {
-        label: 'idLabel',
-        value: questionSet?.id,
-      },
-      {
-        label: 'titleLabel',
-        value: questionSet?.title,
-      },
-      {
-        label: 'classLevelLabel',
-        value: questionSet?.classLevel?.name,
-      },
-      {
-        label: 'sessionLabel',
-        value: questionSet?.session?.name,
-      },
-      {
-        label: 'questionsCountLabel',
-        value: questionSet?.questions?.length || 0,
-      },
-    ];
-  }, [questionSet]);
-
   const { onSuccess, onError } = useMutationHandlers({
     queryKey: [KEYS.QUESTION_SET_DETAIL, questionSetId],
     messages: {
@@ -112,17 +84,6 @@ export function QuestionSetDetail({ questionSetId }: { questionSetId: string }) 
     deactivateQuestionSet,
     onSuccess,
     onError,
-  );
-
-  const handleCheck = useCallback(
-    (checked: boolean) => {
-      if (questionSet) {
-        if (checked) {
-          handleActivate(questionSet);
-        } else handleDeactivate(questionSet);
-      }
-    },
-    [handleActivate, handleDeactivate, questionSet],
   );
 
   useEntityDetailHandler({
@@ -144,39 +105,28 @@ export function QuestionSetDetail({ questionSetId }: { questionSetId: string }) 
 
   return (
     <Stack spacing={2}>
-      <Card>
-        <CardContent>
-          <DetailTooltipWrapper>
-            <InfoTooltip
-              createdAt={questionSet?.createdAt}
-              updatedAt={questionSet?.updatedAt}
-              isActive={questionSet?.isActive}
-            />
-          </DetailTooltipWrapper>
-          <Grid container spacing={2}>
-            {questionSetDetailFields?.map((field, idx) => (
-              <DetailItem
-                key={`question-set-${idx}`}
-                label={<FormattedMessage {...messages?.[field.label]} />}
-                value={field.value}
-              />
-            ))}
-
-            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-              <FormControlLabel
-                control={
-                  activateQuestionSet.isPending || deactivateQuestionSet.isPending || isFetching || isLoading ? (
-                    <CircularProgress size={26} sx={{ mr: 2 }} />
-                  ) : (
-                    <Switch checked={questionSet?.isActive || false} onChange={(e) => handleCheck(e.target.checked)} />
-                  )
-                }
-                label={<FormattedMessage {...(questionSet?.isActive ? messages.deactivate : messages.activate)} />}
-              />
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
+      <DetailHeader
+        title={questionSet.title}
+        isActive={questionSet.isActive}
+        fields={[
+          {
+            key: 'class',
+            label: <FormattedMessage {...messages.classLevelLabel} />,
+            value: questionSet.classLevel?.name,
+          },
+          { key: 'session', label: <FormattedMessage {...messages.sessionLabel} />, value: questionSet.session?.name },
+          {
+            key: 'questions',
+            label: <FormattedMessage {...messages.questionsCountLabel} />,
+            value: questionSet.questions?.length || 0,
+          },
+        ]}
+        createdAt={questionSet.createdAt}
+        updatedAt={questionSet.updatedAt}
+        onEdit={() => route({ url: routes.questions.edit(questionSet.id) })}
+        onToggleActive={() => (questionSet.isActive ? handleDeactivate(questionSet) : handleActivate(questionSet))}
+        isToggling={activateQuestionSet.isPending || deactivateQuestionSet.isPending || isFetching}
+      />
 
       {/* Questions Section */}
       <Card>
@@ -188,7 +138,7 @@ export function QuestionSetDetail({ questionSetId }: { questionSetId: string }) 
           {sortedQuestions.length > 0 ? (
             <List>
               {sortedQuestions.map((question) => (
-                <Paper key={question.id} elevation={1} sx={{ mb: 1 }}>
+                <Paper key={question.id} variant="outlined" sx={{ mb: 1, borderRadius: 3 }}>
                   <ListItem>
                     <ListItemIcon>
                       <Chip label={question.sortOrder} size="small" color="primary" sx={{ minWidth: 32 }} />
@@ -198,7 +148,11 @@ export function QuestionSetDetail({ questionSetId }: { questionSetId: string }) 
                       secondary={
                         <Box component="span" sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
                           <Chip
-                            label={question.isActive ? 'Active' : 'Inactive'}
+                            label={
+                              <FormattedMessage
+                                {...(question.isActive ? headerMessages.active : headerMessages.deactivated)}
+                              />
+                            }
                             size="small"
                             color={question.isActive ? 'success' : 'default'}
                             variant="outlined"
