@@ -4,6 +4,8 @@
 /node_modules
 /.pnp
 .pnp.*
+# Left over from Yarn in older checkouts
+.yarn/
 
 # testing
 /coverage
