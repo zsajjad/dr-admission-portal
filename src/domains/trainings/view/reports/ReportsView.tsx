@@ -34,7 +34,7 @@ import {
   useTrainersReport,
   useTrainingsReport,
 } from '../../api/reports';
-import { StaffFilter, UrlDateFilter, UrlSelect, UrlTextFilter } from '../../components/Filters';
+import { StaffFilter, TrainingFilter, UrlDateFilter, UrlSelect, UrlTextFilter } from '../../components/Filters';
 import common from '../../messages';
 import { cardStyle, formatAmount, formatPct } from '../../utils';
 
@@ -307,6 +307,7 @@ export function ReportsView() {
             <UrlDateFilter param="from" label={t(messages.from)} />
             <UrlDateFilter param="to" label={t(messages.to)} />
             <SessionFilter minWidth={180} />
+            <TrainingFilter />
             <StaffFilter param="trainer" role={StaffRole.TRAINER} label={t(common.trainer)} />
             <StaffFilter param="tester" role={StaffRole.TESTER} label={t(common.tester)} />
             <BranchFilter minWidth={180} resetFiltersOnChange={['areaId']} />
