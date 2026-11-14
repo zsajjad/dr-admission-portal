@@ -80,14 +80,18 @@ describe('validateTraining', () => {
 describe('validateSettings', () => {
   it('needs reminders before the auto-close day', () => {
     assert.deepEqual(
-      validateSettings({ maxAttempts: 2, autoCloseDays: 30, reminderDays: [7, 30] }).map((i) => i.code),
+      validateSettings({ maxAttempts: 2, retrainBelowPct: 90, autoCloseDays: 30, reminderDays: [7, 30] }).map(
+        (i) => i.code,
+      ),
       ['REMINDER_RANGE'],
     );
   });
   it('keeps attempts within the limit', () => {
     assert.deepEqual(
-      validateSettings({ maxAttempts: 0, autoCloseDays: 30, reminderDays: [7] }).map((i) => i.code),
-      ['MAX_ATTEMPTS_RANGE'],
+      validateSettings({ maxAttempts: 0, retrainBelowPct: 120, autoCloseDays: 30, reminderDays: [7] }).map(
+        (i) => i.code,
+      ),
+      ['MAX_ATTEMPTS_RANGE', 'RETRAIN_PCT_RANGE'],
     );
   });
 });

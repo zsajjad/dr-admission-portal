@@ -75,6 +75,12 @@ export default defineMessages({
     id: `${scope}.maxAttemptsHelp`,
     defaultMessage: 'The first attempt tests every required training; later ones only the failed ones',
   },
+  retrainBelowPct: { id: `${scope}.retrainBelowPct`, defaultMessage: 'Retrain below (%)' },
+  retrainBelowHelp: {
+    id: `${scope}.retrainBelowHelp`,
+    defaultMessage: 'Within a session, a training scored below this can be retrained and retested, even if passed',
+  },
+  RETRAIN_PCT_RANGE: { id: `${scope}.RETRAIN_PCT_RANGE`, defaultMessage: 'The retrain % must be 0–100' },
   autoCloseDays: { id: `${scope}.autoCloseDays`, defaultMessage: 'Auto-close after (days)' },
   autoCloseHelp: {
     id: `${scope}.autoCloseHelp`,
