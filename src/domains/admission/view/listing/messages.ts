@@ -118,7 +118,7 @@ export default defineMessages({
   },
   printVerificationSlip: {
     id: `${scope}.printVerificationSlip`,
-    defaultMessage: 'Print Slip',
+    defaultMessage: 'Print verification slip',
   },
   printSlip: {
     id: `${scope}.printSlip`,
