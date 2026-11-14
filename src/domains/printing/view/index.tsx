@@ -9,7 +9,7 @@ import EventSeatIcon from '@mui/icons-material/EventSeat';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
 import QueueIcon from '@mui/icons-material/Queue';
 import TableChartIcon from '@mui/icons-material/TableChart';
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Tab, Tabs } from '@mui/material';
 
 import { useFormattedMessage } from '@/theme/FormattedMessage';
 
@@ -24,7 +24,7 @@ type TabLabelKey = 'idCards' | 'sittingSlips' | 'attendanceSheets' | 'verificati
 
 interface TabConfig {
   key: TabKey;
-  icon: React.ReactNode;
+  icon: React.ReactElement;
   labelKey: TabLabelKey;
 }
 
@@ -35,72 +35,6 @@ const TABS: TabConfig[] = [
   { key: 'verification-slips', icon: <FactCheckIcon fontSize="small" />, labelKey: 'verificationSlips' },
   { key: 'card-requests', icon: <QueueIcon fontSize="small" />, labelKey: 'cardRequests' },
 ];
-
-interface PillTabProps {
-  icon: React.ReactNode;
-  label: string;
-  isActive: boolean;
-  onClick: () => void;
-}
-
-function PillTab({ icon, label, isActive, onClick }: PillTabProps) {
-  return (
-    <Box
-      onClick={onClick}
-      role="tab"
-      aria-selected={isActive}
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onClick();
-        }
-      }}
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 1.5,
-        px: 3,
-        py: 1.5,
-        borderRadius: '999px',
-        cursor: 'pointer',
-        transition: 'all 0.2s ease-in-out',
-        userSelect: 'none',
-        whiteSpace: 'nowrap',
-        ...(isActive
-          ? {
-              bgcolor: 'primary.main',
-              color: 'primary.contrastText',
-              boxShadow: '0 4px 14px rgba(0,0,0,0.18)',
-              transform: 'translateY(-1px)',
-              '& .MuiSvgIcon-root': {
-                color: 'inherit',
-              },
-            }
-          : {
-              bgcolor: 'action.hover',
-              color: 'text.secondary',
-              '&:hover': {
-                bgcolor: 'action.selected',
-                color: 'text.primary',
-              },
-            }),
-      }}
-    >
-      {icon}
-      <Typography
-        variant="body2"
-        sx={{
-          fontWeight: isActive ? 600 : 500,
-          fontSize: '0.9rem',
-          letterSpacing: '0.01em',
-        }}
-      >
-        {label}
-      </Typography>
-    </Box>
-  );
-}
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -149,47 +83,38 @@ export function PrintingView() {
   );
 
   return (
-    <Box sx={{ width: '100%', py: 1 }}>
-      {/* Pill Tabs */}
-      <Stack
-        direction="row"
-        spacing={1.5}
-        sx={{
-          p: 2,
-          bgcolor: 'background.paper',
-          borderRadius: 4,
-          boxShadow: '0 4px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)',
-          overflowX: 'auto',
-          '&::-webkit-scrollbar': {
-            height: 6,
-          },
-          '&::-webkit-scrollbar-thumb': {
-            bgcolor: 'action.disabled',
-            borderRadius: 3,
-          },
-        }}
-        role="tablist"
-        aria-label="printing tabs"
-      >
-        {TABS.map((tab) => (
-          <PillTab
-            key={tab.key}
-            icon={tab.icon}
-            label={formattedMessages[tab.labelKey]}
-            isActive={currentTab === tab.key}
-            onClick={() => handleTabChange(tab.key)}
-          />
-        ))}
-      </Stack>
+    <Box sx={{ width: '100%' }}>
+      {/* The same underline tabs as the rest of the portal (theme/Components/tab.tsx) */}
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs
+          value={currentTab}
+          onChange={(_, value: TabKey) => handleTabChange(value)}
+          variant="scrollable"
+          scrollButtons="auto"
+          aria-label="printing tabs"
+        >
+          {TABS.map((tab) => (
+            <Tab
+              key={tab.key}
+              value={tab.key}
+              id={`printing-tab-${tab.key}`}
+              aria-controls={`printing-tabpanel-${tab.key}`}
+              icon={tab.icon}
+              iconPosition="start"
+              label={formattedMessages[tab.labelKey]}
+            />
+          ))}
+        </Tabs>
+      </Box>
 
       {/* Tab Panels */}
       <Box
         sx={{
-          mt: 3,
-          p: 4,
+          mt: 2,
+          p: 3,
           bgcolor: 'background.paper',
           borderRadius: 4,
-          boxShadow: '0 4px 24px rgba(0,0,0,0.06), 0 8px 32px rgba(0,0,0,0.04)',
+          boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
           minHeight: 450,
         }}
       >

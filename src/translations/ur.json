@@ -951,5 +951,7 @@
   "app.components.DetailHeader.reactivate": "دوبارہ فعال کریں",
   "app.components.DetailHeader.added": "شامل کیا گیا",
   "app.components.DetailHeader.lastChanged": "آخری تبدیلی",
-  "app.components.DetailHeader.by": "از {name}"
+  "app.components.DetailHeader.by": "از {name}",
+  "app.components.RowMenu.more": "مزید اقدامات",
+  "app.domains.admission.view.listing.printVerificationSlip": "تصدیقی سلپ پرنٹ کریں"
 }
