@@ -21,7 +21,9 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AdminPermissionControllerListUsersParams,
   DetailAdminPermissionsResponseDto,
+  ListAdminUserPermissionsResponseDto,
   ListPermissionsResponseDto,
   UpdateAdminPermissionsDto,
 } from '../app.schemas';
@@ -225,6 +227,115 @@ export function useAdminPermissionControllerMe<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getAdminPermissionControllerMeQueryOptions(options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export const adminPermissionControllerListUsers = (
+  params?: AdminPermissionControllerListUsersParams,
+  signal?: AbortSignal,
+) => {
+  return service<ListAdminUserPermissionsResponseDto>({
+    url: `/admin-permission/users`,
+    method: 'GET',
+    params,
+    signal,
+  });
+};
+
+export const getAdminPermissionControllerListUsersQueryKey = (params?: AdminPermissionControllerListUsersParams) => {
+  return [`/admin-permission/users`, ...(params ? [params] : [])] as const;
+};
+
+export const getAdminPermissionControllerListUsersQueryOptions = <
+  TData = Awaited<ReturnType<typeof adminPermissionControllerListUsers>>,
+  TError = void,
+>(
+  params?: AdminPermissionControllerListUsersParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminPermissionControllerListUsers>>, TError, TData>>;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAdminPermissionControllerListUsersQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof adminPermissionControllerListUsers>>> = ({ signal }) =>
+    adminPermissionControllerListUsers(params, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof adminPermissionControllerListUsers>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AdminPermissionControllerListUsersQueryResult = NonNullable<
+  Awaited<ReturnType<typeof adminPermissionControllerListUsers>>
+>;
+export type AdminPermissionControllerListUsersQueryError = void;
+
+export function useAdminPermissionControllerListUsers<
+  TData = Awaited<ReturnType<typeof adminPermissionControllerListUsers>>,
+  TError = void,
+>(
+  params: undefined | AdminPermissionControllerListUsersParams,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminPermissionControllerListUsers>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminPermissionControllerListUsers>>,
+          TError,
+          Awaited<ReturnType<typeof adminPermissionControllerListUsers>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminPermissionControllerListUsers<
+  TData = Awaited<ReturnType<typeof adminPermissionControllerListUsers>>,
+  TError = void,
+>(
+  params?: AdminPermissionControllerListUsersParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminPermissionControllerListUsers>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminPermissionControllerListUsers>>,
+          TError,
+          Awaited<ReturnType<typeof adminPermissionControllerListUsers>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminPermissionControllerListUsers<
+  TData = Awaited<ReturnType<typeof adminPermissionControllerListUsers>>,
+  TError = void,
+>(
+  params?: AdminPermissionControllerListUsersParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminPermissionControllerListUsers>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAdminPermissionControllerListUsers<
+  TData = Awaited<ReturnType<typeof adminPermissionControllerListUsers>>,
+  TError = void,
+>(
+  params?: AdminPermissionControllerListUsersParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof adminPermissionControllerListUsers>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getAdminPermissionControllerListUsersQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

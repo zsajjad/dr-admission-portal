@@ -286,6 +286,8 @@ export interface AdminPermissionGrant {
   permission: Permission;
   /** Admin user who granted it */
   grantedById?: string;
+  /** Name of the admin who granted it */
+  grantedByName?: string;
   grantedAt: string;
 }
 
@@ -302,6 +304,24 @@ export interface DetailAdminPermissionsResponseDto {
   /** Message of the action */
   message: string;
   data: AdminUserPermissions;
+}
+
+export interface AdminUserWithPermissions {
+  adminUserId: string;
+  role: RoleName;
+  /** What the admin can do now. A SUPER_ADMIN gets every permission. */
+  effective: Permission[];
+  /** Permissions granted explicitly */
+  grants: AdminPermissionGrant[];
+  name: string;
+  email: string;
+  isActive: boolean;
+}
+
+export interface ListAdminUserPermissionsResponseDto {
+  /** Total number of records */
+  count: number;
+  data: AdminUserWithPermissions[];
 }
 
 export interface UpdateAdminPermissionsDto {
@@ -336,6 +356,10 @@ export interface AuditLogEntry {
   adminUserId?: string;
   staffUserId?: string;
   staffDeviceId?: string;
+  /** Name of the admin or staff user (not part of the hash) */
+  actorName?: string;
+  /** The staff user's card ID (not part of the hash) */
+  actorStaffId?: string;
   action: string;
   entityType: string;
   entityId: string;
@@ -354,6 +378,28 @@ export interface ListAuditLogsResponseDto {
   /** Total number of records */
   count: number;
   data: AuditLogEntry[];
+}
+
+export interface AuditLogActorFacet {
+  actorType: AuditActorType;
+  /** Admin user ID or staff user ID */
+  id: string;
+  name: string;
+  /** Staff users' card ID */
+  staffId?: string;
+}
+
+export interface AuditLogFacets {
+  actions: string[];
+  entityTypes: string[];
+  /** Admins and staff users who have entries */
+  actors: AuditLogActorFacet[];
+}
+
+export interface AuditLogFacetsResponseDto {
+  /** Message of the action */
+  message: string;
+  data: AuditLogFacets;
 }
 
 export interface VerifyAuditLogResponseDto {
@@ -1872,6 +1918,58 @@ export interface ResolveStudentResponseDto {
   data: ResolvedStudent;
 }
 
+export interface LookupGrsDto {
+  /** GR numbers, current or old (1 to 2000) */
+  grNumbers: string[];
+  /** Only this session's admissions */
+  sessionId?: string;
+}
+
+export interface GrLookupStudent {
+  id: string;
+  /** The current (primary) GR */
+  grNumber: string;
+  name: string;
+  fatherName: string;
+  gender: Gender;
+}
+
+export interface GrLookupClassLevel {
+  id: string;
+  code: string;
+  gender: Gender;
+}
+
+export interface GrLookupAdmission {
+  id: string;
+  sessionId: string;
+  sessionName: string;
+  branchId: string;
+  branchCode: string;
+  classLevel: GrLookupClassLevel;
+  sectionId?: string;
+  status: AdmissionStatus;
+  isFeePaid: boolean;
+}
+
+export interface GrLookupRow {
+  /** The GR as sent (trimmed) */
+  queriedGr: string;
+  found: boolean;
+  /** Found through an old GR (an alias): show "Old card. Current GR: …" */
+  viaAlias: boolean;
+  student?: GrLookupStudent;
+  /** The student's active admissions (only the requested session's, when sessionId is given) */
+  admissions: GrLookupAdmission[];
+}
+
+export interface LookupGrsResponseDto {
+  /** Total number of records */
+  count: number;
+  /** One row per distinct GR, in the order sent */
+  data: GrLookupRow[];
+}
+
 export interface MergeFieldChoicesDto {
   /** Student ID to take the name from */
   name?: string;
@@ -2380,6 +2478,39 @@ export interface LinkLegacyResponseDto {
   data: StudentMergeEntity;
 }
 
+/**
+ * What matched
+ */
+export type DuplicateMatch = (typeof DuplicateMatch)[keyof typeof DuplicateMatch];
+
+export const DuplicateMatch = {
+  PHONE: 'PHONE',
+  IDENTITY_NUMBER: 'IDENTITY_NUMBER',
+  NAME_AND_FATHER: 'NAME_AND_FATHER',
+  NAME_AND_BIRTH_DATE: 'NAME_AND_BIRTH_DATE',
+} as const;
+
+export interface LikelyDuplicate {
+  id: string;
+  grNumber: string;
+  name: string;
+  fatherName: string;
+  dateOfBirth: string;
+  gender: Gender;
+  createdAt: string;
+  /** What matched */
+  matchedOn: DuplicateMatch[];
+  /** Sessions with an active admission, newest first */
+  sessions: string[];
+}
+
+export interface ListLikelyDuplicatesResponseDto {
+  /** Total number of records */
+  count: number;
+  /** Strongest matches first */
+  data: LikelyDuplicate[];
+}
+
 export interface StudentListBranch {
   id: string;
   code: string;
@@ -2594,6 +2725,34 @@ export interface StudentProfileMessage {
   createdAt: string;
 }
 
+export type SectionTeacherRole = (typeof SectionTeacherRole)[keyof typeof SectionTeacherRole];
+
+export const SectionTeacherRole = {
+  CLASS_TEACHER: 'CLASS_TEACHER',
+  ASSISTANT: 'ASSISTANT',
+} as const;
+
+export interface StudentProfileSectionTeacher {
+  staffUserId: string;
+  name: string;
+  role: SectionTeacherRole;
+}
+
+export interface StudentProfileSection {
+  id: string;
+  /** Letters run across both genders of a class */
+  letter: string;
+  name?: string;
+  /** False when the section was deactivated */
+  isActive: boolean;
+  /** When the student was placed in it */
+  assignedAt?: string;
+  /** Admin who placed the student */
+  assignedBy?: AdminUserBase;
+  /** Class teachers first */
+  teachers: StudentProfileSectionTeacher[];
+}
+
 export interface StudentProfileAdmission {
   id: string;
   session: StudentProfileSession;
@@ -2632,6 +2791,8 @@ export interface StudentProfileAdmission {
   cardPrints: StudentProfileCardPrint[];
   /** WhatsApp messages, newest first (latest 50) */
   messages: StudentProfileMessage[];
+  /** The section the student is placed in; missing until an admin places them */
+  section?: StudentProfileSection;
 }
 
 export interface StudentProfilePermissions {
@@ -4067,16 +4228,6 @@ export interface StaffTokenResponseDto {
   scope: StaffTokenScope;
 }
 
-/**
- * The user's role here
- */
-export type SectionTeacherRole = (typeof SectionTeacherRole)[keyof typeof SectionTeacherRole];
-
-export const SectionTeacherRole = {
-  CLASS_TEACHER: 'CLASS_TEACHER',
-  ASSISTANT: 'ASSISTANT',
-} as const;
-
 export interface StaffSectionDto {
   id: string;
   name: string;
@@ -4671,6 +4822,43 @@ export interface FinalResultEntity {
   lockedAt?: string;
 }
 
+export interface ClassResultTrainings {
+  required: number;
+  passed: number;
+  /** Every required training is passed */
+  complete: boolean;
+}
+
+export interface ClassResultRow {
+  admissionId: string;
+  /** Every row, all sources. The one that counts per part is the most recently updated. */
+  parts: AdmissionResultEntity[];
+  /** @nullable */
+  final?: FinalResultEntity | null;
+  grNumber: string;
+  name: string;
+  classLevelCode: string;
+  sectionId?: string;
+  sectionLetter?: string;
+  /**
+   * null until trainings are in core (feat/result-rules-v3 fills it)
+   * @nullable
+   */
+  trainings?: ClassResultTrainings | null;
+}
+
+export interface ListClassResultsResponseDto {
+  /** Total number of records */
+  count: number;
+  /** Every placeable admission of the class, by name */
+  data: ClassResultRow[];
+  /**
+   * The class level's theory pass mark this session; null until theory pass marks are in core
+   * @nullable
+   */
+  theoryPassMark?: number | null;
+}
+
 export interface SectionResultRow {
   admissionId: string;
   /** Every row, all sources. The one that counts per part is the most recently updated. */
@@ -4919,6 +5107,11 @@ export const AdminUsersControllerFindAllSortBy = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
 } as const;
+
+export type AdminPermissionControllerListUsersParams = {
+  /** Include deactivated admins */
+  includeInActive?: boolean;
+};
 
 export type AuditLogControllerFindAllParams = {
   /** Number of records to skip */
@@ -5876,6 +6069,13 @@ export const SectionControllerListAdmissionsSortOrder = {
   asc: 'asc',
   desc: 'desc',
 } as const;
+
+export type ResultsControllerFindForClassParams = {
+  sessionId: string;
+  branchId: string;
+  /** A gendered class level, e.g. Muhibaan5-G */
+  classLevelId: string;
+};
 
 export type StaffSyncReviewControllerFindAllParams = {
   /** Number of records to skip */

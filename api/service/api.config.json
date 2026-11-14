@@ -2045,6 +2045,55 @@
         ]
       }
     },
+    "/admin-permission/users": {
+      "get": {
+        "operationId": "AdminPermissionController_listUsers",
+        "parameters": [
+          {
+            "name": "includeInActive",
+            "required": false,
+            "in": "query",
+            "description": "Include deactivated admins",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListAdminUserPermissionsResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nSuper admins only"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Admin Permission"
+        ],
+        "x-permissions": [
+          "SUPER_ADMIN"
+        ]
+      }
+    },
     "/admin-permission/users/{adminUserId}": {
       "get": {
         "operationId": "AdminPermissionController_findForUser",
@@ -2330,6 +2379,44 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ListAuditLogsResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: audit.view"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Audit Log"
+        ],
+        "x-permissions": [
+          "audit.view"
+        ]
+      }
+    },
+    "/audit-log/facets": {
+      "get": {
+        "operationId": "AuditLogController_facets",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Actions, entity types and actors to filter by",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditLogFacetsResponseDto"
                 }
               }
             }
@@ -6154,6 +6241,59 @@
         ]
       }
     },
+    "/admin/students/lookup-grs": {
+      "post": {
+        "description": "For bulk screens (class changes, result imports). One row per distinct GR, in the order sent.",
+        "operationId": "StudentMergeController_lookupGrs",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LookupGrsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LookupGrsResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: sections.manage or results.enter or results.override or students.merge"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "summary": "Look up to 2,000 GRs at once (old GRs resolved), with each student’s active admissions",
+        "tags": [
+          "Student Merge"
+        ],
+        "x-permissions": [
+          "sections.manage",
+          "results.enter",
+          "results.override",
+          "students.merge"
+        ]
+      }
+    },
     "/admin/students/merge/preview": {
       "post": {
         "operationId": "StudentMergeController_preview",
@@ -6859,6 +6999,55 @@
           }
         ],
         "summary": "Link a student to its 2025 record; the GR rule decides which GR stays primary",
+        "tags": [
+          "Student Merge"
+        ],
+        "x-permissions": [
+          "students.merge"
+        ]
+      }
+    },
+    "/admin/students/{id}/likely-duplicates": {
+      "get": {
+        "description": "For the merge screen. Returns no phone, address or B-form; a person still has to judge.",
+        "operationId": "StudentMergeController_likelyDuplicates",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListLikelyDuplicatesResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: students.merge"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "summary": "Active records that may be the same person (shared phone or B-form, same name and father or birth)",
         "tags": [
           "Student Merge"
         ],
@@ -11769,6 +11958,71 @@
         ]
       }
     },
+    "/results/class": {
+      "get": {
+        "operationId": "ResultsController_findForClass",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "branchId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "classLevelId",
+            "required": true,
+            "in": "query",
+            "description": "A gendered class level, e.g. Muhibaan5-G",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The results table for one class (session, branch and gendered class level), all sections",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListClassResultsResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: reports.view or results.enter"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Results"
+        ],
+        "x-permissions": [
+          "reports.view",
+          "results.enter"
+        ]
+      }
+    },
     "/results/sections/{sectionId}": {
       "get": {
         "operationId": "ResultsController_findForSection",
@@ -13003,6 +13257,10 @@
             "type": "string",
             "description": "Admin user who granted it"
           },
+          "grantedByName": {
+            "type": "string",
+            "description": "Name of the admin who granted it"
+          },
           "grantedAt": {
             "format": "date-time",
             "type": "string"
@@ -13064,6 +13322,72 @@
           "data"
         ]
       },
+      "AdminUserWithPermissions": {
+        "type": "object",
+        "properties": {
+          "adminUserId": {
+            "type": "string"
+          },
+          "role": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RoleName"
+              }
+            ]
+          },
+          "effective": {
+            "type": "array",
+            "description": "What the admin can do now. A SUPER_ADMIN gets every permission.",
+            "items": {
+              "$ref": "#/components/schemas/Permission"
+            }
+          },
+          "grants": {
+            "description": "Permissions granted explicitly",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminPermissionGrant"
+            }
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "adminUserId",
+          "role",
+          "effective",
+          "grants",
+          "name",
+          "email",
+          "isActive"
+        ]
+      },
+      "ListAdminUserPermissionsResponseDto": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "description": "Total number of records"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminUserWithPermissions"
+            }
+          }
+        },
+        "required": [
+          "count",
+          "data"
+        ]
+      },
       "UpdateAdminPermissionsDto": {
         "type": "object",
         "properties": {
@@ -13115,6 +13439,14 @@
           },
           "staffDeviceId": {
             "type": "string"
+          },
+          "actorName": {
+            "type": "string",
+            "description": "Name of the admin or staff user (not part of the hash)"
+          },
+          "actorStaffId": {
+            "type": "string",
+            "description": "The staff user's card ID (not part of the hash)"
           },
           "action": {
             "type": "string",
@@ -13181,6 +13513,87 @@
         },
         "required": [
           "count",
+          "data"
+        ]
+      },
+      "AuditLogActorFacet": {
+        "type": "object",
+        "properties": {
+          "actorType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AuditActorType"
+              }
+            ]
+          },
+          "id": {
+            "type": "string",
+            "description": "Admin user ID or staff user ID"
+          },
+          "name": {
+            "type": "string"
+          },
+          "staffId": {
+            "type": "string",
+            "description": "Staff users' card ID"
+          }
+        },
+        "required": [
+          "actorType",
+          "id",
+          "name"
+        ]
+      },
+      "AuditLogFacets": {
+        "type": "object",
+        "properties": {
+          "actions": {
+            "example": [
+              "adminPermission.grant",
+              "section.create"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "entityTypes": {
+            "example": [
+              "AdminUser",
+              "Section"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "actors": {
+            "description": "Admins and staff users who have entries",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuditLogActorFacet"
+            }
+          }
+        },
+        "required": [
+          "actions",
+          "entityTypes",
+          "actors"
+        ]
+      },
+      "AuditLogFacetsResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message of the action"
+          },
+          "data": {
+            "$ref": "#/components/schemas/AuditLogFacets"
+          }
+        },
+        "required": [
+          "message",
           "data"
         ]
       },
@@ -17244,6 +17657,179 @@
           "data"
         ]
       },
+      "LookupGrsDto": {
+        "type": "object",
+        "properties": {
+          "grNumbers": {
+            "description": "GR numbers, current or old (1 to 2000)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sessionId": {
+            "type": "string",
+            "description": "Only this session's admissions"
+          }
+        },
+        "required": [
+          "grNumbers"
+        ]
+      },
+      "GrLookupStudent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "grNumber": {
+            "type": "string",
+            "description": "The current (primary) GR"
+          },
+          "name": {
+            "type": "string"
+          },
+          "fatherName": {
+            "type": "string"
+          },
+          "gender": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Gender"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "grNumber",
+          "name",
+          "fatherName",
+          "gender"
+        ]
+      },
+      "GrLookupClassLevel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "example": "Muhibaan5-G"
+          },
+          "gender": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Gender"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "gender"
+        ]
+      },
+      "GrLookupAdmission": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "sessionName": {
+            "type": "string"
+          },
+          "branchId": {
+            "type": "string"
+          },
+          "branchCode": {
+            "type": "string"
+          },
+          "classLevel": {
+            "$ref": "#/components/schemas/GrLookupClassLevel"
+          },
+          "sectionId": {
+            "type": "string"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AdmissionStatus"
+              }
+            ]
+          },
+          "isFeePaid": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "sessionId",
+          "sessionName",
+          "branchId",
+          "branchCode",
+          "classLevel",
+          "status",
+          "isFeePaid"
+        ]
+      },
+      "GrLookupRow": {
+        "type": "object",
+        "properties": {
+          "queriedGr": {
+            "type": "string",
+            "description": "The GR as sent (trimmed)"
+          },
+          "found": {
+            "type": "boolean"
+          },
+          "viaAlias": {
+            "type": "boolean",
+            "description": "Found through an old GR (an alias): show \"Old card. Current GR: …\""
+          },
+          "student": {
+            "$ref": "#/components/schemas/GrLookupStudent"
+          },
+          "admissions": {
+            "description": "The student's active admissions (only the requested session's, when sessionId is given)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GrLookupAdmission"
+            }
+          }
+        },
+        "required": [
+          "queriedGr",
+          "found",
+          "viaAlias",
+          "admissions"
+        ]
+      },
+      "LookupGrsResponseDto": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "description": "Total number of records"
+          },
+          "data": {
+            "description": "One row per distinct GR, in the order sent",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GrLookupRow"
+            }
+          }
+        },
+        "required": [
+          "count",
+          "data"
+        ]
+      },
       "MergeFieldChoicesDto": {
         "type": "object",
         "properties": {
@@ -18721,6 +19307,93 @@
           "data"
         ]
       },
+      "DuplicateMatch": {
+        "type": "string",
+        "enum": [
+          "PHONE",
+          "IDENTITY_NUMBER",
+          "NAME_AND_FATHER",
+          "NAME_AND_BIRTH_DATE"
+        ],
+        "description": "What matched"
+      },
+      "LikelyDuplicate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "grNumber": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "fatherName": {
+            "type": "string"
+          },
+          "dateOfBirth": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "gender": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Gender"
+              }
+            ]
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "matchedOn": {
+            "type": "array",
+            "description": "What matched",
+            "items": {
+              "$ref": "#/components/schemas/DuplicateMatch"
+            }
+          },
+          "sessions": {
+            "description": "Sessions with an active admission, newest first",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "grNumber",
+          "name",
+          "fatherName",
+          "dateOfBirth",
+          "gender",
+          "createdAt",
+          "matchedOn",
+          "sessions"
+        ]
+      },
+      "ListLikelyDuplicatesResponseDto": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "description": "Total number of records"
+          },
+          "data": {
+            "description": "Strongest matches first",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LikelyDuplicate"
+            }
+          }
+        },
+        "required": [
+          "count",
+          "data"
+        ]
+      },
       "StudentListBranch": {
         "type": "object",
         "properties": {
@@ -19361,6 +20034,82 @@
           "createdAt"
         ]
       },
+      "SectionTeacherRole": {
+        "type": "string",
+        "enum": [
+          "CLASS_TEACHER",
+          "ASSISTANT"
+        ]
+      },
+      "StudentProfileSectionTeacher": {
+        "type": "object",
+        "properties": {
+          "staffUserId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SectionTeacherRole"
+              }
+            ]
+          }
+        },
+        "required": [
+          "staffUserId",
+          "name",
+          "role"
+        ]
+      },
+      "StudentProfileSection": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "letter": {
+            "type": "string",
+            "example": "B",
+            "description": "Letters run across both genders of a class"
+          },
+          "name": {
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "False when the section was deactivated"
+          },
+          "assignedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "When the student was placed in it"
+          },
+          "assignedBy": {
+            "description": "Admin who placed the student",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AdminUserBase"
+              }
+            ]
+          },
+          "teachers": {
+            "description": "Class teachers first",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StudentProfileSectionTeacher"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "letter",
+          "isActive",
+          "teachers"
+        ]
+      },
       "StudentProfileAdmission": {
         "type": "object",
         "properties": {
@@ -19482,6 +20231,14 @@
             "items": {
               "$ref": "#/components/schemas/StudentProfileMessage"
             }
+          },
+          "section": {
+            "description": "The section the student is placed in; missing until an admin places them",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StudentProfileSection"
+              }
+            ]
           }
         },
         "required": [
@@ -23144,14 +23901,6 @@
           "scope"
         ]
       },
-      "SectionTeacherRole": {
-        "type": "string",
-        "enum": [
-          "CLASS_TEACHER",
-          "ASSISTANT"
-        ],
-        "description": "The user's role here"
-      },
       "StaffSectionDto": {
         "type": "object",
         "properties": {
@@ -24692,6 +25441,108 @@
           "ranksImported",
           "source",
           "locked"
+        ]
+      },
+      "ClassResultTrainings": {
+        "type": "object",
+        "properties": {
+          "required": {
+            "type": "number"
+          },
+          "passed": {
+            "type": "number"
+          },
+          "complete": {
+            "type": "boolean",
+            "description": "Every required training is passed"
+          }
+        },
+        "required": [
+          "required",
+          "passed",
+          "complete"
+        ]
+      },
+      "ClassResultRow": {
+        "type": "object",
+        "properties": {
+          "admissionId": {
+            "type": "string"
+          },
+          "parts": {
+            "description": "Every row, all sources. The one that counts per part is the most recently updated.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdmissionResultEntity"
+            }
+          },
+          "final": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FinalResultEntity"
+              }
+            ]
+          },
+          "grNumber": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "classLevelCode": {
+            "type": "string"
+          },
+          "sectionId": {
+            "type": "string"
+          },
+          "sectionLetter": {
+            "type": "string",
+            "example": "B"
+          },
+          "trainings": {
+            "nullable": true,
+            "description": "null until trainings are in core (feat/result-rules-v3 fills it)",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ClassResultTrainings"
+              }
+            ]
+          }
+        },
+        "required": [
+          "admissionId",
+          "parts",
+          "grNumber",
+          "name",
+          "classLevelCode"
+        ]
+      },
+      "ListClassResultsResponseDto": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "description": "Total number of records"
+          },
+          "data": {
+            "description": "Every placeable admission of the class, by name",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClassResultRow"
+            }
+          },
+          "theoryPassMark": {
+            "type": "number",
+            "nullable": true,
+            "description": "The class level's theory pass mark this session; null until theory pass marks are in core"
+          }
+        },
+        "required": [
+          "count",
+          "data"
         ]
       },
       "SectionResultRow": {
