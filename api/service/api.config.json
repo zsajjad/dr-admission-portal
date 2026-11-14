@@ -12491,7 +12491,7 @@
     },
     "/results/ranks/compute": {
       "post": {
-        "description": "Pass: Wazu ≥ 75% and Namaz ≥ 75%, each on its own; undecided while either is missing. Positions only for students who passed, per branch and class level: theory %, then practical %, then attendance %. TERMINATED, locked and 2026-imported results keep their pass or fail; imported ranks are kept.",
+        "description": "Pass: theory at or above the class level's pass mark, and every Fiqh training the student's age requires passed in this session (a passed recheck or attempt; passes from earlier sessions only make it a recheck). Trainings missing: undecided while the session runs, fail once it has ended. Positions only for students who passed, per branch and class level: theory %, then attendance %. TERMINATED, locked and 2026-imported results keep their pass or fail; imported ranks are kept.",
         "operationId": "ResultsController_computeRanks",
         "parameters": [],
         "requestBody": {
@@ -13934,7 +13934,7 @@
         },
         "responses": {
           "201": {
-            "description": "For the trainings the student still needs. 400 NOTHING_REQUIRED; 409 ALREADY_ENROLLED",
+            "description": "For the trainings to train this session (never passed, or a failed recheck). 400 NOTHING_REQUIRED; 409 ALREADY_ENROLLED",
             "content": {
               "application/json": {
                 "schema": {
@@ -14184,7 +14184,7 @@
         },
         "responses": {
           "201": {
-            "description": "Record a pass by hand (e.g. from earlier records). Pays nobody. 400 ALREADY_PASSED.",
+            "description": "Record a pass by hand for a session (default: the current one), e.g. from earlier records or as an override. Pays nobody. 400 ALREADY_PASSED.",
             "content": {
               "application/json": {
                 "schema": {
@@ -14289,7 +14289,7 @@
         },
         "responses": {
           "201": {
-            "description": "The training becomes required again",
+            "description": "The training is no longer passed in that session (an earlier session's pass: no longer a recheck, if it was the only one)",
             "content": {
               "application/json": {
                 "schema": {
@@ -14754,6 +14754,246 @@
         ]
       }
     },
+    "/trainings/rechecks": {
+      "get": {
+        "operationId": "TrainingsAdminController_rechecks",
+        "parameters": [
+          {
+            "name": "skip",
+            "required": false,
+            "in": "query",
+            "description": "Number of records to skip",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "take",
+            "required": false,
+            "in": "query",
+            "description": "Number of records to take",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "required": false,
+            "in": "query",
+            "description": "Sort direction",
+            "schema": {
+              "default": "asc",
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "includeInActive",
+            "required": false,
+            "in": "query",
+            "description": "Include deactivated records",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "trainingId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "studentId",
+            "required": false,
+            "in": "query",
+            "description": "A student's rechecks (records merged into them included)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "passed",
+            "required": false,
+            "in": "query",
+            "description": "Only passed (true) or failed (false) rechecks",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "lateGrade",
+            "required": false,
+            "in": "query",
+            "description": "Only rechecks that arrived after the window end plus the grace period",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "overridden",
+            "required": false,
+            "in": "query",
+            "description": "Only rechecks an admin changed",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "awaitingTraining",
+            "required": false,
+            "in": "query",
+            "description": "true: only failed rechecks waiting for a trainer: failed, the training not passed in that session since, and not in any of the student's open enrollments. In the running sessions unless sessionId is given. Register the student with POST /trainings/enrollments { grNumber, trainerStaffUserId } (lastTrainerStaffUserId is a good default). false or left out: no filter.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "testerStaffUserId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "windowId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "description": "Tested from",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rechecks for review, e.g. passed=false (failed), lateGrade=true (flagged LATE_GRADE), or awaitingTraining=true (failed and waiting for a trainer to register the student; each row has lastTrainerStaffUserId when known)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListTrainingRechecksResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: reports.view or trainings.configure or trainings.manage or trainings.override or trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "reports.view",
+          "trainings.configure",
+          "trainings.manage",
+          "trainings.override",
+          "trainings.payouts"
+        ]
+      }
+    },
+    "/trainings/rechecks/{id}/marks": {
+      "put": {
+        "operationId": "TrainingsAdminController_overrideRecheck",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OverrideRecheckDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recheck override, with a reason: the session's pass follows the new result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingRecheckResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: trainings.override"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "trainings.override"
+        ]
+      }
+    },
     "/trainings/jobs/auto-close": {
       "post": {
         "operationId": "TrainingsAdminController_runClock",
@@ -14800,7 +15040,7 @@
             "name": "from",
             "required": false,
             "in": "query",
-            "description": "From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers: the test date. Payouts: when the ledger entry was made (a closure, approval-ready).",
+            "description": "From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers, rechecks: the test date. Payouts: when the ledger entry was made (a closure, approval-ready).",
             "schema": {
               "format": "date-time",
               "type": "string"
@@ -14943,7 +15183,7 @@
             "name": "from",
             "required": false,
             "in": "query",
-            "description": "From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers: the test date. Payouts: when the ledger entry was made (a closure, approval-ready).",
+            "description": "From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers, rechecks: the test date. Payouts: when the ledger entry was made (a closure, approval-ready).",
             "schema": {
               "format": "date-time",
               "type": "string"
@@ -15086,7 +15326,7 @@
             "name": "from",
             "required": false,
             "in": "query",
-            "description": "From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers: the test date. Payouts: when the ledger entry was made (a closure, approval-ready).",
+            "description": "From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers, rechecks: the test date. Payouts: when the ledger entry was made (a closure, approval-ready).",
             "schema": {
               "format": "date-time",
               "type": "string"
@@ -15229,7 +15469,7 @@
             "name": "from",
             "required": false,
             "in": "query",
-            "description": "From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers: the test date. Payouts: when the ledger entry was made (a closure, approval-ready).",
+            "description": "From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers, rechecks: the test date. Payouts: when the ledger entry was made (a closure, approval-ready).",
             "schema": {
               "format": "date-time",
               "type": "string"
@@ -15372,7 +15612,7 @@
             "name": "from",
             "required": false,
             "in": "query",
-            "description": "From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers: the test date. Payouts: when the ledger entry was made (a closure, approval-ready).",
+            "description": "From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers, rechecks: the test date. Payouts: when the ledger entry was made (a closure, approval-ready).",
             "schema": {
               "format": "date-time",
               "type": "string"
@@ -15476,6 +15716,149 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TesterReportDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: reports.view or trainings.configure or trainings.manage or trainings.override or trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "reports.view",
+          "trainings.configure",
+          "trainings.manage",
+          "trainings.override",
+          "trainings.payouts"
+        ]
+      }
+    },
+    "/trainings/reports/rechecks": {
+      "get": {
+        "operationId": "TrainingsAdminController_rechecksReport",
+        "parameters": [
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "description": "From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers, rechecks: the test date. Payouts: when the ledger entry was made (a closure, approval-ready).",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "trainingId",
+            "required": false,
+            "in": "query",
+            "description": "Only this training",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "trainerStaffUserId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "testerStaffUserId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "branchId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "areaId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gender",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Gender"
+            }
+          },
+          {
+            "name": "groupBy",
+            "required": false,
+            "in": "query",
+            "description": "Split every figure by gender, area or branch",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "gender",
+                "area",
+                "branch"
+              ]
+            }
+          },
+          {
+            "name": "stuckDays",
+            "required": false,
+            "in": "query",
+            "description": "Pipeline: open and unchanged this many days",
+            "schema": {
+              "default": 7,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rechecks per training (graded, passed, failed, retrained; still due with sessionId) and per tester",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecheckReportDto"
                 }
               }
             }
@@ -16094,7 +16477,7 @@
             "name": "from",
             "required": false,
             "in": "query",
-            "description": "From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers: the test date. Payouts: when the ledger entry was made (a closure, approval-ready).",
+            "description": "From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers, rechecks: the test date. Payouts: when the ledger entry was made (a closure, approval-ready).",
             "schema": {
               "format": "date-time",
               "type": "string"
@@ -16513,6 +16896,47 @@
                   "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/StaffGradedAttemptDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`code`: TOKEN_INVALID, TOKEN_EXPIRED or DEVICE_REVOKED"
+          },
+          "403": {
+            "description": "`code`: ROLE_REQUIRED (TRAINER or TESTER)"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "staff-jwt": []
+          }
+        ],
+        "tags": [
+          "Staff App"
+        ]
+      }
+    },
+    "/staff/testing/rechecks": {
+      "get": {
+        "operationId": "TrainingsStaffController_gradedRechecks",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "TESTER: rechecks I graded (test.recheck), newest first, at most 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StaffGradedRecheckDto"
                   }
                 }
               }
@@ -30009,6 +30433,105 @@
           "percentage"
         ]
       },
+      "LastYearStepIssueDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "wash_arms",
+            "description": "A step code; labels from GET /staff/results/steps"
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true,
+            "description": "The tester's comment on the step; null when none"
+          }
+        },
+        "required": [
+          "code",
+          "comment"
+        ]
+      },
+      "LastYearTrainingDto": {
+        "type": "object",
+        "properties": {
+          "trainingId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "example": "WAZU"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nameUr": {
+            "type": "string",
+            "nullable": true
+          },
+          "stepSkill": {
+            "type": "string",
+            "enum": [
+              "WAZU",
+              "NAMAZ"
+            ],
+            "nullable": true,
+            "description": "Graded step by step"
+          },
+          "scorePct": {
+            "type": "number",
+            "nullable": true,
+            "description": "Last year's best score %; null when unknown"
+          },
+          "passed": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Passed last year; null when unknown (2026 results with no pass mark and no pass recorded)"
+          },
+          "wrongSteps": {
+            "nullable": true,
+            "description": "The steps got wrong (from the last attempt, else the pass, else the results), in step order; [] when none wrong, null when not graded step by step",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LastYearStepIssueDto"
+            }
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true,
+            "description": "The latest tester's comment; null when none"
+          },
+          "comments": {
+            "description": "Every tester's comment from last year's attempts and rechecks, oldest first",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "ATTEMPT",
+              "PASS",
+              "RESULTS"
+            ],
+            "description": "Where it came from: last year's tester grades (attempts or rechecks), a pass recorded then, or the session's results"
+          }
+        },
+        "required": [
+          "trainingId",
+          "code",
+          "name",
+          "nameUr",
+          "stepSkill",
+          "scorePct",
+          "passed",
+          "wrongSteps",
+          "comment",
+          "comments",
+          "source"
+        ]
+      },
       "LastYearSummaryDto": {
         "type": "object",
         "properties": {
@@ -30066,6 +30589,13 @@
           "interviewSummary": {
             "type": "string",
             "nullable": true
+          },
+          "trainings": {
+            "description": "Per Fiqh training with a record in last year's session, in catalog order; [] when none",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LastYearTrainingDto"
+            }
           }
         },
         "required": [
@@ -30077,7 +30607,8 @@
           "namazWrongSteps",
           "branchRank",
           "rankedOf",
-          "interviewSummary"
+          "interviewSummary",
+          "trainings"
         ]
       },
       "StaffSectionStudentDto": {
@@ -30136,7 +30667,7 @@
           },
           "payload": {
             "type": "object",
-            "description": "attendance.mark: { sectionId, date: \"YYYY-MM-DD\" (Karachi), absentAdmissionIds: string[] }"
+            "description": "attendance.mark: { sectionId, date: \"YYYY-MM-DD\" (Karachi), absentAdmissionIds: string[] }. test.recheck (TESTER): StaffRecheckPayloadDto { grNumber, marks: [{ trainingId, marks, steps?, comment? }] }."
           },
           "clientTime": {
             "type": "string",
@@ -30217,7 +30748,6 @@
           "MARKS_INVALID",
           "INVALID_RETRAIN_SET",
           "NOT_DUE",
-          "INVALID_IMPROVE_SET",
           "SENT_AFTER_LOGOUT",
           "LATE_DAY",
           "LATE_GRADE",
@@ -31896,6 +32426,26 @@
               "$ref": "#/components/schemas/StepRef"
             }
           },
+          "wazuScorePct": {
+            "type": "number",
+            "nullable": true,
+            "description": "Wazu practical score %; null when none"
+          },
+          "wazuPassed": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "null when there was no pass mark (2026)"
+          },
+          "namazScorePct": {
+            "type": "number",
+            "nullable": true,
+            "description": "Namaz practical score %; null when none"
+          },
+          "namazPassed": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "null when there was no pass mark (2026)"
+          },
           "branchRank": {
             "type": "number",
             "nullable": true
@@ -32905,11 +33455,107 @@
           "trainings"
         ]
       },
-      "TrainingItemKind": {
+      "TrainingRoute": {
         "type": "string",
         "enum": [
-          "REQUIRED",
-          "IMPROVEMENT"
+          "TRAIN",
+          "RECHECK"
+        ],
+        "description": "TRAIN: never passed. RECHECK: passed in an earlier session, but failed its recheck this session."
+      },
+      "StepMarkEntity": {
+        "type": "object",
+        "properties": {
+          "stepCode": {
+            "type": "string",
+            "description": "A step code from GET /staff/results/steps"
+          },
+          "correct": {
+            "type": "boolean"
+          },
+          "comment": {
+            "type": "string",
+            "description": "The tester's short comment on this step (mainly wrong steps)"
+          }
+        },
+        "required": [
+          "stepCode",
+          "correct"
+        ]
+      },
+      "RecheckEntity": {
+        "type": "object",
+        "properties": {
+          "recheckId": {
+            "type": "string"
+          },
+          "trainingId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nameUr": {
+            "type": "string",
+            "nullable": true
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "marks": {
+            "type": "number"
+          },
+          "maxMarks": {
+            "type": "number"
+          },
+          "scorePct": {
+            "type": "number"
+          },
+          "passed": {
+            "type": "boolean",
+            "description": "false: the training is trained this session (route RECHECK)"
+          },
+          "steps": {
+            "nullable": true,
+            "description": "null when not graded step by step",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StepMarkEntity"
+            }
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true,
+            "description": "The tester's comment: what the student got wrong and what to practice (null when none)"
+          },
+          "testedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "When the tester submitted it (phone's time)"
+          },
+          "overridden": {
+            "type": "boolean",
+            "description": "An admin changed the marks"
+          }
+        },
+        "required": [
+          "recheckId",
+          "trainingId",
+          "code",
+          "name",
+          "nameUr",
+          "sessionId",
+          "marks",
+          "maxMarks",
+          "scorePct",
+          "passed",
+          "steps",
+          "comment",
+          "testedAt",
+          "overridden"
         ]
       },
       "TrainingItemStatus": {
@@ -32970,22 +33616,23 @@
             "nullable": true,
             "description": "Graded step by step with these step codes (GET /staff/results/steps)"
           },
-          "kind": {
+          "route": {
+            "description": "TRAIN: never passed. RECHECK: passed in an earlier session, but failed its recheck this session.",
             "allOf": [
               {
-                "$ref": "#/components/schemas/TrainingItemKind"
+                "$ref": "#/components/schemas/TrainingRoute"
               }
             ]
           },
-          "previousBestPct": {
-            "type": "number",
+          "recheck": {
             "nullable": true,
-            "description": "IMPROVEMENT: the best score before this enrollment"
-          },
-          "previousBand": {
-            "type": "number",
-            "nullable": true,
-            "description": "IMPROVEMENT: that score's band; the item pays only a higher band"
+            "description": "RECHECK: this session's failed recheck (score, wrong steps, the tester's comment)",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RecheckEntity"
+              }
+            ]
           },
           "status": {
             "allOf": [
@@ -32996,7 +33643,7 @@
           },
           "due": {
             "type": "boolean",
-            "description": "In the current round: round 1, every item not passed elsewhere (improvements always); after a RETRAIN, the trainings chosen. False once closed."
+            "description": "In the current round: round 1, every item not passed elsewhere this session; after a RETRAIN, the trainings chosen. False once closed."
           },
           "completed": {
             "type": "boolean",
@@ -33037,9 +33684,8 @@
           "maxMarks",
           "passMarks",
           "stepSkill",
-          "kind",
-          "previousBestPct",
-          "previousBand",
+          "route",
+          "recheck",
           "status",
           "due",
           "completed",
@@ -33048,22 +33694,6 @@
           "best",
           "payout",
           "retrainable"
-        ]
-      },
-      "StepMarkEntity": {
-        "type": "object",
-        "properties": {
-          "stepCode": {
-            "type": "string",
-            "description": "A step code from GET /staff/results/steps"
-          },
-          "correct": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "stepCode",
-          "correct"
         ]
       },
       "AttemptMarkEntity": {
@@ -33095,6 +33725,11 @@
             "items": {
               "$ref": "#/components/schemas/StepMarkEntity"
             }
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true,
+            "description": "The tester's comment: what the student got wrong and what to practice (null when none)"
           }
         },
         "required": [
@@ -33104,7 +33739,8 @@
           "scorePct",
           "passed",
           "payout",
-          "steps"
+          "steps",
+          "comment"
         ]
       },
       "AdminAttemptEntity": {
@@ -33455,14 +34091,14 @@
               }
             ]
           },
-          "itemKind": {
-            "type": "string",
-            "enum": [
-              "REQUIRED",
-              "IMPROVEMENT"
-            ],
+          "route": {
             "nullable": true,
-            "description": "Payouts: whether the training was required, or an improvement of an earlier pass"
+            "description": "Payouts: TRAIN (never passed before) or RECHECK (passed in an earlier session, retrained after a failed recheck)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrainingRoute"
+              }
+            ]
           },
           "title": {
             "type": "string",
@@ -33514,7 +34150,7 @@
           "student",
           "reason",
           "training",
-          "itemKind",
+          "route",
           "title",
           "reference",
           "date",
@@ -33670,6 +34306,13 @@
               "$ref": "#/components/schemas/AdminAttemptEntity"
             }
           },
+          "rechecks": {
+            "description": "The student's rechecks in the enrollment's session",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecheckEntity"
+            }
+          },
           "decision": {
             "nullable": true,
             "type": "object",
@@ -33723,6 +34366,7 @@
           "rules",
           "trainings",
           "attempts",
+          "rechecks",
           "decision",
           "decisions",
           "assignments",
@@ -33769,6 +34413,83 @@
           "nameUr"
         ]
       },
+      "SessionTrainingEntity": {
+        "type": "object",
+        "properties": {
+          "trainingId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nameUr": {
+            "type": "string",
+            "nullable": true
+          },
+          "maxMarks": {
+            "type": "number"
+          },
+          "passMarks": {
+            "type": "number"
+          },
+          "stepSkill": {
+            "type": "string",
+            "enum": [
+              "WAZU",
+              "NAMAZ"
+            ],
+            "nullable": true,
+            "description": "Graded step by step with these step codes (GET /staff/results/steps)"
+          },
+          "route": {
+            "description": "RECHECK: passed in an earlier session, tested directly by a tester. TRAIN: never passed, trained first.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrainingRoute"
+              }
+            ]
+          },
+          "passedThisSession": {
+            "type": "boolean",
+            "description": "Passed this session (counts for the session result)"
+          },
+          "recheckDue": {
+            "type": "boolean",
+            "description": "A recheck a tester may grade now (test.recheck)"
+          },
+          "trainable": {
+            "type": "boolean",
+            "description": "To be trained this session: TRAIN not passed yet, or RECHECK whose recheck failed"
+          },
+          "recheck": {
+            "nullable": true,
+            "description": "This session's recheck, once graded",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RecheckEntity"
+              }
+            ]
+          }
+        },
+        "required": [
+          "trainingId",
+          "code",
+          "name",
+          "nameUr",
+          "maxMarks",
+          "passMarks",
+          "stepSkill",
+          "route",
+          "passedThisSession",
+          "recheckDue",
+          "trainable",
+          "recheck"
+        ]
+      },
       "TrainingPassEntity": {
         "type": "object",
         "properties": {
@@ -33802,19 +34523,28 @@
           },
           "source": {
             "type": "string",
-            "description": "TRAINING (graded) or ADMIN (recorded by hand)"
+            "description": "TRAINING (an attempt), RECHECK (a recheck), ADMIN (recorded by hand) or IMPORT_2026"
           },
           "bestScorePct": {
             "type": "number",
             "nullable": true,
-            "description": "The best score on it in any session (null if recorded by hand)"
-          },
-          "improvable": {
-            "type": "boolean",
-            "description": "Best score below the threshold (90%): the trainer may pick it to improve when registering"
+            "description": "The best score on it in that session (null if recorded by hand)"
           },
           "reason": {
             "type": "string"
+          },
+          "steps": {
+            "nullable": true,
+            "description": "Right or wrong per step, from the attempt or recheck that made the pass (or the 2026 import); null when not graded step by step",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StepMarkEntity"
+            }
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true,
+            "description": "The tester's comment on the attempt or recheck that made the pass; null when none"
           }
         },
         "required": [
@@ -33828,7 +34558,100 @@
           "sessionName",
           "source",
           "bestScorePct",
-          "improvable"
+          "steps",
+          "comment"
+        ]
+      },
+      "TrainingMarkHistoryEntity": {
+        "type": "object",
+        "properties": {
+          "trainingId": {
+            "type": "string"
+          },
+          "marks": {
+            "type": "number"
+          },
+          "maxMarks": {
+            "type": "number"
+          },
+          "scorePct": {
+            "type": "number"
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "payout": {
+            "type": "number",
+            "description": "PKR this mark pays"
+          },
+          "steps": {
+            "nullable": true,
+            "description": "null when not graded step by step",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StepMarkEntity"
+            }
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true,
+            "description": "The tester's comment: what the student got wrong and what to practice (null when none)"
+          },
+          "attemptId": {
+            "type": "string"
+          },
+          "attemptNo": {
+            "type": "number"
+          },
+          "testedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "When the tester submitted it (phone's time)"
+          },
+          "overridden": {
+            "type": "boolean",
+            "description": "An admin changed the marks"
+          },
+          "enrollmentId": {
+            "type": "string"
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "sessionName": {
+            "type": "string",
+            "nullable": true
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nameUr": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "trainingId",
+          "marks",
+          "maxMarks",
+          "scorePct",
+          "passed",
+          "payout",
+          "steps",
+          "comment",
+          "attemptId",
+          "attemptNo",
+          "testedAt",
+          "overridden",
+          "enrollmentId",
+          "sessionId",
+          "sessionName",
+          "code",
+          "name",
+          "nameUr"
         ]
       },
       "StudentTrainingsDto": {
@@ -33847,17 +34670,31 @@
             "description": "NOT_ADMITTED when there is no admission this session"
           },
           "required": {
-            "description": "Trainings their age requires that they haven’t passed",
+            "description": "Trainings to train this session: never passed, or a failed recheck",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/RequiredTrainingEntity"
             }
           },
+          "trainings": {
+            "description": "Every training the student's age requires this session: its route and where it stands",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SessionTrainingEntity"
+            }
+          },
           "passed": {
-            "description": "Trainings passed, any year",
+            "description": "Passes, every session (one per training and session)",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/TrainingPassEntity"
+            }
+          },
+          "rechecks": {
+            "description": "Every recheck, any session, newest first",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecheckEntity"
             }
           },
           "enrollments": {
@@ -33866,14 +34703,24 @@
             "items": {
               "$ref": "#/components/schemas/TrainingEnrollmentEntity"
             }
+          },
+          "history": {
+            "description": "Every graded mark, any year, newest first, with the tester's comment and steps",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrainingMarkHistoryEntity"
+            }
           }
         },
         "required": [
           "studentId",
           "age",
           "required",
+          "trainings",
           "passed",
-          "enrollments"
+          "rechecks",
+          "enrollments",
+          "history"
         ]
       },
       "StudentTrainingsResponseDto": {
@@ -34178,13 +35025,6 @@
           },
           "trainerStaffUserId": {
             "type": "string"
-          },
-          "improveTrainingIds": {
-            "description": "Passed trainings with a best score below 90% to improve this session (400 INVALID_IMPROVE_SET otherwise)",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
           }
         }
       },
@@ -34334,6 +35174,11 @@
           },
           "correct": {
             "type": "boolean"
+          },
+          "comment": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "A short comment on the step (mainly wrong steps)"
           }
         },
         "required": [
@@ -34356,6 +35201,12 @@
             "items": {
               "$ref": "#/components/schemas/StepMarkDto"
             }
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 500,
+            "description": "The tester's comment: what the student got wrong and what to practice (Urdu is fine). Leave out to keep the tester's; null or an empty string clears it."
           }
         },
         "required": [
@@ -34381,6 +35232,211 @@
         "required": [
           "reason",
           "marks"
+        ]
+      },
+      "TrainingRecheckRowEntity": {
+        "type": "object",
+        "properties": {
+          "recheckId": {
+            "type": "string"
+          },
+          "trainingId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nameUr": {
+            "type": "string",
+            "nullable": true
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "marks": {
+            "type": "number"
+          },
+          "maxMarks": {
+            "type": "number"
+          },
+          "scorePct": {
+            "type": "number"
+          },
+          "passed": {
+            "type": "boolean",
+            "description": "false: the training is trained this session (route RECHECK)"
+          },
+          "steps": {
+            "nullable": true,
+            "description": "null when not graded step by step",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StepMarkEntity"
+            }
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true,
+            "description": "The tester's comment: what the student got wrong and what to practice (null when none)"
+          },
+          "testedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "When the tester submitted it (phone's time)"
+          },
+          "overridden": {
+            "type": "boolean",
+            "description": "An admin changed the marks"
+          },
+          "studentId": {
+            "type": "string"
+          },
+          "grNumber": {
+            "type": "string"
+          },
+          "studentName": {
+            "type": "string",
+            "description": "The student's name"
+          },
+          "sessionName": {
+            "type": "string"
+          },
+          "passMarks": {
+            "type": "number"
+          },
+          "testerStaffUserId": {
+            "type": "string"
+          },
+          "testerName": {
+            "type": "string"
+          },
+          "windowId": {
+            "type": "string"
+          },
+          "windowName": {
+            "type": "string"
+          },
+          "lateGrade": {
+            "type": "boolean",
+            "description": "Arrived after the window end plus the grace period (LATE_GRADE)"
+          },
+          "syncItemId": {
+            "type": "string",
+            "nullable": true,
+            "description": "The sync item, for the flagged-items screen"
+          },
+          "overriddenAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "overriddenByName": {
+            "type": "string"
+          },
+          "overrideReason": {
+            "type": "string"
+          },
+          "retrainEnrollmentId": {
+            "type": "string",
+            "description": "A failed recheck: the enrollment it's trained in this session, once it's in one"
+          },
+          "lastTrainerStaffUserId": {
+            "type": "string",
+            "description": "The trainer of the student's latest enrollment in the recheck's session; left out when none"
+          },
+          "lastTrainerName": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "recheckId",
+          "trainingId",
+          "code",
+          "name",
+          "nameUr",
+          "sessionId",
+          "marks",
+          "maxMarks",
+          "scorePct",
+          "passed",
+          "steps",
+          "comment",
+          "testedAt",
+          "overridden",
+          "studentId",
+          "grNumber",
+          "studentName",
+          "passMarks",
+          "testerStaffUserId",
+          "lateGrade",
+          "syncItemId"
+        ]
+      },
+      "ListTrainingRechecksResponseDto": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "description": "Total number of records"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrainingRecheckRowEntity"
+            }
+          }
+        },
+        "required": [
+          "count",
+          "data"
+        ]
+      },
+      "OverrideRecheckDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "Why, for the audit log"
+          },
+          "marks": {
+            "type": "number",
+            "description": "Between 0 and the training's maximum when rechecked"
+          },
+          "steps": {
+            "description": "Trainings graded step by step only. Leave out to keep the steps the tester recorded.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StepMarkDto"
+            }
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 500,
+            "description": "The tester's comment. Leave out to keep it; null or an empty string clears it."
+          }
+        },
+        "required": [
+          "reason",
+          "marks"
+        ]
+      },
+      "TrainingRecheckResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message of the action"
+          },
+          "data": {
+            "$ref": "#/components/schemas/TrainingRecheckRowEntity"
+          }
+        },
+        "required": [
+          "message",
+          "data"
         ]
       },
       "RunClockResponseDto": {
@@ -34805,6 +35861,160 @@
           "groups"
         ]
       },
+      "RecheckTrainingRowDto": {
+        "type": "object",
+        "properties": {
+          "trainingId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "graded": {
+            "type": "number",
+            "description": "Rechecks graded"
+          },
+          "passed": {
+            "type": "number"
+          },
+          "failed": {
+            "type": "number"
+          },
+          "passRate": {
+            "type": "number",
+            "nullable": true
+          },
+          "averagePct": {
+            "type": "number",
+            "nullable": true,
+            "description": "Average score %"
+          },
+          "retrained": {
+            "type": "number",
+            "description": "Failed rechecks now in an enrollment (being trained)"
+          },
+          "passedAfterRetrain": {
+            "type": "number",
+            "description": "Failed rechecks passed later in the session, after retraining"
+          },
+          "due": {
+            "type": "number",
+            "nullable": true,
+            "description": "With sessionId (and no date or tester filter): admitted students still to recheck (passed before, not rechecked or passed this session)"
+          }
+        },
+        "required": [
+          "trainingId",
+          "code",
+          "name",
+          "graded",
+          "passed",
+          "failed",
+          "passRate",
+          "averagePct",
+          "retrained",
+          "passedAfterRetrain",
+          "due"
+        ]
+      },
+      "RecheckTesterRowDto": {
+        "type": "object",
+        "properties": {
+          "testerStaffUserId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "graded": {
+            "type": "number"
+          },
+          "passed": {
+            "type": "number"
+          },
+          "averagePct": {
+            "type": "number",
+            "nullable": true,
+            "description": "Average score % given"
+          },
+          "overridden": {
+            "type": "number",
+            "description": "Rechecks an admin overrode"
+          },
+          "lateGrade": {
+            "type": "number",
+            "description": "Flagged LATE_GRADE"
+          }
+        },
+        "required": [
+          "testerStaffUserId",
+          "name",
+          "graded",
+          "passed",
+          "averagePct",
+          "overridden",
+          "lateGrade"
+        ]
+      },
+      "RecheckGroupDto": {
+        "type": "object",
+        "properties": {
+          "group": {
+            "type": "string",
+            "description": "\"all\", or the gender, area ID or branch ID"
+          },
+          "label": {
+            "type": "string",
+            "description": "Area or branch name"
+          },
+          "graded": {
+            "type": "number"
+          },
+          "passed": {
+            "type": "number"
+          },
+          "failed": {
+            "type": "number"
+          },
+          "trainings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecheckTrainingRowDto"
+            }
+          },
+          "testers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecheckTesterRowDto"
+            }
+          }
+        },
+        "required": [
+          "group",
+          "graded",
+          "passed",
+          "failed",
+          "trainings",
+          "testers"
+        ]
+      },
+      "RecheckReportDto": {
+        "type": "object",
+        "properties": {
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecheckGroupDto"
+            }
+          }
+        },
+        "required": [
+          "groups"
+        ]
+      },
       "ListLedgerResponseDto": {
         "type": "object",
         "properties": {
@@ -35098,6 +36308,118 @@
           "total"
         ]
       },
+      "StaffRecheckMarkDto": {
+        "type": "object",
+        "properties": {
+          "trainingId": {
+            "type": "string",
+            "description": "A recheck due now (lookup trainings[].recheckDue)"
+          },
+          "marks": {
+            "type": "number",
+            "description": "0 to the training's maxMarks, at most 2 decimals"
+          },
+          "steps": {
+            "description": "Trainings graded step by step (stepSkill) only: each step right or wrong, with an optional comment",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StepMarkDto"
+            }
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 500,
+            "description": "The tester's comment: what the student got wrong and what to practice (Urdu is fine)"
+          }
+        },
+        "required": [
+          "trainingId",
+          "marks"
+        ]
+      },
+      "StaffRecheckPayloadDto": {
+        "type": "object",
+        "properties": {
+          "grNumber": {
+            "type": "string",
+            "description": "The student (old GRs too)"
+          },
+          "marks": {
+            "description": "At least one, at most one per training",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StaffRecheckMarkDto"
+            }
+          }
+        },
+        "required": [
+          "grNumber",
+          "marks"
+        ]
+      },
+      "RecheckFailedTrainingDto": {
+        "type": "object",
+        "properties": {
+          "trainingId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nameUr": {
+            "type": "string",
+            "nullable": true
+          },
+          "scorePct": {
+            "type": "number"
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true,
+            "description": "The tester's comment; null when none"
+          }
+        },
+        "required": [
+          "trainingId",
+          "code",
+          "name",
+          "nameUr",
+          "scorePct",
+          "comment"
+        ]
+      },
+      "RecheckFailedNotificationDataDto": {
+        "type": "object",
+        "properties": {
+          "grNumber": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "description": "The student's name"
+          },
+          "trainings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecheckFailedTrainingDto"
+            }
+          },
+          "joined": {
+            "type": "boolean",
+            "description": "true: added to the open enrollment (notification enrollmentId). false: waits for the next enrollment; register the student again once the open one closes (or now, when there is none open)."
+          }
+        },
+        "required": [
+          "grNumber",
+          "name",
+          "trainings",
+          "joined"
+        ]
+      },
       "StaffTrainingDto": {
         "type": "object",
         "properties": {
@@ -35245,20 +36567,47 @@
             "type": "string",
             "nullable": true
           },
+          "lastYear": {
+            "nullable": true,
+            "description": "Last year's performance, with each Fiqh training's issues (lastYear.trainings); null: no record",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LastYearSummaryDto"
+              }
+            ]
+          },
+          "sessionId": {
+            "type": "string",
+            "nullable": true,
+            "description": "This session: the student's admission's session, else the current session (as in GET /staff/me); null when there is none. A pass in passed[] with this sessionId is this session's; any other is from an earlier one."
+          },
+          "sessionName": {
+            "type": "string",
+            "nullable": true,
+            "description": "This session's name, e.g. 2027; null with sessionId"
+          },
           "age": {
             "type": "number",
             "nullable": true,
             "description": "Age at this session’s admission; null when not admitted"
           },
           "required": {
-            "description": "Trainings their age requires that they haven’t passed",
+            "description": "Trainings to train this session: never passed, or a failed recheck (what training.register enrolls)",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/RequiredTrainingEntity"
             }
           },
+          "trainings": {
+            "description": "Every training the student's age requires this session, with its route (TRAIN or RECHECK), whether it's passed this session, a recheck due, or to be trained, and this session's recheck",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SessionTrainingEntity"
+            }
+          },
           "passed": {
-            "description": "Trainings passed, any year",
+            "description": "Passes, every session (one per training and session)",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/TrainingPassEntity"
@@ -35294,6 +36643,18 @@
                 "$ref": "#/components/schemas/StaffSyncReasonCode"
               }
             ]
+          },
+          "canRecheck": {
+            "type": "boolean",
+            "description": "The caller can recheck now (test.recheck): a recheck is due (see trainings[].recheckDue)"
+          },
+          "recheckBlockedBy": {
+            "description": "ROLE_REQUIRED, NOT_ADMITTED, NOT_DUE (no recheck due), OWN_TRAINEE or NO_WINDOW",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StaffSyncReasonCode"
+              }
+            ]
           }
         },
         "required": [
@@ -35304,12 +36665,17 @@
           "gender",
           "classLevelCode",
           "branchCode",
+          "lastYear",
+          "sessionId",
+          "sessionName",
           "age",
           "required",
+          "trainings",
           "passed",
           "enrollment",
           "canRegister",
-          "canTest"
+          "canTest",
+          "canRecheck"
         ]
       },
       "AttemptEntity": {
@@ -35411,6 +36777,13 @@
               "$ref": "#/components/schemas/EnrollmentItemEntity"
             }
           },
+          "rechecks": {
+            "description": "The student's rechecks in the enrollment's session, passed or failed (a failed one not in `trainings` joins the next enrollment)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecheckEntity"
+            }
+          },
           "attempts": {
             "type": "array",
             "items": {
@@ -35465,6 +36838,7 @@
           "attemptsUsed",
           "maxAttempts",
           "trainings",
+          "rechecks",
           "attempts",
           "decision",
           "autoCloseAt",
@@ -35489,7 +36863,7 @@
           },
           "data": {
             "type": "object",
-            "description": "grNumber, name, and per kind: attemptNo, marks (per training: scorePct, passed, payout), payoutNow, nextStep, failedTrainingIds, trainings, payout, dueAt…"
+            "description": "grNumber, name, and per kind: attemptNo, marks (per training: scorePct, passed, payout, comment), payoutNow, nextStep, failedTrainingIds, trainings, payout, dueAt… RECHECK_FAILED: RecheckFailedNotificationDataDto ({ grNumber, name, trainings: [{ trainingId, code, name, nameUr, scorePct, comment }], joined })."
           },
           "createdAt": {
             "format": "date-time",
@@ -35747,6 +37121,111 @@
           "passedCount",
           "totalCount",
           "marks"
+        ]
+      },
+      "StaffGradedRecheckDto": {
+        "type": "object",
+        "properties": {
+          "recheckId": {
+            "type": "string"
+          },
+          "trainingId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nameUr": {
+            "type": "string",
+            "nullable": true
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "marks": {
+            "type": "number"
+          },
+          "maxMarks": {
+            "type": "number"
+          },
+          "scorePct": {
+            "type": "number"
+          },
+          "passed": {
+            "type": "boolean",
+            "description": "false: the training is trained this session (route RECHECK)"
+          },
+          "steps": {
+            "nullable": true,
+            "description": "null when not graded step by step",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StepMarkEntity"
+            }
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true,
+            "description": "The tester's comment: what the student got wrong and what to practice (null when none)"
+          },
+          "testedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "When the tester submitted it (phone's time)"
+          },
+          "overridden": {
+            "type": "boolean",
+            "description": "An admin changed the marks"
+          },
+          "studentId": {
+            "type": "string"
+          },
+          "grNumber": {
+            "type": "string"
+          },
+          "studentName": {
+            "type": "string",
+            "description": "The student's name"
+          },
+          "syncItemId": {
+            "type": "string",
+            "nullable": true,
+            "description": "The test.recheck sync item it came from (one sitting: the rechecks sent together share it); null when not from a sync item"
+          },
+          "windowId": {
+            "type": "string",
+            "nullable": true,
+            "description": "The testing window it was graded in"
+          },
+          "lateGrade": {
+            "type": "boolean",
+            "description": "Arrived after the window end plus the grace period (LATE_GRADE)"
+          }
+        },
+        "required": [
+          "recheckId",
+          "trainingId",
+          "code",
+          "name",
+          "nameUr",
+          "sessionId",
+          "marks",
+          "maxMarks",
+          "scorePct",
+          "passed",
+          "steps",
+          "comment",
+          "testedAt",
+          "overridden",
+          "studentId",
+          "grNumber",
+          "studentName",
+          "syncItemId",
+          "windowId",
+          "lateGrade"
         ]
       },
       "FeeDeskAdmissionSummary": {

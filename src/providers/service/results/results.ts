@@ -350,7 +350,7 @@ export const useResultsControllerUnlock = <TError = void, TContext = unknown>(
   return useMutation(getResultsControllerUnlockMutationOptions(options), queryClient);
 };
 /**
- * Pass: Wazu ≥ 75% and Namaz ≥ 75%, each on its own; undecided while either is missing. Positions only for students who passed, per branch and class level: theory %, then practical %, then attendance %. TERMINATED, locked and 2026-imported results keep their pass or fail; imported ranks are kept.
+ * Pass: theory at or above the class level's pass mark, and every Fiqh training the student's age requires passed in this session (a passed recheck or attempt; passes from earlier sessions only make it a recheck). Trainings missing: undecided while the session runs, fail once it has ended. Positions only for students who passed, per branch and class level: theory %, then attendance %. TERMINATED, locked and 2026-imported results keep their pass or fail; imported ranks are kept.
  * @summary Work out pass or fail and positions for a session
  */
 export const resultsControllerComputeRanks = (computeRanksDto: ComputeRanksDto, signal?: AbortSignal) => {
@@ -405,7 +405,7 @@ export type ResultsControllerComputeRanksMutationError = void;
 export type ResultsControllerComputeRanksMutationVariables = { data: ComputeRanksDto };
 
 /**
- * Pass: Wazu ≥ 75% and Namaz ≥ 75%, each on its own; undecided while either is missing. Positions only for students who passed, per branch and class level: theory %, then practical %, then attendance %. TERMINATED, locked and 2026-imported results keep their pass or fail; imported ranks are kept.
+ * Pass: theory at or above the class level's pass mark, and every Fiqh training the student's age requires passed in this session (a passed recheck or attempt; passes from earlier sessions only make it a recheck). Trainings missing: undecided while the session runs, fail once it has ended. Positions only for students who passed, per branch and class level: theory %, then attendance %. TERMINATED, locked and 2026-imported results keep their pass or fail; imported ranks are kept.
  * @summary Work out pass or fail and positions for a session
  */
 export const useResultsControllerComputeRanks = <TError = void, TContext = unknown>(

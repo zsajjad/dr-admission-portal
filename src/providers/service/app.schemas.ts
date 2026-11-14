@@ -4625,6 +4625,77 @@ export interface LastYearTheoryDto {
   percentage: number | null;
 }
 
+export interface LastYearStepIssueDto {
+  /** A step code; labels from GET /staff/results/steps */
+  code: string;
+  /**
+   * The tester's comment on the step; null when none
+   * @nullable
+   */
+  comment: string | null;
+}
+
+/**
+ * Graded step by step
+ * @nullable
+ */
+export type LastYearTrainingDtoStepSkill =
+  | (typeof LastYearTrainingDtoStepSkill)[keyof typeof LastYearTrainingDtoStepSkill]
+  | null;
+
+export const LastYearTrainingDtoStepSkill = {
+  WAZU: 'WAZU',
+  NAMAZ: 'NAMAZ',
+} as const;
+
+/**
+ * Where it came from: last year's tester grades (attempts or rechecks), a pass recorded then, or the session's results
+ */
+export type LastYearTrainingDtoSource = (typeof LastYearTrainingDtoSource)[keyof typeof LastYearTrainingDtoSource];
+
+export const LastYearTrainingDtoSource = {
+  ATTEMPT: 'ATTEMPT',
+  PASS: 'PASS',
+  RESULTS: 'RESULTS',
+} as const;
+
+export interface LastYearTrainingDto {
+  trainingId: string;
+  code: string;
+  name: string;
+  /** @nullable */
+  nameUr: string | null;
+  /**
+   * Graded step by step
+   * @nullable
+   */
+  stepSkill: LastYearTrainingDtoStepSkill;
+  /**
+   * Last year's best score %; null when unknown
+   * @nullable
+   */
+  scorePct: number | null;
+  /**
+   * Passed last year; null when unknown (2026 results with no pass mark and no pass recorded)
+   * @nullable
+   */
+  passed: boolean | null;
+  /**
+   * The steps got wrong (from the last attempt, else the pass, else the results), in step order; [] when none wrong, null when not graded step by step
+   * @nullable
+   */
+  wrongSteps: LastYearStepIssueDto[] | null;
+  /**
+   * The latest tester's comment; null when none
+   * @nullable
+   */
+  comment: string | null;
+  /** Every tester's comment from last year's attempts and rechecks, oldest first */
+  comments: string[];
+  /** Where it came from: last year's tester grades (attempts or rechecks), a pass recorded then, or the session's results */
+  source: LastYearTrainingDtoSource;
+}
+
 export interface LastYearSummaryDto {
   /** The session's name */
   sessionCode: string;
@@ -4649,6 +4720,8 @@ export interface LastYearSummaryDto {
   rankedOf: number | null;
   /** @nullable */
   interviewSummary: string | null;
+  /** Per Fiqh training with a record in last year's session, in catalog order; [] when none */
+  trainings: LastYearTrainingDto[];
 }
 
 export interface StaffSectionStudentDto {
@@ -4666,7 +4739,7 @@ export interface StaffSectionStudentDto {
 }
 
 /**
- * attendance.mark: { sectionId, date: "YYYY-MM-DD" (Karachi), absentAdmissionIds: string[] }
+ * attendance.mark: { sectionId, date: "YYYY-MM-DD" (Karachi), absentAdmissionIds: string[] }. test.recheck (TESTER): StaffRecheckPayloadDto { grNumber, marks: [{ trainingId, marks, steps?, comment? }] }.
  */
 export type StaffSyncItemDtoPayload = { [key: string]: unknown };
 
@@ -4674,7 +4747,7 @@ export interface StaffSyncItemDto {
   /** Made on the phone; a re-send is answered "duplicate" */
   id: string;
   type: string;
-  /** attendance.mark: { sectionId, date: "YYYY-MM-DD" (Karachi), absentAdmissionIds: string[] } */
+  /** attendance.mark: { sectionId, date: "YYYY-MM-DD" (Karachi), absentAdmissionIds: string[] }. test.recheck (TESTER): StaffRecheckPayloadDto { grNumber, marks: [{ trainingId, marks, steps?, comment? }] }. */
   payload: StaffSyncItemDtoPayload;
   /** When the action was taken, on the phone */
   clientTime: string;
@@ -4735,7 +4808,6 @@ export const StaffSyncReasonCode = {
   MARKS_INVALID: 'MARKS_INVALID',
   INVALID_RETRAIN_SET: 'INVALID_RETRAIN_SET',
   NOT_DUE: 'NOT_DUE',
-  INVALID_IMPROVE_SET: 'INVALID_IMPROVE_SET',
   SENT_AFTER_LOGOUT: 'SENT_AFTER_LOGOUT',
   LATE_DAY: 'LATE_DAY',
   LATE_GRADE: 'LATE_GRADE',
@@ -5360,6 +5432,26 @@ export interface LastSessionSummary {
    * @nullable
    */
   namazStepsWrong: StepRef[] | null;
+  /**
+   * Wazu practical score %; null when none
+   * @nullable
+   */
+  wazuScorePct?: number | null;
+  /**
+   * null when there was no pass mark (2026)
+   * @nullable
+   */
+  wazuPassed?: boolean | null;
+  /**
+   * Namaz practical score %; null when none
+   * @nullable
+   */
+  namazScorePct?: number | null;
+  /**
+   * null when there was no pass mark (2026)
+   * @nullable
+   */
+  namazPassed?: boolean | null;
   /** @nullable */
   branchRank?: number | null;
   /** @nullable */
@@ -5790,12 +5882,52 @@ export interface EnrollmentRulesEntity {
   trainings: RulesTrainingEntity[];
 }
 
-export type TrainingItemKind = (typeof TrainingItemKind)[keyof typeof TrainingItemKind];
+/**
+ * TRAIN: never passed. RECHECK: passed in an earlier session, but failed its recheck this session.
+ */
+export type TrainingRoute = (typeof TrainingRoute)[keyof typeof TrainingRoute];
 
-export const TrainingItemKind = {
-  REQUIRED: 'REQUIRED',
-  IMPROVEMENT: 'IMPROVEMENT',
+export const TrainingRoute = {
+  TRAIN: 'TRAIN',
+  RECHECK: 'RECHECK',
 } as const;
+
+export interface StepMarkEntity {
+  /** A step code from GET /staff/results/steps */
+  stepCode: string;
+  correct: boolean;
+  /** The tester's short comment on this step (mainly wrong steps) */
+  comment?: string;
+}
+
+export interface RecheckEntity {
+  recheckId: string;
+  trainingId: string;
+  code: string;
+  name: string;
+  /** @nullable */
+  nameUr: string | null;
+  sessionId: string;
+  marks: number;
+  maxMarks: number;
+  scorePct: number;
+  /** false: the training is trained this session (route RECHECK) */
+  passed: boolean;
+  /**
+   * null when not graded step by step
+   * @nullable
+   */
+  steps: StepMarkEntity[] | null;
+  /**
+   * The tester's comment: what the student got wrong and what to practice (null when none)
+   * @nullable
+   */
+  comment: string | null;
+  /** When the tester submitted it (phone's time) */
+  testedAt: string;
+  /** An admin changed the marks */
+  overridden: boolean;
+}
 
 export type TrainingItemStatus = (typeof TrainingItemStatus)[keyof typeof TrainingItemStatus];
 
@@ -5837,19 +5969,15 @@ export interface EnrollmentItemEntity {
    * @nullable
    */
   stepSkill: EnrollmentItemEntityStepSkill;
-  kind: TrainingItemKind;
+  /** TRAIN: never passed. RECHECK: passed in an earlier session, but failed its recheck this session. */
+  route: TrainingRoute;
   /**
-   * IMPROVEMENT: the best score before this enrollment
+   * RECHECK: this session's failed recheck (score, wrong steps, the tester's comment)
    * @nullable
    */
-  previousBestPct: number | null;
-  /**
-   * IMPROVEMENT: that score's band; the item pays only a higher band
-   * @nullable
-   */
-  previousBand: number | null;
+  recheck: RecheckEntity | null;
   status: TrainingItemStatus;
-  /** In the current round: round 1, every item not passed elsewhere (improvements always); after a RETRAIN, the trainings chosen. False once closed. */
+  /** In the current round: round 1, every item not passed elsewhere this session; after a RETRAIN, the trainings chosen. False once closed. */
   due: boolean;
   /** Marked complete in the current round */
   completed: boolean;
@@ -5867,12 +5995,6 @@ export interface EnrollmentItemEntity {
   retrainable: boolean;
 }
 
-export interface StepMarkEntity {
-  /** A step code from GET /staff/results/steps */
-  stepCode: string;
-  correct: boolean;
-}
-
 export interface AttemptMarkEntity {
   trainingId: string;
   marks: number;
@@ -5886,6 +6008,11 @@ export interface AttemptMarkEntity {
    * @nullable
    */
   steps: StepMarkEntity[] | null;
+  /**
+   * The tester's comment: what the student got wrong and what to practice (null when none)
+   * @nullable
+   */
+  comment: string | null;
 }
 
 export interface AdminAttemptEntity {
@@ -6000,19 +6127,6 @@ export interface LedgerTrainingEntity {
   nameUr: string | null;
 }
 
-/**
- * Payouts: whether the training was required, or an improvement of an earlier pass
- * @nullable
- */
-export type TrainerLedgerEntryEntityItemKind =
-  | (typeof TrainerLedgerEntryEntityItemKind)[keyof typeof TrainerLedgerEntryEntityItemKind]
-  | null;
-
-export const TrainerLedgerEntryEntityItemKind = {
-  REQUIRED: 'REQUIRED',
-  IMPROVEMENT: 'IMPROVEMENT',
-} as const;
-
 export interface TrainerLedgerEntryEntity {
   id: string;
   trainerStaffUserId: string;
@@ -6034,11 +6148,8 @@ export interface TrainerLedgerEntryEntity {
    * @nullable
    */
   training: LedgerTrainingEntity | null;
-  /**
-   * Payouts: whether the training was required, or an improvement of an earlier pass
-   * @nullable
-   */
-  itemKind: TrainerLedgerEntryEntityItemKind;
+  /** Payouts: TRAIN (never passed before) or RECHECK (passed in an earlier session, retrained after a failed recheck) */
+  route: TrainingRoute | null;
   /**
    * Ad hoc amounts: what it is for
    * @nullable
@@ -6122,6 +6233,8 @@ export interface TrainingEnrollmentDetailEntity {
   rules: EnrollmentRulesEntity;
   trainings: EnrollmentItemEntity[];
   attempts: AdminAttemptEntity[];
+  /** The student's rechecks in the enrollment's session */
+  rechecks: RecheckEntity[];
   /** @nullable */
   decision: DecisionDueEntity | null;
   decisions: DecisionEntity[];
@@ -6144,6 +6257,47 @@ export interface RequiredTrainingEntity {
   nameUr: string | null;
 }
 
+/**
+ * Graded step by step with these step codes (GET /staff/results/steps)
+ * @nullable
+ */
+export type SessionTrainingEntityStepSkill =
+  | (typeof SessionTrainingEntityStepSkill)[keyof typeof SessionTrainingEntityStepSkill]
+  | null;
+
+export const SessionTrainingEntityStepSkill = {
+  WAZU: 'WAZU',
+  NAMAZ: 'NAMAZ',
+} as const;
+
+export interface SessionTrainingEntity {
+  trainingId: string;
+  code: string;
+  name: string;
+  /** @nullable */
+  nameUr: string | null;
+  maxMarks: number;
+  passMarks: number;
+  /**
+   * Graded step by step with these step codes (GET /staff/results/steps)
+   * @nullable
+   */
+  stepSkill: SessionTrainingEntityStepSkill;
+  /** RECHECK: passed in an earlier session, tested directly by a tester. TRAIN: never passed, trained first. */
+  route: TrainingRoute;
+  /** Passed this session (counts for the session result) */
+  passedThisSession: boolean;
+  /** A recheck a tester may grade now (test.recheck) */
+  recheckDue: boolean;
+  /** To be trained this session: TRAIN not passed yet, or RECHECK whose recheck failed */
+  trainable: boolean;
+  /**
+   * This session's recheck, once graded
+   * @nullable
+   */
+  recheck: RecheckEntity | null;
+}
+
 export interface TrainingPassEntity {
   id: string;
   trainingId: string;
@@ -6156,16 +6310,58 @@ export interface TrainingPassEntity {
   sessionId: string | null;
   /** @nullable */
   sessionName: string | null;
-  /** TRAINING (graded) or ADMIN (recorded by hand) */
+  /** TRAINING (an attempt), RECHECK (a recheck), ADMIN (recorded by hand) or IMPORT_2026 */
   source: string;
   /**
-   * The best score on it in any session (null if recorded by hand)
+   * The best score on it in that session (null if recorded by hand)
    * @nullable
    */
   bestScorePct: number | null;
-  /** Best score below the threshold (90%): the trainer may pick it to improve when registering */
-  improvable: boolean;
   reason?: string;
+  /**
+   * Right or wrong per step, from the attempt or recheck that made the pass (or the 2026 import); null when not graded step by step
+   * @nullable
+   */
+  steps: StepMarkEntity[] | null;
+  /**
+   * The tester's comment on the attempt or recheck that made the pass; null when none
+   * @nullable
+   */
+  comment: string | null;
+}
+
+export interface TrainingMarkHistoryEntity {
+  trainingId: string;
+  marks: number;
+  maxMarks: number;
+  scorePct: number;
+  passed: boolean;
+  /** PKR this mark pays */
+  payout: number;
+  /**
+   * null when not graded step by step
+   * @nullable
+   */
+  steps: StepMarkEntity[] | null;
+  /**
+   * The tester's comment: what the student got wrong and what to practice (null when none)
+   * @nullable
+   */
+  comment: string | null;
+  attemptId: string;
+  attemptNo: number;
+  /** When the tester submitted it (phone's time) */
+  testedAt: string;
+  /** An admin changed the marks */
+  overridden: boolean;
+  enrollmentId: string;
+  sessionId: string;
+  /** @nullable */
+  sessionName: string | null;
+  code: string;
+  name: string;
+  /** @nullable */
+  nameUr: string | null;
 }
 
 export interface StudentTrainingsDto {
@@ -6177,12 +6373,18 @@ export interface StudentTrainingsDto {
   age: number | null;
   /** NOT_ADMITTED when there is no admission this session */
   requiredBlockedBy?: string;
-  /** Trainings their age requires that they haven’t passed */
+  /** Trainings to train this session: never passed, or a failed recheck */
   required: RequiredTrainingEntity[];
-  /** Trainings passed, any year */
+  /** Every training the student's age requires this session: its route and where it stands */
+  trainings: SessionTrainingEntity[];
+  /** Passes, every session (one per training and session) */
   passed: TrainingPassEntity[];
+  /** Every recheck, any session, newest first */
+  rechecks: RecheckEntity[];
   /** Every enrollment, any year, newest first */
   enrollments: TrainingEnrollmentEntity[];
+  /** Every graded mark, any year, newest first, with the tester's comment and steps */
+  history: TrainingMarkHistoryEntity[];
 }
 
 export interface StudentTrainingsResponseDto {
@@ -6302,8 +6504,6 @@ export interface CreateTrainingEnrollmentDto {
   grNumber?: string;
   studentId?: string;
   trainerStaffUserId?: string;
-  /** Passed trainings with a best score below 90% to improve this session (400 INVALID_IMPROVE_SET otherwise) */
-  improveTrainingIds?: string[];
 }
 
 export interface SetTrainerDto {
@@ -6364,6 +6564,11 @@ export interface StepMarkDto {
   /** A step code of the training's step skill */
   stepCode: string;
   correct: boolean;
+  /**
+   * A short comment on the step (mainly wrong steps)
+   * @maxLength 200
+   */
+  comment?: string;
 }
 
 export interface MarkDto {
@@ -6371,6 +6576,12 @@ export interface MarkDto {
   marks: number;
   /** Trainings graded step by step only. Leave out to keep the steps the tester recorded. */
   steps?: StepMarkDto[];
+  /**
+   * The tester's comment: what the student got wrong and what to practice (Urdu is fine). Leave out to keep the tester's; null or an empty string clears it.
+   * @maxLength 500
+   * @nullable
+   */
+  comment?: string | null;
 }
 
 export interface OverrideMarksDto {
@@ -6378,6 +6589,87 @@ export interface OverrideMarksDto {
   reason: string;
   /** One mark for every training in the attempt */
   marks: MarkDto[];
+}
+
+export interface TrainingRecheckRowEntity {
+  recheckId: string;
+  trainingId: string;
+  code: string;
+  name: string;
+  /** @nullable */
+  nameUr: string | null;
+  sessionId: string;
+  marks: number;
+  maxMarks: number;
+  scorePct: number;
+  /** false: the training is trained this session (route RECHECK) */
+  passed: boolean;
+  /**
+   * null when not graded step by step
+   * @nullable
+   */
+  steps: StepMarkEntity[] | null;
+  /**
+   * The tester's comment: what the student got wrong and what to practice (null when none)
+   * @nullable
+   */
+  comment: string | null;
+  /** When the tester submitted it (phone's time) */
+  testedAt: string;
+  /** An admin changed the marks */
+  overridden: boolean;
+  studentId: string;
+  grNumber: string;
+  /** The student's name */
+  studentName: string;
+  sessionName?: string;
+  passMarks: number;
+  testerStaffUserId: string;
+  testerName?: string;
+  windowId?: string;
+  windowName?: string;
+  /** Arrived after the window end plus the grace period (LATE_GRADE) */
+  lateGrade: boolean;
+  /**
+   * The sync item, for the flagged-items screen
+   * @nullable
+   */
+  syncItemId: string | null;
+  overriddenAt?: string;
+  overriddenByName?: string;
+  overrideReason?: string;
+  /** A failed recheck: the enrollment it's trained in this session, once it's in one */
+  retrainEnrollmentId?: string;
+  /** The trainer of the student's latest enrollment in the recheck's session; left out when none */
+  lastTrainerStaffUserId?: string;
+  lastTrainerName?: string;
+}
+
+export interface ListTrainingRechecksResponseDto {
+  /** Total number of records */
+  count: number;
+  data: TrainingRecheckRowEntity[];
+}
+
+export interface OverrideRecheckDto {
+  /** Why, for the audit log */
+  reason: string;
+  /** Between 0 and the training's maximum when rechecked */
+  marks: number;
+  /** Trainings graded step by step only. Leave out to keep the steps the tester recorded. */
+  steps?: StepMarkDto[];
+  /**
+   * The tester's comment. Leave out to keep it; null or an empty string clears it.
+   * @maxLength 500
+   * @nullable
+   */
+  comment?: string | null;
+}
+
+export interface TrainingRecheckResponseDto {
+  /** Message of the action */
+  message: string;
+  data: TrainingRecheckRowEntity;
 }
 
 export interface RunClockResponseDto {
@@ -6550,6 +6842,64 @@ export interface TesterReportDto {
   groups: TesterGroupDto[];
 }
 
+export interface RecheckTrainingRowDto {
+  trainingId: string;
+  code: string;
+  name: string;
+  /** Rechecks graded */
+  graded: number;
+  passed: number;
+  failed: number;
+  /** @nullable */
+  passRate: number | null;
+  /**
+   * Average score %
+   * @nullable
+   */
+  averagePct: number | null;
+  /** Failed rechecks now in an enrollment (being trained) */
+  retrained: number;
+  /** Failed rechecks passed later in the session, after retraining */
+  passedAfterRetrain: number;
+  /**
+   * With sessionId (and no date or tester filter): admitted students still to recheck (passed before, not rechecked or passed this session)
+   * @nullable
+   */
+  due: number | null;
+}
+
+export interface RecheckTesterRowDto {
+  testerStaffUserId: string;
+  name: string;
+  graded: number;
+  passed: number;
+  /**
+   * Average score % given
+   * @nullable
+   */
+  averagePct: number | null;
+  /** Rechecks an admin overrode */
+  overridden: number;
+  /** Flagged LATE_GRADE */
+  lateGrade: number;
+}
+
+export interface RecheckGroupDto {
+  /** "all", or the gender, area ID or branch ID */
+  group: string;
+  /** Area or branch name */
+  label?: string;
+  graded: number;
+  passed: number;
+  failed: number;
+  trainings: RecheckTrainingRowDto[];
+  testers: RecheckTesterRowDto[];
+}
+
+export interface RecheckReportDto {
+  groups: RecheckGroupDto[];
+}
+
 export interface ListLedgerResponseDto {
   /** Total number of records */
   count: number;
@@ -6649,6 +6999,51 @@ export interface PayoutReportDto {
   total: PayoutReportRowDto;
 }
 
+export interface StaffRecheckMarkDto {
+  /** A recheck due now (lookup trainings[].recheckDue) */
+  trainingId: string;
+  /** 0 to the training's maxMarks, at most 2 decimals */
+  marks: number;
+  /** Trainings graded step by step (stepSkill) only: each step right or wrong, with an optional comment */
+  steps?: StepMarkDto[];
+  /**
+   * The tester's comment: what the student got wrong and what to practice (Urdu is fine)
+   * @maxLength 500
+   * @nullable
+   */
+  comment?: string | null;
+}
+
+export interface StaffRecheckPayloadDto {
+  /** The student (old GRs too) */
+  grNumber: string;
+  /** At least one, at most one per training */
+  marks: StaffRecheckMarkDto[];
+}
+
+export interface RecheckFailedTrainingDto {
+  trainingId: string;
+  code: string;
+  name: string;
+  /** @nullable */
+  nameUr: string | null;
+  scorePct: number;
+  /**
+   * The tester's comment; null when none
+   * @nullable
+   */
+  comment: string | null;
+}
+
+export interface RecheckFailedNotificationDataDto {
+  grNumber: string;
+  /** The student's name */
+  name: string;
+  trainings: RecheckFailedTrainingDto[];
+  /** true: added to the open enrollment (notification enrollmentId). false: waits for the next enrollment; register the student again once the open one closes (or now, when there is none open). */
+  joined: boolean;
+}
+
 /**
  * @nullable
  */
@@ -6705,13 +7100,30 @@ export interface StaffLookupResponseDto {
   /** @nullable */
   branchCode: string | null;
   /**
+   * Last year's performance, with each Fiqh training's issues (lastYear.trainings); null: no record
+   * @nullable
+   */
+  lastYear: LastYearSummaryDto | null;
+  /**
+   * This session: the student's admission's session, else the current session (as in GET /staff/me); null when there is none. A pass in passed[] with this sessionId is this session's; any other is from an earlier one.
+   * @nullable
+   */
+  sessionId: string | null;
+  /**
+   * This session's name, e.g. 2027; null with sessionId
+   * @nullable
+   */
+  sessionName: string | null;
+  /**
    * Age at this session’s admission; null when not admitted
    * @nullable
    */
   age: number | null;
-  /** Trainings their age requires that they haven’t passed */
+  /** Trainings to train this session: never passed, or a failed recheck (what training.register enrolls) */
   required: RequiredTrainingEntity[];
-  /** Trainings passed, any year */
+  /** Every training the student's age requires this session, with its route (TRAIN or RECHECK), whether it's passed this session, a recheck due, or to be trained, and this session's recheck */
+  trainings: SessionTrainingEntity[];
+  /** Passes, every session (one per training and session) */
   passed: TrainingPassEntity[];
   /**
    * The open enrollment
@@ -6723,6 +7135,10 @@ export interface StaffLookupResponseDto {
   /** Gradable by the caller right now */
   canTest: boolean;
   testBlockedBy?: StaffSyncReasonCode;
+  /** The caller can recheck now (test.recheck): a recheck is due (see trainings[].recheckDue) */
+  canRecheck: boolean;
+  /** ROLE_REQUIRED, NOT_ADMITTED, NOT_DUE (no recheck due), OWN_TRAINEE or NO_WINDOW */
+  recheckBlockedBy?: StaffSyncReasonCode;
 }
 
 export interface AttemptEntity {
@@ -6763,6 +7179,8 @@ export interface TrainerStudentEntity {
   /** Attempts allowed this session */
   maxAttempts: number;
   trainings: EnrollmentItemEntity[];
+  /** The student's rechecks in the enrollment's session, passed or failed (a failed one not in `trainings` joins the next enrollment) */
+  rechecks: RecheckEntity[];
   attempts: AttemptEntity[];
   /**
    * Set while a retrain/close decision is due
@@ -6781,7 +7199,7 @@ export interface TrainerStudentEntity {
 }
 
 /**
- * grNumber, name, and per kind: attemptNo, marks (per training: scorePct, passed, payout), payoutNow, nextStep, failedTrainingIds, trainings, payout, dueAt…
+ * grNumber, name, and per kind: attemptNo, marks (per training: scorePct, passed, payout, comment), payoutNow, nextStep, failedTrainingIds, trainings, payout, dueAt… RECHECK_FAILED: RecheckFailedNotificationDataDto ({ grNumber, name, trainings: [{ trainingId, code, name, nameUr, scorePct, comment }], joined }).
  */
 export type StaffNotificationDtoData = { [key: string]: unknown };
 
@@ -6790,7 +7208,7 @@ export interface StaffNotificationDto {
   kind: string;
   /** @nullable */
   enrollmentId: string | null;
-  /** grNumber, name, and per kind: attemptNo, marks (per training: scorePct, passed, payout), payoutNow, nextStep, failedTrainingIds, trainings, payout, dueAt… */
+  /** grNumber, name, and per kind: attemptNo, marks (per training: scorePct, passed, payout, comment), payoutNow, nextStep, failedTrainingIds, trainings, payout, dueAt… RECHECK_FAILED: RecheckFailedNotificationDataDto ({ grNumber, name, trainings: [{ trainingId, code, name, nameUr, scorePct, comment }], joined }). */
   data: StaffNotificationDtoData;
   createdAt: string;
   /** @nullable */
@@ -6884,6 +7302,51 @@ export interface StaffGradedAttemptDto {
   passedCount: number;
   totalCount: number;
   marks: AttemptMarkEntity[];
+}
+
+export interface StaffGradedRecheckDto {
+  recheckId: string;
+  trainingId: string;
+  code: string;
+  name: string;
+  /** @nullable */
+  nameUr: string | null;
+  sessionId: string;
+  marks: number;
+  maxMarks: number;
+  scorePct: number;
+  /** false: the training is trained this session (route RECHECK) */
+  passed: boolean;
+  /**
+   * null when not graded step by step
+   * @nullable
+   */
+  steps: StepMarkEntity[] | null;
+  /**
+   * The tester's comment: what the student got wrong and what to practice (null when none)
+   * @nullable
+   */
+  comment: string | null;
+  /** When the tester submitted it (phone's time) */
+  testedAt: string;
+  /** An admin changed the marks */
+  overridden: boolean;
+  studentId: string;
+  grNumber: string;
+  /** The student's name */
+  studentName: string;
+  /**
+   * The test.recheck sync item it came from (one sitting: the rechecks sent together share it); null when not from a sync item
+   * @nullable
+   */
+  syncItemId: string | null;
+  /**
+   * The testing window it was graded in
+   * @nullable
+   */
+  windowId: string | null;
+  /** Arrived after the window end plus the grace period (LATE_GRADE) */
+  lateGrade: boolean;
 }
 
 export interface FeeDeskAdmissionSummary {
@@ -8453,8 +8916,44 @@ export const TrainingsAdminControllerAttemptsSortOrder = {
   desc: 'desc',
 } as const;
 
+export type TrainingsAdminControllerRechecksParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: TrainingsAdminControllerRechecksSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+  sessionId?: string;
+  trainingId?: string;
+  /** A student's rechecks (records merged into them included) */
+  studentId?: string;
+  /** Only passed (true) or failed (false) rechecks */
+  passed?: boolean;
+  /** Only rechecks that arrived after the window end plus the grace period */
+  lateGrade?: boolean;
+  /** Only rechecks an admin changed */
+  overridden?: boolean;
+  /** true: only failed rechecks waiting for a trainer: failed, the training not passed in that session since, and not in any of the student's open enrollments. In the running sessions unless sessionId is given. Register the student with POST /trainings/enrollments { grNumber, trainerStaffUserId } (lastTrainerStaffUserId is a good default). false or left out: no filter. */
+  awaitingTraining?: boolean;
+  testerStaffUserId?: string;
+  windowId?: string;
+  /** Tested from */
+  from?: string;
+  to?: string;
+};
+
+export type TrainingsAdminControllerRechecksSortOrder =
+  (typeof TrainingsAdminControllerRechecksSortOrder)[keyof typeof TrainingsAdminControllerRechecksSortOrder];
+
+export const TrainingsAdminControllerRechecksSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
 export type TrainingsAdminControllerPipelineParams = {
-  /** From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers: the test date. Payouts: when the ledger entry was made (a closure, approval-ready). */
+  /** From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers, rechecks: the test date. Payouts: when the ledger entry was made (a closure, approval-ready). */
   from?: string;
   to?: string;
   sessionId?: string;
@@ -8481,7 +8980,7 @@ export const TrainingsAdminControllerPipelineGroupBy = {
 } as const;
 
 export type TrainingsAdminControllerResultsParams = {
-  /** From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers: the test date. Payouts: when the ledger entry was made (a closure, approval-ready). */
+  /** From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers, rechecks: the test date. Payouts: when the ledger entry was made (a closure, approval-ready). */
   from?: string;
   to?: string;
   sessionId?: string;
@@ -8508,7 +9007,7 @@ export const TrainingsAdminControllerResultsGroupBy = {
 } as const;
 
 export type TrainingsAdminControllerTrainingsParams = {
-  /** From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers: the test date. Payouts: when the ledger entry was made (a closure, approval-ready). */
+  /** From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers, rechecks: the test date. Payouts: when the ledger entry was made (a closure, approval-ready). */
   from?: string;
   to?: string;
   sessionId?: string;
@@ -8535,7 +9034,7 @@ export const TrainingsAdminControllerTrainingsGroupBy = {
 } as const;
 
 export type TrainingsAdminControllerTrainersParams = {
-  /** From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers: the test date. Payouts: when the ledger entry was made (a closure, approval-ready). */
+  /** From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers, rechecks: the test date. Payouts: when the ledger entry was made (a closure, approval-ready). */
   from?: string;
   to?: string;
   sessionId?: string;
@@ -8562,7 +9061,7 @@ export const TrainingsAdminControllerTrainersGroupBy = {
 } as const;
 
 export type TrainingsAdminControllerTestersParams = {
-  /** From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers: the test date. Payouts: when the ledger entry was made (a closure, approval-ready). */
+  /** From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers, rechecks: the test date. Payouts: when the ledger entry was made (a closure, approval-ready). */
   from?: string;
   to?: string;
   sessionId?: string;
@@ -8583,6 +9082,33 @@ export type TrainingsAdminControllerTestersGroupBy =
   (typeof TrainingsAdminControllerTestersGroupBy)[keyof typeof TrainingsAdminControllerTestersGroupBy];
 
 export const TrainingsAdminControllerTestersGroupBy = {
+  gender: 'gender',
+  area: 'area',
+  branch: 'branch',
+} as const;
+
+export type TrainingsAdminControllerRechecksReportParams = {
+  /** From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers, rechecks: the test date. Payouts: when the ledger entry was made (a closure, approval-ready). */
+  from?: string;
+  to?: string;
+  sessionId?: string;
+  /** Only this training */
+  trainingId?: string;
+  trainerStaffUserId?: string;
+  testerStaffUserId?: string;
+  branchId?: string;
+  areaId?: string;
+  gender?: Gender;
+  /** Split every figure by gender, area or branch */
+  groupBy?: TrainingsAdminControllerRechecksReportGroupBy;
+  /** Pipeline: open and unchanged this many days */
+  stuckDays?: number;
+};
+
+export type TrainingsAdminControllerRechecksReportGroupBy =
+  (typeof TrainingsAdminControllerRechecksReportGroupBy)[keyof typeof TrainingsAdminControllerRechecksReportGroupBy];
+
+export const TrainingsAdminControllerRechecksReportGroupBy = {
   gender: 'gender',
   area: 'area',
   branch: 'branch',
@@ -8649,7 +9175,7 @@ export const TrainingsLedgerControllerExportSortOrder = {
 } as const;
 
 export type TrainingsLedgerControllerPayoutsParams = {
-  /** From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers: the test date. Payouts: when the ledger entry was made (a closure, approval-ready). */
+  /** From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers, rechecks: the test date. Payouts: when the ledger entry was made (a closure, approval-ready). */
   from?: string;
   to?: string;
   sessionId?: string;
