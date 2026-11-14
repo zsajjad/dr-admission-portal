@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 
 import { useAdminPermissionControllerMe } from '@/providers/service/admin-permission/admin-permission';
-import { Permission } from '@/providers/service/app.schemas';
+import { Permission, RoleName } from '@/providers/service/app.schemas';
 
 /**
  * What the signed-in admin may do, from GET /admin-permission/me.
@@ -23,5 +23,12 @@ export function usePermissions() {
     [effective],
   );
 
-  return { has, role: data?.data?.role, isLoading: status === 'loading' || isLoading };
+  const role = data?.data?.role;
+  return {
+    has,
+    role,
+    /** Only super admins grant permissions */
+    isSuperAdmin: role === RoleName.SUPER_ADMIN,
+    isLoading: status === 'loading' || isLoading,
+  };
 }
