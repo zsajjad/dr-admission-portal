@@ -106,5 +106,14 @@
   "app.admission.sessionDashboard.recordUnique": "تمام سیشنز میں کل {count} مختلف طلبہ داخل ہوئے",
   "app.admission.sessionDashboard.noData": "ابھی کوئی ڈیٹا نہیں",
   "app.home.welcome": "سیشن ڈیش بورڈ",
-  "app.home.subtitle": "یہ سیشن کیسا جا رہا ہے، پچھلے سیشن کے مقابلے میں"
+  "app.home.subtitle": "یہ سیشن کیسا جا رہا ہے، پچھلے سیشن کے مقابلے میں",
+  "app.components.Layout.programName": "دانشگاہِ رمضان",
+  "app.components.Layout.home": "ہوم",
+  "app.components.Layout.adminUsers": "ایڈمنز",
+  "app.components.Layout.branches": "برانچز",
+  "app.components.Layout.van": "وینز",
+  "app.components.Layout.admissions": "داخلے",
+  "app.components.Layout.questionSets": "سوالات کے سیٹ",
+  "app.components.Layout.printing": "پرنٹنگ",
+  "app.components.Layout.interactionReport": "انٹرویوز"
 }
