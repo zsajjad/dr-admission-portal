@@ -32,6 +32,11 @@ export const routes = {
     listing: '/students',
     profile: (id: string) => `/students/${id}`,
   },
+  studentMerge: {
+    listing: '/students/merge',
+    withRecord: (studentId: string) => `/students/merge?a=${studentId}`,
+    history: '/students/merge?tab=history',
+  },
   staffUsers: {
     listing: '/staff-users',
     detail: (id: string) => `/staff-users/${id}`,

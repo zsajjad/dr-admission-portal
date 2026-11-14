@@ -18,6 +18,8 @@ import HistoryEduOutlinedIcon from '@mui/icons-material/HistoryEduOutlined';
 import HistoryEduRoundedIcon from '@mui/icons-material/HistoryEduRounded';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
+import JoinInnerOutlinedIcon from '@mui/icons-material/JoinInnerOutlined';
+import JoinInnerRoundedIcon from '@mui/icons-material/JoinInnerRounded';
 import PersonSearchOutlinedIcon from '@mui/icons-material/PersonSearchOutlined';
 import PersonSearchRoundedIcon from '@mui/icons-material/PersonSearchRounded';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
@@ -61,6 +63,10 @@ export const navIcons: Record<string, { filled: MuiIcon; outlined: MuiIcon }> = 
   students: {
     filled: PersonSearchRoundedIcon,
     outlined: PersonSearchOutlinedIcon,
+  },
+  studentMerge: {
+    filled: JoinInnerRoundedIcon,
+    outlined: JoinInnerOutlinedIcon,
   },
   staffUsers: {
     filled: BadgeRoundedIcon,
