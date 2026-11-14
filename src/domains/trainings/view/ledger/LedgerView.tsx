@@ -64,7 +64,7 @@ import common from '../../messages';
 import { useTrainingsAccess } from '../../permissions';
 import { cardStyle, formatAmount, formatDate, formatDateTime } from '../../utils';
 
-import { AdjustmentDialog, PaymentDialog, VoidDialog } from './LedgerDialogs';
+import { AdhocDialog, AdjustmentDialog, PaymentDialog, VoidDialog } from './LedgerDialogs';
 import messages from './messages';
 
 const TOTAL_KEYS = ['projected', 'awaitingApproval', 'approved', 'paid', 'due'] as const;
@@ -105,6 +105,7 @@ export function LedgerView() {
   const [approving, setApproving] = useState<{ ids: string[]; amount: number } | null>(null);
   const [payment, setPayment] = useState<{ trainerId?: string } | null>(null);
   const [adjustment, setAdjustment] = useState<{ trainerId?: string } | null>(null);
+  const [adhoc, setAdhoc] = useState<{ trainerId?: string } | null>(null);
   const [voiding, setVoiding] = useState<LedgerEntry | null>(null);
   const [exporting, setExporting] = useState(false);
 
@@ -178,6 +179,13 @@ export function LedgerView() {
         renderCell: ({ row }) => <LedgerKindLabel kind={row.kind} />,
       },
       {
+        field: 'training',
+        headerName: intl.formatMessage(common.training),
+        width: 110,
+        sortable: false,
+        valueGetter: (_v, row) => row.training?.code ?? '',
+      },
+      {
         field: 'student',
         headerName: intl.formatMessage(messages.student),
         flex: 1,
@@ -238,7 +246,7 @@ export function LedgerView() {
         renderCell: ({ row }) => (
           <Stack sx={{ py: 0.75, lineHeight: 1.2 }}>
             <Typography variant="body2">
-              {[row.training?.code, row.reference, row.reason].filter(Boolean).join(' · ')}
+              {[row.title, row.reference, row.reason].filter(Boolean).join(' · ')}
             </Typography>
             {row.voidedAt && (
               <Typography variant="caption" color="text.secondary">
@@ -294,6 +302,9 @@ export function LedgerView() {
             <Stack direction="row" spacing={1}>
               <Button size="small" startIcon={<AddIcon />} onClick={() => setAdjustment({})}>
                 <FormattedMessage {...messages.addAdjustment} />
+              </Button>
+              <Button size="small" variant="outlined" startIcon={<AddIcon />} onClick={() => setAdhoc({})}>
+                <FormattedMessage {...messages.addAmount} />
               </Button>
               <Button size="small" variant="contained" startIcon={<PayIcon />} onClick={() => setPayment({})}>
                 <FormattedMessage {...messages.recordPayment} />
@@ -503,6 +514,7 @@ export function LedgerView() {
             onClose={() => setAdjustment(null)}
             trainerId={adjustment?.trainerId ?? filters.trainer}
           />
+          <AdhocDialog open={!!adhoc} onClose={() => setAdhoc(null)} trainerId={adhoc?.trainerId ?? filters.trainer} />
           <VoidDialog entry={voiding} onClose={() => setVoiding(null)} />
         </>
       )}

@@ -4,9 +4,11 @@
  * reading, and every change reloads every trainings query, since one action can move states,
  * counts and money shown elsewhere.
  */
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
+
+import service from '@/services';
 
 export type QueryParams = Record<string, string | number | boolean | string[] | undefined | null>;
 
@@ -32,3 +34,21 @@ export function useTrainingsMutation<TVars, TResult = unknown>(request: (vars: T
     onSuccess: () => queryClient.invalidateQueries({ predicate: (q) => isTrainingsQuery(q.queryKey) }),
   });
 }
+
+/**
+ * A GET for routes not in the generated client yet (contract v3). The key starts with the route,
+ * like the generated ones, so mutations reload it too.
+ */
+export function useTrainingsQuery<T>(url: string, params: QueryParams = {}, enabled = true) {
+  const { isAuthenticated } = useAuthenticatedApi();
+  const clean = cleanParams(params);
+  return useQuery<T>({
+    queryKey: [url, clean],
+    queryFn: ({ signal }) => service<T>({ url, method: 'GET', params: clean, signal }),
+    enabled: isAuthenticated && enabled,
+  });
+}
+
+/** A request for routes not in the generated client yet */
+export const request = <T>(method: 'POST' | 'PUT' | 'PATCH' | 'DELETE', url: string, data?: unknown) =>
+  service<T>({ url, method, data, headers: { 'Content-Type': 'application/json' } });

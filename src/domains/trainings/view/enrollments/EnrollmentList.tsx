@@ -32,7 +32,7 @@ import {
   useEnrollments,
   useRunAutoClose,
 } from '../../api/operations';
-import { CourseFilter, StaffFilter, UrlSelect, UrlTextFilter } from '../../components/Filters';
+import { StaffFilter, UrlSelect, UrlTextFilter } from '../../components/Filters';
 import { PayoutChip } from '../../components/PayoutChip';
 import { useStaffNames } from '../../components/StaffUserSelect';
 import { StateChip } from '../../components/StateChip';
@@ -48,7 +48,6 @@ import messages from './messages';
 const FILTER_KEYS = [
   'sessionId',
   'state',
-  'courseId',
   'trainer',
   'tester',
   'branchId',
@@ -72,7 +71,6 @@ export function EnrollmentList() {
     return {
       gr: t(messages.grNumber),
       student: t(messages.student),
-      course: t(common.course),
       state: t(messages.state),
       trainer: t(common.trainer),
       tester: t(common.tester),
@@ -90,7 +88,6 @@ export function EnrollmentList() {
   const params: EnrollmentFilters = {
     sessionId: filters.sessionId,
     state: filters.state as EnrollmentState | undefined,
-    courseId: filters.courseId,
     trainerStaffUserId: filters.trainer,
     testerStaffUserId: filters.tester,
     branchId: filters.branchId,
@@ -137,13 +134,6 @@ export function EnrollmentList() {
             </Typography>
           </Stack>
         ),
-      },
-      {
-        field: 'course',
-        headerName: text.course,
-        width: 90,
-        sortable: false,
-        valueGetter: (_v, row) => row.course.code,
       },
       {
         field: 'state',
@@ -244,7 +234,6 @@ export function EnrollmentList() {
               label={<FormattedMessage {...messages.state} />}
               options={ENROLLMENT_STATES.map((s) => ({ value: s, label: text.states[s] }))}
             />
-            <CourseFilter />
             <StaffFilter param="trainer" role={StaffRole.TRAINER} label={<FormattedMessage {...common.trainer} />} />
             <StaffFilter param="tester" role={StaffRole.TESTER} label={<FormattedMessage {...common.tester} />} />
             <BranchFilter minWidth={180} resetFiltersOnChange={['areaId']} />

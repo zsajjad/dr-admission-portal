@@ -28,19 +28,23 @@ import {
 
 import service from '@/services';
 
-import { cleanParams, useQueryGate, useTrainingsMutation } from './common';
+import { cleanParams, request, useQueryGate, useTrainingsMutation } from './common';
 
 /** v3 adds the training to each entry; typed here until the client is regenerated */
-export type LedgerEntry = TrainerLedgerEntryEntity & {
+export type LedgerEntry = Omit<TrainerLedgerEntryEntity, 'kind'> & {
+  kind: LedgerKind;
   trainingId?: string | null;
   training?: { id: string; code: string; name: string } | null;
+  /** ADHOC entries */
+  title?: string | null;
 };
-export type LedgerKind = TrainerLedgerKind;
+/** ADHOC: an ad hoc credit (an allowance, a bonus), typed here until the client is regenerated */
+export type LedgerKind = TrainerLedgerKind | 'ADHOC';
 export type LedgerStatus = TrainerLedgerStatus;
 export type TrainerTotals = TrainerLedgerSummaryEntity;
 export type LedgerFilters = TrainingsLedgerControllerListParams;
 
-export const LEDGER_KINDS = Object.values(TrainerLedgerKind);
+export const LEDGER_KINDS: LedgerKind[] = [...Object.values(TrainerLedgerKind), 'ADHOC'];
 export const LEDGER_STATUSES = Object.values(TrainerLedgerStatus);
 
 export const useLedger = (params: LedgerFilters) =>
@@ -76,6 +80,21 @@ export const useRecordPayment = () =>
 
 export const useAddAdjustment = () =>
   useTrainingsMutation((data: RecordAdjustmentDto) => trainingsLedgerControllerAdjustment(data));
+
+export interface AdhocBody {
+  trainerStaffUserId: string;
+  /** Whole rupees, above 0 */
+  amount: number;
+  title: string;
+  /** ISO date */
+  date: string;
+  reference?: string;
+  note?: string;
+}
+
+/** POST /trainings/ledger/adhoc: approved when made, adds to the balance due */
+export const useAddAdhoc = () =>
+  useTrainingsMutation((data: AdhocBody) => request('POST', '/trainings/ledger/adhoc', data));
 
 export const useVoidEntry = () =>
   useTrainingsMutation(({ id, reason }: { id: string; reason: string }) =>

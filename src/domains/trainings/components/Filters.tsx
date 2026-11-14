@@ -10,7 +10,7 @@ import { FormattedMessage } from '@/theme/FormattedMessage';
 
 import { useListingFilters } from '@/hooks/useListingFilters';
 
-import { useCourses } from '../api/setup';
+import { useCatalog } from '../api/setup';
 import messages from '../messages';
 
 import { StaffUserSelect } from './StaffUserSelect';
@@ -51,11 +51,13 @@ export function UrlSelect({
   );
 }
 
-/** A course select bound to `courseId` */
-export function CourseFilter({ param = 'courseId' }: { param?: string }) {
-  const { data } = useCourses();
-  const options = (data?.data ?? []).map((c) => ({ value: c.id, label: `${c.code} · ${c.name}` }));
-  return <UrlSelect param={param} label={<FormattedMessage {...messages.course} />} options={options} minWidth={200} />;
+/** A catalog training select bound to `trainingId` */
+export function TrainingFilter({ param = 'trainingId' }: { param?: string }) {
+  const { data } = useCatalog();
+  const options = (data?.data ?? []).map((t) => ({ value: t.id, label: `${t.code} · ${t.name}` }));
+  return (
+    <UrlSelect param={param} label={<FormattedMessage {...messages.training} />} options={options} minWidth={200} />
+  );
 }
 
 /** A trainer or tester select bound to a URL query param (the staff user's ID) */

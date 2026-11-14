@@ -27,11 +27,10 @@ import {
   trainingsAdminControllerSetTrainer,
   useTrainingsAdminControllerDetail,
   useTrainingsAdminControllerList,
-  useTrainingsAdminControllerStudent,
   useTrainingsLedgerControllerList,
 } from '@/providers/service/trainings/trainings';
 
-import { cleanParams, useQueryGate, useTrainingsMutation } from './common';
+import { cleanParams, request, useQueryGate, useTrainingsMutation, useTrainingsQuery } from './common';
 import { Band } from './setup';
 
 export const ENROLLMENT_STATES = Object.values(TrainingEnrollmentState);
@@ -51,7 +50,13 @@ export interface MarkStep {
   stepCode: string;
   correct: boolean;
 }
-export type AttemptMark = AttemptMarkEntity & { steps?: MarkStep[] | null };
+/** v3 moves score, band and pay onto each mark */
+export type AttemptMark = AttemptMarkEntity & {
+  steps?: MarkStep[] | null;
+  scorePct?: number;
+  band?: number;
+  payout?: number;
+};
 export type Attempt = Omit<AdminAttemptEntity, 'marks'> & { marks: AttemptMark[] };
 
 /** The course and its trainings as they were at enrollment (core's CourseRules; untyped in the spec) */
@@ -66,21 +71,41 @@ export interface RulesSnapshot {
   reminderDays: number[];
   payoutFloor: number;
   bands: Band[];
-  trainings: {
-    trainingId: string;
-    code: string;
-    name: string;
-    nameUr: string | null;
-    weightPct: number;
-    maxMarks: number;
-    passMarks: number;
-    sortOrder: number;
-  }[];
+  trainings: RuleTraining[];
+}
+
+/** A training in the snapshot; under v3 each carries its own floor and bands */
+export interface RuleTraining {
+  trainingId: string;
+  code: string;
+  name: string;
+  nameUr: string | null;
+  weightPct?: number;
+  maxMarks: number;
+  passMarks: number;
+  payoutFloor?: number;
+  bands?: Band[];
+  stepSkill?: 'WAZU' | 'NAMAZ' | null;
+  sortOrder: number;
+}
+
+/** v3: one row per required training in the enrollment */
+export interface EnrollmentItem {
+  trainingId: string;
+  code?: string;
+  name?: string;
+  status: 'PENDING' | 'PASSED' | 'FAILED';
+  attemptsUsed: number;
+  bestAttemptNo: number | null;
+  scorePct: number | null;
+  payout: number | null;
 }
 
 export type EnrollmentDetail = Omit<TrainingEnrollmentDetailEntity, 'rules' | 'attempts'> & {
   rules: RulesSnapshot;
   attempts: Attempt[];
+  /** v3 */
+  items?: EnrollmentItem[];
 };
 
 export type LedgerKind = TrainerLedgerKind;
@@ -100,9 +125,60 @@ export const useEnrollments = (params: EnrollmentFilters) =>
 export const useEnrollment = (id?: string) =>
   useTrainingsAdminControllerDetail<{ data: EnrollmentDetail }>(id ?? '', useQueryGate(!!id));
 
-/** The student's enrollments in every year, what the matrix gives now, and their completed courses */
-export const useStudentTrainings = (studentId?: string) =>
-  useTrainingsAdminControllerStudent(studentId ?? '', useQueryGate(!!studentId));
+/** A training the student must do now (v3) */
+export interface RequiredTraining {
+  trainingId?: string;
+  id?: string;
+  code: string;
+  name: string;
+}
+
+/** A training passed for good, in any year (v3 student_training_pass) */
+export interface TrainingPass {
+  id: string;
+  trainingId: string;
+  code?: string;
+  name?: string;
+  passedAt: string;
+  sessionId?: string | null;
+  sessionName?: string | null;
+  source: 'TRAINING' | 'ADMIN';
+  enrollmentId?: string | null;
+  reason?: string | null;
+}
+
+/** GET /trainings/students/:studentId and /trainings/required (v3) */
+export interface StudentTrainings {
+  age: number | null;
+  required: RequiredTraining[];
+  passed: TrainingPass[];
+  enrollments: EnrollmentListItem[];
+}
+
+const unwrap = <T>(res: { data?: T } | T | undefined): T | undefined =>
+  res && typeof res === 'object' && 'data' in res ? (res as { data?: T }).data : (res as T | undefined);
+
+/** The student's age now, what's required, what's passed (any year) and every enrollment */
+export function useStudentTrainings(studentId?: string) {
+  const query = useTrainingsQuery<{ data?: StudentTrainings } | StudentTrainings>(
+    `/trainings/students/${studentId}`,
+    {},
+    !!studentId,
+  );
+  return { ...query, student: unwrap<StudentTrainings>(query.data) };
+}
+
+/** POST /trainings/passes: a manual pass, e.g. from earlier records. It pays nobody. */
+export const useAddPass = () =>
+  useTrainingsMutation((data: { studentId: string; trainingId: string; reason: string }) =>
+    request('POST', '/trainings/passes', data),
+  );
+
+/** POST /trainings/passes/:id/revoke: the training becomes required again */
+export const useRevokePass = () =>
+  useTrainingsMutation(({ id, reason }: { id: string; reason: string }) =>
+    request('POST', `/trainings/passes/${id}/revoke`, { reason }),
+  );
 
 /** An enrollment's ledger entries */
 export const useEnrollmentLedger = (enrollmentId: string) =>
@@ -134,8 +210,14 @@ export const useReopenEnrollment = () =>
 
 export const useOverrideMarks = () =>
   useTrainingsMutation(
-    ({ attemptId, ...data }: { attemptId: string; marks: { trainingId: string; marks: number }[]; reason: string }) =>
-      trainingsAdminControllerOverride(attemptId, data),
+    ({
+      attemptId,
+      ...data
+    }: {
+      attemptId: string;
+      marks: { trainingId: string; marks: number; steps?: MarkStep[] }[];
+      reason: string;
+    }) => trainingsAdminControllerOverride(attemptId, data),
   );
 
 /** Runs the auto-close and reminder job now */

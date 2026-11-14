@@ -11,7 +11,14 @@ import { StaffRole } from '@/providers/service/app.schemas';
 
 import { FormattedMessage } from '@/theme/FormattedMessage';
 
-import { LedgerEntry, TrainerTotals, useAddAdjustment, useRecordPayment, useVoidEntry } from '../../api/ledger';
+import {
+  LedgerEntry,
+  TrainerTotals,
+  useAddAdhoc,
+  useAddAdjustment,
+  useRecordPayment,
+  useVoidEntry,
+} from '../../api/ledger';
 import { ActionDialog } from '../../components/ActionDialog';
 import { ReasonField, reasonMissing } from '../../components/ReasonField';
 import { StaffUserSelect } from '../../components/StaffUserSelect';
@@ -133,6 +140,118 @@ export function PaymentDialog({ open, onClose, trainerId: initialTrainer, totals
             <FormattedMessage {...messages.moreThanDue} values={{ due: formatAmount(due) }} />
           </Alert>
         )}
+        <TextField
+          size="small"
+          label={<FormattedMessage {...messages.reference} />}
+          value={reference}
+          onChange={(e) => setReference(e.target.value)}
+        />
+        <TextField
+          size="small"
+          multiline
+          minRows={2}
+          label={<FormattedMessage {...messages.note} />}
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+        />
+      </Stack>
+    </ActionDialog>
+  );
+}
+
+/** An ad hoc credit (an allowance, a bonus), entered like a payment; approved when made */
+export function AdhocDialog({ open, onClose, trainerId: initialTrainer }: TrainerDialogProps) {
+  const intl = useIntl();
+  const mutation = useAddAdhoc();
+  const done = useClose(onClose);
+  const [trainerId, setTrainerId] = useState<string | null>(null);
+  const [amount, setAmount] = useState('');
+  const [title, setTitle] = useState('');
+  const [date, setDate] = useState('');
+  const [reference, setReference] = useState('');
+  const [note, setNote] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    setTrainerId(initialTrainer ?? null);
+    setAmount('');
+    setTitle('');
+    setDate(format(new Date(), 'yyyy-MM-dd'));
+    setReference('');
+    setNote('');
+    setSubmitted(false);
+  }, [open, initialTrainer]);
+
+  const amountOk = WHOLE.test(amount.trim()) && Number(amount) > 0;
+  const valid = !!trainerId && amountOk && !!title.trim() && !!date;
+
+  const handleSubmit = () => {
+    setSubmitted(true);
+    if (!valid || !trainerId) return;
+    mutation.mutate(
+      {
+        trainerStaffUserId: trainerId,
+        amount: Number(amount),
+        title: title.trim(),
+        date: new Date(`${date}T12:00:00`).toISOString(),
+        ...(reference.trim() && { reference: reference.trim() }),
+        ...(note.trim() && { note: note.trim() }),
+      },
+      done,
+    );
+  };
+
+  return (
+    <ActionDialog
+      open={open}
+      onClose={onClose}
+      onSubmit={handleSubmit}
+      isSubmitting={mutation.isPending}
+      title={<FormattedMessage {...messages.addAmountTitle} />}
+      submitLabel={<FormattedMessage {...messages.addAmount} />}
+    >
+      <Stack spacing={2}>
+        <Typography variant="body2" color="text.secondary">
+          <FormattedMessage {...messages.addAmountExplain} />
+        </Typography>
+        <StaffUserSelect
+          role={StaffRole.TRAINER}
+          label={<FormattedMessage {...common.trainer} />}
+          value={trainerId}
+          onChange={setTrainerId}
+          error={submitted && !trainerId}
+        />
+        <TextField
+          size="small"
+          label={<FormattedMessage {...messages.title} />}
+          placeholder={intl.formatMessage(messages.titlePlaceholder)}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          error={submitted && !title.trim()}
+        />
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+          <TextField
+            size="small"
+            fullWidth
+            label={<FormattedMessage {...messages.amountRs} />}
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            error={submitted && !amountOk}
+            helperText={submitted && !amountOk ? intl.formatMessage(messages.amountPositive) : undefined}
+            slotProps={{ htmlInput: { inputMode: 'numeric', dir: 'ltr' } }}
+          />
+          <TextField
+            size="small"
+            fullWidth
+            type="date"
+            label={<FormattedMessage {...messages.date} />}
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            error={submitted && !date}
+            slotProps={{ inputLabel: { shrink: true } }}
+          />
+        </Stack>
         <TextField
           size="small"
           label={<FormattedMessage {...messages.reference} />}

@@ -1,84 +1,104 @@
 /**
- * Courses, the age matrix and testing windows (contract v2, "Admin routes").
+ * The training catalog, settings and testing windows (contract v3, "Admin routes").
  */
 import {
   CreateTestingWindowDto,
-  CreateTrainingCourseDto,
+  Gender,
   PayoutBandEntity,
-  ReplaceAgeRulesDto,
-  StudentTrainingsDto,
   TestingWindowEntity,
-  TrainingAgeRuleEntity,
-  TrainingCourseEntity,
-  TrainingEntity,
   TrainingsConfigControllerListWindowsParams,
   UpdateTestingWindowDto,
 } from '@/providers/service/app.schemas';
 import {
-  trainingsConfigControllerActivateCourse,
   trainingsConfigControllerCloseWindow,
-  trainingsConfigControllerCreateCourse,
   trainingsConfigControllerCreateWindow,
-  trainingsConfigControllerDeactivateCourse,
-  trainingsConfigControllerReplaceAgeRules,
-  trainingsConfigControllerUpdateCourse,
   trainingsConfigControllerUpdateWindow,
-  useTrainingsAdminControllerResolve,
-  useTrainingsConfigControllerGetCourse,
-  useTrainingsConfigControllerListAgeRules,
-  useTrainingsConfigControllerListCourses,
   useTrainingsConfigControllerListWindows,
 } from '@/providers/service/trainings/trainings';
 
-import { cleanParams, useQueryGate, useTrainingsMutation } from './common';
+import { cleanParams, request, useQueryGate, useTrainingsMutation, useTrainingsQuery } from './common';
 
 export type Band = PayoutBandEntity;
-export type Training = TrainingEntity;
-export type TrainingCourse = TrainingCourseEntity;
-export type CourseBody = CreateTrainingCourseDto;
-export type AgeRule = TrainingAgeRuleEntity;
 export type TestingWindow = TestingWindowEntity;
-export type ResolvedCourse = StudentTrainingsDto;
 
 // ---------------------------------------------------------------------------
-// Courses
+// The training catalog (contract v3). Typed by hand until core's v3 OpenAPI export lands.
 
-/** Every course, inactive ones included */
-export const useCourses = () =>
-  useTrainingsConfigControllerListCourses<{ count: number; data: TrainingCourse[] }>(
-    { includeInActive: true, take: 100 },
-    useQueryGate(),
+export const STEP_SKILLS = ['WAZU', 'NAMAZ'] as const;
+/** Graded step by step with the results step codes */
+export type StepSkill = (typeof STEP_SKILLS)[number];
+
+/** A standalone training, required from an age (and optionally for one gender) */
+export interface CatalogTraining {
+  id: string;
+  code: string;
+  name: string;
+  nameUr?: string | null;
+  requiredFromAge: number;
+  /** null: both genders */
+  gender?: Gender | null;
+  maxMarks: number;
+  passMarks: number;
+  payoutFloor: number;
+  /** On the training's score %, highest first */
+  bands: Band[];
+  stepSkill?: StepSkill | null;
+  sortOrder: number;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string | null;
+}
+
+export interface CatalogBody {
+  code: string;
+  name: string;
+  nameUr?: string;
+  requiredFromAge: number;
+  gender?: Gender | null;
+  maxMarks: number;
+  passMarks: number;
+  payoutFloor?: number;
+  bands?: Band[];
+  stepSkill?: StepSkill | null;
+  sortOrder?: number;
+}
+
+export const useCatalog = () =>
+  useTrainingsQuery<{ count: number; data: CatalogTraining[] }>('/trainings/catalog', {
+    includeInActive: true,
+    take: 100,
+  });
+
+export const useCatalogTraining = (id?: string) =>
+  useTrainingsQuery<{ data: CatalogTraining }>(`/trainings/catalog/${id}`, {}, !!id);
+
+export const useCreateCatalogTraining = () =>
+  useTrainingsMutation((data: CatalogBody) => request<{ data: CatalogTraining }>('POST', '/trainings/catalog', data));
+
+/** Edits only affect new enrollments */
+export const useUpdateCatalogTraining = () =>
+  useTrainingsMutation(({ id, data }: { id: string; data: CatalogBody }) =>
+    request<{ data: CatalogTraining }>('PATCH', `/trainings/catalog/${id}`, data),
   );
 
-export const useCourse = (id?: string) =>
-  useTrainingsConfigControllerGetCourse<{ data: TrainingCourse }>(id ?? '', useQueryGate(!!id));
+export const useActivateCatalogTraining = () =>
+  useTrainingsMutation(({ id }: { id: string }) => request('PATCH', `/trainings/catalog/${id}/activate`));
 
-export const useCreateCourse = () =>
-  useTrainingsMutation((data: CourseBody) => trainingsConfigControllerCreateCourse(data));
+export const useDeactivateCatalogTraining = () =>
+  useTrainingsMutation(({ id }: { id: string }) => request('DELETE', `/trainings/catalog/${id}/deactivate`));
 
-export const useUpdateCourse = () =>
-  useTrainingsMutation(({ id, data }: { id: string; data: CourseBody }) =>
-    trainingsConfigControllerUpdateCourse(id, data),
-  );
+/** One row for every training: attempts per session, auto-close and reminder days */
+export interface TrainingSettings {
+  maxAttempts: number;
+  autoCloseDays: number;
+  reminderDays: number[];
+}
 
-export const useActivateCourse = () =>
-  useTrainingsMutation(({ id }: { id: string }) => trainingsConfigControllerActivateCourse(id));
+export const useTrainingSettings = () =>
+  useTrainingsQuery<{ data?: TrainingSettings } & Partial<TrainingSettings>>('/trainings/settings');
 
-export const useDeactivateCourse = () =>
-  useTrainingsMutation(({ id }: { id: string }) => trainingsConfigControllerDeactivateCourse(id));
-
-// ---------------------------------------------------------------------------
-// The age matrix
-
-export const useAgeRules = () => useTrainingsConfigControllerListAgeRules(useQueryGate());
-
-/** PUT replaces the matrix; overlaps are refused */
-export const useReplaceAgeRules = () =>
-  useTrainingsMutation((data: ReplaceAgeRulesDto) => trainingsConfigControllerReplaceAgeRules(data));
-
-/** The course the matrix gives a student now, their completed courses and enrollments */
-export const useResolveCourse = (studentId?: string) =>
-  useTrainingsAdminControllerResolve({ studentId: studentId ?? '' }, useQueryGate(!!studentId));
+export const useSaveTrainingSettings = () =>
+  useTrainingsMutation((data: TrainingSettings) => request('PUT', '/trainings/settings', data));
 
 // ---------------------------------------------------------------------------
 // Testing windows
