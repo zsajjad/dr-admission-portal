@@ -2,12 +2,15 @@
 
 import { useMemo } from 'react';
 
+import { useIntl } from 'react-intl';
+
 import Link from 'next/link';
 
 import { Person as ProfileIcon } from '@mui/icons-material';
 import { Box, Button, Card, CardContent, Chip, Grid, Stack, Typography } from '@mui/material';
 
 import { PrintActions } from '@/domains/admission/components/PrintActions';
+import { formatDateTime } from '@/domains/students/utils';
 import { VanChip } from '@/domains/van/components/VanChip';
 
 import { DataNotFound } from '@/components/DataNotFound';
@@ -121,6 +124,8 @@ export function AdmissionDetail({ admissionId }: { admissionId: string }) {
     ];
   }, [admissionDetail]);
 
+  const intl = useIntl();
+
   const additionalFields: { value?: string | number | boolean; label: keyof typeof messages; isBoolean?: boolean }[] =
     useMemo(() => {
       return [
@@ -161,8 +166,26 @@ export function AdmissionDetail({ admissionId }: { admissionId: string }) {
           value: admissionDetail?.isFeePaid,
           isBoolean: true,
         },
+        // Marked by an admin in the portal, or by a staff user at the staff app fee desk
+        ...(admissionDetail?.isFeePaid && (admissionDetail.feePaidByStaffUser || admissionDetail.feePaidByAdmin)
+          ? [
+              {
+                label: 'feePaidByLabel' as const,
+                value: admissionDetail.feePaidByStaffUser
+                  ? intl.formatMessage(messages.feePaidByStaffApp, {
+                      name: admissionDetail.feePaidByStaffUser.name,
+                      staffId: admissionDetail.feePaidByStaffUser.staffId,
+                      date: formatDateTime(admissionDetail.feePaidAt),
+                    })
+                  : intl.formatMessage(messages.feePaidByAdmin, {
+                      name: admissionDetail.feePaidByAdmin?.name ?? '',
+                      date: formatDateTime(admissionDetail.feePaidAt),
+                    }),
+              },
+            ]
+          : []),
       ];
-    }, [admissionDetail]);
+    }, [admissionDetail, intl]);
 
   const formattedMessages = {
     failToFetch: useFormattedMessage(messages.failToFetch),

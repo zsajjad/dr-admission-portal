@@ -49,6 +49,7 @@ export function TeachersDialog({ open, section, onClose }: { open: boolean; sect
           staffId: t.staffId,
           name: `${t.name} (${inactiveLabel})`,
           roles: [],
+          branchIds: [],
           language: 'ur',
           isActive: t.isActive,
           activeDevices: 0,

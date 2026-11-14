@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+import { useIntl } from 'react-intl';
+
 import Link from 'next/link';
 
 import {
@@ -82,6 +84,7 @@ export function AdmissionPanel({ studentId, gender, admission, isLatest }: Admis
   const close = () => setDialog(null);
   const { onSuccess, onError } = useProfileActions(studentId);
   const { has } = usePermissions();
+  const intl = useIntl();
   const canChangeClass = has(Permission.sectionsmanage);
   const changeClassNotAllowed = useFormattedMessage(messages.changeClassNotAllowed);
 
@@ -134,6 +137,14 @@ export function AdmissionPanel({ studentId, gender, admission, isLatest }: Admis
         onError,
       },
     );
+
+  // The fee is marked by an admin in the portal or by a staff user at the staff app fee desk
+  const feePaidBy = a.feePaidByStaffUser
+    ? intl.formatMessage(messages.byStaffApp, {
+        name: a.feePaidByStaffUser.name,
+        staffId: a.feePaidByStaffUser.staffId,
+      })
+    : a.feePaidByAdmin?.name;
 
   const byOn = (name?: string, date?: string) =>
     name ? <FormattedMessage {...messages.byOn} values={{ name, date: formatDateTime(date) }} /> : undefined;
@@ -269,7 +280,7 @@ export function AdmissionPanel({ studentId, gender, admission, isLatest }: Admis
               <Field
                 label={<FormattedMessage {...messages.fee} />}
                 value={<FormattedMessage {...(a.isFeePaid ? messages.feePaid : messages.feeUnpaid)} />}
-                caption={a.isFeePaid ? byOn(a.feePaidByAdmin?.name, a.feePaidAt) : undefined}
+                caption={a.isFeePaid ? byOn(feePaidBy, a.feePaidAt) : undefined}
               />
             </Grid>
             <Grid size={{ xs: 6, md: 3 }}>

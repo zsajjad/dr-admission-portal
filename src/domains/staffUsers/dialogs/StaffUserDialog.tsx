@@ -6,6 +6,7 @@ import { useIntl } from 'react-intl';
 
 import {
   Alert,
+  Autocomplete,
   Checkbox,
   FormControl,
   FormControlLabel,
@@ -20,7 +21,8 @@ import {
 
 import { ProfileDialog } from '@/domains/students/dialogs/ProfileDialog';
 
-import { StaffLanguage, StaffRole, StaffUserEntity } from '@/providers/service/app.schemas';
+import { Branch, StaffLanguage, StaffRole, StaffUserEntity } from '@/providers/service/app.schemas';
+import { useBranchControllerFindAll } from '@/providers/service/branch/branch';
 import { useStaffUserControllerCreate, useStaffUserControllerUpdate } from '@/providers/service/staff-user/staff-user';
 
 import { FormattedMessage, useFormattedMessage } from '@/theme/FormattedMessage';
@@ -47,6 +49,11 @@ export function StaffUserDialog({ open, user, onClose, onSaved }: StaffUserDialo
   const [phone, setPhone] = useState('');
   const [roles, setRoles] = useState<StaffRole[]>([]);
   const [language, setLanguage] = useState<StaffLanguage>(StaffLanguage.ur);
+  // Needs core #19 (feat/staff-fee-desk): the fee desk is scoped to these branches
+  const [branchIds, setBranchIds] = useState<string[]>([]);
+  const { data: branchesData } = useBranchControllerFindAll({ take: 100 }, { query: { enabled: open } });
+  const branches = (branchesData?.data || []).filter((b) => b.isActive !== false || branchIds.includes(b.id));
+  const branchesLabel = useFormattedMessage(messages.branches);
   const [touched, setTouched] = useState(false);
 
   const nameRequired = useFormattedMessage(messages.nameRequired);
@@ -60,6 +67,7 @@ export function StaffUserDialog({ open, user, onClose, onSaved }: StaffUserDialo
     setPhone(user?.phone ?? '');
     setRoles(user?.roles ?? []);
     setLanguage(user?.language ?? StaffLanguage.ur);
+    setBranchIds(user?.branchIds ?? []);
     setTouched(false);
   }, [open, user]);
 
@@ -76,7 +84,7 @@ export function StaffUserDialog({ open, user, onClose, onSaved }: StaffUserDialo
   const handleSubmit = () => {
     setTouched(true);
     if (!valid) return;
-    const data = { name: name.trim(), roles, language, ...(phone.trim() ? { phone: phone.trim() } : {}) };
+    const data = { name: name.trim(), roles, language, branchIds, ...(phone.trim() ? { phone: phone.trim() } : {}) };
     if (user) {
       update.mutate(
         { id: user.id, data },
@@ -174,6 +182,23 @@ export function StaffUserDialog({ open, user, onClose, onSaved }: StaffUserDialo
           </FormGroup>
           {touched && errors.roles && <FormHelperText>{errors.roles}</FormHelperText>}
         </FormControl>
+        <Autocomplete<Branch, true>
+          multiple
+          size="small"
+          options={branches}
+          value={branches.filter((b) => branchIds.includes(b.id))}
+          getOptionLabel={(b) => `${b.code} · ${b.name}`}
+          isOptionEqualToValue={(a, b) => a.id === b.id}
+          onChange={(_, v) => setBranchIds(v.map((b) => b.id))}
+          renderInput={(params) => (
+            <TextField {...params} label={branchesLabel} helperText={<FormattedMessage {...messages.branchesHint} />} />
+          )}
+        />
+        {roles.includes(StaffRole.FEE_DESK) && branchIds.length === 0 && (
+          <Alert severity="warning">
+            <FormattedMessage {...messages.feeDeskNeedsBranch} />
+          </Alert>
+        )}
         <TextField
           select
           size="small"

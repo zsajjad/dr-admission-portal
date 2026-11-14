@@ -26,6 +26,16 @@ export default defineMessages({
   phone: { id: `${scope}.phone`, defaultMessage: 'Phone' },
   roles: { id: `${scope}.roles`, defaultMessage: 'Roles' },
   language: { id: `${scope}.language`, defaultMessage: 'App language' },
+  branches: { id: `${scope}.branches`, defaultMessage: 'Branches' },
+  branchesHint: {
+    id: `${scope}.branchesHint`,
+    defaultMessage: 'The branches they work for. At the fee desk they see only these branches’ admissions.',
+  },
+  feeDeskNeedsBranch: {
+    id: `${scope}.feeDeskNeedsBranch`,
+    defaultMessage: 'Pick at least one branch: without one, the fee desk shows them nothing.',
+  },
+  noBranches: { id: `${scope}.noBranches`, defaultMessage: 'None' },
   status: { id: `${scope}.status`, defaultMessage: 'Status' },
   active: { id: `${scope}.active`, defaultMessage: 'Active' },
   deactivated: { id: `${scope}.deactivated`, defaultMessage: 'Deactivated' },

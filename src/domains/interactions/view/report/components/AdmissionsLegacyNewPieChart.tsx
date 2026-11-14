@@ -107,4 +107,3 @@ export function AdmissionsLegacyNewPieChart({ legacyCount, nonLegacyCount }: Adm
     </ChartCard>
   );
 }
-

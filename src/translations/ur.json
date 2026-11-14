@@ -412,5 +412,13 @@
   "app.domains.sections.rejectedBy": "سرور نے مسترد کیا: {reason}",
   "app.domains.sections.summaryLine": "بدلیں گے: {change} · پہلے سے کلاس میں: {same} · بھیجے نہیں جا سکتے: {bad}",
   "app.domains.sections.editedSinceCheck": "جانچ کے بعد سطریں بدل گئی ہیں۔ دوبارہ تلاش اور جانچ کریں۔",
-  "app.components.Layout.sections": "سیکشن"
+  "app.components.Layout.sections": "سیکشن",
+  "app.domains.students.byStaffApp": "{name} (اسٹاف ایپ، {staffId})",
+  "app.domains.admission.view.detail.feePaidByLabel": "فیس وصول کرنے والے",
+  "app.domains.admission.view.detail.feePaidByStaffApp": "{name} (اسٹاف ایپ فیس ڈیسک، {staffId})، {date}",
+  "app.domains.admission.view.detail.feePaidByAdmin": "{name}، {date}",
+  "app.domains.staffUsers.branches": "برانچیں",
+  "app.domains.staffUsers.branchesHint": "جن برانچوں کے لیے وہ کام کرتے ہیں۔ فیس ڈیسک پر انہیں صرف ان برانچوں کے داخلے نظر آتے ہیں۔",
+  "app.domains.staffUsers.feeDeskNeedsBranch": "کم از کم ایک برانچ چنیں: اس کے بغیر فیس ڈیسک پر انہیں کچھ نظر نہیں آئے گا۔",
+  "app.domains.staffUsers.noBranches": "کوئی نہیں"
 }
