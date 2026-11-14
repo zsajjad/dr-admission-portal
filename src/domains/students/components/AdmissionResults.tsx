@@ -57,7 +57,15 @@ const fmt = (n?: number | null) => (n === null || n === undefined ? '' : String(
  * This session's result, from GET /results/admissions/:admissionId:
  * theory, Wazu and Namaz (with the steps they got wrong), attendance, and the final result with the branch rank.
  */
-export function AdmissionResults({ admission }: { admission: StudentProfileAdmission }) {
+interface AdmissionResultsProps {
+  admission: StudentProfileAdmission;
+  /** Replaces the card's title, e.g. to name the session */
+  title?: ReactNode;
+  /** Puts the four parts in one row, for a full-width card */
+  wide?: boolean;
+}
+
+export function AdmissionResults({ admission, title, wide }: AdmissionResultsProps) {
   const { has, isLoading: permissionsLoading } = usePermissions();
   const canView = has(Permission.reportsview, Permission.resultsenter);
   const { locale } = useLocale();
@@ -126,7 +134,7 @@ export function AdmissionResults({ admission }: { admission: StudentProfileAdmis
       <Stack spacing={2}>
         <Grid container spacing={2}>
           {[ResultPart.THEORY, ResultPart.WAZU, ResultPart.NAMAZ, ResultPart.ATTENDANCE].map((part) => (
-            <Grid key={part} size={{ xs: 12, sm: 6 }}>
+            <Grid key={part} size={{ xs: 12, sm: 6, lg: wide ? 3 : 6 }}>
               <PartTile part={part} row={byPart.get(part)} stepName={stepName} />
             </Grid>
           ))}
@@ -171,7 +179,7 @@ export function AdmissionResults({ admission }: { admission: StudentProfileAdmis
   };
 
   return (
-    <SectionCard title={<FormattedMessage {...messages.resultsSlotTitle} />} summary={summary}>
+    <SectionCard title={title ?? <FormattedMessage {...messages.resultsSlotTitle} />} summary={summary}>
       {body()}
     </SectionCard>
   );

@@ -11,13 +11,17 @@ import { StudentSessionTrainingsCard } from '@/domains/trainings/view/enrollment
 import { DataNotFound } from '@/components/DataNotFound';
 import { DetailSkeleton } from '@/components/Skeleton/DetailSkeleton';
 
+import { Permission } from '@/providers/service/app.schemas';
 import { useStudentsControllerGetProfile } from '@/providers/service/students/students';
 
 import { FormattedMessage, useFormattedMessage } from '@/theme/FormattedMessage';
 
+import { usePermissions } from '@/hooks/usePermissions';
+
 import { extractNetworkError } from '@/utils/extractNetworkError';
 
 import { AdmissionPanel, admissionPanelId } from '../../components/AdmissionPanel';
+import { AdmissionResults } from '../../components/AdmissionResults';
 import { AdmissionSnapshot } from '../../components/AdmissionSnapshot';
 import { IdentitySection } from '../../components/IdentitySection';
 import { ProfileHeader } from '../../components/ProfileHeader';
@@ -28,7 +32,7 @@ import messages from '../../messages';
 /**
  * Everything about one student, from GET /students/:id/profile, ordered for the days classes run:
  * who they are and where they sit this session, this session's attendance and Fiqh trainings,
- * the last two admissions side by side, every admission in full, then identity and documents.
+ * last year's result, the last two admissions side by side, every admission in full, then identity and documents.
  */
 export function StudentProfileView({ studentId }: { studentId: string }) {
   const notFound = useFormattedMessage(messages.notFound);
@@ -38,6 +42,8 @@ export function StudentProfileView({ studentId }: { studentId: string }) {
   const profile = data?.data;
   const { current: currentSession } = useSessions();
   const { canRead: canReadTrainings } = useTrainingsAccess();
+  const { has } = usePermissions();
+  const canViewResults = has(Permission.reportsview, Permission.resultsenter);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
   const current = useMemo(() => {
@@ -46,6 +52,15 @@ export function StudentProfileView({ studentId }: { studentId: string }) {
     );
     return inSession.find((a) => a.isActive) ?? inSession[0];
   }, [profile?.admissions, currentSession]);
+
+  // The latest admission before this session ("last year"), for its result
+  const previous = useMemo(
+    () =>
+      (profile?.admissions ?? []).find(
+        (a) => a.id !== current?.id && (currentSession ? a.session.id !== currentSession.id : !a.session.isActive),
+      ),
+    [profile?.admissions, current, currentSession],
+  );
 
   const setPanel = (id: string, open: boolean) =>
     setExpanded((prev) => {
@@ -100,6 +115,15 @@ export function StudentProfileView({ studentId }: { studentId: string }) {
           </Grid>
         )}
       </Grid>
+
+      {/* Last year's result, part by part */}
+      {previous && canViewResults && (
+        <AdmissionResults
+          admission={previous}
+          wide
+          title={<FormattedMessage {...messages.lastYearResult} values={{ session: previous.session.name }} />}
+        />
+      )}
 
       {/* The last two admissions, side by side */}
       {recent.length > 0 && (

@@ -942,5 +942,6 @@
   "app.domains.students.notAdmittedThisSession": "اس سیشن میں داخلہ نہیں",
   "app.domains.students.absentStreak": "مسلسل آخری {days} دن غیر حاضر",
   "app.domains.students.attendanceSoFar": "اب تک {marked} میں سے {attended} دن",
-  "app.domains.students.daysLeft": "{days} باقی"
+  "app.domains.students.daysLeft": "{days} باقی",
+  "app.domains.students.lastYearResult": "پچھلے سال کا نتیجہ، {session}"
 }
