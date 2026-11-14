@@ -29,11 +29,13 @@ import type {
   EnterFinalResultDto,
   EnterPartResultDto,
   LastSessionSummaryResponseDto,
+  ListClassResultsResponseDto,
   ListSectionResultsResponseDto,
   ListSkillStepsResponseDto,
   LockResultsDto,
   LockResultsResponseDto,
   ResultPart,
+  ResultsControllerFindForClassParams,
 } from '../app.schemas';
 
 import service from '../../../services/index';
@@ -413,6 +415,107 @@ export const useResultsControllerComputeRanks = <TError = void, TContext = unkno
 > => {
   return useMutation(getResultsControllerComputeRanksMutationOptions(options), queryClient);
 };
+export const resultsControllerFindForClass = (params: ResultsControllerFindForClassParams, signal?: AbortSignal) => {
+  return service<ListClassResultsResponseDto>({ url: `/results/class`, method: 'GET', params, signal });
+};
+
+export const getResultsControllerFindForClassQueryKey = (params?: ResultsControllerFindForClassParams) => {
+  return [`/results/class`, ...(params ? [params] : [])] as const;
+};
+
+export const getResultsControllerFindForClassQueryOptions = <
+  TData = Awaited<ReturnType<typeof resultsControllerFindForClass>>,
+  TError = void,
+>(
+  params: ResultsControllerFindForClassParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof resultsControllerFindForClass>>, TError, TData>>;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getResultsControllerFindForClassQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof resultsControllerFindForClass>>> = ({ signal }) =>
+    resultsControllerFindForClass(params, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof resultsControllerFindForClass>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type ResultsControllerFindForClassQueryResult = NonNullable<
+  Awaited<ReturnType<typeof resultsControllerFindForClass>>
+>;
+export type ResultsControllerFindForClassQueryError = void;
+
+export function useResultsControllerFindForClass<
+  TData = Awaited<ReturnType<typeof resultsControllerFindForClass>>,
+  TError = void,
+>(
+  params: ResultsControllerFindForClassParams,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof resultsControllerFindForClass>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof resultsControllerFindForClass>>,
+          TError,
+          Awaited<ReturnType<typeof resultsControllerFindForClass>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useResultsControllerFindForClass<
+  TData = Awaited<ReturnType<typeof resultsControllerFindForClass>>,
+  TError = void,
+>(
+  params: ResultsControllerFindForClassParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof resultsControllerFindForClass>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof resultsControllerFindForClass>>,
+          TError,
+          Awaited<ReturnType<typeof resultsControllerFindForClass>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useResultsControllerFindForClass<
+  TData = Awaited<ReturnType<typeof resultsControllerFindForClass>>,
+  TError = void,
+>(
+  params: ResultsControllerFindForClassParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof resultsControllerFindForClass>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useResultsControllerFindForClass<
+  TData = Awaited<ReturnType<typeof resultsControllerFindForClass>>,
+  TError = void,
+>(
+  params: ResultsControllerFindForClassParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof resultsControllerFindForClass>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getResultsControllerFindForClassQueryOptions(params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
 export const resultsControllerFindForSection = (sectionId: string, signal?: AbortSignal) => {
   return service<ListSectionResultsResponseDto>({ url: `/results/sections/${sectionId}`, method: 'GET', signal });
 };

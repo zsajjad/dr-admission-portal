@@ -1,5 +1,7 @@
 import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined';
 import AccountTreeRoundedIcon from '@mui/icons-material/AccountTreeRounded';
+import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
+import AdminPanelSettingsRoundedIcon from '@mui/icons-material/AdminPanelSettingsRounded';
 import AirportShuttleOutlinedIcon from '@mui/icons-material/AirportShuttleOutlined';
 import AirportShuttleRoundedIcon from '@mui/icons-material/AirportShuttleRounded';
 import AssignmentIndOutlinedIcon from '@mui/icons-material/AssignmentIndOutlined';
@@ -35,6 +37,10 @@ export const navIcons: Record<string, { filled: MuiIcon; outlined: MuiIcon }> = 
   adminUsers: {
     filled: SupervisedUserCircleRoundedIcon,
     outlined: SupervisedUserCircleOutlinedIcon,
+  },
+  adminPermissions: {
+    filled: AdminPanelSettingsRoundedIcon,
+    outlined: AdminPanelSettingsOutlinedIcon,
   },
   branches: {
     filled: AccountTreeRoundedIcon,

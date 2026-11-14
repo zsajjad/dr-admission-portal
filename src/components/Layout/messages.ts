@@ -40,6 +40,10 @@ export default defineMessages({
     id: `${scope}.questionSets`,
     defaultMessage: 'Question Sets',
   },
+  adminPermissions: {
+    id: `${scope}.adminPermissions`,
+    defaultMessage: 'Admin permissions',
+  },
   staffUsers: {
     id: `${scope}.staffUsers`,
     defaultMessage: 'Staff app users',

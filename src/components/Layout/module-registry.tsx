@@ -16,6 +16,8 @@ interface ModuleConfig {
   key?: string;
   /** Shown only to admins with at least one of these */
   permissions?: Permission[];
+  /** Shown only to super admins */
+  superAdminOnly?: boolean;
 }
 
 export const MODULE_REGISTRY = {
@@ -29,6 +31,12 @@ export const MODULE_REGISTRY = {
     title: <FormattedMessage {...messages.adminUsers} />,
     href: routes.adminUsers.listing,
     icon: 'adminUsers',
+  },
+  adminPermissions: {
+    title: <FormattedMessage {...messages.adminPermissions} />,
+    href: routes.adminPermissions.listing,
+    icon: 'adminPermissions',
+    superAdminOnly: true,
   },
   branches: {
     title: <FormattedMessage {...messages.branches} />,
