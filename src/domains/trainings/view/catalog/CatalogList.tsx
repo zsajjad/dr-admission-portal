@@ -26,29 +26,29 @@ import { routes } from '@/router/routes';
 
 import { extractNetworkError } from '@/utils/extractNetworkError';
 
-import { TrainingCourse, useActivateCourse, useCourses, useDeactivateCourse } from '../../api/setup';
+import { CatalogTraining, useActivateCatalogTraining, useCatalog, useDeactivateCatalogTraining } from '../../api/setup';
 import { ActionDialog } from '../../components/ActionDialog';
 import { useNotify } from '../../components/useNotify';
 import common from '../../messages';
 import { useTrainingsAccess } from '../../permissions';
 import { sortBands } from '../../rules';
-import { cardStyle, formatAmount, formatPct } from '../../utils';
+import { cardStyle, formatAmount } from '../../utils';
 
 import messages from './messages';
+import { SettingsForm } from './SettingsForm';
 
-/** Every course with its main rules; admins with trainings.configure can add, edit and (de)activate */
-export function CourseList() {
+/** The training catalog, by required age, and the settings every training shares */
+export function CatalogList() {
   const { canConfigure } = useTrainingsAccess();
-  const { data, isLoading, error } = useCourses();
-  const activate = useActivateCourse();
-  const deactivate = useDeactivateCourse();
+  const { data, isLoading, error } = useCatalog();
+  const activate = useActivateCatalogTraining();
+  const deactivate = useDeactivateCatalogTraining();
   const notify = useNotify();
-  const [confirm, setConfirm] = useState<TrainingCourse | null>(null);
+  const [confirm, setConfirm] = useState<CatalogTraining | null>(null);
 
-  const courses = data?.data ?? [];
-
-  const handleActivate = (course: TrainingCourse) =>
-    activate.mutate({ id: course.id }, { onSuccess: () => notify.success(), onError: notify.error });
+  const trainings = [...(data?.data ?? [])].sort(
+    (a, b) => a.requiredFromAge - b.requiredFromAge || a.sortOrder - b.sortOrder,
+  );
 
   const handleDeactivate = () => {
     if (!confirm) return;
@@ -66,13 +66,22 @@ export function CourseList() {
 
   return (
     <Stack spacing={2}>
-      {canConfigure && (
-        <Stack direction="row" justifyContent="flex-end">
-          <Button variant="contained" startIcon={<AddIcon />} component={Link} href={routes.trainings.courseCreate}>
-            <FormattedMessage {...messages.newCourse} />
+      <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
+        <Typography variant="body2" color="text.secondary">
+          <FormattedMessage {...messages.help} />
+        </Typography>
+        {canConfigure && (
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            component={Link}
+            href={routes.trainings.catalogCreate}
+            sx={{ flexShrink: 0 }}
+          >
+            <FormattedMessage {...messages.newTraining} />
           </Button>
-        </Stack>
-      )}
+        )}
+      </Stack>
 
       {!!error && (
         <Alert severity="error">
@@ -91,24 +100,24 @@ export function CourseList() {
                 <FormattedMessage {...messages.name} />
               </TableCell>
               <TableCell>
-                <FormattedMessage {...messages.trainings} />
+                <FormattedMessage {...messages.requiredFromAge} />
               </TableCell>
               <TableCell>
-                <FormattedMessage {...messages.retrainThresholdPct} />
+                <FormattedMessage {...messages.gender} />
               </TableCell>
               <TableCell align="right">
-                <FormattedMessage {...messages.attempts} />
-              </TableCell>
-              <TableCell align="right">
-                <FormattedMessage {...messages.autoClose} />
+                <FormattedMessage {...messages.marks} />
               </TableCell>
               <TableCell>
-                <FormattedMessage {...messages.payoutRange} />
+                <FormattedMessage {...messages.payout} />
+              </TableCell>
+              <TableCell>
+                <FormattedMessage {...messages.stepSkill} />
               </TableCell>
               <TableCell>
                 <FormattedMessage {...messages.status} />
               </TableCell>
-              <TableCell align="right" />
+              <TableCell />
             </TableRow>
           </TableHead>
           <TableBody>
@@ -120,73 +129,72 @@ export function CourseList() {
                   </TableCell>
                 </TableRow>
               ))}
-            {!isLoading && courses.length === 0 && (
+            {!isLoading && trainings.length === 0 && (
               <TableRow>
                 <TableCell colSpan={9}>
                   <Typography color="text.secondary" sx={{ py: 2, textAlign: 'center' }}>
-                    <FormattedMessage {...messages.noCourses} />
+                    <FormattedMessage {...messages.noTrainings} />
                   </Typography>
                 </TableCell>
               </TableRow>
             )}
-            {courses.map((course) => {
-              const active = course.trainings.filter((t) => t.isActive);
-              const top = sortBands(course.bands)[0];
+            {trainings.map((t) => {
               const busy =
-                (activate.isPending && activate.variables?.id === course.id) ||
-                (deactivate.isPending && deactivate.variables?.id === course.id);
+                (activate.isPending && activate.variables?.id === t.id) ||
+                (deactivate.isPending && deactivate.variables?.id === t.id);
               return (
-                <TableRow key={course.id} hover sx={{ opacity: course.isActive ? 1 : 0.6 }}>
-                  <TableCell sx={{ fontFamily: 'monospace', fontWeight: 600 }}>{course.code}</TableCell>
+                <TableRow key={t.id} hover sx={{ opacity: t.isActive ? 1 : 0.6 }}>
+                  <TableCell sx={{ fontFamily: 'monospace', fontWeight: 600 }}>{t.code}</TableCell>
                   <TableCell>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                      {course.name}
+                      {t.name}
                     </Typography>
-                    {course.nameUr && (
+                    {t.nameUr && (
                       <Typography variant="caption" color="text.secondary" className="font-urdu" dir="rtl">
-                        {course.nameUr}
+                        {t.nameUr}
                       </Typography>
                     )}
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2">
-                      <FormattedMessage {...messages.trainingsCount} values={{ count: String(active.length) }} />
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {active.map((t) => `${t.code} ${formatPct(t.weightPct)}`).join(' · ')}
-                    </Typography>
+                    <FormattedMessage {...messages.fromAge} values={{ age: String(t.requiredFromAge) }} />
                   </TableCell>
                   <TableCell>
                     <FormattedMessage
-                      {...messages.passRule}
-                      values={{ pct: String(Number(course.retrainThresholdPct)) }}
+                      {...(t.gender === 'MALE' ? common.boys : t.gender === 'FEMALE' ? common.girls : common.both)}
                     />
                   </TableCell>
-                  <TableCell align="right">{course.maxAttempts}</TableCell>
                   <TableCell align="right">
-                    <FormattedMessage {...messages.days} values={{ days: String(course.autoCloseDays) }} />
+                    {t.passMarks} / {t.maxMarks}
                   </TableCell>
                   <TableCell>
-                    {formatAmount(course.payoutFloor)} – {formatAmount(top?.amount)}
+                    {formatAmount(t.payoutFloor)} – {formatAmount(sortBands(t.bands)[0]?.amount)}
                   </TableCell>
+                  <TableCell>{t.stepSkill ? <FormattedMessage {...messages[`step_${t.stepSkill}`]} /> : ''}</TableCell>
                   <TableCell>
                     <Chip
                       size="small"
-                      color={course.isActive ? 'success' : 'default'}
-                      label={<FormattedMessage {...(course.isActive ? common.active : common.inactive)} />}
+                      color={t.isActive ? 'success' : 'default'}
+                      label={<FormattedMessage {...(t.isActive ? common.active : common.inactive)} />}
                     />
                   </TableCell>
                   <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>
-                    <Button size="small" component={Link} href={routes.trainings.course(course.id)}>
+                    <Button size="small" component={Link} href={routes.trainings.catalogTraining(t.id)}>
                       <FormattedMessage {...(canConfigure ? common.edit : messages.open)} />
                     </Button>
                     {canConfigure &&
-                      (course.isActive ? (
-                        <Button size="small" color="error" disabled={busy} onClick={() => setConfirm(course)}>
+                      (t.isActive ? (
+                        <Button size="small" color="error" disabled={busy} onClick={() => setConfirm(t)}>
                           <FormattedMessage {...common.deactivate} />
                         </Button>
                       ) : (
-                        <Button size="small" color="success" disabled={busy} onClick={() => handleActivate(course)}>
+                        <Button
+                          size="small"
+                          color="success"
+                          disabled={busy}
+                          onClick={() =>
+                            activate.mutate({ id: t.id }, { onSuccess: () => notify.success(), onError: notify.error })
+                          }
+                        >
                           <FormattedMessage {...common.activate} />
                         </Button>
                       ))}
@@ -197,6 +205,8 @@ export function CourseList() {
           </TableBody>
         </Table>
       </Card>
+
+      <SettingsForm />
 
       <ActionDialog
         open={!!confirm}

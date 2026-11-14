@@ -73,6 +73,9 @@ export default defineMessages({
     id: `${scope}.flag_SENT_AFTER_LOGOUT`,
     defaultMessage: 'Sent after the phone was logged out',
   },
+  item_PENDING: { id: `${scope}.item_PENDING`, defaultMessage: 'Pending' },
+  item_PASSED: { id: `${scope}.item_PASSED`, defaultMessage: 'Passed' },
+  item_FAILED: { id: `${scope}.item_FAILED`, defaultMessage: 'Failed' },
   lateGrade: { id: `${scope}.lateGrade`, defaultMessage: 'Late grade' },
   wrongSteps: { id: `${scope}.wrongSteps`, defaultMessage: 'Wrong steps: {steps}' },
   repeatReason: { id: `${scope}.repeatReason`, defaultMessage: 'Enrolled again: {reason}' },
@@ -163,7 +166,7 @@ export default defineMessages({
   marksInvalid: { id: `${scope}.marksInvalid`, defaultMessage: 'Between 0 and {max}, at most 2 decimals' },
   newResult: {
     id: `${scope}.newResult`,
-    defaultMessage: 'New result: {pct}, {passed} of {total} passed, band {band}, payout {payout}',
+    defaultMessage: '{training}: {pct}, {result}, pays {payout}',
   },
   noChange: { id: `${scope}.noChange`, defaultMessage: 'Change at least one mark' },
 
@@ -179,6 +182,11 @@ export default defineMessages({
   },
   courseOverride: { id: `${scope}.courseOverride`, defaultMessage: 'Course' },
   useMatrix: { id: `${scope}.useMatrix`, defaultMessage: 'The age matrix’s course' },
+  requiredNow: { id: `${scope}.requiredNow`, defaultMessage: 'Required now (age {age}), not yet passed' },
+  nothingRequired: {
+    id: `${scope}.nothingRequired`,
+    defaultMessage: 'Nothing is required: the student has passed every training for their age.',
+  },
   trainerOptional: { id: `${scope}.trainerOptional`, defaultMessage: 'Trainer (optional)' },
   completedBefore: { id: `${scope}.completedBefore`, defaultMessage: 'Courses done before' },
   completedLine: { id: `${scope}.completedLine`, defaultMessage: '{course}, {session}: {result}, best {pct}' },
@@ -196,7 +204,23 @@ export default defineMessages({
   profileCard: { id: `${scope}.profileCard`, defaultMessage: 'Fiqh trainings' },
   profileCardSummary: {
     id: `${scope}.profileCardSummary`,
-    defaultMessage: '{count} enrollments',
+    defaultMessage: '{passed} passed, {required} required now',
+  },
+  passedTitle: { id: `${scope}.passedTitle`, defaultMessage: 'Passed, in any year' },
+  noPasses: { id: `${scope}.noPasses`, defaultMessage: 'No trainings passed yet' },
+  passByTest: { id: `${scope}.passByTest`, defaultMessage: 'Passed a test' },
+  passByAdmin: { id: `${scope}.passByAdmin`, defaultMessage: 'Added by an admin' },
+  addPass: { id: `${scope}.addPass`, defaultMessage: 'Add a pass' },
+  addPassHelp: {
+    id: `${scope}.addPassHelp`,
+    defaultMessage:
+      'Record a training the student passed outside the app, e.g. from earlier records. It counts for good, pays nobody, and recomputes this session’s result.',
+  },
+  revoke: { id: `${scope}.revoke`, defaultMessage: 'Revoke' },
+  revokeTitle: { id: `${scope}.revokeTitle`, defaultMessage: 'Revoke the {training} pass?' },
+  revokeHelp: {
+    id: `${scope}.revokeHelp`,
+    defaultMessage: 'The training becomes required again, and this session’s result is recomputed.',
   },
   profileCardLink: { id: `${scope}.profileCardLink`, defaultMessage: 'See all' },
 });

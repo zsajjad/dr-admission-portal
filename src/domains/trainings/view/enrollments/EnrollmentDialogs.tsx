@@ -24,7 +24,7 @@ import { ActionDialog } from '../../components/ActionDialog';
 import { ReasonField, reasonMissing } from '../../components/ReasonField';
 import { StaffUserSelect } from '../../components/StaffUserSelect';
 import { useNotify } from '../../components/useNotify';
-import { bandFor, payoutFor, weightedPct } from '../../rules';
+import { grade } from '../../rules';
 import { formatAmount, formatPct } from '../../utils';
 
 import messages from './messages';
@@ -245,7 +245,14 @@ export function OverrideMarksDialog({ open, onClose, enrollment, attempt }: Dial
   const r = useReason(open);
   const noChange = useFormattedMessage(messages.noChange);
   const { trainings, payoutFloor, bands } = enrollment.rules;
-  const ordered = useMemo(() => [...trainings].sort((a, b) => a.sortOrder - b.sortOrder), [trainings]);
+  // v3 grades only the trainings not yet passed, so the attempt's marks say which ones it has
+  const ordered = useMemo(
+    () =>
+      [...trainings]
+        .filter((t) => !attempt || attempt.marks.some((m) => m.trainingId === t.trainingId))
+        .sort((a, b) => a.sortOrder - b.sortOrder),
+    [trainings, attempt],
+  );
   const [marks, setMarks] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -262,13 +269,21 @@ export function OverrideMarksDialog({ open, onClose, enrollment, attempt }: Dial
   const values = ordered.map((t) => Number(marks[t.trainingId]));
   const changed = attempt.marks.some((m) => Number(marks[m.trainingId]) !== m.marks);
 
-  const preview = (() => {
-    if (anyInvalid) return null;
-    const pct = weightedPct(ordered, values);
-    const passed = ordered.filter((t, i) => values[i] >= t.passMarks).length;
-    const band = bandFor(bands, pct) ?? payoutFloor;
-    return { pct, passed, band, payout: payoutFor(payoutFloor, band, passed, ordered.length) };
-  })();
+  // Each training pays on its own score (v3): the band when passed, the floor when failed
+  const preview = anyInvalid
+    ? null
+    : ordered.map((t, i) => ({
+        code: t.code,
+        ...grade(
+          {
+            maxMarks: t.maxMarks,
+            passMarks: t.passMarks,
+            payoutFloor: t.payoutFloor ?? payoutFloor,
+            bands: t.bands ?? bands,
+          },
+          values[i],
+        ),
+      }));
 
   const handleSubmit = () => {
     r.setSubmitted(true);
@@ -321,16 +336,19 @@ export function OverrideMarksDialog({ open, onClose, enrollment, attempt }: Dial
         </Box>
         {preview && (
           <Alert severity={changed ? 'info' : 'success'} icon={false}>
-            <FormattedMessage
-              {...messages.newResult}
-              values={{
-                pct: formatPct(preview.pct),
-                passed: String(preview.passed),
-                total: String(ordered.length),
-                band: formatAmount(preview.band),
-                payout: formatAmount(preview.payout),
-              }}
-            />
+            {preview.map((p) => (
+              <Box key={p.code}>
+                <FormattedMessage
+                  {...messages.newResult}
+                  values={{
+                    training: p.code,
+                    pct: formatPct(p.scorePct),
+                    result: intl.formatMessage(p.passed ? messages.passedYes : messages.passedNo),
+                    payout: formatAmount(p.pay),
+                  }}
+                />
+              </Box>
+            ))}
           </Alert>
         )}
         {r.submitted && !changed && <Alert severity="warning">{noChange}</Alert>}

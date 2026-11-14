@@ -10,8 +10,7 @@ export default defineMessages({
 
   // Tabs
   tabEnrollments: { id: `${scope}.tabEnrollments`, defaultMessage: 'Enrollments' },
-  tabCourses: { id: `${scope}.tabCourses`, defaultMessage: 'Courses' },
-  tabAgeMatrix: { id: `${scope}.tabAgeMatrix`, defaultMessage: 'Age matrix' },
+  tabCatalog: { id: `${scope}.tabCatalog`, defaultMessage: 'Training catalog' },
   tabWindows: { id: `${scope}.tabWindows`, defaultMessage: 'Testing windows' },
   tabLedger: { id: `${scope}.tabLedger`, defaultMessage: 'Trainer ledger' },
 
@@ -47,6 +46,7 @@ export default defineMessages({
   branch: { id: `${scope}.branch`, defaultMessage: 'Branch' },
   allBranches: { id: `${scope}.allBranches`, defaultMessage: 'All branches' },
   course: { id: `${scope}.course`, defaultMessage: 'Course' },
+  training: { id: `${scope}.training`, defaultMessage: 'Training' },
   trainer: { id: `${scope}.trainer`, defaultMessage: 'Trainer' },
   tester: { id: `${scope}.tester`, defaultMessage: 'Tester' },
   rupees: { id: `${scope}.rupees`, defaultMessage: 'Rs {amount}' },

@@ -45,7 +45,6 @@ import { useSessions } from '../../components/useCurrentSession';
 import common from '../../messages';
 import { useTrainingsAccess } from '../../permissions';
 import { cardStyle, formatAmount, formatDate, formatDateTime, formatPct } from '../../utils';
-import { PayoutPreview } from '../courses/PayoutPreview';
 
 import {
   AssignTesterDialog,
@@ -305,10 +304,59 @@ export function EnrollmentDetailBody({ enrollment: e }: { enrollment: Enrollment
             </Typography>
             <Typography variant="body2" sx={{ mb: 1.5 }}>
               {trainings
-                .map((t) => `${t.code} ${formatPct(t.weightPct)} (pass ${t.passMarks}/${t.maxMarks})`)
+                .map(
+                  (t) =>
+                    `${t.code} (pass ${t.passMarks}/${t.maxMarks}, ${formatAmount(t.payoutFloor ?? e.rules.payoutFloor)}–${formatAmount(
+                      Math.max(...(t.bands ?? e.rules.bands ?? []).map((b) => b.amount), 0),
+                    )})`,
+                )
                 .join(' · ')}
             </Typography>
-            <PayoutPreview floor={e.rules.payoutFloor} bands={e.rules.bands} totalTrainings={trainings.length} />
+            {e.items && (
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>
+                      <FormattedMessage {...messages.training} />
+                    </TableCell>
+                    <TableCell>
+                      <FormattedMessage {...messages.status} />
+                    </TableCell>
+                    <TableCell align="right">
+                      <FormattedMessage {...messages.attempts} />
+                    </TableCell>
+                    <TableCell align="right">
+                      <FormattedMessage {...messages.bestPct} />
+                    </TableCell>
+                    <TableCell align="right">
+                      <FormattedMessage {...messages.payout} />
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {e.items.map((item) => {
+                    const rule = trainings.find((t) => t.trainingId === item.trainingId);
+                    return (
+                      <TableRow key={item.trainingId}>
+                        <TableCell>{item.code ?? rule?.code}</TableCell>
+                        <TableCell>
+                          <Chip
+                            size="small"
+                            color={
+                              item.status === 'PASSED' ? 'success' : item.status === 'FAILED' ? 'error' : 'default'
+                            }
+                            label={<FormattedMessage {...messages[`item_${item.status}`]} />}
+                          />
+                        </TableCell>
+                        <TableCell align="right">{item.attemptsUsed}</TableCell>
+                        <TableCell align="right">{formatPct(item.scorePct)}</TableCell>
+                        <TableCell align="right">{formatAmount(item.payout)}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            )}
           </Section>
         </Grid>
 
@@ -418,6 +466,12 @@ export function EnrollmentDetailBody({ enrollment: e }: { enrollment: Enrollment
                                 sx={{ color: m && !m.passed ? 'error.main' : 'text.primary', fontWeight: 600 }}
                               >
                                 {m?.marks ?? '--'}
+                                {m?.scorePct !== undefined && (
+                                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                                    {formatPct(m.scorePct)}
+                                    {m.payout !== undefined ? ` · ${formatAmount(m.payout)}` : ''}
+                                  </Typography>
+                                )}
                               </TableCell>
                             );
                           })}
