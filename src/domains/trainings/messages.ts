@@ -9,6 +9,7 @@ export default defineMessages({
   title: { id: `${scope}.title`, defaultMessage: 'Fiqh trainings' },
 
   // Tabs
+  tabEnrollments: { id: `${scope}.tabEnrollments`, defaultMessage: 'Enrollments' },
   tabCourses: { id: `${scope}.tabCourses`, defaultMessage: 'Courses' },
   tabAgeMatrix: { id: `${scope}.tabAgeMatrix`, defaultMessage: 'Age matrix' },
   tabWindows: { id: `${scope}.tabWindows`, defaultMessage: 'Testing windows' },
@@ -46,4 +47,39 @@ export default defineMessages({
   trainer: { id: `${scope}.trainer`, defaultMessage: 'Trainer' },
   tester: { id: `${scope}.tester`, defaultMessage: 'Tester' },
   rupees: { id: `${scope}.rupees`, defaultMessage: 'Rs {amount}' },
+  unassigned: { id: `${scope}.unassigned`, defaultMessage: 'Unassigned' },
+  system: { id: `${scope}.system`, defaultMessage: 'System' },
+  admin: { id: `${scope}.admin`, defaultMessage: 'Admin' },
+
+  // Enrollment states
+  REGISTERED: { id: `${scope}.REGISTERED`, defaultMessage: 'Registered' },
+  IN_TRAINING: { id: `${scope}.IN_TRAINING`, defaultMessage: 'In training' },
+  READY_FOR_TEST: { id: `${scope}.READY_FOR_TEST`, defaultMessage: 'Ready for test' },
+  TESTED: { id: `${scope}.TESTED`, defaultMessage: 'Tested' },
+  CLOSED: { id: `${scope}.CLOSED`, defaultMessage: 'Closed' },
+
+  // Closure reasons
+  PASSED: { id: `${scope}.PASSED`, defaultMessage: 'Passed' },
+  TRAINER_CLOSED: { id: `${scope}.TRAINER_CLOSED`, defaultMessage: 'Closed by trainer' },
+  ATTEMPTS_USED: { id: `${scope}.ATTEMPTS_USED`, defaultMessage: 'Attempts used' },
+  AUTO_CLOSED: { id: `${scope}.AUTO_CLOSED`, defaultMessage: 'Auto-closed' },
+  ADMIN_CLOSED: { id: `${scope}.ADMIN_CLOSED`, defaultMessage: 'Closed by admin' },
+
+  // Decisions
+  RETRAIN: { id: `${scope}.RETRAIN`, defaultMessage: 'Retrain' },
+  CLOSE: { id: `${scope}.CLOSE`, defaultMessage: 'Close' },
+  AUTO_CLOSE: { id: `${scope}.AUTO_CLOSE`, defaultMessage: 'Auto-close' },
+  ADMIN_CLOSE: { id: `${scope}.ADMIN_CLOSE`, defaultMessage: 'Closed by admin' },
+  REOPEN: { id: `${scope}.REOPEN`, defaultMessage: 'Reopened' },
+
+  // Ledger entry kinds and statuses
+  PAYOUT: { id: `${scope}.PAYOUT`, defaultMessage: 'Payout' },
+  ADJUSTMENT: { id: `${scope}.ADJUSTMENT`, defaultMessage: 'Adjustment' },
+  PAYMENT: { id: `${scope}.PAYMENT`, defaultMessage: 'Payment' },
+  PAYABLE: { id: `${scope}.PAYABLE`, defaultMessage: 'Awaiting approval' },
+  APPROVED: { id: `${scope}.APPROVED`, defaultMessage: 'Approved' },
+  PART_PAID: { id: `${scope}.PART_PAID`, defaultMessage: 'Part paid' },
+  PAID: { id: `${scope}.PAID`, defaultMessage: 'Paid' },
+  CANCELLED: { id: `${scope}.CANCELLED`, defaultMessage: 'Cancelled' },
+  VOID: { id: `${scope}.VOID`, defaultMessage: 'Void' },
 });

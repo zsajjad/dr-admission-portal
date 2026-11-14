@@ -45,3 +45,14 @@ export const cardStyle = {
 
 /** Parses a number field; empty or invalid input becomes NaN so validation flags it */
 export const toNumber = (value: string): number => (value.trim() === '' ? Number.NaN : Number(value));
+
+/** Whole days since a time */
+export const daysSince = (iso: string): number =>
+  Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 86400000));
+
+/** Who made a change, for history tables */
+export function actorName(actor?: { type: string; name?: string } | null, labels?: { system: string; admin: string }) {
+  if (!actor) return '--';
+  if (actor.type === 'SYSTEM') return labels?.system ?? 'System';
+  return actor.name ?? (actor.type === 'ADMIN' ? (labels?.admin ?? 'Admin') : '--');
+}
