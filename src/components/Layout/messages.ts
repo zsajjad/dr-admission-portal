@@ -12,6 +12,14 @@ export default defineMessages({
     id: `${scope}.home`,
     defaultMessage: 'Home',
   },
+  dashboard: {
+    id: `${scope}.dashboard`,
+    defaultMessage: 'Dashboard',
+  },
+  programName: {
+    id: `${scope}.programName`,
+    defaultMessage: 'Danishgah-e-Ramzan',
+  },
   admin: {
     id: `${scope}.admin`,
     defaultMessage: 'Admins',

@@ -2882,3 +2882,306 @@ export type PrintingControllerCountCardPrintRequestsParams = {
   /** Status filter */
   status?: CardPrintRequestStatus;
 };
+
+export interface SessionDashboardSessionRef {
+  id: string;
+  name: string;
+  startsAt?: string;
+  endsAt?: string;
+  isActive: boolean;
+}
+
+export interface SessionDashboardAlignment {
+  /** False when either session has no start date; same-day comparisons are then left out */
+  available: boolean;
+  /** Today as days from the session start (Pakistan time): -30 is 30 days before the first class day */
+  day?: number;
+  /** Today's date in Pakistan (YYYY-MM-DD) */
+  sessionDate?: string;
+  /** The date in the comparison session that is the same number of days from its start */
+  compareDate?: string;
+}
+
+export interface SessionDashboardFunnelCounts {
+  /** Active admissions that are not rejected and not merged duplicates */
+  applied: number;
+  /** Of applied: status VERIFIED or CONFIRMED */
+  verified: number;
+  /** Of applied: fee marked paid */
+  feePaid: number;
+  /** Of applied: finalized */
+  finalized: number;
+  /** Of applied: placed in a section */
+  placed: number;
+  /** Of applied: has a teacher interview */
+  interviewed: number;
+}
+
+export interface SessionDashboardDayCounts {
+  applied: number;
+  feePaid: number;
+  finalized: number;
+}
+
+export interface SessionDashboardBranchRef {
+  id: string;
+  code: string;
+  name: string;
+}
+
+export interface SessionDashboardBreakdownRow {
+  branch: SessionDashboardBranchRef;
+  group: ClassLevelGroup;
+  /** The class's gender */
+  gender: Gender;
+  /** The session, now */
+  current: SessionDashboardFunnelCounts;
+  /** The comparison session at the same day of its cycle */
+  previousSameDay?: SessionDashboardDayCounts;
+  /** The comparison session, final */
+  previousFinal?: SessionDashboardFunnelCounts;
+}
+
+export interface SessionDashboardStudentMix {
+  /** Applicants never admitted in an earlier session and with no 2025 record */
+  newStudents: number;
+  /** Applicants admitted in any earlier session, or with a 2025 record */
+  returningStudents: number;
+}
+
+export interface SessionDashboardFeeDay {
+  /** Date in Pakistan (YYYY-MM-DD) */
+  date: string;
+  paid: number;
+  tiflan: number;
+  muhiban: number;
+  nasiran: number;
+}
+
+export interface SessionDashboardFeeProgress {
+  /** True when a fee was marked paid today or in the two days before */
+  inProgress: boolean;
+  /** Fees marked paid today (Pakistan time) */
+  paidToday: number;
+  /** Verified admissions whose fee is not paid yet */
+  awaitingFee: number;
+  /** Every day a fee was marked paid, oldest first */
+  days: SessionDashboardFeeDay[];
+}
+
+export interface SessionDashboardOverview {
+  generatedAt: string;
+  session: SessionDashboardSessionRef;
+  compareSession?: SessionDashboardSessionRef;
+  branchId?: string;
+  alignment: SessionDashboardAlignment;
+  /** The session, now */
+  current: SessionDashboardFunnelCounts;
+  /** The comparison session at the same day of its cycle */
+  previousSameDay?: SessionDashboardDayCounts;
+  /** The comparison session, final */
+  previousFinal?: SessionDashboardFunnelCounts;
+  /** Rejected applications in the session (not part of applied) */
+  rejected: number;
+  /** By branch, group and gender */
+  breakdown: SessionDashboardBreakdownRow[];
+  studentMix: SessionDashboardStudentMix;
+  feeProgress: SessionDashboardFeeProgress;
+}
+
+export interface SessionDashboardOverviewResponseDto {
+  /** Message of the action */
+  message: string;
+  data: SessionDashboardOverview;
+}
+
+export interface SessionDashboardTimelinePoint {
+  /** Days from the session start; negative is before the first class day */
+  day: number;
+  /** Cumulative; empty for days still in the future */
+  applied?: number;
+  feePaid?: number;
+  finalized?: number;
+  /** The comparison session, cumulative on the same day */
+  previousApplied?: number;
+  previousFeePaid?: number;
+  previousFinalized?: number;
+}
+
+export interface SessionDashboardTimeline {
+  session: SessionDashboardSessionRef;
+  compareSession?: SessionDashboardSessionRef;
+  alignment: SessionDashboardAlignment;
+  /** One point per day, oldest first */
+  points: SessionDashboardTimelinePoint[];
+  /** The comparison session, final totals */
+  previousFinal?: SessionDashboardDayCounts;
+}
+
+export interface SessionDashboardTimelineResponseDto {
+  /** Message of the action */
+  message: string;
+  data: SessionDashboardTimeline;
+}
+
+export interface SessionDashboardPoolTotals {
+  /** Students of the comparison session who can come back */
+  pool: number;
+  /** Of the pool: applied in this session */
+  returned: number;
+  /** Of the pool: not applied in this session yet */
+  remaining: number;
+  /** Of returned: fee paid in this session */
+  returnedFeePaid: number;
+  /** returned / pool, in percent. Empty when the pool is empty */
+  retentionRate?: number;
+  /** Left out of the pool: too old (or too young) for any class this session */
+  agedOut: number;
+  /** Left out of the pool: terminated in the comparison session */
+  terminated: number;
+}
+
+export interface SessionDashboardPoolPrevious {
+  /** The session before the comparison session */
+  fromSession: SessionDashboardSessionRef;
+  pool: number;
+  /** Returned by the same day of the cycle */
+  returnedSameDay?: number;
+  retentionRateSameDay?: number;
+  returnedFinal: number;
+  retentionRateFinal?: number;
+}
+
+export interface SessionDashboardPoolByBranch {
+  /** Students of the comparison session who can come back */
+  pool: number;
+  /** Of the pool: applied in this session */
+  returned: number;
+  /** Of the pool: not applied in this session yet */
+  remaining: number;
+  /** Branch of the comparison-session admission */
+  branch: SessionDashboardBranchRef;
+}
+
+export interface SessionDashboardPoolByGroup {
+  /** Students of the comparison session who can come back */
+  pool: number;
+  /** Of the pool: applied in this session */
+  returned: number;
+  /** Of the pool: not applied in this session yet */
+  remaining: number;
+  /** Group of the class expected now */
+  group: ClassLevelGroup;
+  gender: Gender;
+}
+
+export interface SessionDashboardPoolByClass {
+  /** Students of the comparison session who can come back */
+  pool: number;
+  /** Of the pool: applied in this session */
+  returned: number;
+  /** Of the pool: not applied in this session yet */
+  remaining: number;
+  classLevelId: string;
+  /** The class the student would be in this session, by age */
+  code: string;
+  name: string;
+  group: ClassLevelGroup;
+  gender: Gender;
+  sortOrder: number;
+}
+
+export interface SessionDashboardPoolByArea {
+  /** Students of the comparison session who can come back */
+  pool: number;
+  /** Of the pool: applied in this session */
+  returned: number;
+  /** Of the pool: not applied in this session yet */
+  remaining: number;
+  areaId: string;
+  /** Area of the comparison-session admission */
+  name: string;
+  branchCode: string;
+}
+
+export interface SessionDashboardReturningPool {
+  session: SessionDashboardSessionRef;
+  /** The session the pool comes from. Empty when there is no earlier session */
+  compareSession?: SessionDashboardSessionRef;
+  totals: SessionDashboardPoolTotals;
+  previous?: SessionDashboardPoolPrevious;
+  byBranch: SessionDashboardPoolByBranch[];
+  byGroup: SessionDashboardPoolByGroup[];
+  byClass: SessionDashboardPoolByClass[];
+  /** Most students remaining first */
+  byArea: SessionDashboardPoolByArea[];
+}
+
+export interface SessionDashboardReturningPoolResponseDto {
+  /** Message of the action */
+  message: string;
+  data: SessionDashboardReturningPool;
+}
+
+export interface SessionDashboardRecordRow {
+  session: SessionDashboardSessionRef;
+  /** Applications: active, not rejected, not merged duplicates */
+  applications: number;
+  /** Of applications: fee marked paid */
+  feePaid: number;
+  /** Of applications: admitted (fee paid, finalized, confirmed, or with a recorded result) */
+  admitted: number;
+  /** Different students among the admitted (merged records count once) */
+  uniqueStudents: number;
+  /** Of admitted: admitted in an earlier session, or with a 2025 record */
+  returningStudents: number;
+  /** Of admitted: first time */
+  newStudents: number;
+}
+
+export interface SessionDashboardRecord {
+  /** Every session with a start date or admissions, oldest first */
+  sessions: SessionDashboardRecordRow[];
+  /** 2025 records on file (imported; 2025 has no session or admissions in this system) */
+  legacyRecords2025: number;
+  /** Different students admitted in any session */
+  uniqueStudentsAdmitted: number;
+}
+
+export interface SessionDashboardRecordResponseDto {
+  /** Message of the action */
+  message: string;
+  data: SessionDashboardRecord;
+}
+
+export type SessionDashboardControllerGetOverviewParams = {
+  /** The session to monitor. Default: the active session. */
+  sessionId?: string;
+  /** The session to compare against. Default: the session that started before it. */
+  compareSessionId?: string;
+  /** Only this branch. Default: all branches. */
+  branchId?: string;
+};
+
+export type SessionDashboardControllerGetTimelineParams = {
+  /** The session to monitor. Default: the active session. */
+  sessionId?: string;
+  /** The session to compare against. Default: the session that started before it. */
+  compareSessionId?: string;
+  /** Only this branch. Default: all branches. */
+  branchId?: string;
+};
+
+export type SessionDashboardControllerGetReturningPoolParams = {
+  /** The session to monitor. Default: the active session. */
+  sessionId?: string;
+  /** The session to compare against. Default: the session that started before it. */
+  compareSessionId?: string;
+  /** Only this branch. Default: all branches. */
+  branchId?: string;
+};
+
+export type SessionDashboardControllerGetRecordParams = {
+  /** Only this branch. Default: all branches. */
+  branchId?: string;
+};
