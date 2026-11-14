@@ -144,7 +144,7 @@ export const assetsControllerDelete = (id: string, signal?: AbortSignal) => {
 
 export const getAssetsControllerDeleteMutationKey = () => ['assetsControllerDelete'] as const;
 
-export const getAssetsControllerDeleteMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAssetsControllerDeleteMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof assetsControllerDelete>>,
     TError,
@@ -178,10 +178,10 @@ export const getAssetsControllerDeleteMutationOptions = <TError = unknown, TCont
 
 export type AssetsControllerDeleteMutationResult = NonNullable<Awaited<ReturnType<typeof assetsControllerDelete>>>;
 
-export type AssetsControllerDeleteMutationError = unknown;
+export type AssetsControllerDeleteMutationError = void;
 export type AssetsControllerDeleteMutationVariables = { id: string };
 
-export const useAssetsControllerDelete = <TError = unknown, TContext = unknown>(
+export const useAssetsControllerDelete = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof assetsControllerDelete>>,

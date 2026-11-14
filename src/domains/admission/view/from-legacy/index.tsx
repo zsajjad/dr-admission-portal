@@ -37,14 +37,14 @@ import { DataTable } from '@/components/DataTable';
 
 import {
   useAdmissionsControllerCreate,
-  useAdmissionsControllerSearchLegacy,
+  useAdmissionsControllerSearchLegacyAdmin,
 } from '@/providers/service/admissions/admissions';
 import {
   Area,
   AssetsControllerUploadPublicType,
   Branch,
   Gender,
-  LegacyStudentRow,
+  LegacyStudentFullRow,
   Session,
 } from '@/providers/service/app.schemas';
 import { useAreaControllerFindAll } from '@/providers/service/area/area';
@@ -93,7 +93,7 @@ interface CreateAdmissionFormValues {
 export function FromLegacyAdmission(): React.JSX.Element {
   const [searchQuery, setSearchQuery] = useState('');
   const [submittedQuery, setSubmittedQuery] = useState('');
-  const [selectedStudent, setSelectedStudent] = useState<LegacyStudentRow | null>(null);
+  const [selectedStudent, setSelectedStudent] = useState<LegacyStudentFullRow | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   // Translated messages
@@ -156,7 +156,7 @@ export function FromLegacyAdmission(): React.JSX.Element {
     isLoading: isSearching,
     isError: searchError,
     error: searchErrorData,
-  } = useAdmissionsControllerSearchLegacy(
+  } = useAdmissionsControllerSearchLegacyAdmin(
     { query: submittedQuery, take: 50 },
     {
       query: {
@@ -183,7 +183,7 @@ export function FromLegacyAdmission(): React.JSX.Element {
     [handleSearch],
   );
 
-  const handleOpenDialog = useCallback((student: LegacyStudentRow) => {
+  const handleOpenDialog = useCallback((student: LegacyStudentFullRow) => {
     setSelectedStudent(student);
     setDialogOpen(true);
   }, []);
@@ -213,7 +213,7 @@ export function FromLegacyAdmission(): React.JSX.Element {
 
   // Get initial values from selected student's prefill data
   const getInitialValues = useCallback(
-    (student: LegacyStudentRow | null): CreateAdmissionFormValues => {
+    (student: LegacyStudentFullRow | null): CreateAdmissionFormValues => {
       const prefill = student?.prefill;
       return {
         sessionId: sessions[0]?.id || '',
@@ -325,7 +325,7 @@ export function FromLegacyAdmission(): React.JSX.Element {
     [filteredAreas, values.areaId],
   );
 
-  const columns: GridColDef<LegacyStudentRow>[] = useMemo(
+  const columns: GridColDef<LegacyStudentFullRow>[] = useMemo(
     () => [
       {
         field: 'grNumber',
@@ -477,7 +477,7 @@ export function FromLegacyAdmission(): React.JSX.Element {
       )}
 
       {submittedQuery ? (
-        <DataTable<LegacyStudentRow>
+        <DataTable<LegacyStudentFullRow>
           getRowId={(row) => row.id}
           columns={columns}
           rows={searchResults?.data || []}
