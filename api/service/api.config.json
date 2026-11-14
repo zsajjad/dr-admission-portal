@@ -12036,6 +12036,3174 @@
           "results.override"
         ]
       }
+    },
+    "/trainings/courses": {
+      "get": {
+        "operationId": "TrainingsConfigController_listCourses",
+        "parameters": [
+          {
+            "name": "skip",
+            "required": false,
+            "in": "query",
+            "description": "Number of records to skip",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "take",
+            "required": false,
+            "in": "query",
+            "description": "Number of records to take",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "required": false,
+            "in": "query",
+            "description": "Sort direction",
+            "schema": {
+              "default": "asc",
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "includeInActive",
+            "required": false,
+            "in": "query",
+            "description": "Include deactivated records",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "code",
+              "type": "string",
+              "enum": [
+                "code",
+                "name",
+                "createdAt"
+              ]
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Code or name contains this",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListTrainingCoursesResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: reports.view or trainings.configure or trainings.manage or trainings.override or trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "reports.view",
+          "trainings.configure",
+          "trainings.manage",
+          "trainings.override",
+          "trainings.payouts"
+        ]
+      },
+      "post": {
+        "operationId": "TrainingsConfigController_createCourse",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTrainingCourseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingCourseResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: trainings.configure"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "trainings.configure"
+        ]
+      }
+    },
+    "/trainings/courses/{id}": {
+      "get": {
+        "operationId": "TrainingsConfigController_getCourse",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingCourseResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: reports.view or trainings.configure or trainings.manage or trainings.override or trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "reports.view",
+          "trainings.configure",
+          "trainings.manage",
+          "trainings.override",
+          "trainings.payouts"
+        ]
+      },
+      "patch": {
+        "operationId": "TrainingsConfigController_updateCourse",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTrainingCourseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Only new enrollments use the new rules; open ones keep the rules they started with",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingCourseResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: trainings.configure"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "trainings.configure"
+        ]
+      }
+    },
+    "/trainings/courses/{id}/activate": {
+      "patch": {
+        "operationId": "TrainingsConfigController_activateCourse",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingCourseResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: trainings.configure"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "trainings.configure"
+        ]
+      }
+    },
+    "/trainings/courses/{id}/deactivate": {
+      "delete": {
+        "operationId": "TrainingsConfigController_deactivateCourse",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Refused while the age matrix uses the course",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingCourseResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: trainings.configure"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "trainings.configure"
+        ]
+      }
+    },
+    "/trainings/age-rules": {
+      "get": {
+        "operationId": "TrainingsConfigController_listAgeRules",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The training × age matrix",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgeRulesResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: reports.view or trainings.configure or trainings.manage or trainings.override or trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "reports.view",
+          "trainings.configure",
+          "trainings.manage",
+          "trainings.override",
+          "trainings.payouts"
+        ]
+      },
+      "put": {
+        "operationId": "TrainingsConfigController_replaceAgeRules",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReplaceAgeRulesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Replaces the whole matrix; overlapping ranges are refused",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgeRulesResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: trainings.configure"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "trainings.configure"
+        ]
+      }
+    },
+    "/trainings/windows": {
+      "get": {
+        "operationId": "TrainingsConfigController_listWindows",
+        "parameters": [
+          {
+            "name": "skip",
+            "required": false,
+            "in": "query",
+            "description": "Number of records to skip",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "take",
+            "required": false,
+            "in": "query",
+            "description": "Number of records to take",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "required": false,
+            "in": "query",
+            "description": "Sort direction",
+            "schema": {
+              "default": "asc",
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "includeInActive",
+            "required": false,
+            "in": "query",
+            "description": "Include deactivated records",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "branchId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "openAt",
+            "required": false,
+            "in": "query",
+            "description": "Only windows open at this time",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListTestingWindowsResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: reports.view or trainings.configure or trainings.manage or trainings.override or trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "reports.view",
+          "trainings.configure",
+          "trainings.manage",
+          "trainings.override",
+          "trainings.payouts"
+        ]
+      },
+      "post": {
+        "operationId": "TrainingsConfigController_createWindow",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTestingWindowDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestingWindowResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: trainings.manage"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "trainings.manage"
+        ]
+      }
+    },
+    "/trainings/windows/{id}": {
+      "get": {
+        "operationId": "TrainingsConfigController_getWindow",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestingWindowResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: reports.view or trainings.configure or trainings.manage or trainings.override or trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "reports.view",
+          "trainings.configure",
+          "trainings.manage",
+          "trainings.override",
+          "trainings.payouts"
+        ]
+      },
+      "patch": {
+        "operationId": "TrainingsConfigController_updateWindow",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTestingWindowDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestingWindowResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: trainings.manage"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "trainings.manage"
+        ]
+      }
+    },
+    "/trainings/windows/{id}/close": {
+      "post": {
+        "operationId": "TrainingsConfigController_closeWindow",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CloseTestingWindowDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Closes the window now",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestingWindowResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: trainings.manage"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "trainings.manage"
+        ]
+      }
+    },
+    "/trainings/enrollments": {
+      "get": {
+        "operationId": "TrainingsAdminController_list",
+        "parameters": [
+          {
+            "name": "skip",
+            "required": false,
+            "in": "query",
+            "description": "Number of records to skip",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "take",
+            "required": false,
+            "in": "query",
+            "description": "Number of records to take",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "required": false,
+            "in": "query",
+            "description": "Sort direction",
+            "schema": {
+              "default": "asc",
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "includeInActive",
+            "required": false,
+            "in": "query",
+            "description": "Include deactivated records",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "createdAt",
+              "type": "string",
+              "enum": [
+                "createdAt",
+                "updatedAt",
+                "closedAt"
+              ]
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/TrainingEnrollmentState"
+            }
+          },
+          {
+            "name": "courseId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "trainerStaffUserId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "testerStaffUserId",
+            "required": false,
+            "in": "query",
+            "description": "Pre-assigned tester",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "branchId",
+            "required": false,
+            "in": "query",
+            "description": "Branch of the admission the course was picked from",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "areaId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gender",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Gender"
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Exact GR (old GRs included) or part of the name",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "stuckDays",
+            "required": false,
+            "in": "query",
+            "description": "Open and unchanged for at least this many days",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListTrainingEnrollmentsResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: reports.view or trainings.configure or trainings.manage or trainings.override or trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "reports.view",
+          "trainings.configure",
+          "trainings.manage",
+          "trainings.override",
+          "trainings.payouts"
+        ]
+      },
+      "post": {
+        "operationId": "TrainingsAdminController_enroll",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTrainingEnrollmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "400 COURSE_COMPLETED without a reason; 409 ALREADY_ENROLLED",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingEnrollmentResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: trainings.manage"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "trainings.manage"
+        ]
+      }
+    },
+    "/trainings/enrollments/{id}": {
+      "get": {
+        "operationId": "TrainingsAdminController_detail",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingEnrollmentResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: reports.view or trainings.configure or trainings.manage or trainings.override or trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "reports.view",
+          "trainings.configure",
+          "trainings.manage",
+          "trainings.override",
+          "trainings.payouts"
+        ]
+      }
+    },
+    "/trainings/students/{studentId}": {
+      "get": {
+        "operationId": "TrainingsAdminController_student",
+        "parameters": [
+          {
+            "name": "studentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A student's enrollments in every year",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentTrainingsResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: reports.view or trainings.configure or trainings.manage or trainings.override or trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "reports.view",
+          "trainings.configure",
+          "trainings.manage",
+          "trainings.override",
+          "trainings.payouts"
+        ]
+      }
+    },
+    "/trainings/age-rules/resolve": {
+      "get": {
+        "operationId": "TrainingsAdminController_resolve",
+        "parameters": [
+          {
+            "name": "studentId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The course the matrix gives a student now",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentTrainingsResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: reports.view or trainings.configure or trainings.manage or trainings.override or trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "reports.view",
+          "trainings.configure",
+          "trainings.manage",
+          "trainings.override",
+          "trainings.payouts"
+        ]
+      }
+    },
+    "/trainings/enrollments/{id}/trainer": {
+      "put": {
+        "operationId": "TrainingsAdminController_setTrainer",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetTrainerDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Full reassignment: progress and the payout move. Refused on a closed enrollment.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingEnrollmentResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: trainings.manage"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "trainings.manage"
+        ]
+      }
+    },
+    "/trainings/enrollments/{id}/tester": {
+      "put": {
+        "operationId": "TrainingsAdminController_setTester",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetTesterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pre-assign the tester for the next attempt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingEnrollmentResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: trainings.manage"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "trainings.manage"
+        ]
+      }
+    },
+    "/trainings/enrollments/{id}/close": {
+      "post": {
+        "operationId": "TrainingsAdminController_close",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReasonDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "ADMIN_CLOSED, paid from the best attempt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingEnrollmentResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: trainings.manage"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "trainings.manage"
+        ]
+      }
+    },
+    "/trainings/enrollments/{id}/reopen": {
+      "post": {
+        "operationId": "TrainingsAdminController_reopen",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReasonDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingEnrollmentResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: trainings.manage"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "trainings.manage"
+        ]
+      }
+    },
+    "/trainings/attempts/{id}/marks": {
+      "put": {
+        "operationId": "TrainingsAdminController_override",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OverrideMarksDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Grade override, with a reason",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingEnrollmentResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: trainings.override"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "trainings.override"
+        ]
+      }
+    },
+    "/trainings/jobs/auto-close": {
+      "post": {
+        "operationId": "TrainingsAdminController_runClock",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Runs the hourly auto-close and reminders now",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunClockResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: trainings.manage"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "trainings.manage"
+        ]
+      }
+    },
+    "/trainings/reports/pipeline": {
+      "get": {
+        "operationId": "TrainingsAdminController_pipeline",
+        "parameters": [
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "description": "Enrollments created (pipeline) or attempts tested (others) from",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "courseId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "trainerStaffUserId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "testerStaffUserId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "branchId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "areaId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gender",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Gender"
+            }
+          },
+          {
+            "name": "groupBy",
+            "required": false,
+            "in": "query",
+            "description": "Split every figure by gender, area or branch",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "gender",
+                "area",
+                "branch"
+              ]
+            }
+          },
+          {
+            "name": "stuckDays",
+            "required": false,
+            "in": "query",
+            "description": "Pipeline: open and unchanged this many days",
+            "schema": {
+              "default": 7,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PipelineReportDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: reports.view or trainings.configure or trainings.manage or trainings.override or trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "reports.view",
+          "trainings.configure",
+          "trainings.manage",
+          "trainings.override",
+          "trainings.payouts"
+        ]
+      }
+    },
+    "/trainings/reports/results": {
+      "get": {
+        "operationId": "TrainingsAdminController_results",
+        "parameters": [
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "description": "Enrollments created (pipeline) or attempts tested (others) from",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "courseId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "trainerStaffUserId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "testerStaffUserId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "branchId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "areaId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gender",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Gender"
+            }
+          },
+          {
+            "name": "groupBy",
+            "required": false,
+            "in": "query",
+            "description": "Split every figure by gender, area or branch",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "gender",
+                "area",
+                "branch"
+              ]
+            }
+          },
+          {
+            "name": "stuckDays",
+            "required": false,
+            "in": "query",
+            "description": "Pipeline: open and unchanged this many days",
+            "schema": {
+              "default": 7,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultsReportDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: reports.view or trainings.configure or trainings.manage or trainings.override or trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "reports.view",
+          "trainings.configure",
+          "trainings.manage",
+          "trainings.override",
+          "trainings.payouts"
+        ]
+      }
+    },
+    "/trainings/reports/trainings": {
+      "get": {
+        "operationId": "TrainingsAdminController_trainings",
+        "parameters": [
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "description": "Enrollments created (pipeline) or attempts tested (others) from",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "courseId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "trainerStaffUserId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "testerStaffUserId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "branchId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "areaId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gender",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Gender"
+            }
+          },
+          {
+            "name": "groupBy",
+            "required": false,
+            "in": "query",
+            "description": "Split every figure by gender, area or branch",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "gender",
+                "area",
+                "branch"
+              ]
+            }
+          },
+          {
+            "name": "stuckDays",
+            "required": false,
+            "in": "query",
+            "description": "Pipeline: open and unchanged this many days",
+            "schema": {
+              "default": 7,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingLevelReportDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: reports.view or trainings.configure or trainings.manage or trainings.override or trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "reports.view",
+          "trainings.configure",
+          "trainings.manage",
+          "trainings.override",
+          "trainings.payouts"
+        ]
+      }
+    },
+    "/trainings/reports/trainers": {
+      "get": {
+        "operationId": "TrainingsAdminController_trainers",
+        "parameters": [
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "description": "Enrollments created (pipeline) or attempts tested (others) from",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "courseId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "trainerStaffUserId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "testerStaffUserId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "branchId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "areaId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gender",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Gender"
+            }
+          },
+          {
+            "name": "groupBy",
+            "required": false,
+            "in": "query",
+            "description": "Split every figure by gender, area or branch",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "gender",
+                "area",
+                "branch"
+              ]
+            }
+          },
+          {
+            "name": "stuckDays",
+            "required": false,
+            "in": "query",
+            "description": "Pipeline: open and unchanged this many days",
+            "schema": {
+              "default": 7,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainerReportDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: reports.view or trainings.configure or trainings.manage or trainings.override or trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "reports.view",
+          "trainings.configure",
+          "trainings.manage",
+          "trainings.override",
+          "trainings.payouts"
+        ]
+      }
+    },
+    "/trainings/reports/testers": {
+      "get": {
+        "operationId": "TrainingsAdminController_testers",
+        "parameters": [
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "description": "Enrollments created (pipeline) or attempts tested (others) from",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "courseId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "trainerStaffUserId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "testerStaffUserId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "branchId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "areaId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gender",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Gender"
+            }
+          },
+          {
+            "name": "groupBy",
+            "required": false,
+            "in": "query",
+            "description": "Split every figure by gender, area or branch",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "gender",
+                "area",
+                "branch"
+              ]
+            }
+          },
+          {
+            "name": "stuckDays",
+            "required": false,
+            "in": "query",
+            "description": "Pipeline: open and unchanged this many days",
+            "schema": {
+              "default": 7,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TesterReportDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: reports.view or trainings.configure or trainings.manage or trainings.override or trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "reports.view",
+          "trainings.configure",
+          "trainings.manage",
+          "trainings.override",
+          "trainings.payouts"
+        ]
+      }
+    },
+    "/trainings/ledger": {
+      "get": {
+        "operationId": "TrainingsLedgerController_list",
+        "parameters": [
+          {
+            "name": "skip",
+            "required": false,
+            "in": "query",
+            "description": "Number of records to skip",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "take",
+            "required": false,
+            "in": "query",
+            "description": "Number of records to take",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "required": false,
+            "in": "query",
+            "description": "Sort direction",
+            "schema": {
+              "default": "asc",
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "includeInActive",
+            "required": false,
+            "in": "query",
+            "description": "Include deactivated records",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "trainerStaffUserId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "kind",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/TrainerLedgerKind"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Stored status (PAYABLE, APPROVED, CANCELLED, RECORDED, VOIDED)",
+            "schema": {
+              "$ref": "#/components/schemas/TrainerLedgerStatus"
+            }
+          },
+          {
+            "name": "enrollmentId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "description": "Created from",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListLedgerResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: reports.view or trainings.configure or trainings.manage or trainings.override or trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "reports.view",
+          "trainings.configure",
+          "trainings.manage",
+          "trainings.override",
+          "trainings.payouts"
+        ]
+      }
+    },
+    "/trainings/ledger/trainers": {
+      "get": {
+        "operationId": "TrainingsLedgerController_trainers",
+        "parameters": [
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "description": "Entries created from (projected ignores dates)",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Totals per trainer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListLedgerTrainersResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: reports.view or trainings.configure or trainings.manage or trainings.override or trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "reports.view",
+          "trainings.configure",
+          "trainings.manage",
+          "trainings.override",
+          "trainings.payouts"
+        ]
+      }
+    },
+    "/trainings/ledger/export": {
+      "get": {
+        "operationId": "TrainingsLedgerController_export",
+        "parameters": [
+          {
+            "name": "skip",
+            "required": false,
+            "in": "query",
+            "description": "Number of records to skip",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "take",
+            "required": false,
+            "in": "query",
+            "description": "Number of records to take",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "required": false,
+            "in": "query",
+            "description": "Sort direction",
+            "schema": {
+              "default": "asc",
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "includeInActive",
+            "required": false,
+            "in": "query",
+            "description": "Include deactivated records",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "trainerStaffUserId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "kind",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/TrainerLedgerKind"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Stored status (PAYABLE, APPROVED, CANCELLED, RECORDED, VOIDED)",
+            "schema": {
+              "$ref": "#/components/schemas/TrainerLedgerStatus"
+            }
+          },
+          {
+            "name": "enrollmentId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "description": "Created from",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The entries matching the filters, as CSV"
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: trainings.payouts or reports.view"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "trainings.payouts",
+          "reports.view"
+        ]
+      }
+    },
+    "/trainings/ledger/approve": {
+      "post": {
+        "operationId": "TrainingsLedgerController_approve",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApproveLedgerDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "PAYABLE → APPROVED; the trainer is notified",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LedgerActionResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "trainings.payouts"
+        ]
+      }
+    },
+    "/trainings/ledger/payments": {
+      "post": {
+        "operationId": "TrainingsLedgerController_payment",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordPaymentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "400 MORE_THAN_DUE above the balance due",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LedgerActionResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "trainings.payouts"
+        ]
+      }
+    },
+    "/trainings/ledger/adjustments": {
+      "post": {
+        "operationId": "TrainingsLedgerController_adjustment",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordAdjustmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Approved when made",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LedgerActionResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "trainings.payouts"
+        ]
+      }
+    },
+    "/trainings/ledger/entries/{id}/void": {
+      "post": {
+        "operationId": "TrainingsLedgerController_void",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VoidLedgerEntryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Payments and adjustments only",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LedgerActionResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "trainings.payouts"
+        ]
+      }
+    },
+    "/trainings/reports/payouts": {
+      "get": {
+        "operationId": "TrainingsLedgerController_payouts",
+        "parameters": [
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "description": "Enrollments created (pipeline) or attempts tested (others) from",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "courseId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "trainerStaffUserId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "testerStaffUserId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "branchId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "areaId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gender",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Gender"
+            }
+          },
+          {
+            "name": "groupBy",
+            "required": false,
+            "in": "query",
+            "description": "Split every figure by gender, area or branch",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "gender",
+                "area",
+                "branch"
+              ]
+            }
+          },
+          {
+            "name": "stuckDays",
+            "required": false,
+            "in": "query",
+            "description": "Pipeline: open and unchanged this many days",
+            "schema": {
+              "default": 7,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pending / payable / approved / paid per trainer and period",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayoutReportDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: reports.view or trainings.configure or trainings.manage or trainings.override or trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "reports.view",
+          "trainings.configure",
+          "trainings.manage",
+          "trainings.override",
+          "trainings.payouts"
+        ]
+      }
+    },
+    "/staff/trainings/courses": {
+      "get": {
+        "operationId": "TrainingsStaffController_courses",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Active courses with their trainings. TRAINER or TESTER.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StaffCourseDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`code`: TOKEN_INVALID, TOKEN_EXPIRED or DEVICE_REVOKED"
+          },
+          "403": {
+            "description": "`code`: ROLE_REQUIRED (TRAINER or TESTER)"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "staff-jwt": []
+          }
+        ],
+        "tags": [
+          "Staff App"
+        ]
+      }
+    },
+    "/staff/trainings/lookup": {
+      "get": {
+        "operationId": "TrainingsStaffController_lookup",
+        "parameters": [
+          {
+            "name": "gr",
+            "required": true,
+            "in": "query",
+            "description": "An exact GR (old GRs included)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "TRAINER or TESTER",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffLookupResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`code`: TOKEN_INVALID, TOKEN_EXPIRED or DEVICE_REVOKED"
+          },
+          "403": {
+            "description": "`code`: ROLE_REQUIRED (TRAINER or TESTER)"
+          },
+          "404": {
+            "description": "`code`: STUDENT_NOT_FOUND"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "staff-jwt": []
+          }
+        ],
+        "tags": [
+          "Staff App"
+        ]
+      }
+    },
+    "/staff/trainings/students": {
+      "get": {
+        "operationId": "TrainingsStaffController_students",
+        "parameters": [
+          {
+            "name": "all",
+            "required": false,
+            "in": "query",
+            "description": "Every enrollment, not only open and this session",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "TRAINER: my open enrollments and those closed this session (all=true: every one)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TrainerStudentEntity"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`code`: TOKEN_INVALID, TOKEN_EXPIRED or DEVICE_REVOKED"
+          },
+          "403": {
+            "description": "`code`: ROLE_REQUIRED (TRAINER or TESTER)"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "staff-jwt": []
+          }
+        ],
+        "tags": [
+          "Staff App"
+        ]
+      }
+    },
+    "/staff/trainings/notifications": {
+      "get": {
+        "operationId": "TrainingsStaffController_notifications",
+        "parameters": [
+          {
+            "name": "since",
+            "required": false,
+            "in": "query",
+            "description": "Only newer than this",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "TRAINER: newest first, at most 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StaffNotificationDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`code`: TOKEN_INVALID, TOKEN_EXPIRED or DEVICE_REVOKED"
+          },
+          "403": {
+            "description": "`code`: ROLE_REQUIRED (TRAINER or TESTER)"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "staff-jwt": []
+          }
+        ],
+        "tags": [
+          "Staff App"
+        ]
+      }
+    },
+    "/staff/trainings/ledger": {
+      "get": {
+        "operationId": "TrainingsStaffController_myLedger",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "TRAINER: my entries, balance and projected payouts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffLedgerDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`code`: TOKEN_INVALID, TOKEN_EXPIRED or DEVICE_REVOKED"
+          },
+          "403": {
+            "description": "`code`: ROLE_REQUIRED (TRAINER or TESTER)"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "staff-jwt": []
+          }
+        ],
+        "tags": [
+          "Staff App"
+        ]
+      }
+    },
+    "/staff/testing/queue": {
+      "get": {
+        "operationId": "TrainingsStaffController_queue",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "TESTER: students I may grade, and my windows",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffTestingQueueDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`code`: TOKEN_INVALID, TOKEN_EXPIRED or DEVICE_REVOKED"
+          },
+          "403": {
+            "description": "`code`: ROLE_REQUIRED (TRAINER or TESTER)"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "staff-jwt": []
+          }
+        ],
+        "tags": [
+          "Staff App"
+        ]
+      }
+    },
+    "/staff/testing/graded": {
+      "get": {
+        "operationId": "TrainingsStaffController_graded",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "TESTER: attempts I submitted, newest first",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StaffGradedAttemptDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`code`: TOKEN_INVALID, TOKEN_EXPIRED or DEVICE_REVOKED"
+          },
+          "403": {
+            "description": "`code`: ROLE_REQUIRED (TRAINER or TESTER)"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "staff-jwt": []
+          }
+        ],
+        "tags": [
+          "Staff App"
+        ]
+      }
     }
   },
   "info": {
@@ -12047,7 +15215,7 @@
   "tags": [],
   "servers": [
     {
-      "url": "http://localhost:4000",
+      "url": "http://localhost:4517",
       "description": "Local"
     }
   ],
@@ -12759,7 +15927,11 @@
           "students.editIdentity",
           "students.merge",
           "reports.view",
-          "audit.view"
+          "audit.view",
+          "trainings.configure",
+          "trainings.manage",
+          "trainings.override",
+          "trainings.payouts"
         ]
       },
       "PermissionDefinition": {
@@ -23290,9 +26462,33 @@
           "INVALID_DATE",
           "FUTURE_DATE",
           "NO_CLASS_DAY",
+          "ROLE_REQUIRED",
+          "STUDENT_NOT_FOUND",
+          "NOT_ADMITTED",
+          "NO_COURSE",
+          "COURSE_COMPLETED",
+          "OTHER_TRAINER",
+          "COURSE_CHANGED",
+          "NOT_ENROLLED",
+          "NOT_YOUR_STUDENT",
+          "UNKNOWN_TRAINING",
+          "WRONG_STATE",
+          "TRAININGS_PENDING",
+          "NOT_TESTED",
+          "WRONG_ATTEMPT",
+          "NO_ATTEMPTS_LEFT",
+          "ENROLLMENT_CLOSED",
+          "NOT_READY",
+          "NO_WINDOW",
+          "ASSIGNED_TO_OTHER",
+          "OWN_TRAINEE",
+          "ALREADY_GRADED",
+          "MARKS_INVALID",
           "SENT_AFTER_LOGOUT",
           "LATE_DAY",
-          "SUPERSEDED"
+          "LATE_GRADE",
+          "SUPERSEDED",
+          "NO_CHANGE"
         ],
         "description": "Always set for rejected and flagged items; SUPERSEDED on an applied item that changed nothing"
       },
@@ -24803,6 +27999,3001 @@
         },
         "required": [
           "result"
+        ]
+      },
+      "PayoutBandEntity": {
+        "type": "object",
+        "properties": {
+          "minPct": {
+            "type": "number",
+            "example": 90,
+            "description": "Lowest weighted % that earns this band"
+          },
+          "amount": {
+            "type": "number",
+            "example": 1000,
+            "description": "PKR"
+          }
+        },
+        "required": [
+          "minPct",
+          "amount"
+        ]
+      },
+      "TrainingEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "example": "WAZU"
+          },
+          "name": {
+            "type": "string",
+            "example": "Wazu"
+          },
+          "nameUr": {
+            "type": "string"
+          },
+          "weightPct": {
+            "type": "number",
+            "example": 30,
+            "description": "Share of the weighted score; a course's trainings sum to 100"
+          },
+          "maxMarks": {
+            "type": "number",
+            "example": 100
+          },
+          "passMarks": {
+            "type": "number",
+            "example": 50
+          },
+          "sortOrder": {
+            "type": "number"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name",
+          "weightPct",
+          "maxMarks",
+          "passMarks",
+          "sortOrder",
+          "isActive"
+        ]
+      },
+      "TrainingCourseEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "example": "FIQH-B"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nameUr": {
+            "type": "string"
+          },
+          "retrainThresholdPct": {
+            "type": "number",
+            "example": 90,
+            "description": "Every training passed at this weighted % or more closes the course"
+          },
+          "maxAttempts": {
+            "type": "number",
+            "example": 2
+          },
+          "autoCloseDays": {
+            "type": "number",
+            "example": 30,
+            "description": "Days with no next step before the course closes by itself"
+          },
+          "reminderDays": {
+            "example": [
+              7,
+              25
+            ],
+            "description": "Days on which the trainer is reminded",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "payoutFloor": {
+            "type": "number",
+            "example": 350,
+            "description": "PKR"
+          },
+          "bands": {
+            "description": "Highest first",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PayoutBandEntity"
+            }
+          },
+          "trainings": {
+            "description": "Active trainings in order (all of them for admins)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrainingEntity"
+            }
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name",
+          "retrainThresholdPct",
+          "maxAttempts",
+          "autoCloseDays",
+          "reminderDays",
+          "payoutFloor",
+          "bands",
+          "trainings",
+          "isActive",
+          "createdAt"
+        ]
+      },
+      "ListTrainingCoursesResponseDto": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "description": "Total number of records"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrainingCourseEntity"
+            }
+          }
+        },
+        "required": [
+          "count",
+          "data"
+        ]
+      },
+      "TrainingCourseResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message of the action"
+          },
+          "data": {
+            "$ref": "#/components/schemas/TrainingCourseEntity"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "PayoutBandDto": {
+        "type": "object",
+        "properties": {
+          "minPct": {
+            "type": "number",
+            "example": 90
+          },
+          "amount": {
+            "type": "number",
+            "example": 1000,
+            "description": "PKR"
+          }
+        },
+        "required": [
+          "minPct",
+          "amount"
+        ]
+      },
+      "TrainingInputDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "An existing training of this course, to update it"
+          },
+          "code": {
+            "type": "string",
+            "example": "WAZU",
+            "description": "Letters, digits, - and _; unique in the course"
+          },
+          "name": {
+            "type": "string",
+            "example": "Wazu"
+          },
+          "nameUr": {
+            "type": "string"
+          },
+          "weightPct": {
+            "type": "number",
+            "example": 30
+          },
+          "maxMarks": {
+            "type": "number",
+            "example": 100
+          },
+          "passMarks": {
+            "type": "number",
+            "example": 50
+          },
+          "sortOrder": {
+            "type": "number",
+            "description": "Defaults to the position in the list"
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "weightPct",
+          "maxMarks",
+          "passMarks"
+        ]
+      },
+      "CreateTrainingCourseDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "FIQH-B"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nameUr": {
+            "type": "string"
+          },
+          "retrainThresholdPct": {
+            "type": "number",
+            "default": 90
+          },
+          "maxAttempts": {
+            "type": "number",
+            "default": 2
+          },
+          "autoCloseDays": {
+            "type": "number",
+            "default": 30
+          },
+          "reminderDays": {
+            "default": [
+              7,
+              25
+            ],
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "payoutFloor": {
+            "type": "number",
+            "default": 350
+          },
+          "bands": {
+            "description": "Defaults to 90→1000, 75→750, 50→500, 0→350",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PayoutBandDto"
+            }
+          },
+          "trainings": {
+            "description": "Weights must sum to 100. On update, a training left out of the list is deactivated.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrainingInputDto"
+            }
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "trainings"
+        ]
+      },
+      "UpdateTrainingCourseDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "FIQH-B"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nameUr": {
+            "type": "string"
+          },
+          "retrainThresholdPct": {
+            "type": "number",
+            "default": 90
+          },
+          "maxAttempts": {
+            "type": "number",
+            "default": 2
+          },
+          "autoCloseDays": {
+            "type": "number",
+            "default": 30
+          },
+          "reminderDays": {
+            "default": [
+              7,
+              25
+            ],
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "payoutFloor": {
+            "type": "number",
+            "default": 350
+          },
+          "bands": {
+            "description": "Defaults to 90→1000, 75→750, 50→500, 0→350",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PayoutBandDto"
+            }
+          },
+          "trainings": {
+            "description": "Weights must sum to 100. On update, a training left out of the list is deactivated.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrainingInputDto"
+            }
+          },
+          "reason": {
+            "type": "string",
+            "description": "Why, for the audit log"
+          }
+        }
+      },
+      "TrainingAgeRuleEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "minAge": {
+            "type": "number",
+            "example": 10
+          },
+          "maxAge": {
+            "type": "number",
+            "example": 13
+          },
+          "gender": {
+            "description": "Missing: both genders",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Gender"
+              }
+            ]
+          },
+          "courseId": {
+            "type": "string"
+          },
+          "courseCode": {
+            "type": "string"
+          },
+          "courseName": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "minAge",
+          "maxAge",
+          "courseId",
+          "courseCode",
+          "courseName"
+        ]
+      },
+      "AgeRulesResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message of the action"
+          },
+          "data": {
+            "description": "By gender (both first), then age",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrainingAgeRuleEntity"
+            }
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "AgeRuleInputDto": {
+        "type": "object",
+        "properties": {
+          "minAge": {
+            "type": "number",
+            "example": 10
+          },
+          "maxAge": {
+            "type": "number",
+            "example": 13
+          },
+          "gender": {
+            "description": "Leave out for both genders",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Gender"
+              }
+            ]
+          },
+          "courseId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "minAge",
+          "maxAge",
+          "courseId"
+        ]
+      },
+      "ReplaceAgeRulesDto": {
+        "type": "object",
+        "properties": {
+          "rules": {
+            "description": "Ranges for the same gender must not overlap",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgeRuleInputDto"
+            }
+          },
+          "reason": {
+            "type": "string",
+            "description": "Why, for the audit log"
+          }
+        },
+        "required": [
+          "rules"
+        ]
+      },
+      "TestingWindowEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "branchId": {
+            "type": "string",
+            "description": "Missing: every branch"
+          },
+          "branchCode": {
+            "type": "string",
+            "example": "NK"
+          },
+          "name": {
+            "type": "string"
+          },
+          "opensAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "closesAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "closedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Closed early by an admin"
+          },
+          "isOpen": {
+            "type": "boolean",
+            "description": "Open right now"
+          },
+          "testerStaffUserIds": {
+            "description": "Staff user IDs; empty: every tester",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "sessionId",
+          "name",
+          "opensAt",
+          "closesAt",
+          "isOpen",
+          "testerStaffUserIds",
+          "createdAt"
+        ]
+      },
+      "ListTestingWindowsResponseDto": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "description": "Total number of records"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TestingWindowEntity"
+            }
+          }
+        },
+        "required": [
+          "count",
+          "data"
+        ]
+      },
+      "TestingWindowResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message of the action"
+          },
+          "data": {
+            "$ref": "#/components/schemas/TestingWindowEntity"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "CreateTestingWindowDto": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "example": "NK test day 1"
+          },
+          "branchId": {
+            "type": "string",
+            "description": "Leave out for every branch"
+          },
+          "opensAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Defaults to now"
+          },
+          "closesAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "testerStaffUserIds": {
+            "description": "Only these testers; leave out or empty for every tester",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "sessionId",
+          "name",
+          "closesAt"
+        ]
+      },
+      "UpdateTestingWindowDto": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "example": "NK test day 1"
+          },
+          "branchId": {
+            "type": "string",
+            "description": "Leave out for every branch"
+          },
+          "opensAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Defaults to now"
+          },
+          "closesAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "testerStaffUserIds": {
+            "description": "Only these testers; leave out or empty for every tester",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CloseTestingWindowDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "Why, for the audit log"
+          }
+        }
+      },
+      "TrainingEnrollmentState": {
+        "type": "string",
+        "enum": [
+          "REGISTERED",
+          "IN_TRAINING",
+          "READY_FOR_TEST",
+          "TESTED",
+          "CLOSED"
+        ]
+      },
+      "CourseRefEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nameUr": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name",
+          "nameUr"
+        ]
+      },
+      "TrainingClosureReason": {
+        "type": "string",
+        "enum": [
+          "PASSED",
+          "TRAINER_CLOSED",
+          "ATTEMPTS_USED",
+          "AUTO_CLOSED",
+          "ADMIN_CLOSED"
+        ]
+      },
+      "TrainingPayoutStatus": {
+        "type": "string",
+        "enum": [
+          "PENDING",
+          "PAYABLE",
+          "APPROVED",
+          "PAID"
+        ]
+      },
+      "EnrollmentPayoutEntity": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "nullable": true,
+            "description": "PKR; null before the first test"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrainingPayoutStatus"
+              }
+            ]
+          }
+        },
+        "required": [
+          "amount",
+          "status"
+        ]
+      },
+      "TrainingEnrollmentEntity": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "string"
+          },
+          "grNumber": {
+            "type": "string",
+            "description": "The current GR"
+          },
+          "name": {
+            "type": "string"
+          },
+          "fatherName": {
+            "type": "string"
+          },
+          "classLevelCode": {
+            "type": "string",
+            "nullable": true,
+            "description": "This session"
+          },
+          "branchCode": {
+            "type": "string",
+            "nullable": true,
+            "description": "This session"
+          },
+          "id": {
+            "type": "string"
+          },
+          "course": {
+            "$ref": "#/components/schemas/CourseRefEntity"
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "admissionId": {
+            "type": "string"
+          },
+          "ageAtEnrollment": {
+            "type": "number"
+          },
+          "source": {
+            "type": "string",
+            "description": "TRAINER or ADMIN"
+          },
+          "repeatReason": {
+            "type": "string"
+          },
+          "trainerStaffUserId": {
+            "type": "string"
+          },
+          "trainerName": {
+            "type": "string"
+          },
+          "testerStaffUserId": {
+            "type": "string"
+          },
+          "state": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrainingEnrollmentState"
+              }
+            ]
+          },
+          "round": {
+            "type": "number"
+          },
+          "attemptsUsed": {
+            "type": "number"
+          },
+          "readyAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "autoCloseAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "closedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "closureReason": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrainingClosureReason"
+              }
+            ]
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "bestPct": {
+            "type": "number",
+            "description": "Weighted % of the best-paying attempt"
+          },
+          "payout": {
+            "$ref": "#/components/schemas/EnrollmentPayoutEntity"
+          },
+          "paidTrainerStaffUserId": {
+            "type": "string",
+            "description": "The trainer paid at closure"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "studentId",
+          "grNumber",
+          "name",
+          "fatherName",
+          "classLevelCode",
+          "branchCode",
+          "id",
+          "course",
+          "sessionId",
+          "source",
+          "state",
+          "round",
+          "attemptsUsed",
+          "payout",
+          "createdAt"
+        ]
+      },
+      "ListTrainingEnrollmentsResponseDto": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "description": "Total number of records"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrainingEnrollmentEntity"
+            }
+          }
+        },
+        "required": [
+          "count",
+          "data"
+        ]
+      },
+      "EnrollmentProgressEntity": {
+        "type": "object",
+        "properties": {
+          "trainingId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nameUr": {
+            "type": "string",
+            "nullable": true
+          },
+          "weightPct": {
+            "type": "number"
+          },
+          "maxMarks": {
+            "type": "number"
+          },
+          "passMarks": {
+            "type": "number"
+          },
+          "completed": {
+            "type": "boolean",
+            "description": "Marked complete in the current round"
+          },
+          "completedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "trainingId",
+          "code",
+          "name",
+          "nameUr",
+          "weightPct",
+          "maxMarks",
+          "passMarks",
+          "completed",
+          "completedAt"
+        ]
+      },
+      "AttemptMarkEntity": {
+        "type": "object",
+        "properties": {
+          "trainingId": {
+            "type": "string"
+          },
+          "marks": {
+            "type": "number"
+          },
+          "maxMarks": {
+            "type": "number"
+          },
+          "passed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "trainingId",
+          "marks",
+          "maxMarks",
+          "passed"
+        ]
+      },
+      "AdminAttemptEntity": {
+        "type": "object",
+        "properties": {
+          "attemptId": {
+            "type": "string"
+          },
+          "attemptNo": {
+            "type": "number"
+          },
+          "testedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "When the tester submitted it (phone's time)"
+          },
+          "weightedPct": {
+            "type": "number",
+            "description": "Weighted %, 2 decimals"
+          },
+          "passedCount": {
+            "type": "number"
+          },
+          "totalCount": {
+            "type": "number"
+          },
+          "allPassed": {
+            "type": "boolean"
+          },
+          "band": {
+            "type": "number"
+          },
+          "payout": {
+            "type": "number",
+            "description": "What this attempt pays (PKR)"
+          },
+          "overridden": {
+            "type": "boolean",
+            "description": "An admin changed the marks"
+          },
+          "marks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttemptMarkEntity"
+            }
+          },
+          "testerStaffUserId": {
+            "type": "string"
+          },
+          "windowId": {
+            "type": "string"
+          },
+          "lateGrade": {
+            "type": "boolean",
+            "description": "Arrived after the window end plus the grace period"
+          },
+          "overriddenAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "overriddenByAdminUserId": {
+            "type": "string"
+          },
+          "overrideReason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "attemptId",
+          "attemptNo",
+          "testedAt",
+          "weightedPct",
+          "passedCount",
+          "totalCount",
+          "allPassed",
+          "band",
+          "payout",
+          "overridden",
+          "marks",
+          "testerStaffUserId",
+          "lateGrade"
+        ]
+      },
+      "DecisionDueEntity": {
+        "type": "object",
+        "properties": {
+          "attemptNo": {
+            "type": "number"
+          },
+          "suggested": {
+            "type": "string",
+            "enum": [
+              "RETRAIN"
+            ],
+            "nullable": true,
+            "description": "Pre-selected when a training failed"
+          },
+          "canRetrain": {
+            "type": "boolean"
+          },
+          "payoutNow": {
+            "type": "number",
+            "description": "The best payout so far"
+          },
+          "payoutIfAllPass": {
+            "type": "number",
+            "description": "If every training passes at the latest score"
+          },
+          "payoutMax": {
+            "type": "number",
+            "description": "The top band"
+          }
+        },
+        "required": [
+          "attemptNo",
+          "suggested",
+          "canRetrain",
+          "payoutNow",
+          "payoutIfAllPass",
+          "payoutMax"
+        ]
+      },
+      "DecisionEntity": {
+        "type": "object",
+        "properties": {
+          "decision": {
+            "type": "string"
+          },
+          "attemptNo": {
+            "type": "number"
+          },
+          "closureReason": {
+            "type": "string"
+          },
+          "actorType": {
+            "type": "string",
+            "description": "STAFF, ADMIN or SYSTEM"
+          },
+          "staffUserId": {
+            "type": "string"
+          },
+          "adminUserId": {
+            "type": "string"
+          },
+          "clientTime": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "decision",
+          "actorType",
+          "createdAt"
+        ]
+      },
+      "AssignmentEntity": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "fromTrainerStaffUserId": {
+            "type": "string"
+          },
+          "toTrainerStaffUserId": {
+            "type": "string"
+          },
+          "byAdminUserId": {
+            "type": "string"
+          },
+          "byStaffUserId": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "createdAt"
+        ]
+      },
+      "TrainingEnrollmentDetailEntity": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "string"
+          },
+          "grNumber": {
+            "type": "string",
+            "description": "The current GR"
+          },
+          "name": {
+            "type": "string"
+          },
+          "fatherName": {
+            "type": "string"
+          },
+          "classLevelCode": {
+            "type": "string",
+            "nullable": true,
+            "description": "This session"
+          },
+          "branchCode": {
+            "type": "string",
+            "nullable": true,
+            "description": "This session"
+          },
+          "id": {
+            "type": "string"
+          },
+          "course": {
+            "$ref": "#/components/schemas/CourseRefEntity"
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "admissionId": {
+            "type": "string"
+          },
+          "ageAtEnrollment": {
+            "type": "number"
+          },
+          "source": {
+            "type": "string",
+            "description": "TRAINER or ADMIN"
+          },
+          "repeatReason": {
+            "type": "string"
+          },
+          "trainerStaffUserId": {
+            "type": "string"
+          },
+          "trainerName": {
+            "type": "string"
+          },
+          "testerStaffUserId": {
+            "type": "string"
+          },
+          "state": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrainingEnrollmentState"
+              }
+            ]
+          },
+          "round": {
+            "type": "number"
+          },
+          "attemptsUsed": {
+            "type": "number"
+          },
+          "readyAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "autoCloseAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "closedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "closureReason": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrainingClosureReason"
+              }
+            ]
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "bestPct": {
+            "type": "number",
+            "description": "Weighted % of the best-paying attempt"
+          },
+          "payout": {
+            "$ref": "#/components/schemas/EnrollmentPayoutEntity"
+          },
+          "paidTrainerStaffUserId": {
+            "type": "string",
+            "description": "The trainer paid at closure"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "rules": {
+            "type": "object",
+            "description": "The rules snapshot the enrollment started under"
+          },
+          "trainings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EnrollmentProgressEntity"
+            }
+          },
+          "attempts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AdminAttemptEntity"
+            }
+          },
+          "decision": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DecisionDueEntity"
+              }
+            ]
+          },
+          "decisions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DecisionEntity"
+            }
+          },
+          "assignments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AssignmentEntity"
+            }
+          }
+        },
+        "required": [
+          "studentId",
+          "grNumber",
+          "name",
+          "fatherName",
+          "classLevelCode",
+          "branchCode",
+          "id",
+          "course",
+          "sessionId",
+          "source",
+          "state",
+          "round",
+          "attemptsUsed",
+          "payout",
+          "createdAt",
+          "rules",
+          "trainings",
+          "attempts",
+          "decision",
+          "decisions",
+          "assignments"
+        ]
+      },
+      "TrainingEnrollmentResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message of the action"
+          },
+          "data": {
+            "$ref": "#/components/schemas/TrainingEnrollmentDetailEntity"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "CompletedCourseEntity": {
+        "type": "object",
+        "properties": {
+          "enrollmentId": {
+            "type": "string"
+          },
+          "courseId": {
+            "type": "string"
+          },
+          "courseName": {
+            "type": "string"
+          },
+          "courseNameUr": {
+            "type": "string",
+            "nullable": true
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "sessionName": {
+            "type": "string"
+          },
+          "closedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "closureReason": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrainingClosureReason"
+              }
+            ]
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "bestPct": {
+            "type": "number",
+            "nullable": true,
+            "description": "Weighted % of the best-paying attempt"
+          }
+        },
+        "required": [
+          "enrollmentId",
+          "courseId",
+          "courseName",
+          "courseNameUr",
+          "sessionId",
+          "sessionName",
+          "closedAt",
+          "closureReason",
+          "passed",
+          "bestPct"
+        ]
+      },
+      "StudentTrainingsDto": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "string"
+          },
+          "course": {
+            "nullable": true,
+            "description": "What the age matrix gives now",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CourseRefEntity"
+              }
+            ]
+          },
+          "age": {
+            "type": "number",
+            "description": "Age at this session’s admission"
+          },
+          "courseBlockedBy": {
+            "type": "string",
+            "description": "Why there is no course: NOT_ADMITTED or NO_COURSE"
+          },
+          "alreadyCompleted": {
+            "type": "boolean",
+            "description": "The student already closed that course"
+          },
+          "completedCourses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CompletedCourseEntity"
+            }
+          },
+          "enrollments": {
+            "description": "Every enrollment, any year, newest first",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrainingEnrollmentEntity"
+            }
+          }
+        },
+        "required": [
+          "studentId",
+          "course",
+          "alreadyCompleted",
+          "completedCourses",
+          "enrollments"
+        ]
+      },
+      "StudentTrainingsResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message of the action"
+          },
+          "data": {
+            "$ref": "#/components/schemas/StudentTrainingsDto"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "CreateTrainingEnrollmentDto": {
+        "type": "object",
+        "properties": {
+          "grNumber": {
+            "type": "string",
+            "description": "grNumber or studentId"
+          },
+          "studentId": {
+            "type": "string"
+          },
+          "courseId": {
+            "type": "string",
+            "description": "Defaults to the course the age matrix gives"
+          },
+          "trainerStaffUserId": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Required to enroll a student again in a course they closed"
+          }
+        }
+      },
+      "SetTrainerDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "Why, for the audit log"
+          },
+          "trainerStaffUserId": {
+            "type": "string",
+            "nullable": true,
+            "description": "null takes the student off their trainer"
+          }
+        },
+        "required": [
+          "reason",
+          "trainerStaffUserId"
+        ]
+      },
+      "SetTesterDto": {
+        "type": "object",
+        "properties": {
+          "testerStaffUserId": {
+            "type": "string",
+            "nullable": true,
+            "description": "null: the first eligible tester"
+          }
+        },
+        "required": [
+          "testerStaffUserId"
+        ]
+      },
+      "ReasonDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "Why, for the audit log"
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "MarkDto": {
+        "type": "object",
+        "properties": {
+          "trainingId": {
+            "type": "string"
+          },
+          "marks": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "trainingId",
+          "marks"
+        ]
+      },
+      "OverrideMarksDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "Why, for the audit log"
+          },
+          "marks": {
+            "description": "One mark for every training in the attempt",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MarkDto"
+            }
+          }
+        },
+        "required": [
+          "reason",
+          "marks"
+        ]
+      },
+      "RunClockResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message of the action"
+          },
+          "closed": {
+            "type": "number"
+          },
+          "reminded": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "message",
+          "closed",
+          "reminded"
+        ]
+      },
+      "PipelineGroupDto": {
+        "type": "object",
+        "properties": {
+          "group": {
+            "type": "string",
+            "description": "\"all\", or the gender, area ID or branch ID"
+          },
+          "label": {
+            "type": "string",
+            "description": "Area or branch name"
+          },
+          "states": {
+            "type": "object",
+            "description": "Enrollments per state: REGISTERED, IN_TRAINING, READY_FOR_TEST, TESTED, CLOSED"
+          },
+          "stuck": {
+            "type": "number",
+            "description": "Open and unchanged for stuckDays or more"
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "group",
+          "states",
+          "stuck",
+          "total"
+        ]
+      },
+      "PipelineReportDto": {
+        "type": "object",
+        "properties": {
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PipelineGroupDto"
+            }
+          }
+        },
+        "required": [
+          "groups"
+        ]
+      },
+      "ResultsGroupDto": {
+        "type": "object",
+        "properties": {
+          "group": {
+            "type": "string",
+            "description": "\"all\", or the gender, area ID or branch ID"
+          },
+          "label": {
+            "type": "string",
+            "description": "Area or branch name"
+          },
+          "tested": {
+            "type": "number",
+            "description": "Enrollments with at least one test"
+          },
+          "passed": {
+            "type": "number",
+            "description": "Of those, how many passed every training in some attempt"
+          },
+          "passRate": {
+            "type": "number",
+            "nullable": true,
+            "description": "% of tested"
+          },
+          "averageScore": {
+            "type": "number",
+            "nullable": true,
+            "description": "Average weighted % of the best attempt"
+          },
+          "distribution": {
+            "description": "Best scores in buckets 0–9, 10–19, … 90–100",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "retested": {
+            "type": "number",
+            "description": "Enrollments tested twice"
+          },
+          "firstAttemptAverage": {
+            "type": "number",
+            "nullable": true
+          },
+          "secondAttemptAverage": {
+            "type": "number",
+            "nullable": true
+          },
+          "averageImprovement": {
+            "type": "number",
+            "nullable": true,
+            "description": "Average change from attempt 1 to attempt 2"
+          }
+        },
+        "required": [
+          "group",
+          "tested",
+          "passed",
+          "passRate",
+          "averageScore",
+          "distribution",
+          "retested",
+          "firstAttemptAverage",
+          "secondAttemptAverage",
+          "averageImprovement"
+        ]
+      },
+      "ResultsReportDto": {
+        "type": "object",
+        "properties": {
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResultsGroupDto"
+            }
+          }
+        },
+        "required": [
+          "groups"
+        ]
+      },
+      "TrainingLevelRowDto": {
+        "type": "object",
+        "properties": {
+          "trainingId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "graded": {
+            "type": "number"
+          },
+          "passRate": {
+            "type": "number",
+            "nullable": true
+          },
+          "averagePct": {
+            "type": "number",
+            "nullable": true,
+            "description": "Average marks as % of max"
+          }
+        },
+        "required": [
+          "trainingId",
+          "code",
+          "name",
+          "graded",
+          "passRate",
+          "averagePct"
+        ]
+      },
+      "TrainingLevelGroupDto": {
+        "type": "object",
+        "properties": {
+          "group": {
+            "type": "string",
+            "description": "\"all\", or the gender, area ID or branch ID"
+          },
+          "label": {
+            "type": "string",
+            "description": "Area or branch name"
+          },
+          "trainings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrainingLevelRowDto"
+            }
+          }
+        },
+        "required": [
+          "group",
+          "trainings"
+        ]
+      },
+      "TrainingLevelReportDto": {
+        "type": "object",
+        "properties": {
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrainingLevelGroupDto"
+            }
+          }
+        },
+        "required": [
+          "groups"
+        ]
+      },
+      "TrainerRowDto": {
+        "type": "object",
+        "properties": {
+          "trainerStaffUserId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "students": {
+            "type": "number"
+          },
+          "tested": {
+            "type": "number"
+          },
+          "averageScore": {
+            "type": "number",
+            "nullable": true,
+            "description": "Average best weighted %"
+          },
+          "retrainRate": {
+            "type": "number",
+            "nullable": true,
+            "description": "% of tested students retrained"
+          },
+          "payoutTotal": {
+            "type": "number",
+            "description": "Fixed payouts of closed enrollments (PKR)"
+          }
+        },
+        "required": [
+          "trainerStaffUserId",
+          "name",
+          "students",
+          "tested",
+          "averageScore",
+          "retrainRate",
+          "payoutTotal"
+        ]
+      },
+      "TrainerGroupDto": {
+        "type": "object",
+        "properties": {
+          "group": {
+            "type": "string",
+            "description": "\"all\", or the gender, area ID or branch ID"
+          },
+          "label": {
+            "type": "string",
+            "description": "Area or branch name"
+          },
+          "trainers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrainerRowDto"
+            }
+          }
+        },
+        "required": [
+          "group",
+          "trainers"
+        ]
+      },
+      "TrainerReportDto": {
+        "type": "object",
+        "properties": {
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrainerGroupDto"
+            }
+          }
+        },
+        "required": [
+          "groups"
+        ]
+      },
+      "TesterRowDto": {
+        "type": "object",
+        "properties": {
+          "testerStaffUserId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "windowId": {
+            "type": "string",
+            "nullable": true
+          },
+          "graded": {
+            "type": "number"
+          },
+          "averageScore": {
+            "type": "number",
+            "nullable": true
+          },
+          "overridden": {
+            "type": "number"
+          },
+          "justAbovePass": {
+            "type": "number",
+            "description": "Marks within 5% of max above a pass mark (the requirements ask to watch for clustering)"
+          }
+        },
+        "required": [
+          "testerStaffUserId",
+          "name",
+          "windowId",
+          "graded",
+          "averageScore",
+          "overridden",
+          "justAbovePass"
+        ]
+      },
+      "TesterGroupDto": {
+        "type": "object",
+        "properties": {
+          "group": {
+            "type": "string",
+            "description": "\"all\", or the gender, area ID or branch ID"
+          },
+          "label": {
+            "type": "string",
+            "description": "Area or branch name"
+          },
+          "testers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TesterRowDto"
+            }
+          }
+        },
+        "required": [
+          "group",
+          "testers"
+        ]
+      },
+      "TesterReportDto": {
+        "type": "object",
+        "properties": {
+          "groups": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TesterGroupDto"
+            }
+          }
+        },
+        "required": [
+          "groups"
+        ]
+      },
+      "TrainerLedgerKind": {
+        "type": "string",
+        "enum": [
+          "PAYOUT",
+          "ADJUSTMENT",
+          "PAYMENT"
+        ]
+      },
+      "TrainerLedgerStatus": {
+        "type": "string",
+        "enum": [
+          "PAYABLE",
+          "APPROVED",
+          "PART_PAID",
+          "PAID",
+          "CANCELLED",
+          "RECORDED",
+          "VOIDED"
+        ]
+      },
+      "LedgerStudentEntity": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "string"
+          },
+          "grNumber": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "studentId",
+          "grNumber",
+          "name"
+        ]
+      },
+      "TrainerLedgerEntryEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "trainerStaffUserId": {
+            "type": "string"
+          },
+          "kind": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrainerLedgerKind"
+              }
+            ]
+          },
+          "amount": {
+            "type": "number",
+            "description": "PKR. Payouts and payments positive; adjustments either sign."
+          },
+          "status": {
+            "description": "Credits: PAYABLE → APPROVED → PART_PAID / PAID (from payments), or CANCELLED. Payments: RECORDED or VOIDED.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrainerLedgerStatus"
+              }
+            ]
+          },
+          "paidAmount": {
+            "type": "number",
+            "description": "For approved credits: how much payments cover"
+          },
+          "enrollmentId": {
+            "type": "string",
+            "nullable": true
+          },
+          "student": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LedgerStudentEntity"
+              }
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "reference": {
+            "type": "string",
+            "nullable": true
+          },
+          "paidAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "approvedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "approvedByAdminUserId": {
+            "type": "string"
+          },
+          "voidedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "voidReason": {
+            "type": "string"
+          },
+          "createdByAdminUserId": {
+            "type": "string",
+            "description": "Missing: made by the system at closure"
+          }
+        },
+        "required": [
+          "id",
+          "trainerStaffUserId",
+          "kind",
+          "amount",
+          "status",
+          "paidAmount",
+          "enrollmentId",
+          "student",
+          "reason",
+          "reference",
+          "paidAt",
+          "createdAt",
+          "approvedAt"
+        ]
+      },
+      "ListLedgerResponseDto": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "description": "Total number of records"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrainerLedgerEntryEntity"
+            }
+          }
+        },
+        "required": [
+          "count",
+          "data"
+        ]
+      },
+      "LedgerTotalsEntity": {
+        "type": "object",
+        "properties": {
+          "projected": {
+            "type": "number",
+            "description": "Open enrollments: best payout so far (not in the ledger yet)"
+          },
+          "awaitingApproval": {
+            "type": "number",
+            "description": "Credits waiting for an admin"
+          },
+          "approved": {
+            "type": "number",
+            "description": "Approved credits"
+          },
+          "paid": {
+            "type": "number",
+            "description": "Payments recorded"
+          },
+          "due": {
+            "type": "number",
+            "description": "approved − paid"
+          }
+        },
+        "required": [
+          "projected",
+          "awaitingApproval",
+          "approved",
+          "paid",
+          "due"
+        ]
+      },
+      "TrainerLedgerSummaryEntity": {
+        "type": "object",
+        "properties": {
+          "trainerStaffUserId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "staffId": {
+            "type": "string"
+          },
+          "totals": {
+            "$ref": "#/components/schemas/LedgerTotalsEntity"
+          }
+        },
+        "required": [
+          "trainerStaffUserId",
+          "name",
+          "staffId",
+          "totals"
+        ]
+      },
+      "ListLedgerTrainersResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message of the action"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrainerLedgerSummaryEntity"
+            }
+          },
+          "totals": {
+            "description": "Every trainer together",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LedgerTotalsEntity"
+              }
+            ]
+          }
+        },
+        "required": [
+          "message",
+          "data",
+          "totals"
+        ]
+      },
+      "ApproveLedgerDto": {
+        "type": "object",
+        "properties": {
+          "entryIds": {
+            "description": "PAYABLE credits to approve",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "entryIds"
+        ]
+      },
+      "LedgerActionResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message of the action"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrainerLedgerEntryEntity"
+            }
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "RecordPaymentDto": {
+        "type": "object",
+        "properties": {
+          "trainerStaffUserId": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number",
+            "description": "PKR, at most what is due"
+          },
+          "paidAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "When the money was sent; defaults to now"
+          },
+          "reference": {
+            "type": "string",
+            "description": "Bank or cash reference"
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "trainerStaffUserId",
+          "amount"
+        ]
+      },
+      "RecordAdjustmentDto": {
+        "type": "object",
+        "properties": {
+          "trainerStaffUserId": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number",
+            "description": "PKR, either sign, not 0"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "enrollmentId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "trainerStaffUserId",
+          "amount",
+          "reason"
+        ]
+      },
+      "VoidLedgerEntryDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "PayoutReportRowDto": {
+        "type": "object",
+        "properties": {
+          "trainerStaffUserId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "pending": {
+            "type": "number",
+            "description": "Pending: projected payouts of open enrollments"
+          },
+          "payable": {
+            "type": "number"
+          },
+          "approved": {
+            "type": "number"
+          },
+          "paid": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "trainerStaffUserId",
+          "name",
+          "pending",
+          "payable",
+          "approved",
+          "paid"
+        ]
+      },
+      "PayoutReportDto": {
+        "type": "object",
+        "properties": {
+          "trainers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PayoutReportRowDto"
+            }
+          },
+          "total": {
+            "description": "All trainers",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PayoutReportRowDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "trainers",
+          "total"
+        ]
+      },
+      "StaffCourseTrainingDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nameUr": {
+            "type": "string",
+            "nullable": true
+          },
+          "weightPct": {
+            "type": "number"
+          },
+          "maxMarks": {
+            "type": "number"
+          },
+          "passMarks": {
+            "type": "number"
+          },
+          "order": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name",
+          "nameUr",
+          "weightPct",
+          "maxMarks",
+          "passMarks",
+          "order"
+        ]
+      },
+      "StaffCourseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nameUr": {
+            "type": "string",
+            "nullable": true
+          },
+          "maxAttempts": {
+            "type": "number"
+          },
+          "retrainThresholdPct": {
+            "type": "number"
+          },
+          "trainings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StaffCourseTrainingDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name",
+          "nameUr",
+          "maxAttempts",
+          "retrainThresholdPct",
+          "trainings"
+        ]
+      },
+      "StaffLookupTrainerDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "StaffLookupEnrollmentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "state": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrainingEnrollmentState"
+              }
+            ]
+          },
+          "courseId": {
+            "type": "string"
+          },
+          "attemptsUsed": {
+            "type": "number"
+          },
+          "trainer": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StaffLookupTrainerDto"
+              }
+            ]
+          },
+          "mine": {
+            "type": "boolean",
+            "description": "The caller is the trainer"
+          }
+        },
+        "required": [
+          "id",
+          "state",
+          "courseId",
+          "attemptsUsed",
+          "trainer",
+          "mine"
+        ]
+      },
+      "StaffLookupResponseDto": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "string"
+          },
+          "grNumber": {
+            "type": "string",
+            "description": "The current GR"
+          },
+          "name": {
+            "type": "string"
+          },
+          "fatherName": {
+            "type": "string"
+          },
+          "gender": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Gender"
+              }
+            ]
+          },
+          "classLevelCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "branchCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "course": {
+            "nullable": true,
+            "description": "The course the age matrix gives now",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CourseRefEntity"
+              }
+            ]
+          },
+          "enrollment": {
+            "nullable": true,
+            "description": "The open enrollment",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StaffLookupEnrollmentDto"
+              }
+            ]
+          },
+          "completedCourses": {
+            "description": "Courses closed with at least one test, any year",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CompletedCourseEntity"
+            }
+          },
+          "canRegister": {
+            "type": "boolean"
+          },
+          "registerBlockedBy": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StaffSyncReasonCode"
+              }
+            ]
+          },
+          "canTest": {
+            "type": "boolean",
+            "description": "Gradable by the caller right now"
+          },
+          "testBlockedBy": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StaffSyncReasonCode"
+              }
+            ]
+          }
+        },
+        "required": [
+          "studentId",
+          "grNumber",
+          "name",
+          "fatherName",
+          "gender",
+          "classLevelCode",
+          "branchCode",
+          "course",
+          "enrollment",
+          "completedCourses",
+          "canRegister",
+          "canTest"
+        ]
+      },
+      "AttemptEntity": {
+        "type": "object",
+        "properties": {
+          "attemptId": {
+            "type": "string"
+          },
+          "attemptNo": {
+            "type": "number"
+          },
+          "testedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "When the tester submitted it (phone's time)"
+          },
+          "weightedPct": {
+            "type": "number",
+            "description": "Weighted %, 2 decimals"
+          },
+          "passedCount": {
+            "type": "number"
+          },
+          "totalCount": {
+            "type": "number"
+          },
+          "allPassed": {
+            "type": "boolean"
+          },
+          "band": {
+            "type": "number"
+          },
+          "payout": {
+            "type": "number",
+            "description": "What this attempt pays (PKR)"
+          },
+          "overridden": {
+            "type": "boolean",
+            "description": "An admin changed the marks"
+          },
+          "marks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttemptMarkEntity"
+            }
+          }
+        },
+        "required": [
+          "attemptId",
+          "attemptNo",
+          "testedAt",
+          "weightedPct",
+          "passedCount",
+          "totalCount",
+          "allPassed",
+          "band",
+          "payout",
+          "overridden",
+          "marks"
+        ]
+      },
+      "TrainerStudentEntity": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "string"
+          },
+          "grNumber": {
+            "type": "string",
+            "description": "The current GR"
+          },
+          "name": {
+            "type": "string"
+          },
+          "fatherName": {
+            "type": "string"
+          },
+          "classLevelCode": {
+            "type": "string",
+            "nullable": true,
+            "description": "This session"
+          },
+          "branchCode": {
+            "type": "string",
+            "nullable": true,
+            "description": "This session"
+          },
+          "enrollmentId": {
+            "type": "string"
+          },
+          "lastYear": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LastYearSummaryDto"
+              }
+            ]
+          },
+          "course": {
+            "$ref": "#/components/schemas/CourseRefEntity"
+          },
+          "sessionId": {
+            "type": "string",
+            "description": "The session the student enrolled in"
+          },
+          "state": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrainingEnrollmentState"
+              }
+            ]
+          },
+          "round": {
+            "type": "number"
+          },
+          "attemptsUsed": {
+            "type": "number"
+          },
+          "maxAttempts": {
+            "type": "number"
+          },
+          "trainings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EnrollmentProgressEntity"
+            }
+          },
+          "attempts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttemptEntity"
+            }
+          },
+          "decision": {
+            "nullable": true,
+            "description": "Set while a retrain/close decision is due",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DecisionDueEntity"
+              }
+            ]
+          },
+          "autoCloseAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true,
+            "description": "Closes by itself at this time unless the next step happens"
+          },
+          "payout": {
+            "$ref": "#/components/schemas/EnrollmentPayoutEntity"
+          },
+          "closedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "closureReason": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrainingClosureReason"
+              }
+            ]
+          },
+          "passed": {
+            "type": "boolean",
+            "nullable": true,
+            "description": "Some attempt passed every training"
+          }
+        },
+        "required": [
+          "studentId",
+          "grNumber",
+          "name",
+          "fatherName",
+          "classLevelCode",
+          "branchCode",
+          "enrollmentId",
+          "lastYear",
+          "course",
+          "sessionId",
+          "state",
+          "round",
+          "attemptsUsed",
+          "maxAttempts",
+          "trainings",
+          "attempts",
+          "decision",
+          "autoCloseAt",
+          "payout",
+          "closedAt",
+          "closureReason",
+          "passed"
+        ]
+      },
+      "StaffNotificationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "example": "RESULT_SUBMITTED"
+          },
+          "enrollmentId": {
+            "type": "string",
+            "nullable": true
+          },
+          "data": {
+            "type": "object",
+            "description": "grNumber, name, courseName, courseNameUr, and per kind: attemptNo, weightedPct, marks, nextStep, payout, dueAt…"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "readAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "enrollmentId",
+          "data",
+          "createdAt",
+          "readAt"
+        ]
+      },
+      "LedgerPendingEntity": {
+        "type": "object",
+        "properties": {
+          "enrollmentId": {
+            "type": "string"
+          },
+          "grNumber": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "projected": {
+            "type": "number",
+            "nullable": true,
+            "description": "null before the first test"
+          }
+        },
+        "required": [
+          "enrollmentId",
+          "grNumber",
+          "name",
+          "projected"
+        ]
+      },
+      "StaffLedgerDto": {
+        "type": "object",
+        "properties": {
+          "totals": {
+            "$ref": "#/components/schemas/LedgerTotalsEntity"
+          },
+          "pending": {
+            "description": "Open enrollments and their projected payout",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LedgerPendingEntity"
+            }
+          },
+          "entries": {
+            "description": "Newest first, cancelled entries left out",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrainerLedgerEntryEntity"
+            }
+          }
+        },
+        "required": [
+          "totals",
+          "pending",
+          "entries"
+        ]
+      },
+      "EnrollmentTrainingEntity": {
+        "type": "object",
+        "properties": {
+          "trainingId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nameUr": {
+            "type": "string",
+            "nullable": true
+          },
+          "weightPct": {
+            "type": "number"
+          },
+          "maxMarks": {
+            "type": "number"
+          },
+          "passMarks": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "trainingId",
+          "code",
+          "name",
+          "nameUr",
+          "weightPct",
+          "maxMarks",
+          "passMarks"
+        ]
+      },
+      "StaffQueueStudentDto": {
+        "type": "object",
+        "properties": {
+          "enrollmentId": {
+            "type": "string"
+          },
+          "studentId": {
+            "type": "string"
+          },
+          "grNumber": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "fatherName": {
+            "type": "string"
+          },
+          "classLevelCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "branchCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastYear": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LastYearSummaryDto"
+              }
+            ]
+          },
+          "course": {
+            "$ref": "#/components/schemas/CourseRefEntity"
+          },
+          "attemptNo": {
+            "type": "number",
+            "description": "The attempt to grade"
+          },
+          "trainings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EnrollmentTrainingEntity"
+            }
+          },
+          "assignedToMe": {
+            "type": "boolean",
+            "description": "An admin assigned this test to the caller"
+          },
+          "readyAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "enrollmentId",
+          "studentId",
+          "grNumber",
+          "name",
+          "fatherName",
+          "classLevelCode",
+          "branchCode",
+          "lastYear",
+          "course",
+          "attemptNo",
+          "trainings",
+          "assignedToMe",
+          "readyAt"
+        ]
+      },
+      "StaffTestingQueueDto": {
+        "type": "object",
+        "properties": {
+          "windows": {
+            "description": "Open now or opening in the next 7 days, for the caller",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TestingWindowEntity"
+            }
+          },
+          "students": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StaffQueueStudentDto"
+            }
+          }
+        },
+        "required": [
+          "windows",
+          "students"
+        ]
+      },
+      "StaffGradedAttemptDto": {
+        "type": "object",
+        "properties": {
+          "attemptId": {
+            "type": "string"
+          },
+          "enrollmentId": {
+            "type": "string"
+          },
+          "grNumber": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "course": {
+            "$ref": "#/components/schemas/CourseRefEntity"
+          },
+          "attemptNo": {
+            "type": "number"
+          },
+          "testedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "weightedPct": {
+            "type": "number"
+          },
+          "allPassed": {
+            "type": "boolean"
+          },
+          "marks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttemptMarkEntity"
+            }
+          }
+        },
+        "required": [
+          "attemptId",
+          "enrollmentId",
+          "grNumber",
+          "name",
+          "course",
+          "attemptNo",
+          "testedAt",
+          "weightedPct",
+          "allPassed",
+          "marks"
         ]
       }
     }
