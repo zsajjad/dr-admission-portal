@@ -32,7 +32,10 @@ import type {
   LinkLegacyDto,
   LinkLegacyPreview,
   LinkLegacyResponseDto,
+  ListLikelyDuplicatesResponseDto,
   ListStudentMergesResponseDto,
+  LookupGrsDto,
+  LookupGrsResponseDto,
   MaterializeLegacyDto,
   MaterializeLegacyResponseDto,
   PreviewStudentMergeDto,
@@ -173,6 +176,83 @@ export function useStudentMergeControllerResolve<
   return withQueryKey(query, queryOptions.queryKey);
 }
 
+/**
+ * For bulk screens (class changes, result imports). One row per distinct GR, in the order sent.
+ * @summary Look up to 2,000 GRs at once (old GRs resolved), with each student’s active admissions
+ */
+export const studentMergeControllerLookupGrs = (lookupGrsDto: LookupGrsDto, signal?: AbortSignal) => {
+  return service<LookupGrsResponseDto>({
+    url: `/admin/students/lookup-grs`,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    data: lookupGrsDto,
+    signal,
+  });
+};
+
+export const getStudentMergeControllerLookupGrsMutationKey = () => ['studentMergeControllerLookupGrs'] as const;
+
+export const getStudentMergeControllerLookupGrsMutationOptions = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof studentMergeControllerLookupGrs>>,
+    TError,
+    StudentMergeControllerLookupGrsMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof studentMergeControllerLookupGrs>>,
+  TError,
+  StudentMergeControllerLookupGrsMutationVariables,
+  TContext
+> => {
+  const mutationKey = getStudentMergeControllerLookupGrsMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof studentMergeControllerLookupGrs>>,
+    StudentMergeControllerLookupGrsMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return studentMergeControllerLookupGrs(data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type StudentMergeControllerLookupGrsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof studentMergeControllerLookupGrs>>
+>;
+export type StudentMergeControllerLookupGrsMutationBody = LookupGrsDto;
+export type StudentMergeControllerLookupGrsMutationError = void;
+export type StudentMergeControllerLookupGrsMutationVariables = { data: LookupGrsDto };
+
+/**
+ * For bulk screens (class changes, result imports). One row per distinct GR, in the order sent.
+ * @summary Look up to 2,000 GRs at once (old GRs resolved), with each student’s active admissions
+ */
+export const useStudentMergeControllerLookupGrs = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof studentMergeControllerLookupGrs>>,
+      TError,
+      StudentMergeControllerLookupGrsMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof studentMergeControllerLookupGrs>>,
+  TError,
+  StudentMergeControllerLookupGrsMutationVariables,
+  TContext
+> => {
+  return useMutation(getStudentMergeControllerLookupGrsMutationOptions(options), queryClient);
+};
 /**
  * @summary What a merge would do. Writes nothing
  */
@@ -1129,3 +1209,129 @@ export const useStudentMergeControllerLinkLegacy = <TError = void, TContext = un
 > => {
   return useMutation(getStudentMergeControllerLinkLegacyMutationOptions(options), queryClient);
 };
+/**
+ * For the merge screen. Returns no phone, address or B-form; a person still has to judge.
+ * @summary Active records that may be the same person (shared phone or B-form, same name and father or birth)
+ */
+export const studentMergeControllerLikelyDuplicates = (id: string, signal?: AbortSignal) => {
+  return service<ListLikelyDuplicatesResponseDto>({
+    url: `/admin/students/${id}/likely-duplicates`,
+    method: 'GET',
+    signal,
+  });
+};
+
+export const getStudentMergeControllerLikelyDuplicatesQueryKey = (id: string) => {
+  return [`/admin/students/${id}/likely-duplicates`] as const;
+};
+
+export const getStudentMergeControllerLikelyDuplicatesQueryOptions = <
+  TData = Awaited<ReturnType<typeof studentMergeControllerLikelyDuplicates>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof studentMergeControllerLikelyDuplicates>>, TError, TData>>;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getStudentMergeControllerLikelyDuplicatesQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof studentMergeControllerLikelyDuplicates>>> = ({ signal }) =>
+    studentMergeControllerLikelyDuplicates(id, signal);
+
+  return { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof studentMergeControllerLikelyDuplicates>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type StudentMergeControllerLikelyDuplicatesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof studentMergeControllerLikelyDuplicates>>
+>;
+export type StudentMergeControllerLikelyDuplicatesQueryError = void;
+
+/**
+ * For the merge screen. Returns no phone, address or B-form; a person still has to judge.
+ * @summary Active records that may be the same person (shared phone or B-form, same name and father or birth)
+ */
+export function useStudentMergeControllerLikelyDuplicates<
+  TData = Awaited<ReturnType<typeof studentMergeControllerLikelyDuplicates>>,
+  TError = void,
+>(
+  id: string,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof studentMergeControllerLikelyDuplicates>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof studentMergeControllerLikelyDuplicates>>,
+          TError,
+          Awaited<ReturnType<typeof studentMergeControllerLikelyDuplicates>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * For the merge screen. Returns no phone, address or B-form; a person still has to judge.
+ * @summary Active records that may be the same person (shared phone or B-form, same name and father or birth)
+ */
+export function useStudentMergeControllerLikelyDuplicates<
+  TData = Awaited<ReturnType<typeof studentMergeControllerLikelyDuplicates>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof studentMergeControllerLikelyDuplicates>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof studentMergeControllerLikelyDuplicates>>,
+          TError,
+          Awaited<ReturnType<typeof studentMergeControllerLikelyDuplicates>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * For the merge screen. Returns no phone, address or B-form; a person still has to judge.
+ * @summary Active records that may be the same person (shared phone or B-form, same name and father or birth)
+ */
+export function useStudentMergeControllerLikelyDuplicates<
+  TData = Awaited<ReturnType<typeof studentMergeControllerLikelyDuplicates>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof studentMergeControllerLikelyDuplicates>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+/**
+ * For the merge screen. Returns no phone, address or B-form; a person still has to judge.
+ * @summary Active records that may be the same person (shared phone or B-form, same name and father or birth)
+ */
+export function useStudentMergeControllerLikelyDuplicates<
+  TData = Awaited<ReturnType<typeof studentMergeControllerLikelyDuplicates>>,
+  TError = void,
+>(
+  id: string,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof studentMergeControllerLikelyDuplicates>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getStudentMergeControllerLikelyDuplicatesQueryOptions(id, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}

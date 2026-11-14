@@ -19,6 +19,7 @@ import type {
 
 import type {
   AuditLogControllerFindAllParams,
+  AuditLogFacetsResponseDto,
   ListAuditLogsResponseDto,
   VerifyAuditLogResponseDto,
 } from '../app.schemas';
@@ -125,6 +126,94 @@ export function useAuditLogControllerFindAll<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getAuditLogControllerFindAllQueryOptions(params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export const auditLogControllerFacets = (signal?: AbortSignal) => {
+  return service<AuditLogFacetsResponseDto>({ url: `/audit-log/facets`, method: 'GET', signal });
+};
+
+export const getAuditLogControllerFacetsQueryKey = () => {
+  return [`/audit-log/facets`] as const;
+};
+
+export const getAuditLogControllerFacetsQueryOptions = <
+  TData = Awaited<ReturnType<typeof auditLogControllerFacets>>,
+  TError = void,
+>(options?: {
+  query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof auditLogControllerFacets>>, TError, TData>>;
+}) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getAuditLogControllerFacetsQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof auditLogControllerFacets>>> = ({ signal }) =>
+    auditLogControllerFacets(signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof auditLogControllerFacets>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type AuditLogControllerFacetsQueryResult = NonNullable<Awaited<ReturnType<typeof auditLogControllerFacets>>>;
+export type AuditLogControllerFacetsQueryError = void;
+
+export function useAuditLogControllerFacets<
+  TData = Awaited<ReturnType<typeof auditLogControllerFacets>>,
+  TError = void,
+>(
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof auditLogControllerFacets>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof auditLogControllerFacets>>,
+          TError,
+          Awaited<ReturnType<typeof auditLogControllerFacets>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAuditLogControllerFacets<
+  TData = Awaited<ReturnType<typeof auditLogControllerFacets>>,
+  TError = void,
+>(
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof auditLogControllerFacets>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof auditLogControllerFacets>>,
+          TError,
+          Awaited<ReturnType<typeof auditLogControllerFacets>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAuditLogControllerFacets<
+  TData = Awaited<ReturnType<typeof auditLogControllerFacets>>,
+  TError = void,
+>(
+  options?: { query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof auditLogControllerFacets>>, TError, TData>> },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useAuditLogControllerFacets<
+  TData = Awaited<ReturnType<typeof auditLogControllerFacets>>,
+  TError = void,
+>(
+  options?: { query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof auditLogControllerFacets>>, TError, TData>> },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getAuditLogControllerFacetsQueryOptions(options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

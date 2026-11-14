@@ -89,7 +89,14 @@
     "staffmanage",
     "studentsedit",
     "studentsmerge",
-    "phonelink"
+    "phonelink",
+    "staffreview",
+    "trainingsconfigure",
+    "trainingsmanage",
+    "trainingsoverride",
+    "trainingspayouts",
+    "retrainable",
+    "reportschat"
   ],
   "ignoreWords": [],
   "import": []

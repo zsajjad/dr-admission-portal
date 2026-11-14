@@ -340,7 +340,7 @@ export const useStudentsControllerUpdate = <TError = void, TContext = unknown>(
   return useMutation(getStudentsControllerUpdateMutationOptions(options), queryClient);
 };
 /**
- * SUPER_ADMIN and ADMIN only. A reason is required. Admission class levels are not changed.
+ * Needs the students.editIdentity permission. A reason is required. Admission class levels are not changed. A changed GR stays findable as an alias of the student (source GR_CHANGE).
  * @summary Change identity details (name, father name, birth date, B-form, GR number)
  */
 export const studentsControllerUpdateIdentity = (
@@ -399,7 +399,7 @@ export type StudentsControllerUpdateIdentityMutationError = void;
 export type StudentsControllerUpdateIdentityMutationVariables = { id: string; data: UpdateStudentIdentityDto };
 
 /**
- * SUPER_ADMIN and ADMIN only. A reason is required. Admission class levels are not changed.
+ * Needs the students.editIdentity permission. A reason is required. Admission class levels are not changed. A changed GR stays findable as an alias of the student (source GR_CHANGE).
  * @summary Change identity details (name, father name, birth date, B-form, GR number)
  */
 export const useStudentsControllerUpdateIdentity = <TError = void, TContext = unknown>(
