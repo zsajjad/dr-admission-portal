@@ -15,6 +15,11 @@ interface ReasonFieldProps {
   label?: React.ComponentProps<typeof FormattedMessage>;
 }
 
+/** Core refuses shorter reasons */
+export const REASON_MIN = 3;
+
+export const reasonMissing = (value: string) => value.trim().length < REASON_MIN;
+
 /** The reason every audited change asks for */
 export function ReasonField({
   value,
@@ -23,9 +28,9 @@ export function ReasonField({
   required = true,
   label = messages.reason,
 }: ReasonFieldProps) {
-  const requiredText = useFormattedMessage(messages.required);
+  const requiredText = useFormattedMessage(messages.reasonTooShort);
   const help = useFormattedMessage(messages.reasonHelp);
-  const missing = required && !!showError && !value.trim();
+  const missing = required && !!showError && reasonMissing(value);
   return (
     <TextField
       size="small"

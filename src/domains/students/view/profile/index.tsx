@@ -2,6 +2,8 @@
 
 import { Alert, Stack, Typography } from '@mui/material';
 
+import { StudentTrainingsCard } from '@/domains/trainings/view/enrollments/StudentTrainingsView';
+
 import { DataNotFound } from '@/components/DataNotFound';
 import { DetailSkeleton } from '@/components/Skeleton/DetailSkeleton';
 
@@ -50,6 +52,7 @@ export function StudentProfileView({ studentId }: { studentId: string }) {
 
       <ProfileHeader profile={profile} />
       <IdentitySection student={profile.student} />
+      <StudentTrainingsCard studentId={profile.student.id} />
 
       <Stack spacing={1.5}>
         <Typography variant="h6" sx={{ fontWeight: 600 }}>

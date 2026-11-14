@@ -42,6 +42,10 @@ export const routes = {
   },
   trainings: {
     home: '/trainings',
+    enrollments: '/trainings/enrollments',
+    enrollment: (id: string) => `/trainings/enrollments/${id}`,
+    student: (studentId: string) => `/trainings/students/${studentId}`,
+    grades: '/trainings/grades',
     catalog: '/trainings/catalog',
     catalogCreate: '/trainings/catalog/new',
     catalogTraining: (id: string) => `/trainings/catalog/${id}`,
