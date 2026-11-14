@@ -14,7 +14,7 @@ import { colorSchemes } from '@/theme/color-schemes';
 
 import { routes } from '@/router/routes';
 
-import { useNavItems } from '../config';
+import { useNavGroups } from '../config';
 import { NavList } from '../NavItems';
 
 import { MobileDrawer } from './Styled';
@@ -26,7 +26,7 @@ export interface MobileNavProps {
 
 export function MobileNav({ open, onClose }: MobileNavProps): React.JSX.Element {
   const pathname = usePathname();
-  const navItems = useNavItems();
+  const navGroups = useNavGroups();
   const { light } = colorSchemes;
   const { palette } = light;
 
@@ -41,7 +41,7 @@ export function MobileNav({ open, onClose }: MobileNavProps): React.JSX.Element 
       </Box>
 
       <Divider sx={{ borderColor: palette.stroke }} />
-      <NavList pathname={pathname} items={navItems} />
+      <NavList pathname={pathname} groups={navGroups} />
     </MobileDrawer>
   );
 }
