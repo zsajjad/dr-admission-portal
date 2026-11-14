@@ -40,6 +40,10 @@ export default defineMessages({
     id: `${scope}.questionSets`,
     defaultMessage: 'Question Sets',
   },
+  staffUsers: {
+    id: `${scope}.staffUsers`,
+    defaultMessage: 'Staff app users',
+  },
   printing: {
     id: `${scope}.printing`,
     defaultMessage: 'Printing',

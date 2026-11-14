@@ -28,6 +28,11 @@ export const routes = {
     listing: '/students',
     profile: (id: string) => `/students/${id}`,
   },
+  staffUsers: {
+    listing: '/staff-users',
+    detail: (id: string) => `/staff-users/${id}`,
+    cards: (ids?: string[]) => (ids?.length ? `/staff-users/cards?ids=${ids.join(',')}` : '/staff-users/cards'),
+  },
   questions: {
     listing: '/questions?includeInActive=true',
     create: '/questions/create',
