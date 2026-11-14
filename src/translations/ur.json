@@ -310,5 +310,13 @@
   "app.domains.staffUsers.cardStaff": "اسٹاف",
   "app.components.Layout.staffUsers": "اسٹاف ایپ صارفین",
   "app.components.RequirePermission.notAllowed": "آپ یہ صفحہ نہیں کھول سکتے۔ اس کے لیے {permissions} اجازت چاہیے؛ کسی سپر ایڈمن سے کہیں۔",
-  "app.domains.staffUsers.showDeactivated": "غیر فعال بھی دکھائیں"
+  "app.domains.staffUsers.showDeactivated": "غیر فعال بھی دکھائیں",
+  "app.domains.students.byStaffApp": "{name} (اسٹاف ایپ، {staffId})",
+  "app.domains.admission.view.detail.feePaidByLabel": "فیس وصول کرنے والے",
+  "app.domains.admission.view.detail.feePaidByStaffApp": "{name} (اسٹاف ایپ فیس ڈیسک، {staffId})، {date}",
+  "app.domains.admission.view.detail.feePaidByAdmin": "{name}، {date}",
+  "app.domains.staffUsers.branches": "برانچیں",
+  "app.domains.staffUsers.branchesHint": "جن برانچوں کے لیے وہ کام کرتے ہیں۔ فیس ڈیسک پر انہیں صرف ان برانچوں کے داخلے نظر آتے ہیں۔",
+  "app.domains.staffUsers.feeDeskNeedsBranch": "کم از کم ایک برانچ چنیں: اس کے بغیر فیس ڈیسک پر انہیں کچھ نظر نہیں آئے گا۔",
+  "app.domains.staffUsers.noBranches": "کوئی نہیں"
 }
