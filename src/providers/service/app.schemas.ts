@@ -1185,6 +1185,13 @@ export interface AdmissionInteractionTeacher {
   email: string;
 }
 
+export interface StaffUserBase {
+  id: string;
+  name: string;
+  /** The 5-digit staff ID on the card */
+  staffId: string;
+}
+
 export interface AdmissionInteractionQuestionSet {
   /** id */
   id: string;
@@ -1217,8 +1224,10 @@ export interface AdmissionInteraction {
   id: string;
   /** notes */
   notes?: string;
-  /** teacher */
-  teacher: AdmissionInteractionTeacher;
+  /** The admin who did the interview (portal or mobile app) */
+  teacher?: AdmissionInteractionTeacher;
+  /** The staff app teacher who did the interview */
+  staffUser?: StaffUserBase;
   /** questionSet */
   questionSet: AdmissionInteractionQuestionSet;
   /** ratings */
@@ -1266,13 +1275,6 @@ export interface AdmissionClassLevel {
   gender: Gender;
   /** group */
   group: ClassLevelGroup;
-}
-
-export interface StaffUserBase {
-  id: string;
-  name: string;
-  /** The 5-digit staff ID on the card */
-  staffId: string;
 }
 
 export interface Admission {
@@ -2534,7 +2536,10 @@ export interface StudentProfileInterviewRating {
 
 export interface StudentProfileInterview {
   id: string;
-  teacher: AdminUserBase;
+  /** The admin who did the interview (portal or mobile app) */
+  teacher?: AdminUserBase;
+  /** The staff app teacher who did the interview */
+  staffUser?: StaffUserBase;
   questionSetTitle: string;
   /** Overall notes */
   notes?: string;
@@ -2783,8 +2788,10 @@ export interface Interaction {
   id: string;
   /** Overall notes */
   notes?: string;
-  /** Teacher who conducted the interaction */
-  teacher: AdminUserBase;
+  /** The admin who did the interview (portal or mobile app) */
+  teacher?: AdminUserBase;
+  /** The staff app teacher who did the interview */
+  staffUser?: StaffUserBase;
   /** Student info */
   student: InteractionStudent;
   /** Admission info */
@@ -4104,6 +4111,11 @@ export interface StaffSectionDto {
   role: SectionTeacherRole;
 }
 
+export interface StaffCurrentSessionDto {
+  id: string;
+  name: string;
+}
+
 export interface StaffMeResponseDto {
   user: StaffUserSummaryDto;
   roles: StaffRole[];
@@ -4111,6 +4123,11 @@ export interface StaffMeResponseDto {
   sections: StaffSectionDto[];
   /** Older apps get 426 APP_UPDATE_REQUIRED on sync */
   minAppVersion: string;
+  /**
+   * The current session (its id goes in interview.submit), or null when there is none
+   * @nullable
+   */
+  currentSession: StaffCurrentSessionDto | null;
 }
 
 export type StaffSkillStepDtoPart = (typeof StaffSkillStepDtoPart)[keyof typeof StaffSkillStepDtoPart];
@@ -4232,6 +4249,8 @@ export const StaffSyncReasonCode = {
   INVALID_DATE: 'INVALID_DATE',
   FUTURE_DATE: 'FUTURE_DATE',
   NO_CLASS_DAY: 'NO_CLASS_DAY',
+  ADMISSION_NOT_FOUND: 'ADMISSION_NOT_FOUND',
+  ROLE_REQUIRED: 'ROLE_REQUIRED',
   SENT_AFTER_LOGOUT: 'SENT_AFTER_LOGOUT',
   LATE_DAY: 'LATE_DAY',
   SUPERSEDED: 'SUPERSEDED',
@@ -4250,6 +4269,37 @@ export interface StaffSyncResultDto {
 export interface StaffSyncResponseDto {
   /** In the order sent. An item that hit a server-side failure has no result: keep it pending and send it again. */
   results: StaffSyncResultDto[];
+}
+
+export interface StaffInterviewQuestionDto {
+  id: string;
+  /** The question as entered in the portal */
+  textUr: string;
+  /** Same text as textUr until questions get an English version */
+  textEn: string;
+  order: number;
+}
+
+export interface StaffQuestionSetDto {
+  id: string;
+  /** Send it in interview.submit */
+  sessionId: string;
+  classLevelCodes: string[];
+  questions: StaffInterviewQuestionDto[];
+}
+
+export interface StaffInterviewLookupResponseDto {
+  admissionId: string;
+  name: string;
+  fatherName: string;
+  classLevelCode: string;
+  /**
+   * The question set for the student's class, if any
+   * @nullable
+   */
+  questionSetId: string | null;
+  /** An interview is already saved (another one would replace it) */
+  interviewed: boolean;
 }
 
 export interface CreateSectionDto {
