@@ -32,6 +32,7 @@ const TABS: TabConfig[] = [
   { href: routes.trainings.enrollments, label: messages.tabEnrollments, also: ['/trainings/students'] },
   { href: routes.trainings.grades, label: messages.tabGrades },
   { href: routes.trainings.ledger, label: messages.tabLedger },
+  { href: routes.trainings.reports, label: messages.tabReports },
   { href: routes.trainings.catalog, label: messages.tabCatalog },
   { href: routes.trainings.windows, label: messages.tabWindows },
 ];
