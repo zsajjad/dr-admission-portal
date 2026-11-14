@@ -4,11 +4,11 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { Alert, MenuItem, Stack, TextField } from '@mui/material';
 
-import { useAdmissionsControllerUpdateClassLevel } from '@/providers/service/admissions/admissions';
 import { Gender, StudentProfileAdmission } from '@/providers/service/app.schemas';
 import { useClassLevelControllerFindAll } from '@/providers/service/class-level/class-level';
+import { useSectionControllerOverrideClassLevel } from '@/providers/service/section/section';
 
-import { FormattedMessage } from '@/theme/FormattedMessage';
+import { FormattedMessage, useFormattedMessage } from '@/theme/FormattedMessage';
 
 import { useProfileActions } from '../hooks/useProfileActions';
 import messages from '../messages';
@@ -23,10 +23,15 @@ interface ChangeClassDialogProps {
   onClose: () => void;
 }
 
-/** Overrides the class level worked out from the birth date (PATCH /admissions/:id/class-level) */
+/**
+ * Overrides the class level worked out from the birth date
+ * (PATCH /section/admissions/:admissionId/class-level, needs sections.manage).
+ * A student in a section of the old class is taken out of it.
+ */
 export function ChangeClassDialog({ open, studentId, gender, admission, onClose }: ChangeClassDialogProps) {
   const { onSuccess, onError } = useProfileActions(studentId);
-  const mutation = useAdmissionsControllerUpdateClassLevel();
+  const mutation = useSectionControllerOverrideClassLevel();
+  const savedSectionCleared = useFormattedMessage(messages.classSavedSectionCleared);
   const { data: classLevels, isLoading } = useClassLevelControllerFindAll({ take: 100 }, { query: { enabled: open } });
 
   const options = useMemo(
@@ -53,10 +58,10 @@ export function ChangeClassDialog({ open, studentId, gender, admission, onClose 
       return;
     }
     mutation.mutate(
-      { id: admission.id, data: { classLevelId, ...(reason.trim() && { reason: reason.trim() }) } },
+      { admissionId: admission.id, data: { classLevelId, ...(reason.trim() && { reason: reason.trim() }) } },
       {
-        onSuccess: async () => {
-          await onSuccess();
+        onSuccess: async (res) => {
+          await onSuccess(res.sectionCleared ? savedSectionCleared : undefined);
           onClose();
         },
         onError,

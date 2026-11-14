@@ -140,7 +140,37 @@ export default defineMessages({
   sectionSlotTitle: { id: `${scope}.sectionSlotTitle`, defaultMessage: 'Section' },
   sectionSlotEmpty: { id: `${scope}.sectionSlotEmpty`, defaultMessage: 'Sections are not set up yet' },
   resultsSlotTitle: { id: `${scope}.resultsSlotTitle`, defaultMessage: 'Result' },
-  resultsSlotEmpty: { id: `${scope}.resultsSlotEmpty`, defaultMessage: 'Results are not set up yet' },
+
+  // Results
+  resultsNone: { id: `${scope}.resultsNone`, defaultMessage: 'No results for this session yet' },
+  resultsNotAllowed: {
+    id: `${scope}.resultsNotAllowed`,
+    defaultMessage: 'Seeing results needs the reports.view or results.enter permission',
+  },
+  resultsLoadError: { id: `${scope}.resultsLoadError`, defaultMessage: 'Could not load the results' },
+  resultTheory: { id: `${scope}.resultTheory`, defaultMessage: 'Theory' },
+  resultWazu: { id: `${scope}.resultWazu`, defaultMessage: 'Wazu' },
+  resultNamaz: { id: `${scope}.resultNamaz`, defaultMessage: 'Namaz' },
+  resultAttendance: { id: `${scope}.resultAttendance`, defaultMessage: 'Attendance' },
+  resultFinal: { id: `${scope}.resultFinal`, defaultMessage: 'Final result' },
+  resultNotEntered: { id: `${scope}.resultNotEntered`, defaultMessage: 'Not entered' },
+  resultPassed: { id: `${scope}.resultPassed`, defaultMessage: 'Passed' },
+  resultFailed: { id: `${scope}.resultFailed`, defaultMessage: 'Failed' },
+  resultPASS: { id: `${scope}.resultPASS`, defaultMessage: 'Pass' },
+  resultFAIL: { id: `${scope}.resultFAIL`, defaultMessage: 'Fail' },
+  resultTERMINATED: { id: `${scope}.resultTERMINATED`, defaultMessage: 'Terminated' },
+  resultDays: { id: `${scope}.resultDays`, defaultMessage: '{days} of {total} days' },
+  resultTotal: { id: `${scope}.resultTotal`, defaultMessage: 'Total {total}' },
+  resultRank: { id: `${scope}.resultRank`, defaultMessage: 'Rank {rank} of {of} in the branch' },
+  resultNotRanked: { id: `${scope}.resultNotRanked`, defaultMessage: 'Not ranked' },
+  resultLocked: { id: `${scope}.resultLocked`, defaultMessage: 'Locked' },
+  resultWrongSteps: { id: `${scope}.resultWrongSteps`, defaultMessage: 'Wrong steps' },
+  resultAllStepsRight: { id: `${scope}.resultAllStepsRight`, defaultMessage: 'Every step right' },
+  resultNoSteps: { id: `${scope}.resultNoSteps`, defaultMessage: 'Not graded step by step' },
+  sourceSTAFF_APP: { id: `${scope}.sourceSTAFF_APP`, defaultMessage: 'Staff app' },
+  sourcePORTAL: { id: `${scope}.sourcePORTAL`, defaultMessage: 'Portal' },
+  sourceTRAINING: { id: `${scope}.sourceTRAINING`, defaultMessage: 'Fiqh training' },
+  sourceIMPORT_2026: { id: `${scope}.sourceIMPORT_2026`, defaultMessage: 'Imported from 2026' },
 
   // Interview
   interview: { id: `${scope}.interview`, defaultMessage: 'Interview' },
@@ -223,6 +253,14 @@ export default defineMessages({
   classDialogNote: {
     id: `${scope}.classDialogNote`,
     defaultMessage: 'The class was worked out from the birth date. Pick the class the student should be in.',
+  },
+  changeClassNotAllowed: {
+    id: `${scope}.changeClassNotAllowed`,
+    defaultMessage: 'Changing the class needs the sections.manage permission',
+  },
+  classSavedSectionCleared: {
+    id: `${scope}.classSavedSectionCleared`,
+    defaultMessage: 'Class changed. The student was taken out of their old section; place them in a new one.',
   },
   statusDialogTitle: { id: `${scope}.statusDialogTitle`, defaultMessage: 'Change status, {session}' },
 });

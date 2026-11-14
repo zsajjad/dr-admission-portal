@@ -11,6 +11,7 @@ import {
   Edit as EditIcon,
   ExpandMore as ExpandMoreIcon,
   FactCheck as StatusIcon,
+  Lock as LockIcon,
   OpenInNew as OpenIcon,
   RemoveCircle as UnpaidIcon,
   TaskAlt as FinalizeIcon,
@@ -25,6 +26,7 @@ import {
   Divider,
   Grid,
   Stack,
+  Tooltip,
   Typography,
 } from '@mui/material';
 
@@ -32,10 +34,12 @@ import {
   useAdmissionsControllerFinalize,
   useAdmissionsControllerMarkFeePaid,
 } from '@/providers/service/admissions/admissions';
-import { Gender, StudentProfileAdmission } from '@/providers/service/app.schemas';
+import { Gender, Permission, StudentProfileAdmission } from '@/providers/service/app.schemas';
 import { usePrintingControllerCreateCardPrintRequests } from '@/providers/service/printing/printing';
 
 import { FormattedMessage, useFormattedMessage } from '@/theme/FormattedMessage';
+
+import { usePermissions } from '@/hooks/usePermissions';
 
 import { routes } from '@/router/routes';
 
@@ -55,7 +59,7 @@ import {
   vanEligibilityMessage,
 } from '../utils';
 
-import { AdmissionResultsSlot } from './AdmissionResultsSlot';
+import { AdmissionResults } from './AdmissionResults';
 import { AdmissionSectionSlot } from './AdmissionSectionSlot';
 import { AttendanceSummary } from './AttendanceSummary';
 import { CardPrintHistory } from './CardPrintHistory';
@@ -77,6 +81,9 @@ export function AdmissionPanel({ studentId, gender, admission, isLatest }: Admis
   const [dialog, setDialog] = useState<DialogName>(null);
   const close = () => setDialog(null);
   const { onSuccess, onError } = useProfileActions(studentId);
+  const { has } = usePermissions();
+  const canChangeClass = has(Permission.sectionsmanage);
+  const changeClassNotAllowed = useFormattedMessage(messages.changeClassNotAllowed);
 
   const feeMutation = useAdmissionsControllerMarkFeePaid();
   const finalizeMutation = useAdmissionsControllerFinalize();
@@ -201,9 +208,19 @@ export function AdmissionPanel({ studentId, gender, admission, isLatest }: Admis
               <Button size="small" variant="outlined" startIcon={<StatusIcon />} onClick={() => setDialog('status')}>
                 <FormattedMessage {...messages.changeStatus} />
               </Button>
-              <Button size="small" variant="outlined" startIcon={<ClassIcon />} onClick={() => setDialog('class')}>
-                <FormattedMessage {...messages.changeClass} />
-              </Button>
+              <Tooltip title={canChangeClass ? '' : changeClassNotAllowed}>
+                <span>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    startIcon={canChangeClass ? <ClassIcon /> : <LockIcon />}
+                    disabled={!canChangeClass}
+                    onClick={() => setDialog('class')}
+                  >
+                    <FormattedMessage {...messages.changeClass} />
+                  </Button>
+                </span>
+              </Tooltip>
               <Button size="small" variant="outlined" startIcon={<EditIcon />} onClick={() => setDialog('edit')}>
                 <FormattedMessage {...messages.editAdmission} />
               </Button>
@@ -307,13 +324,13 @@ export function AdmissionPanel({ studentId, gender, admission, isLatest }: Admis
 
           <Divider sx={{ mb: 2 }} />
 
-          {/* Section and results: slots for the parallel work */}
+          {/* Section (a slot until sections are wired in) and this session's results */}
           <Grid container spacing={2} sx={{ mb: 2 }}>
             <Grid size={{ xs: 12, md: 4 }}>
               <AdmissionSectionSlot admission={a} />
             </Grid>
             <Grid size={{ xs: 12, md: 8 }}>
-              <AdmissionResultsSlot admission={a} />
+              <AdmissionResults admission={a} />
             </Grid>
           </Grid>
 
