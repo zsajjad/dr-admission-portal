@@ -5,11 +5,11 @@ import { useMemo } from 'react';
 import { Autocomplete, CircularProgress, TextField } from '@mui/material';
 
 import { Session } from '@/providers/service/app.schemas';
-import { useSessionControllerFindAll } from '@/providers/service/session/session';
 
 import FormattedMessage from '@/theme/FormattedMessage';
 
 import { useListingFilters } from '@/hooks/useListingFilters';
+import { useSessions } from '@/hooks/useSessions';
 
 import messages from './messages';
 
@@ -22,18 +22,22 @@ export interface SessionFilterProps {
   minWidth?: number;
   /** Additional callback when session changes */
   onSessionChange?: (sessionId: string | undefined) => void;
+  /** With no session chosen, show the active session as selected (for pages that default to it) */
+  defaultToActive?: boolean;
 }
 
-export function SessionFilter({ size = 'small', minWidth = 280, onSessionChange }: SessionFilterProps) {
+export function SessionFilter({ size = 'small', minWidth = 280, onSessionChange, defaultToActive }: SessionFilterProps) {
   const { filters, setFilter } = useListingFilters<SessionFilterState>();
 
-  // Fetch sessions for filter dropdown
-  const { data: sessionsData, isLoading } = useSessionControllerFindAll({ take: 100 });
-  const sessions = useMemo(() => sessionsData?.data || [], [sessionsData?.data]);
+  // Every session, closed ones included, so past seasons stay selectable
+  const { sessions, activeSession, isLoading } = useSessions();
 
   const selectedSession = useMemo(
-    () => sessions.find((s) => s.id === filters.sessionId) || null,
-    [sessions, filters.sessionId],
+    () =>
+      sessions.find((s) => s.id === filters.sessionId) ||
+      (defaultToActive && !filters.sessionId ? activeSession : undefined) ||
+      null,
+    [sessions, filters.sessionId, defaultToActive, activeSession],
   );
 
   const handleChange = (_: unknown, newValue: Session | null) => {

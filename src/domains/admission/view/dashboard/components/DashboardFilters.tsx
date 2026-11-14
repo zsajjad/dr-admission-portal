@@ -8,7 +8,7 @@ export function DashboardFilters() {
   return (
     <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
       <BranchFilter resetFiltersOnChange={['areaId']} />
-      <SessionFilter />
+      <SessionFilter defaultToActive />
       <AreaFilter />
     </Stack>
   );
