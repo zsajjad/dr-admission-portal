@@ -1,6 +1,7 @@
 {
   "version": 2,
   "framework": "nextjs",
+  "installCommand": "npm install -g pnpm@10.34.9 && pnpm install --frozen-lockfile",
   "buildCommand": "next build",
   "builds": [
     {
