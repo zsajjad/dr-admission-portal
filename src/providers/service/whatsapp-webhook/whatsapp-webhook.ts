@@ -144,14 +144,14 @@ export function useAnnouncementWebhookControllerVerify<
 }
 
 export const announcementWebhookControllerHandleWebhook = (signal?: AbortSignal) => {
-  return service<void>({ url: `/whatsapp/webhook`, method: 'POST', signal });
+  return service<unknown>({ url: `/whatsapp/webhook`, method: 'POST', signal });
 };
 
 export const getAnnouncementWebhookControllerHandleWebhookMutationKey = () =>
   ['announcementWebhookControllerHandleWebhook'] as const;
 
 export const getAnnouncementWebhookControllerHandleWebhookMutationOptions = <
-  TError = unknown,
+  TError = void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -187,9 +187,9 @@ export type AnnouncementWebhookControllerHandleWebhookMutationResult = NonNullab
   Awaited<ReturnType<typeof announcementWebhookControllerHandleWebhook>>
 >;
 
-export type AnnouncementWebhookControllerHandleWebhookMutationError = unknown;
+export type AnnouncementWebhookControllerHandleWebhookMutationError = void;
 
-export const useAnnouncementWebhookControllerHandleWebhook = <TError = unknown, TContext = unknown>(
+export const useAnnouncementWebhookControllerHandleWebhook = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof announcementWebhookControllerHandleWebhook>>,

@@ -60,7 +60,7 @@ export const getStudentsControllerFindAllQueryKey = (params?: StudentsController
 
 export const getStudentsControllerFindAllQueryOptions = <
   TData = Awaited<ReturnType<typeof studentsControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: StudentsControllerFindAllParams,
   options?: { query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof studentsControllerFindAll>>, TError, TData>> },
@@ -80,12 +80,12 @@ export const getStudentsControllerFindAllQueryOptions = <
 };
 
 export type StudentsControllerFindAllQueryResult = NonNullable<Awaited<ReturnType<typeof studentsControllerFindAll>>>;
-export type StudentsControllerFindAllQueryError = unknown;
+export type StudentsControllerFindAllQueryError = void;
 
 /** @summary Search students by GR number, name, father name or phone */
 export function useStudentsControllerFindAll<
   TData = Awaited<ReturnType<typeof studentsControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params: undefined | StudentsControllerFindAllParams,
   options: {
@@ -104,7 +104,7 @@ export function useStudentsControllerFindAll<
 /** @summary Search students by GR number, name, father name or phone */
 export function useStudentsControllerFindAll<
   TData = Awaited<ReturnType<typeof studentsControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: StudentsControllerFindAllParams,
   options?: {
@@ -123,7 +123,7 @@ export function useStudentsControllerFindAll<
 /** @summary Search students by GR number, name, father name or phone */
 export function useStudentsControllerFindAll<
   TData = Awaited<ReturnType<typeof studentsControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: StudentsControllerFindAllParams,
   options?: { query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof studentsControllerFindAll>>, TError, TData>> },
@@ -132,7 +132,7 @@ export function useStudentsControllerFindAll<
 /** @summary Search students by GR number, name, father name or phone */
 export function useStudentsControllerFindAll<
   TData = Awaited<ReturnType<typeof studentsControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: StudentsControllerFindAllParams,
   options?: { query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof studentsControllerFindAll>>, TError, TData>> },
@@ -161,7 +161,7 @@ export const getStudentsControllerGetProfileQueryKey = (id: string) => {
 
 export const getStudentsControllerGetProfileQueryOptions = <
   TData = Awaited<ReturnType<typeof studentsControllerGetProfile>>,
-  TError = unknown,
+  TError = void,
 >(
   id: string,
   options?: {
@@ -185,7 +185,7 @@ export const getStudentsControllerGetProfileQueryOptions = <
 export type StudentsControllerGetProfileQueryResult = NonNullable<
   Awaited<ReturnType<typeof studentsControllerGetProfile>>
 >;
-export type StudentsControllerGetProfileQueryError = unknown;
+export type StudentsControllerGetProfileQueryError = void;
 
 /**
  * Identity and documents, then every admission across sessions (newest first) with fee, van, interview, attendance summary, card print history and WhatsApp messages.
@@ -193,7 +193,7 @@ export type StudentsControllerGetProfileQueryError = unknown;
  */
 export function useStudentsControllerGetProfile<
   TData = Awaited<ReturnType<typeof studentsControllerGetProfile>>,
-  TError = unknown,
+  TError = void,
 >(
   id: string,
   options: {
@@ -215,7 +215,7 @@ export function useStudentsControllerGetProfile<
  */
 export function useStudentsControllerGetProfile<
   TData = Awaited<ReturnType<typeof studentsControllerGetProfile>>,
-  TError = unknown,
+  TError = void,
 >(
   id: string,
   options?: {
@@ -237,7 +237,7 @@ export function useStudentsControllerGetProfile<
  */
 export function useStudentsControllerGetProfile<
   TData = Awaited<ReturnType<typeof studentsControllerGetProfile>>,
-  TError = unknown,
+  TError = void,
 >(
   id: string,
   options?: {
@@ -251,7 +251,7 @@ export function useStudentsControllerGetProfile<
  */
 export function useStudentsControllerGetProfile<
   TData = Awaited<ReturnType<typeof studentsControllerGetProfile>>,
-  TError = unknown,
+  TError = void,
 >(
   id: string,
   options?: {
@@ -283,7 +283,7 @@ export const studentsControllerUpdate = (id: string, updateStudentDto: UpdateStu
 
 export const getStudentsControllerUpdateMutationKey = () => ['studentsControllerUpdate'] as const;
 
-export const getStudentsControllerUpdateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getStudentsControllerUpdateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof studentsControllerUpdate>>,
     TError,
@@ -317,11 +317,11 @@ export const getStudentsControllerUpdateMutationOptions = <TError = unknown, TCo
 
 export type StudentsControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof studentsControllerUpdate>>>;
 export type StudentsControllerUpdateMutationBody = UpdateStudentDto;
-export type StudentsControllerUpdateMutationError = unknown;
+export type StudentsControllerUpdateMutationError = void;
 export type StudentsControllerUpdateMutationVariables = { id: string; data: UpdateStudentDto };
 
 /** @summary Change contact details and documents (phones, address, photo, identity document) */
-export const useStudentsControllerUpdate = <TError = unknown, TContext = unknown>(
+export const useStudentsControllerUpdate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof studentsControllerUpdate>>,

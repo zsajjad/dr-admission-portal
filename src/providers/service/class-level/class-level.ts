@@ -61,7 +61,7 @@ export const classLevelControllerCreate = (createClassLevelDto: CreateClassLevel
 
 export const getClassLevelControllerCreateMutationKey = () => ['classLevelControllerCreate'] as const;
 
-export const getClassLevelControllerCreateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getClassLevelControllerCreateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof classLevelControllerCreate>>,
     TError,
@@ -97,10 +97,10 @@ export type ClassLevelControllerCreateMutationResult = NonNullable<
   Awaited<ReturnType<typeof classLevelControllerCreate>>
 >;
 export type ClassLevelControllerCreateMutationBody = CreateClassLevelDto;
-export type ClassLevelControllerCreateMutationError = unknown;
+export type ClassLevelControllerCreateMutationError = void;
 export type ClassLevelControllerCreateMutationVariables = { data: CreateClassLevelDto };
 
-export const useClassLevelControllerCreate = <TError = unknown, TContext = unknown>(
+export const useClassLevelControllerCreate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof classLevelControllerCreate>>,
@@ -345,7 +345,7 @@ export const classLevelControllerUpdate = (
 
 export const getClassLevelControllerUpdateMutationKey = () => ['classLevelControllerUpdate'] as const;
 
-export const getClassLevelControllerUpdateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getClassLevelControllerUpdateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof classLevelControllerUpdate>>,
     TError,
@@ -381,10 +381,10 @@ export type ClassLevelControllerUpdateMutationResult = NonNullable<
   Awaited<ReturnType<typeof classLevelControllerUpdate>>
 >;
 export type ClassLevelControllerUpdateMutationBody = UpdateClassLevelDto;
-export type ClassLevelControllerUpdateMutationError = unknown;
+export type ClassLevelControllerUpdateMutationError = void;
 export type ClassLevelControllerUpdateMutationVariables = { id: string; data: UpdateClassLevelDto };
 
-export const useClassLevelControllerUpdate = <TError = unknown, TContext = unknown>(
+export const useClassLevelControllerUpdate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof classLevelControllerUpdate>>,
@@ -408,7 +408,7 @@ export const classLevelControllerRemove = (id: string, signal?: AbortSignal) => 
 
 export const getClassLevelControllerRemoveMutationKey = () => ['classLevelControllerRemove'] as const;
 
-export const getClassLevelControllerRemoveMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getClassLevelControllerRemoveMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof classLevelControllerRemove>>,
     TError,
@@ -444,10 +444,10 @@ export type ClassLevelControllerRemoveMutationResult = NonNullable<
   Awaited<ReturnType<typeof classLevelControllerRemove>>
 >;
 
-export type ClassLevelControllerRemoveMutationError = unknown;
+export type ClassLevelControllerRemoveMutationError = void;
 export type ClassLevelControllerRemoveMutationVariables = { id: string };
 
-export const useClassLevelControllerRemove = <TError = unknown, TContext = unknown>(
+export const useClassLevelControllerRemove = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof classLevelControllerRemove>>,
@@ -471,7 +471,7 @@ export const classLevelControllerDeactivate = (id: string, signal?: AbortSignal)
 
 export const getClassLevelControllerDeactivateMutationKey = () => ['classLevelControllerDeactivate'] as const;
 
-export const getClassLevelControllerDeactivateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getClassLevelControllerDeactivateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof classLevelControllerDeactivate>>,
     TError,
@@ -507,10 +507,10 @@ export type ClassLevelControllerDeactivateMutationResult = NonNullable<
   Awaited<ReturnType<typeof classLevelControllerDeactivate>>
 >;
 
-export type ClassLevelControllerDeactivateMutationError = unknown;
+export type ClassLevelControllerDeactivateMutationError = void;
 export type ClassLevelControllerDeactivateMutationVariables = { id: string };
 
-export const useClassLevelControllerDeactivate = <TError = unknown, TContext = unknown>(
+export const useClassLevelControllerDeactivate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof classLevelControllerDeactivate>>,
@@ -534,7 +534,7 @@ export const classLevelControllerActivate = (id: string, signal?: AbortSignal) =
 
 export const getClassLevelControllerActivateMutationKey = () => ['classLevelControllerActivate'] as const;
 
-export const getClassLevelControllerActivateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getClassLevelControllerActivateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof classLevelControllerActivate>>,
     TError,
@@ -570,10 +570,10 @@ export type ClassLevelControllerActivateMutationResult = NonNullable<
   Awaited<ReturnType<typeof classLevelControllerActivate>>
 >;
 
-export type ClassLevelControllerActivateMutationError = unknown;
+export type ClassLevelControllerActivateMutationError = void;
 export type ClassLevelControllerActivateMutationVariables = { id: string };
 
-export const useClassLevelControllerActivate = <TError = unknown, TContext = unknown>(
+export const useClassLevelControllerActivate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof classLevelControllerActivate>>,

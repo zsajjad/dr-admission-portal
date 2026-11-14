@@ -28,6 +28,47 @@ export interface AssetDeleteResponseDto {
   message: string;
 }
 
+export interface PublicBranch {
+  id: string;
+  code: string;
+  name: string;
+}
+
+export interface PublicBranchesResponseDto {
+  data: PublicBranch[];
+}
+
+export interface PublicArea {
+  id: string;
+  branchId: string;
+  code: string;
+  name: string;
+  /** A van runs for girls from this area */
+  hasGirlsVan: boolean;
+  /** A van runs for boys from this area */
+  hasBoysVan: boolean;
+}
+
+export interface PublicAreasResponseDto {
+  data: PublicArea[];
+}
+
+export interface PublicSession {
+  id: string;
+  /** e.g. DR1447 */
+  name: string;
+  /** First day of classes */
+  startsAt?: string;
+  /** Last day of classes; registration closes after it */
+  endsAt?: string;
+  /** Whether the /public admission routes accept registrations */
+  admissionsOpen: boolean;
+}
+
+export interface PublicSessionResponseDto {
+  data: PublicSession;
+}
+
 export interface AdminLoginRequestDto {
   /** Admin email address */
   email: string;
@@ -205,6 +246,123 @@ export interface AdminCreatePasswordRequestDto {
 export interface AdminCreatePasswordResponseDto {
   /** Success message */
   message: string;
+}
+
+export type Permission = (typeof Permission)[keyof typeof Permission];
+
+export const Permission = {
+  staffmanage: 'staff.manage',
+  sectionsmanage: 'sections.manage',
+  resultsenter: 'results.enter',
+  resultslock: 'results.lock',
+  resultsoverride: 'results.override',
+  studentseditIdentity: 'students.editIdentity',
+  studentsmerge: 'students.merge',
+  reportsview: 'reports.view',
+  auditview: 'audit.view',
+} as const;
+
+export interface PermissionDefinition {
+  code: Permission;
+  description: string;
+}
+
+export interface ListPermissionsResponseDto {
+  /** Total number of records */
+  count: number;
+  data: PermissionDefinition[];
+}
+
+export type RoleName = (typeof RoleName)[keyof typeof RoleName];
+
+export const RoleName = {
+  SUPER_ADMIN: 'SUPER_ADMIN',
+  ADMIN: 'ADMIN',
+  TEACHER: 'TEACHER',
+} as const;
+
+export interface AdminPermissionGrant {
+  permission: Permission;
+  /** Admin user who granted it */
+  grantedById?: string;
+  grantedAt: string;
+}
+
+export interface AdminUserPermissions {
+  adminUserId: string;
+  role: RoleName;
+  /** What the admin can do now. A SUPER_ADMIN gets every permission. */
+  effective: Permission[];
+  /** Permissions granted explicitly */
+  grants: AdminPermissionGrant[];
+}
+
+export interface DetailAdminPermissionsResponseDto {
+  /** Message of the action */
+  message: string;
+  data: AdminUserPermissions;
+}
+
+export interface UpdateAdminPermissionsDto {
+  permissions: Permission[];
+  /** Why, for the audit log */
+  reason?: string;
+}
+
+export type AuditActorType = (typeof AuditActorType)[keyof typeof AuditActorType];
+
+export const AuditActorType = {
+  ADMIN: 'ADMIN',
+  STAFF: 'STAFF',
+  SYSTEM: 'SYSTEM',
+} as const;
+
+/**
+ * Values before the change
+ */
+export type AuditLogEntryBefore = { [key: string]: unknown };
+
+/**
+ * Values after the change
+ */
+export type AuditLogEntryAfter = { [key: string]: unknown };
+
+export interface AuditLogEntry {
+  id: string;
+  /** Position in the chain, starting at 1 */
+  seq: number;
+  actorType: AuditActorType;
+  adminUserId?: string;
+  staffUserId?: string;
+  staffDeviceId?: string;
+  action: string;
+  entityType: string;
+  entityId: string;
+  /** Values before the change */
+  before?: AuditLogEntryBefore;
+  /** Values after the change */
+  after?: AuditLogEntryAfter;
+  reason?: string;
+  ip?: string;
+  createdAt: string;
+  prevHash?: string;
+  hash: string;
+}
+
+export interface ListAuditLogsResponseDto {
+  /** Total number of records */
+  count: number;
+  data: AuditLogEntry[];
+}
+
+export interface VerifyAuditLogResponseDto {
+  /** True when every entry is present and matches its hash */
+  ok: boolean;
+  /** Entries checked before stopping */
+  checked: number;
+  /** The first entry that failed */
+  firstBadSeq?: number;
+  problem?: string;
 }
 
 export interface CreateAclRequestDto {
@@ -810,6 +968,66 @@ export interface LegacyAdmissionPrefill {
   alternatePhone?: string;
   /** address */
   address?: string;
+  /** schoolName */
+  schoolName?: string;
+  /** schoolClass */
+  schoolClass?: string;
+  /** lastYearClass */
+  lastYearClass?: string;
+  /** vanRequired */
+  vanRequired?: boolean;
+  /** isMarried */
+  isMarried?: boolean;
+  /** isWorking */
+  isWorking?: boolean;
+}
+
+export interface LegacyStudentRow {
+  /** id */
+  id: string;
+  /** true if this student already has an admission */
+  alreadyRegistered: boolean;
+  /** grNumber (legacy gr_no) */
+  grNumber?: string;
+  /** name */
+  name?: string;
+  /** fatherName (legacy fathers_name) */
+  fatherName?: string;
+  /** gender (legacy free-form text) */
+  gender?: string;
+  /** phone */
+  phone?: string;
+  /** prefill payload for admission create form */
+  prefill: LegacyAdmissionPrefill;
+}
+
+export interface SearchLegacyAdmissionsResponseDto {
+  /** Total number of records */
+  count: number;
+  data: LegacyStudentRow[];
+}
+
+export interface LegacyAdmissionFullPrefill {
+  /** legacyStudentId */
+  legacyStudentId?: string;
+  /** branchId (auto-resolved if possible) */
+  branchId?: string;
+  /** areaId (auto-resolved if possible) */
+  areaId?: string;
+  /** student name */
+  name?: string;
+  /** father/guardian name */
+  fatherName?: string;
+  /** dateOfBirth */
+  dateOfBirth?: string;
+  /** normalized gender (if possible) */
+  gender?: Gender;
+  /** phone */
+  phone?: string;
+  /** alternatePhone */
+  alternatePhone?: string;
+  /** address */
+  address?: string;
   /** identityNumber (B-Form/CNIC as text) */
   identityNumber?: string;
   /** schoolName */
@@ -837,7 +1055,7 @@ export interface LegacyAdmissionRaw {
   imageUrl?: string;
 }
 
-export interface LegacyStudentRow {
+export interface LegacyStudentFullRow {
   /** id */
   id: string;
   /** true if an admission already exists for this phone */
@@ -859,17 +1077,17 @@ export interface LegacyStudentRow {
   /** isVerified */
   isVerified?: boolean;
   /** prefill payload for admission create form */
-  prefill: LegacyAdmissionPrefill;
+  prefill: LegacyAdmissionFullPrefill;
   /** warnings produced while building prefill */
   warnings: string[];
   /** raw legacy fields for display/debug */
   raw: LegacyAdmissionRaw;
 }
 
-export interface SearchLegacyAdmissionsResponseDto {
+export interface SearchLegacyAdmissionsAdminResponseDto {
   /** Total number of records */
   count: number;
-  data: LegacyStudentRow[];
+  data: LegacyStudentFullRow[];
 }
 
 export interface CreateAdmissionDto {
@@ -1410,30 +1628,6 @@ export interface UpdateAdmissionStatusResponseDto {
   data: Admission;
 }
 
-export interface UpdateAdmissionClassLevelDto {
-  /** Class level to place the student in. Must match the student’s gender. */
-  classLevelId: string;
-  /** Why the class was overridden */
-  reason?: string;
-}
-
-export interface AdmissionClassLevelSummary {
-  id: string;
-  code: string;
-  name: string;
-}
-
-export interface AdmissionClassLevelChange {
-  admissionId: string;
-  classLevel: AdmissionClassLevelSummary;
-}
-
-export interface UpdateAdmissionClassLevelResponseDto {
-  /** Message of the action */
-  message: string;
-  data: AdmissionClassLevelChange;
-}
-
 export interface MarkFeePaidDto {
   /** isFeePaid */
   isFeePaid: boolean;
@@ -1454,6 +1648,735 @@ export interface FinalizeAdmissionResponseDto {
   /** Message of the action */
   message: string;
   data: Admission;
+}
+
+export interface PublicReturningLookupDto {
+  /** sessionId the family is registering for */
+  sessionId: string;
+  /** Full mobile number on last year’s record, e.g. 03001234567 */
+  phone?: string;
+  /** GR number from last year’s card (typed or scanned) */
+  grNumber?: string;
+}
+
+export type ReturningStudentState = (typeof ReturningStudentState)[keyof typeof ReturningStudentState];
+
+export const ReturningStudentState = {
+  CAN_VERIFY: 'CAN_VERIFY',
+  ALREADY_REGISTERED: 'ALREADY_REGISTERED',
+  LOCKED: 'LOCKED',
+  NEEDS_OFFICE: 'NEEDS_OFFICE',
+} as const;
+
+export interface ReturningStudentCandidate {
+  /** Opaque reference to send back with the answer. Expires in 30 minutes. */
+  ref: string;
+  /** First name with initials, e.g. "Fatima Z." */
+  displayName: string;
+  gender: Gender;
+  /** Last class attended, e.g. "Tiflan 3" */
+  lastClassName?: string;
+  state: ReturningStudentState;
+  /** Birth dates to choose from (YYYY-MM-DD), one of them correct. Empty unless state is CAN_VERIFY. */
+  dateOfBirthOptions: string[];
+}
+
+export interface PublicReturningLookupResponseDto {
+  /** Message of the action */
+  message: string;
+  data: ReturningStudentCandidate[];
+}
+
+export interface PublicReturningVerifyDto {
+  /** sessionId the family is registering for */
+  sessionId: string;
+  /** ref from the lookup */
+  ref: string;
+  /** The chosen birth date (YYYY-MM-DD) */
+  dateOfBirth: string;
+}
+
+export interface ReturningStudentPrefill {
+  /** GR number */
+  grNumber: string;
+  /** First name with initials */
+  displayName: string;
+  /** dateOfBirth (YYYY-MM-DD) */
+  dateOfBirth: string;
+  gender: Gender;
+  /** Mobile number on record, masked */
+  maskedPhone?: string;
+  /** Last class code */
+  lastYearClass?: string;
+  /** branchId (when it can be resolved) */
+  branchId?: string;
+  /** areaId (when the area is still active) */
+  areaId?: string;
+  /** vanRequired */
+  vanRequired?: boolean;
+  /** isMarried */
+  isMarried?: boolean;
+  /** isWorking */
+  isWorking?: boolean;
+}
+
+export interface PublicReturningVerifyResult {
+  /** Whether the chosen date was right */
+  verified: boolean;
+  /** Wrong answers left before the record is locked */
+  attemptsLeft: number;
+  /** Send with the registration. Present only when verified; expires in 60 minutes. */
+  returningToken?: string;
+  /** Present only when verified */
+  prefill?: ReturningStudentPrefill;
+}
+
+export interface PublicReturningVerifyResponseDto {
+  /** Message of the action */
+  message: string;
+  data: PublicReturningVerifyResult;
+}
+
+export interface PublicCreateReturningAdmissionDto {
+  /** sessionId */
+  sessionId: string;
+  /** branchId */
+  branchId: string;
+  /** areaId */
+  areaId: string;
+  /** alternatePhone */
+  alternatePhone?: string;
+  /** address */
+  address?: string;
+  /** schoolName */
+  schoolName?: string;
+  /** schoolClass */
+  schoolClass?: string;
+  /** vanRequired */
+  vanRequired?: boolean;
+  /** isMarried */
+  isMarried?: boolean;
+  /** isWorking */
+  isWorking?: boolean;
+  /** returningToken from the verify step */
+  returningToken: string;
+}
+
+export interface ReceiptBranch {
+  id: string;
+  name: string;
+}
+
+export interface ReceiptClassLevel {
+  id: string;
+  age: number;
+  code: string;
+  name: string;
+  group: ClassLevelGroup;
+}
+
+export interface PublicAdmissionReceipt {
+  id: string;
+  grNumber: string;
+  gender: Gender;
+  status: AdmissionStatus;
+  branch: ReceiptBranch;
+  classLevel: ReceiptClassLevel;
+}
+
+export interface PublicAdmissionReceiptResponseDto {
+  /** Message of the action */
+  message: string;
+  data: PublicAdmissionReceipt;
+}
+
+export interface PublicCreateAdmissionDto {
+  /** sessionId */
+  sessionId: string;
+  /** branchId */
+  branchId: string;
+  /** areaId */
+  areaId: string;
+  /** student name */
+  name: string;
+  /** father/guardian name */
+  fatherName: string;
+  /** dateOfBirth */
+  dateOfBirth: string;
+  gender: Gender;
+  /** phone */
+  phone: string;
+  /** alternatePhone */
+  alternatePhone?: string;
+  /** address */
+  address?: string;
+  /** identityNumber (B-Form/CNIC as text) */
+  identityNumber?: string;
+  /** schoolName */
+  schoolName?: string;
+  /** schoolClass */
+  schoolClass?: string;
+  /** lastYearClass */
+  lastYearClass?: string;
+  /** vanRequired */
+  vanRequired?: boolean;
+  /** isMarried */
+  isMarried?: boolean;
+  /** isWorking */
+  isWorking?: boolean;
+  /** identityProofAssetId */
+  identityProofAssetId?: string;
+  /** photoAssetId */
+  photoAssetId?: string;
+}
+
+export interface ResolvedStudentInfo {
+  id: string;
+  grNumber: string;
+  name: string;
+  fatherName: string;
+  dateOfBirth: string;
+  gender: Gender;
+}
+
+export type StudentGrAliasSource = (typeof StudentGrAliasSource)[keyof typeof StudentGrAliasSource];
+
+export const StudentGrAliasSource = {
+  MERGE: 'MERGE',
+  LEGACY_LINK: 'LEGACY_LINK',
+} as const;
+
+export interface StudentGrAliasEntity {
+  grNumber: string;
+  source: StudentGrAliasSource;
+  mergeId: string;
+  createdAt: string;
+}
+
+export interface ResolvedStudent {
+  /** The GR that was looked up */
+  queriedGr: string;
+  /** The student's current GR */
+  currentGr: string;
+  /** The GR is an old one: show "Old card. Current GR: …" */
+  viaAlias: boolean;
+  student: ResolvedStudentInfo;
+  /** Every old GR that finds this student */
+  aliases: StudentGrAliasEntity[];
+}
+
+export interface ResolveStudentResponseDto {
+  /** Message of the action */
+  message: string;
+  data: ResolvedStudent;
+}
+
+export interface MergeFieldChoicesDto {
+  /** Student ID to take the name from */
+  name?: string;
+  fatherName?: string;
+  /** Required when the birth dates differ */
+  dateOfBirth?: string;
+  phone?: string;
+  alternatePhone?: string;
+  address?: string;
+  /** B-form / CNIC number */
+  identityNumber?: string;
+  photoAssetId?: string;
+  identityProofAssetId?: string;
+}
+
+export interface PreviewStudentMergeDto {
+  /** The record that stays; its GR survives */
+  survivorStudentId: string;
+  /** Records merged into the survivor (1 to 9) */
+  mergeStudentIds: string[];
+  /** The admission to keep live when the records have more than one live admission in a session */
+  keepAdmissionId?: string;
+  fieldChoices?: MergeFieldChoicesDto;
+  /** Confirms the birth dates are more than a year apart */
+  confirmDobMismatch?: boolean;
+  /** Merge even though two live admissions in a session both have a fee paid (needs forceReason) */
+  force?: boolean;
+}
+
+export interface MergeStudentSummary {
+  id: string;
+  grNumber: string;
+  name: string;
+  fatherName: string;
+  dateOfBirth: string;
+  gender: Gender;
+  phone: string;
+  alternatePhone?: string;
+  address?: string;
+  identityNumber?: string;
+  photoAssetId?: string;
+  identityProofAssetId?: string;
+  /** Its GR is a 2025 GR */
+  has2025Gr: boolean;
+  createdAt: string;
+}
+
+export interface MergeFinalStudent {
+  grNumber: string;
+  name: string;
+  fatherName: string;
+  dateOfBirth: string;
+  gender: Gender;
+  phone: string;
+  alternatePhone?: string;
+  address?: string;
+  identityNumber?: string;
+  photoAssetId?: string;
+  identityProofAssetId?: string;
+}
+
+export interface MergeFieldValue {
+  studentId: string;
+  grNumber: string;
+  /**
+   * Dates as YYYY-MM-DD
+   * @nullable
+   */
+  value?: string | null;
+}
+
+export interface MergeFieldDifference {
+  field: string;
+  values: MergeFieldValue[];
+  /** The record whose value the survivor gets */
+  chosenStudentId: string;
+  /** The admin chose it in fieldChoices (otherwise the default) */
+  chosenByAdmin: boolean;
+}
+
+export interface MergeCardCounts {
+  pending: number;
+  completed: number;
+  cancelled: number;
+}
+
+export type MergeAdmissionAction = (typeof MergeAdmissionAction)[keyof typeof MergeAdmissionAction];
+
+export const MergeAdmissionAction = {
+  STAY: 'STAY',
+  MOVE: 'MOVE',
+  RETIRE: 'RETIRE',
+  MOVE_INACTIVE: 'MOVE_INACTIVE',
+} as const;
+
+export interface MergeAdmissionItem {
+  id: string;
+  /** The record it belongs to now */
+  studentId: string;
+  grNumber: string;
+  sessionId: string;
+  sessionName: string;
+  status: AdmissionStatus;
+  isActive: boolean;
+  isFeePaid: boolean;
+  hasInterview: boolean;
+  cards: MergeCardCounts;
+  attendanceCount: number;
+  announcementCount: number;
+  createdAt: string;
+  action: MergeAdmissionAction;
+}
+
+export interface MergeLegacyLink {
+  legacyStudentId: string;
+  grNumber?: string;
+}
+
+export interface MergeProblem {
+  code: string;
+  message: string;
+}
+
+export interface MergePreview {
+  survivor: MergeStudentSummary;
+  mergedStudents: MergeStudentSummary[];
+  /** The record holding the GR that pickPrimaryGr() keeps */
+  suggestedSurvivorStudentId: string;
+  /** The GR the rule keeps as primary */
+  suggestedPrimaryGr: string;
+  /** The rule used */
+  primaryGrRule: string;
+  /** Why the rule picked that GR */
+  primaryGrReason: string;
+  finalStudent: MergeFinalStudent;
+  differences: MergeFieldDifference[];
+  admissions: MergeAdmissionItem[];
+  /** Admissions that move to the survivor */
+  admissionsMoved: string[];
+  /** Admissions set to DUPLICATE_MERGED and inactive */
+  admissionsRetired: string[];
+  /** PENDING card requests that will be cancelled */
+  cardRequestsCancelled: string[];
+  /** GR numbers that become aliases of the survivor */
+  aliasesAdded: string[];
+  /** Existing aliases moved to the survivor */
+  aliasesMoved: string[];
+  /** 2025 records that will point at the survivor */
+  legacyStudentsLinked: MergeLegacyLink[];
+  warnings: MergeProblem[];
+  /** The merge is refused while any remain */
+  blocking: MergeProblem[];
+  canMerge: boolean;
+  /** Send back with the merge; it fails if the data has changed since */
+  previewHash: string;
+}
+
+export interface PreviewStudentMergeResponseDto {
+  /** Message of the action */
+  message: string;
+  data: MergePreview;
+}
+
+export type MergeConfidence = (typeof MergeConfidence)[keyof typeof MergeConfidence];
+
+export const MergeConfidence = {
+  CERTAIN: 'CERTAIN',
+  HIGH: 'HIGH',
+  MEDIUM: 'MEDIUM',
+  LOW: 'LOW',
+} as const;
+
+export interface MergeEvidenceDto {
+  /** Pair or cluster ID from the detection run */
+  detectionPairId?: string;
+  confidence?: MergeConfidence;
+  /** Who reviewed the pair */
+  reviewer?: string;
+  /** Date of the review file, YYYY-MM-DD */
+  reviewFileDate?: string;
+  notes?: string;
+}
+
+export interface CreateStudentMergeDto {
+  /** The record that stays; its GR survives */
+  survivorStudentId: string;
+  /** Records merged into the survivor (1 to 9) */
+  mergeStudentIds: string[];
+  /** The admission to keep live when the records have more than one live admission in a session */
+  keepAdmissionId?: string;
+  fieldChoices?: MergeFieldChoicesDto;
+  /** Confirms the birth dates are more than a year apart */
+  confirmDobMismatch?: boolean;
+  /** Merge even though two live admissions in a session both have a fee paid (needs forceReason) */
+  force?: boolean;
+  /** Why these records are one person */
+  reason: string;
+  evidence?: MergeEvidenceDto;
+  /** previewHash from POST /admin/students/merge/preview */
+  previewHash: string;
+  /** Required with force */
+  forceReason?: string;
+}
+
+export type StudentMergeKind = (typeof StudentMergeKind)[keyof typeof StudentMergeKind];
+
+export const StudentMergeKind = {
+  MERGE: 'MERGE',
+  LEGACY_LINK: 'LEGACY_LINK',
+  BACKFILL: 'BACKFILL',
+  LEGACY_MATERIALIZE: 'LEGACY_MATERIALIZE',
+} as const;
+
+/**
+ * Detection pair ID, confidence, reviewer, review file date; class override for a backfill
+ */
+export type StudentMergeEntityEvidence = { [key: string]: unknown };
+
+export interface StudentMergeEntity {
+  id: string;
+  kind: StudentMergeKind;
+  survivorStudentId: string;
+  /** The survivor's GR right after this change */
+  survivorGrNumber: string;
+  /** The survivor's GR before (differs for a link) */
+  survivorGrNumberBefore?: string;
+  mergedStudentIds: string[];
+  /** GRs of the merged records (now aliases) */
+  mergedGrNumbers: string[];
+  reason: string;
+  /** Detection pair ID, confidence, reviewer, review file date; class override for a backfill */
+  evidence?: StudentMergeEntityEvidence;
+  createdBy: AdminUserBase;
+  createdAt: string;
+  undoneAt?: string;
+  undoneBy?: AdminUserBase;
+  undoReason?: string;
+}
+
+export interface CreateStudentMergeResponseDto {
+  /** Message of the action */
+  message: string;
+  data: StudentMergeEntity;
+}
+
+export interface BatchStudentMergeRowDto {
+  kind: StudentMergeKind;
+  survivorGr?: string;
+  mergeGrs?: string[];
+  /** GR of the record whose admission stays live */
+  keepAdmissionGr?: string;
+  /** The 2025 GR (LEGACY_LINK, BACKFILL) */
+  legacyGr?: string;
+  reason: string;
+  confidence?: MergeConfidence;
+  reviewer?: string;
+  /** YYYY-MM-DD */
+  reviewFileDate?: string;
+  detectionPairId?: string;
+  /** MERGE: student IDs, as in the preview */
+  fieldChoices?: MergeFieldChoicesDto;
+  confirmDobMismatch?: boolean;
+  force?: boolean;
+  forceReason?: string;
+  /** MERGE: the dry run hash; when given, the row fails if the data changed */
+  previewHash?: string;
+  /** BACKFILL: session ID */
+  sessionId?: string;
+  /** BACKFILL: session name, e.g. DR1447 */
+  sessionName?: string;
+  /** BACKFILL */
+  classLevelId?: string;
+  /** BACKFILL: class level code */
+  classLevelCode?: string;
+  /** BACKFILL */
+  branchId?: string;
+  /** BACKFILL: branch code */
+  branchCode?: string;
+  /** BACKFILL */
+  areaId?: string;
+  /** BACKFILL: area code within the branch */
+  areaCode?: string;
+}
+
+export interface BatchStudentMergeDto {
+  rows: BatchStudentMergeRowDto[];
+}
+
+export interface BatchStudentMergeSummary {
+  total: number;
+  ready: number;
+  done: number;
+  skipped: number;
+  blocked: number;
+  error: number;
+}
+
+export type BatchRowStatus = (typeof BatchRowStatus)[keyof typeof BatchRowStatus];
+
+export const BatchRowStatus = {
+  READY: 'READY',
+  DONE: 'DONE',
+  SKIPPED: 'SKIPPED',
+  BLOCKED: 'BLOCKED',
+  ERROR: 'ERROR',
+} as const;
+
+export interface LinkLegacyPreview {
+  studentId: string;
+  legacyStudentId: string;
+  grNumberBefore: string;
+  /** Set when the 2025 GR becomes primary */
+  grNumberAfter?: string;
+  /** The GR that becomes an alias (the old one, or the 2025 one) */
+  aliasAdded?: string;
+  /** Why that GR stays primary (pickPrimaryGr) */
+  primaryGrReason?: string;
+  /** Admissions that get linked to the 2025 record */
+  admissionsLinked: string[];
+  warnings: MergeProblem[];
+  blocking: MergeProblem[];
+}
+
+export interface BackfillPreview {
+  legacyStudentId: string;
+  grNumber?: string;
+  sessionId: string;
+  classLevelId: string;
+  /** The class the birth date gives, for comparison */
+  derivedClassLevelId?: string;
+  /** The class differs from the derived one */
+  isClassOverride: boolean;
+  branchId: string;
+  areaId: string;
+  warnings: MergeProblem[];
+  blocking: MergeProblem[];
+}
+
+export interface BatchStudentMergeRowResult {
+  /** Row index in the request, from 0 */
+  index: number;
+  kind: StudentMergeKind;
+  status: BatchRowStatus;
+  mergeId?: string;
+  mergePreview?: MergePreview;
+  linkPreview?: LinkLegacyPreview;
+  backfillPreview?: BackfillPreview;
+  blocking: MergeProblem[];
+  warnings: MergeProblem[];
+  error?: string;
+}
+
+export interface BatchStudentMergeResponseDto {
+  message: string;
+  dryRun: boolean;
+  summary: BatchStudentMergeSummary;
+  data: BatchStudentMergeRowResult[];
+}
+
+export interface MaterializeLegacyDto {
+  /** Only these 2025 records (legacy_student.id). Default: every record with no student */
+  legacyStudentIds?: string[];
+  /** 2025 GRs to skip (same person as an existing student) */
+  skipGrs?: string[];
+  /** 2025 records to skip, by legacy_student.id */
+  skipLegacyIds?: string[];
+  /** Area for records whose 2025 area code doesn't match exactly one area */
+  fallbackAreaId?: string;
+  reason: string;
+}
+
+export interface MaterializeLegacyRowResult {
+  legacyStudentId: string;
+  grNumber?: string;
+  status: BatchRowStatus;
+  /** The student created (or that already existed) */
+  studentId?: string;
+  mergeId?: string;
+  /** Why it was skipped or blocked */
+  problems: MergeProblem[];
+}
+
+export interface MaterializeLegacyResponseDto {
+  message: string;
+  dryRun: boolean;
+  /** Pass to POST /admin/students/merges/undo-batch to undo the run */
+  batchId?: string;
+  summary: BatchStudentMergeSummary;
+  data: MaterializeLegacyRowResult[];
+}
+
+export interface BackfillFromLegacyDto {
+  /** The 2025 record (legacy_student.id) */
+  legacyStudentId: string;
+  /** The session they attended */
+  sessionId: string;
+  /** The class they actually sat (from the result sheet) */
+  classLevelId: string;
+  branchId: string;
+  areaId: string;
+  reason: string;
+  evidence?: MergeEvidenceDto;
+}
+
+export interface BackfillFromLegacyResponseDto {
+  /** Message of the action */
+  message: string;
+  data: StudentMergeEntity;
+  studentId: string;
+  admissionId: string;
+}
+
+export type StudentMergeSortBy = (typeof StudentMergeSortBy)[keyof typeof StudentMergeSortBy];
+
+export const StudentMergeSortBy = {
+  createdAt: 'createdAt',
+} as const;
+
+export interface ListStudentMergesResponseDto {
+  /** Total number of records */
+  count: number;
+  data: StudentMergeEntity[];
+}
+
+export interface UndoBatchDto {
+  /** batchId from a materialize run */
+  batchId: string;
+  reason: string;
+}
+
+export interface UndoBatchRowResult {
+  mergeId: string;
+  grNumber: string;
+  status: BatchRowStatus;
+  problems: MergeProblem[];
+}
+
+export interface UndoBatchResponseDto {
+  message: string;
+  summary: BatchStudentMergeSummary;
+  data: UndoBatchRowResult[];
+}
+
+/**
+ * Detection pair ID, confidence, reviewer, review file date; class override for a backfill
+ */
+export type StudentMergeDetailEntityEvidence = { [key: string]: unknown };
+
+/**
+ * Everything an undo restores (rows as they were before the change)
+ */
+export type StudentMergeDetailEntitySnapshot = { [key: string]: unknown };
+
+export interface StudentMergeDetailEntity {
+  id: string;
+  kind: StudentMergeKind;
+  survivorStudentId: string;
+  /** The survivor's GR right after this change */
+  survivorGrNumber: string;
+  /** The survivor's GR before (differs for a link) */
+  survivorGrNumberBefore?: string;
+  mergedStudentIds: string[];
+  /** GRs of the merged records (now aliases) */
+  mergedGrNumbers: string[];
+  reason: string;
+  /** Detection pair ID, confidence, reviewer, review file date; class override for a backfill */
+  evidence?: StudentMergeDetailEntityEvidence;
+  createdBy: AdminUserBase;
+  createdAt: string;
+  undoneAt?: string;
+  undoneBy?: AdminUserBase;
+  undoReason?: string;
+  /** Everything an undo restores (rows as they were before the change) */
+  snapshot: StudentMergeDetailEntitySnapshot;
+  canUndo: boolean;
+  /** Why it cannot be undone now */
+  undoBlockedBy: MergeProblem[];
+}
+
+export interface DetailStudentMergeResponseDto {
+  /** Message of the action */
+  message: string;
+  data: StudentMergeDetailEntity;
+}
+
+export interface UndoStudentMergeDto {
+  reason: string;
+}
+
+export interface UndoStudentMergeResponseDto {
+  /** Message of the action */
+  message: string;
+  data: StudentMergeEntity;
+}
+
+export interface LinkLegacyDto {
+  /** The 2025 record (legacy_student.id) */
+  legacyStudentId: string;
+  reason: string;
+  evidence?: MergeEvidenceDto;
+}
+
+export interface LinkLegacyResponseDto {
+  /** Message of the action */
+  message: string;
+  data: StudentMergeEntity;
 }
 
 export interface StudentListBranch {
@@ -2948,6 +3871,920 @@ export interface TestAnnouncementTemplateResponseDto {
   resolvedVariables: TestAnnouncementTemplateResponseDtoResolvedVariables;
 }
 
+export type StaffRole = (typeof StaffRole)[keyof typeof StaffRole];
+
+export const StaffRole = {
+  TEACHER: 'TEACHER',
+  TRAINER: 'TRAINER',
+  TESTER: 'TESTER',
+  FEE_DESK: 'FEE_DESK',
+} as const;
+
+export type StaffLanguage = (typeof StaffLanguage)[keyof typeof StaffLanguage];
+
+export const StaffLanguage = {
+  ur: 'ur',
+  en: 'en',
+} as const;
+
+export interface CreateStaffUserDto {
+  name: string;
+  phone?: string;
+  roles: StaffRole[];
+  language?: StaffLanguage;
+}
+
+export interface StaffDeviceEntity {
+  id: string;
+  label: string;
+  activatedAt: string;
+  lastSeenAt?: string;
+  /** Logged out */
+  revokedAt?: string;
+  revokeReason?: string;
+  /** Logged out and its unsent work discarded (lost or stolen phone) */
+  discardUnsent: boolean;
+  /** Until when the logged-out phone may still send work made before the logout */
+  drainUntil?: string;
+}
+
+export type StaffLoginCodeStatus = (typeof StaffLoginCodeStatus)[keyof typeof StaffLoginCodeStatus];
+
+export const StaffLoginCodeStatus = {
+  NONE: 'NONE',
+  OPEN: 'OPEN',
+  USED: 'USED',
+  EXPIRED: 'EXPIRED',
+  LOCKED: 'LOCKED',
+  REPLACED: 'REPLACED',
+  DEACTIVATED: 'DEACTIVATED',
+} as const;
+
+export interface StaffLoginCodeState {
+  status: StaffLoginCodeStatus;
+  issuedAt?: string;
+  expiresAt?: string;
+  attemptsLeft?: number;
+}
+
+export interface StaffUserDetail {
+  id: string;
+  /** Printed on the staff card and in its QR code */
+  staffId: string;
+  name: string;
+  phone?: string;
+  roles: StaffRole[];
+  language: StaffLanguage;
+  isActive: boolean;
+  /** Phones logged in now */
+  activeDevices: number;
+  createdAt: string;
+  updatedAt?: string;
+  /** Newest first */
+  devices: StaffDeviceEntity[];
+  /** The latest login code (never the code itself) */
+  loginCode: StaffLoginCodeState;
+}
+
+export interface StaffUserResponseDto {
+  /** Message of the action */
+  message: string;
+  data: StaffUserDetail;
+}
+
+export interface StaffUserEntity {
+  id: string;
+  /** Printed on the staff card and in its QR code */
+  staffId: string;
+  name: string;
+  phone?: string;
+  roles: StaffRole[];
+  language: StaffLanguage;
+  isActive: boolean;
+  /** Phones logged in now */
+  activeDevices: number;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface ListStaffUsersResponseDto {
+  /** Total number of records */
+  count: number;
+  data: StaffUserEntity[];
+}
+
+export interface UpdateStaffUserDto {
+  name?: string;
+  phone?: string;
+  roles?: StaffRole[];
+  language?: StaffLanguage;
+}
+
+export interface StaffLogoutDto {
+  /** For a lost or stolen phone: no drain-only token, so work the phone has not sent is lost. Also applies to phones already logged out and still draining. */
+  discardUnsent?: boolean;
+  /** Why, for the audit log */
+  reason?: string;
+}
+
+export interface StaffLogoutResponseDto {
+  /** Message of the action */
+  message: string;
+  /** Phones logged out now */
+  revoked: number;
+  /** Already logged-out phones whose unsent work is now discarded */
+  discarded: number;
+}
+
+export interface IssueLoginCodeResponseDto {
+  /** Message of the action */
+  message: string;
+  staffId: string;
+  /** Shown once. Give it to the staff member in person; it is not on the card. */
+  code: string;
+  /** 12 hours from now */
+  expiresAt: string;
+}
+
+/**
+ * ECDSA P-256 public key as a JWK (kty, crv, x, y). Created in the browser as non-extractable.
+ */
+export type ActivateStaffDeviceDtoPublicKeyJwk = { [key: string]: unknown };
+
+export interface ActivateStaffDeviceDto {
+  /** From the staff card */
+  staffId: string;
+  /** The one-time code an admin issued */
+  code: string;
+  /** ECDSA P-256 public key as a JWK (kty, crv, x, y). Created in the browser as non-extractable. */
+  publicKeyJwk: ActivateStaffDeviceDtoPublicKeyJwk;
+  deviceLabel: string;
+}
+
+export interface StaffUserSummaryDto {
+  id: string;
+  name: string;
+  roles: StaffRole[];
+  language: StaffLanguage;
+}
+
+export interface ActivateStaffDeviceResponseDto {
+  deviceId: string;
+  user: StaffUserSummaryDto;
+}
+
+export interface StaffChallengeResponseDto {
+  /** Sign this exact string. Single use. */
+  challenge: string;
+  /** Two minutes from now */
+  expiresAt: string;
+}
+
+export interface StaffTokenDto {
+  deviceId: string;
+  challenge: string;
+  /** ECDSA P-256 / SHA-256 over the UTF-8 challenge: raw 64-byte r‖s (IEEE P1363), base64url */
+  signature: string;
+}
+
+/**
+ * `drain` after a logout: accepted only by /staff/sync, for work made before the logout
+ */
+export type StaffTokenScope = (typeof StaffTokenScope)[keyof typeof StaffTokenScope];
+
+export const StaffTokenScope = {
+  full: 'full',
+  drain: 'drain',
+} as const;
+
+export interface StaffTokenResponseDto {
+  /** JWT, audience staff-access-token */
+  accessToken: string;
+  /** Seconds */
+  expiresIn: number;
+  /** `drain` after a logout: accepted only by /staff/sync, for work made before the logout */
+  scope: StaffTokenScope;
+}
+
+/**
+ * The user's role here
+ */
+export type SectionTeacherRole = (typeof SectionTeacherRole)[keyof typeof SectionTeacherRole];
+
+export const SectionTeacherRole = {
+  CLASS_TEACHER: 'CLASS_TEACHER',
+  ASSISTANT: 'ASSISTANT',
+} as const;
+
+export interface StaffSectionDto {
+  id: string;
+  name: string;
+  classLevelCode: string;
+  branchCode: string;
+  /** The user's role here */
+  role: SectionTeacherRole;
+}
+
+export interface StaffMeResponseDto {
+  user: StaffUserSummaryDto;
+  roles: StaffRole[];
+  /** Active sections, in active sessions, that the user teaches */
+  sections: StaffSectionDto[];
+  /** Older apps get 426 APP_UPDATE_REQUIRED on sync */
+  minAppVersion: string;
+}
+
+export type StaffSkillStepDtoPart = (typeof StaffSkillStepDtoPart)[keyof typeof StaffSkillStepDtoPart];
+
+export const StaffSkillStepDtoPart = {
+  WAZU: 'WAZU',
+  NAMAZ: 'NAMAZ',
+} as const;
+
+export interface StaffSkillStepDto {
+  /** As in lastYear.wazuWrongSteps / namazWrongSteps */
+  code: string;
+  part: StaffSkillStepDtoPart;
+  /** @nullable */
+  labelUr: string | null;
+  labelEn: string;
+  /** Order within the part, from 1 */
+  order: number;
+}
+
+export interface LastYearAttendanceDto {
+  present: number;
+  total: number;
+}
+
+export interface LastYearTheoryDto {
+  /**
+   * null when there was no pass mark (2026)
+   * @nullable
+   */
+  passed: boolean | null;
+  /** @nullable */
+  percentage: number | null;
+}
+
+export interface LastYearSummaryDto {
+  /** The session's name */
+  sessionCode: string;
+  classLevelCode: string;
+  /** @nullable */
+  attendance: LastYearAttendanceDto | null;
+  /** @nullable */
+  theory: LastYearTheoryDto | null;
+  /**
+   * Step codes from GET /results/steps; [] when none wrong, null when not graded by step
+   * @nullable
+   */
+  wazuWrongSteps: string[] | null;
+  /** @nullable */
+  namazWrongSteps: string[] | null;
+  /**
+   * Within branch, class level and gender
+   * @nullable
+   */
+  branchRank: number | null;
+  /** @nullable */
+  rankedOf: number | null;
+  /** @nullable */
+  interviewSummary: string | null;
+}
+
+export interface StaffSectionStudentDto {
+  admissionId: string;
+  studentId: string;
+  grNumber: string;
+  name: string;
+  fatherName: string;
+  classLevelCode: string;
+  /**
+   * null: "No record"
+   * @nullable
+   */
+  lastYear: LastYearSummaryDto | null;
+}
+
+/**
+ * attendance.mark: { sectionId, date: "YYYY-MM-DD" (Karachi), absentAdmissionIds: string[] }
+ */
+export type StaffSyncItemDtoPayload = { [key: string]: unknown };
+
+export interface StaffSyncItemDto {
+  /** Made on the phone; a re-send is answered "duplicate" */
+  id: string;
+  type: string;
+  /** attendance.mark: { sectionId, date: "YYYY-MM-DD" (Karachi), absentAdmissionIds: string[] } */
+  payload: StaffSyncItemDtoPayload;
+  /** When the action was taken, on the phone */
+  clientTime: string;
+}
+
+export interface StaffSyncDto {
+  appVersion: string;
+  /** Processed in the order sent; at most 200 */
+  items: StaffSyncItemDto[];
+}
+
+export type StaffSyncStatus = (typeof StaffSyncStatus)[keyof typeof StaffSyncStatus];
+
+export const StaffSyncStatus = {
+  applied: 'applied',
+  duplicate: 'duplicate',
+  flagged: 'flagged',
+  rejected: 'rejected',
+} as const;
+
+/**
+ * Always set for rejected and flagged items; SUPERSEDED on an applied item that changed nothing
+ */
+export type StaffSyncReasonCode = (typeof StaffSyncReasonCode)[keyof typeof StaffSyncReasonCode];
+
+export const StaffSyncReasonCode = {
+  VALIDATION: 'VALIDATION',
+  ID_IN_USE: 'ID_IN_USE',
+  CLOCK_WRONG: 'CLOCK_WRONG',
+  DEVICE_REVOKED: 'DEVICE_REVOKED',
+  UNKNOWN_TYPE: 'UNKNOWN_TYPE',
+  NOT_YOUR_SECTION: 'NOT_YOUR_SECTION',
+  NOT_IN_SECTION: 'NOT_IN_SECTION',
+  INVALID_DATE: 'INVALID_DATE',
+  FUTURE_DATE: 'FUTURE_DATE',
+  NO_CLASS_DAY: 'NO_CLASS_DAY',
+  SENT_AFTER_LOGOUT: 'SENT_AFTER_LOGOUT',
+  LATE_DAY: 'LATE_DAY',
+  SUPERSEDED: 'SUPERSEDED',
+} as const;
+
+export interface StaffSyncResultDto {
+  id: string;
+  status: StaffSyncStatus;
+  /** Always set for rejected and flagged items; SUPERSEDED on an applied item that changed nothing */
+  reasonCode?: StaffSyncReasonCode;
+  /** English text, set together with reasonCode */
+  reason?: string;
+  serverTime: string;
+}
+
+export interface StaffSyncResponseDto {
+  /** In the order sent. An item that hit a server-side failure has no result: keep it pending and send it again. */
+  results: StaffSyncResultDto[];
+}
+
+export interface CreateSectionDto {
+  sessionId: string;
+  branchId: string;
+  /** Gendered class level, e.g. the ID of Muhibaan5-G */
+  classLevelId: string;
+  /** A–Z (or AA…). Unique per session, branch and class number, across both genders. Leave out to take the next free letter. */
+  letter?: string;
+  name?: string;
+}
+
+export interface SectionTeacherEntity {
+  staffUserId: string;
+  /** Staff ID printed on the card */
+  staffId: string;
+  name: string;
+  role: SectionTeacherRole;
+  isActive: boolean;
+}
+
+export interface Section {
+  id: string;
+  sessionId: string;
+  branchId: string;
+  branchCode: string;
+  classLevelId: string;
+  classLevelCode: string;
+  /** Class level code without the gender suffix */
+  classNumber: string;
+  letter: string;
+  name?: string;
+  /** name, or class number and letter */
+  displayName: string;
+  /** Students placed in the section */
+  studentCount: number;
+  teachers: SectionTeacherEntity[];
+  isActive: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface CreateSectionResponseDto {
+  /** Message of the action */
+  message: string;
+  data: Section;
+}
+
+export interface ListSectionsResponseDto {
+  /** Total number of records */
+  count: number;
+  data: Section[];
+}
+
+export interface SectionAdmission {
+  admissionId: string;
+  studentId: string;
+  grNumber: string;
+  name: string;
+  fatherName: string;
+  gender: Gender;
+  classLevelId: string;
+  classLevelCode: string;
+  sectionId?: string;
+  status: AdmissionStatus;
+  isFeePaid: boolean;
+}
+
+export interface ListSectionAdmissionsResponseDto {
+  /** Total number of records */
+  count: number;
+  data: SectionAdmission[];
+}
+
+export interface UnassignedCount {
+  branchId: string;
+  classLevelId: string;
+  classLevelCode: string;
+  count: number;
+}
+
+export interface UnassignedSummaryResponseDto {
+  /** Total number of records */
+  count: number;
+  data: UnassignedCount[];
+}
+
+export interface AssignAdmissionsDto {
+  /** Admissions to place in (or move to) the section */
+  admissionIds: string[];
+  /** Why, for the audit log */
+  reason?: string;
+}
+
+export interface UnassignAdmissionsResponseDto {
+  /** Message of the action */
+  message: string;
+  unassigned: number;
+}
+
+export interface BulkClassLevelOverrideItemDto {
+  admissionId: string;
+  /** Give this or classLevelCode */
+  classLevelId?: string;
+  /** Give this or classLevelId */
+  classLevelCode?: string;
+}
+
+export interface BulkClassLevelOverrideDto {
+  items: BulkClassLevelOverrideItemDto[];
+  /** Check and count, write nothing */
+  dryRun?: boolean;
+  /** Why, for the audit log */
+  reason?: string;
+}
+
+export interface BulkClassLevelOverrideRejectedDto {
+  /** Position in items, from 0 */
+  index: number;
+  admissionId: string;
+  reason: string;
+}
+
+export interface BulkClassLevelOverrideResponseDto {
+  /** Message of the action */
+  message: string;
+  dryRun: boolean;
+  /** Admissions moved to the given class level (would be, in a dry run) */
+  overridden: number;
+  /** Already in the given class level */
+  unchanged: number;
+  /** Of those moved, how many were taken out of a section */
+  sectionCleared: number;
+  rejected: BulkClassLevelOverrideRejectedDto[];
+}
+
+export interface OverrideClassLevelDto {
+  /** The class level to use instead of the one picked by age */
+  classLevelId: string;
+  /** Why, for the audit log */
+  reason?: string;
+}
+
+export interface OverrideClassLevelResponseDto {
+  /** Message of the action */
+  message: string;
+  admissionId: string;
+  classLevelId: string;
+  /** True while an admin override is in place */
+  overridden: boolean;
+  /** The student was taken out of a section of the old class */
+  sectionCleared: boolean;
+}
+
+export interface ClearClassLevelOverrideDto {
+  /** Why, for the audit log */
+  reason?: string;
+}
+
+export interface DetailSectionsResponseDto {
+  /** Message of the action */
+  message: string;
+  data: Section;
+}
+
+export interface UpdateSectionDto {
+  letter?: string;
+  /**
+   * null clears the name
+   * @nullable
+   */
+  name?: string | null;
+  /** Why, for the audit log */
+  reason?: string;
+}
+
+export interface UpdateSectionResponseDto {
+  /** Message of the action */
+  message: string;
+  data: Section;
+}
+
+export interface SectionTeacherItemDto {
+  staffUserId: string;
+  role: SectionTeacherRole;
+}
+
+export interface SetSectionTeachersDto {
+  teachers: SectionTeacherItemDto[];
+  /** Why, for the audit log */
+  reason?: string;
+}
+
+export interface AssignAdmissionsResponseDto {
+  /** Message of the action */
+  message: string;
+  /** Newly placed */
+  assigned: number;
+  /** Moved from another section */
+  moved: number;
+  /** Already in this section */
+  unchanged: number;
+}
+
+/**
+ * WAZU or NAMAZ
+ */
+export type ResultPart = (typeof ResultPart)[keyof typeof ResultPart];
+
+export const ResultPart = {
+  THEORY: 'THEORY',
+  WAZU: 'WAZU',
+  NAMAZ: 'NAMAZ',
+  ATTENDANCE: 'ATTENDANCE',
+} as const;
+
+export interface SkillStepEntity {
+  id: string;
+  /** WAZU or NAMAZ */
+  skill: ResultPart;
+  code: string;
+  nameEn: string;
+  nameUr: string;
+  sortOrder: number;
+  isActive: boolean;
+}
+
+export interface ListSkillStepsResponseDto {
+  /** Total number of records */
+  count: number;
+  data: SkillStepEntity[];
+}
+
+export type ResultSource = (typeof ResultSource)[keyof typeof ResultSource];
+
+export const ResultSource = {
+  STAFF_APP: 'STAFF_APP',
+  PORTAL: 'PORTAL',
+  TRAINING: 'TRAINING',
+  IMPORT_2026: 'IMPORT_2026',
+} as const;
+
+export interface ResultStepInputDto {
+  /** A code from GET /results/steps */
+  stepCode: string;
+  /**
+   * Right (true) or wrong (false)
+   * @nullable
+   */
+  correct?: boolean | null;
+  /**
+   * For steps graded with marks
+   * @nullable
+   */
+  marks?: number | null;
+}
+
+export interface ResultPartInputDto {
+  admissionId: string;
+  part: ResultPart;
+  source: ResultSource;
+  /** Sheet and row, enrollment ID, … */
+  sourceRef?: string;
+  /**
+   * Left out for WAZU/NAMAZ with steps: the number of steps right
+   * @nullable
+   */
+  marks?: number | null;
+  /**
+   * Left out for WAZU/NAMAZ with steps: the number of steps graded
+   * @nullable
+   */
+  maxMarks?: number | null;
+  /**
+   * null when there was no pass mark (2026)
+   * @nullable
+   */
+  passed?: boolean | null;
+  assessedAt?: string;
+  notes?: string;
+  /** WAZU and NAMAZ only. Replaces the stored steps. */
+  steps?: ResultStepInputDto[];
+}
+
+export type FinalResultStatus = (typeof FinalResultStatus)[keyof typeof FinalResultStatus];
+
+export const FinalResultStatus = {
+  PASS: 'PASS',
+  FAIL: 'FAIL',
+  TERMINATED: 'TERMINATED',
+} as const;
+
+export interface FinalResultInputDto {
+  admissionId: string;
+  source: ResultSource;
+  sourceRef?: string;
+  /** @nullable */
+  total?: number | null;
+  /** @nullable */
+  maxTotal?: number | null;
+  result?: FinalResultStatus | null;
+  /**
+   * Only with source IMPORT_2026: the rank from the result sheet. Kept as sent; rank computation skips the row.
+   * @nullable
+   */
+  branchRank?: number | null;
+  /**
+   * Only with source IMPORT_2026: how many students the sheet ranked in the group
+   * @nullable
+   */
+  rankedOf?: number | null;
+}
+
+export interface BulkUpsertResultsDto {
+  items?: ResultPartInputDto[];
+  finals?: FinalResultInputDto[];
+  /** Check and count, write nothing */
+  dryRun?: boolean;
+  /** Recompute ranks for the sessions touched */
+  computeRanks?: boolean;
+  /** Why, for the audit log */
+  reason?: string;
+}
+
+export interface BulkUpsertCountsDto {
+  created: number;
+  updated: number;
+  unchanged: number;
+}
+
+export type RejectedRowDtoList = (typeof RejectedRowDtoList)[keyof typeof RejectedRowDtoList];
+
+export const RejectedRowDtoList = {
+  items: 'items',
+  finals: 'finals',
+} as const;
+
+export interface RejectedRowDto {
+  list: RejectedRowDtoList;
+  /** Position in the list, from 0 */
+  index: number;
+  admissionId: string;
+  reason: string;
+}
+
+export interface BulkUpsertResultsResponseDto {
+  message: string;
+  dryRun: boolean;
+  items: BulkUpsertCountsDto;
+  finals: BulkUpsertCountsDto;
+  rejected: RejectedRowDto[];
+  /** Sessions whose ranks were recomputed */
+  rankedSessions: string[];
+}
+
+export interface LockResultsDto {
+  admissionIds?: string[];
+  sectionId?: string;
+  sessionId?: string;
+  branchId?: string;
+  reason?: string;
+}
+
+export interface LockResultsResponseDto {
+  /** Message of the action */
+  message: string;
+  count: number;
+}
+
+export interface ComputeRanksDto {
+  sessionId: string;
+  branchId?: string;
+}
+
+export interface ComputeRanksResponseDto {
+  /** Message of the action */
+  message: string;
+  /** Groups (branch + class level) ranked */
+  groups: number;
+  /** Students given a rank */
+  ranked: number;
+  /** Final results changed */
+  changed: number;
+}
+
+export interface ResultStepEntity {
+  stepCode: string;
+  /** @nullable */
+  correct?: boolean | null;
+  /** @nullable */
+  marks?: number | null;
+}
+
+export interface AdmissionResultEntity {
+  id: string;
+  admissionId: string;
+  part: ResultPart;
+  source: ResultSource;
+  sourceRef?: string;
+  /** @nullable */
+  marks?: number | null;
+  /** @nullable */
+  maxMarks?: number | null;
+  /** @nullable */
+  scorePct?: number | null;
+  /** @nullable */
+  passed?: boolean | null;
+  assessedAt?: string;
+  notes?: string;
+  steps: ResultStepEntity[];
+  updatedAt: string;
+}
+
+export interface FinalResultEntity {
+  admissionId: string;
+  /** @nullable */
+  total?: number | null;
+  /** @nullable */
+  maxTotal?: number | null;
+  result?: FinalResultStatus | null;
+  /**
+   * Rank in the branch and class level
+   * @nullable
+   */
+  branchRank?: number | null;
+  /**
+   * How many were ranked in that group
+   * @nullable
+   */
+  rankedOf?: number | null;
+  rankedAt?: string;
+  /** Ranks come from the 2026 result sheets; rank computation skips them */
+  ranksImported: boolean;
+  source: ResultSource;
+  sourceRef?: string;
+  locked: boolean;
+  lockedAt?: string;
+}
+
+export interface SectionResultRow {
+  admissionId: string;
+  /** Every row, all sources. The one that counts per part is the most recently updated. */
+  parts: AdmissionResultEntity[];
+  /** @nullable */
+  final?: FinalResultEntity | null;
+  grNumber: string;
+  name: string;
+  classLevelCode: string;
+}
+
+export interface ListSectionResultsResponseDto {
+  /** Total number of records */
+  count: number;
+  data: SectionResultRow[];
+}
+
+export interface AdmissionResults {
+  admissionId: string;
+  /** Every row, all sources. The one that counts per part is the most recently updated. */
+  parts: AdmissionResultEntity[];
+  /** @nullable */
+  final?: FinalResultEntity | null;
+}
+
+export interface AdmissionResultsResponseDto {
+  /** Message of the action */
+  message: string;
+  data: AdmissionResults;
+}
+
+export interface StepRef {
+  code: string;
+  nameEn: string;
+  nameUr: string;
+}
+
+export interface LastSessionSummary {
+  sessionId: string;
+  sessionName: string;
+  /** Last session's class */
+  classLevelCode: string;
+  branchCode: string;
+  /**
+   * Days present (or late)
+   * @nullable
+   */
+  attendanceDays?: number | null;
+  /**
+   * Days in the session
+   * @nullable
+   */
+  attendanceTotal?: number | null;
+  /** @nullable */
+  theoryPassed?: boolean | null;
+  /** @nullable */
+  theoryPct?: number | null;
+  /**
+   * Wazu steps they got wrong; null when not graded by step
+   * @nullable
+   */
+  wazuStepsWrong: StepRef[] | null;
+  /**
+   * Namaz steps they got wrong; null when not graded by step
+   * @nullable
+   */
+  namazStepsWrong: StepRef[] | null;
+  /** @nullable */
+  branchRank?: number | null;
+  /** @nullable */
+  rankedOf?: number | null;
+  result?: FinalResultStatus | null;
+  /**
+   * Interview: mean rating, 1–5
+   * @nullable
+   */
+  interviewAverageRating?: number | null;
+  /**
+   * Interview: the teacher's notes
+   * @nullable
+   */
+  interviewNotes?: string | null;
+}
+
+export interface LastSessionSummaryResponseDto {
+  /** Message of the action */
+  message: string;
+  /** @nullable */
+  data: LastSessionSummary | null;
+}
+
+export interface EnterPartResultDto {
+  /** @nullable */
+  marks?: number | null;
+  /** @nullable */
+  maxMarks?: number | null;
+  /** @nullable */
+  passed?: boolean | null;
+  assessedAt?: string;
+  notes?: string;
+  steps?: ResultStepInputDto[];
+  /** Why, for the audit log */
+  reason?: string;
+}
+
+export interface EnterFinalResultDto {
+  /** @nullable */
+  total?: number | null;
+  /** @nullable */
+  maxTotal?: number | null;
+  result: FinalResultStatus;
+  /** Why, for the audit log */
+  reason?: string;
+}
+
 export type AssetsControllerUploadPublicParams = {
   type: AssetsControllerUploadPublicType;
   /** Category of the asset */
@@ -2997,6 +4834,33 @@ export const AdminUsersControllerFindAllSortBy = {
   email: 'email',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+} as const;
+
+export type AuditLogControllerFindAllParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: AuditLogControllerFindAllSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+  entityType?: string;
+  entityId?: string;
+  action?: string;
+  actorType?: AuditActorType;
+  adminUserId?: string;
+  staffUserId?: string;
+  from?: string;
+  to?: string;
+};
+
+export type AuditLogControllerFindAllSortOrder =
+  (typeof AuditLogControllerFindAllSortOrder)[keyof typeof AuditLogControllerFindAllSortOrder];
+
+export const AuditLogControllerFindAllSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
 } as const;
 
 export type AclControllerFindAllParams = {
@@ -3302,9 +5166,9 @@ export type AdmissionsControllerSearchLegacyParams = {
   sortOrder?: AdmissionsControllerSearchLegacySortOrder;
   /** Include deactivated records */
   includeInActive?: boolean;
-  /** Search query (GR, phone, name, father name) */
+  /** A full phone number or a full GR number */
   query: string;
-  /** Sort by */
+  /** Ignored */
   sortBy?: AdmissionsControllerSearchLegacySortBy;
 };
 
@@ -3320,6 +5184,41 @@ export type AdmissionsControllerSearchLegacySortBy =
   (typeof AdmissionsControllerSearchLegacySortBy)[keyof typeof AdmissionsControllerSearchLegacySortBy];
 
 export const AdmissionsControllerSearchLegacySortBy = {
+  grNo: 'grNo',
+  name: 'name',
+  fathersName: 'fathersName',
+  phoneNumber: 'phoneNumber',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
+
+export type AdmissionsControllerSearchLegacyAdminParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: AdmissionsControllerSearchLegacyAdminSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+  /** Search query (exact GR, or part of a phone number) */
+  query: string;
+  /** Sort by */
+  sortBy?: AdmissionsControllerSearchLegacyAdminSortBy;
+};
+
+export type AdmissionsControllerSearchLegacyAdminSortOrder =
+  (typeof AdmissionsControllerSearchLegacyAdminSortOrder)[keyof typeof AdmissionsControllerSearchLegacyAdminSortOrder];
+
+export const AdmissionsControllerSearchLegacyAdminSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type AdmissionsControllerSearchLegacyAdminSortBy =
+  (typeof AdmissionsControllerSearchLegacyAdminSortBy)[keyof typeof AdmissionsControllerSearchLegacyAdminSortBy];
+
+export const AdmissionsControllerSearchLegacyAdminSortBy = {
   grNo: 'grNo',
   name: 'name',
   fathersName: 'fathersName',
@@ -3403,6 +5302,48 @@ export type AdmissionsControllerFindOneParams = {
   /** Include deactivated records */
   includeInActive?: boolean;
 };
+
+export type StudentMergeControllerResolveParams = {
+  /** A GR number, current or old */
+  gr: string;
+};
+
+export type StudentMergeControllerBatchParams = {
+  /** Preview every row and write nothing */
+  dryRun?: boolean;
+};
+
+export type StudentMergeControllerMaterializeParams = {
+  /** Preview every row and write nothing */
+  dryRun?: boolean;
+};
+
+export type StudentMergeControllerFindAllParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: StudentMergeControllerFindAllSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+  /** Changes involving the student this GR (current or old) finds */
+  gr?: string;
+  /** Changes involving this student, as survivor or merged */
+  studentId?: string;
+  kind?: StudentMergeKind;
+  /** Include undone changes */
+  includeUndone?: boolean;
+  sortBy?: StudentMergeSortBy;
+};
+
+export type StudentMergeControllerFindAllSortOrder =
+  (typeof StudentMergeControllerFindAllSortOrder)[keyof typeof StudentMergeControllerFindAllSortOrder];
+
+export const StudentMergeControllerFindAllSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
 
 export type StudentsControllerFindAllParams = {
   /** Number of records to skip */
@@ -3744,3 +5685,110 @@ export type AnnouncementWebhookControllerVerifyParams = {
   'hub.verify_token': string;
   'hub.challenge': string;
 };
+
+export type StaffUserControllerFindAllParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: StaffUserControllerFindAllSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+  /** Name, staff ID or phone contains this */
+  search?: string;
+  role?: StaffRole;
+};
+
+export type StaffUserControllerFindAllSortOrder =
+  (typeof StaffUserControllerFindAllSortOrder)[keyof typeof StaffUserControllerFindAllSortOrder];
+
+export const StaffUserControllerFindAllSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type SectionControllerFindAllParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: SectionControllerFindAllSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+  sessionId?: string;
+  branchId?: string;
+  classLevelId?: string;
+  classNumber?: string;
+  /** Sections this staff user teaches */
+  staffUserId?: string;
+  /** Sort by */
+  sortBy?: SectionControllerFindAllSortBy;
+};
+
+export type SectionControllerFindAllSortOrder =
+  (typeof SectionControllerFindAllSortOrder)[keyof typeof SectionControllerFindAllSortOrder];
+
+export const SectionControllerFindAllSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type SectionControllerFindAllSortBy =
+  (typeof SectionControllerFindAllSortBy)[keyof typeof SectionControllerFindAllSortBy];
+
+export const SectionControllerFindAllSortBy = {
+  letter: 'letter',
+  classNumber: 'classNumber',
+  createdAt: 'createdAt',
+} as const;
+
+export type SectionControllerListUnassignedParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: SectionControllerListUnassignedSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+  sessionId: string;
+  branchId: string;
+  classLevelId: string;
+  /** Only students whose fee is paid */
+  onlyFeePaid?: boolean;
+};
+
+export type SectionControllerListUnassignedSortOrder =
+  (typeof SectionControllerListUnassignedSortOrder)[keyof typeof SectionControllerListUnassignedSortOrder];
+
+export const SectionControllerListUnassignedSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type SectionControllerUnassignedSummaryParams = {
+  sessionId: string;
+  branchId?: string;
+  onlyFeePaid?: boolean;
+};
+
+export type SectionControllerListAdmissionsParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: SectionControllerListAdmissionsSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+};
+
+export type SectionControllerListAdmissionsSortOrder =
+  (typeof SectionControllerListAdmissionsSortOrder)[keyof typeof SectionControllerListAdmissionsSortOrder];
+
+export const SectionControllerListAdmissionsSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;

@@ -76,7 +76,19 @@
     "اردو",
     "حسین",
     "محمد",
-    "nvmrc"
+    "nvmrc",
+    "wazu",
+    "namaz",
+    "fiqh",
+    "auditview",
+    "reportsview",
+    "resultsenter",
+    "resultslock",
+    "resultsoverride",
+    "sectionsmanage",
+    "staffmanage",
+    "studentsedit",
+    "studentsmerge"
   ],
   "ignoreWords": [],
   "import": []

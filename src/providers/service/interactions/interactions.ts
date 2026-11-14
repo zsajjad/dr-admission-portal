@@ -57,7 +57,7 @@ export const getInteractionsControllerFindAllQueryKey = (params?: InteractionsCo
 
 export const getInteractionsControllerFindAllQueryOptions = <
   TData = Awaited<ReturnType<typeof interactionsControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: InteractionsControllerFindAllParams,
   options?: {
@@ -81,11 +81,11 @@ export const getInteractionsControllerFindAllQueryOptions = <
 export type InteractionsControllerFindAllQueryResult = NonNullable<
   Awaited<ReturnType<typeof interactionsControllerFindAll>>
 >;
-export type InteractionsControllerFindAllQueryError = unknown;
+export type InteractionsControllerFindAllQueryError = void;
 
 export function useInteractionsControllerFindAll<
   TData = Awaited<ReturnType<typeof interactionsControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params: undefined | InteractionsControllerFindAllParams,
   options: {
@@ -103,7 +103,7 @@ export function useInteractionsControllerFindAll<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useInteractionsControllerFindAll<
   TData = Awaited<ReturnType<typeof interactionsControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: InteractionsControllerFindAllParams,
   options?: {
@@ -121,7 +121,7 @@ export function useInteractionsControllerFindAll<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useInteractionsControllerFindAll<
   TData = Awaited<ReturnType<typeof interactionsControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: InteractionsControllerFindAllParams,
   options?: {
@@ -131,7 +131,7 @@ export function useInteractionsControllerFindAll<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useInteractionsControllerFindAll<
   TData = Awaited<ReturnType<typeof interactionsControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: InteractionsControllerFindAllParams,
   options?: {
@@ -160,7 +160,7 @@ export const interactionsControllerCreate = (createInteractionDto: CreateInterac
 
 export const getInteractionsControllerCreateMutationKey = () => ['interactionsControllerCreate'] as const;
 
-export const getInteractionsControllerCreateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getInteractionsControllerCreateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof interactionsControllerCreate>>,
     TError,
@@ -196,10 +196,10 @@ export type InteractionsControllerCreateMutationResult = NonNullable<
   Awaited<ReturnType<typeof interactionsControllerCreate>>
 >;
 export type InteractionsControllerCreateMutationBody = CreateInteractionDto;
-export type InteractionsControllerCreateMutationError = unknown;
+export type InteractionsControllerCreateMutationError = void;
 export type InteractionsControllerCreateMutationVariables = { data: CreateInteractionDto };
 
-export const useInteractionsControllerCreate = <TError = unknown, TContext = unknown>(
+export const useInteractionsControllerCreate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof interactionsControllerCreate>>,
@@ -230,7 +230,7 @@ export const getInteractionsControllerGetDashboardQueryKey = (params?: Interacti
 
 export const getInteractionsControllerGetDashboardQueryOptions = <
   TData = Awaited<ReturnType<typeof interactionsControllerGetDashboard>>,
-  TError = unknown,
+  TError = void,
 >(
   params: InteractionsControllerGetDashboardParams,
   options?: {
@@ -254,11 +254,11 @@ export const getInteractionsControllerGetDashboardQueryOptions = <
 export type InteractionsControllerGetDashboardQueryResult = NonNullable<
   Awaited<ReturnType<typeof interactionsControllerGetDashboard>>
 >;
-export type InteractionsControllerGetDashboardQueryError = unknown;
+export type InteractionsControllerGetDashboardQueryError = void;
 
 export function useInteractionsControllerGetDashboard<
   TData = Awaited<ReturnType<typeof interactionsControllerGetDashboard>>,
-  TError = unknown,
+  TError = void,
 >(
   params: InteractionsControllerGetDashboardParams,
   options: {
@@ -276,7 +276,7 @@ export function useInteractionsControllerGetDashboard<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useInteractionsControllerGetDashboard<
   TData = Awaited<ReturnType<typeof interactionsControllerGetDashboard>>,
-  TError = unknown,
+  TError = void,
 >(
   params: InteractionsControllerGetDashboardParams,
   options?: {
@@ -294,7 +294,7 @@ export function useInteractionsControllerGetDashboard<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useInteractionsControllerGetDashboard<
   TData = Awaited<ReturnType<typeof interactionsControllerGetDashboard>>,
-  TError = unknown,
+  TError = void,
 >(
   params: InteractionsControllerGetDashboardParams,
   options?: {
@@ -304,7 +304,7 @@ export function useInteractionsControllerGetDashboard<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useInteractionsControllerGetDashboard<
   TData = Awaited<ReturnType<typeof interactionsControllerGetDashboard>>,
-  TError = unknown,
+  TError = void,
 >(
   params: InteractionsControllerGetDashboardParams,
   options?: {
@@ -335,7 +335,7 @@ export const getInteractionsControllerGetTemplateQueryKey = (admissionId: string
 
 export const getInteractionsControllerGetTemplateQueryOptions = <
   TData = Awaited<ReturnType<typeof interactionsControllerGetTemplate>>,
-  TError = unknown,
+  TError = void,
 >(
   admissionId: string,
   options?: {
@@ -362,11 +362,11 @@ export const getInteractionsControllerGetTemplateQueryOptions = <
 export type InteractionsControllerGetTemplateQueryResult = NonNullable<
   Awaited<ReturnType<typeof interactionsControllerGetTemplate>>
 >;
-export type InteractionsControllerGetTemplateQueryError = unknown;
+export type InteractionsControllerGetTemplateQueryError = void;
 
 export function useInteractionsControllerGetTemplate<
   TData = Awaited<ReturnType<typeof interactionsControllerGetTemplate>>,
-  TError = unknown,
+  TError = void,
 >(
   admissionId: string,
   options: {
@@ -384,7 +384,7 @@ export function useInteractionsControllerGetTemplate<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useInteractionsControllerGetTemplate<
   TData = Awaited<ReturnType<typeof interactionsControllerGetTemplate>>,
-  TError = unknown,
+  TError = void,
 >(
   admissionId: string,
   options?: {
@@ -402,7 +402,7 @@ export function useInteractionsControllerGetTemplate<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useInteractionsControllerGetTemplate<
   TData = Awaited<ReturnType<typeof interactionsControllerGetTemplate>>,
-  TError = unknown,
+  TError = void,
 >(
   admissionId: string,
   options?: {
@@ -412,7 +412,7 @@ export function useInteractionsControllerGetTemplate<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useInteractionsControllerGetTemplate<
   TData = Awaited<ReturnType<typeof interactionsControllerGetTemplate>>,
-  TError = unknown,
+  TError = void,
 >(
   admissionId: string,
   options?: {

@@ -63,7 +63,7 @@ export const announcementControllerPreview = (previewAnnouncementDto: PreviewAnn
 
 export const getAnnouncementControllerPreviewMutationKey = () => ['announcementControllerPreview'] as const;
 
-export const getAnnouncementControllerPreviewMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAnnouncementControllerPreviewMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof announcementControllerPreview>>,
     TError,
@@ -99,10 +99,10 @@ export type AnnouncementControllerPreviewMutationResult = NonNullable<
   Awaited<ReturnType<typeof announcementControllerPreview>>
 >;
 export type AnnouncementControllerPreviewMutationBody = PreviewAnnouncementDto;
-export type AnnouncementControllerPreviewMutationError = unknown;
+export type AnnouncementControllerPreviewMutationError = void;
 export type AnnouncementControllerPreviewMutationVariables = { data: PreviewAnnouncementDto };
 
-export const useAnnouncementControllerPreview = <TError = unknown, TContext = unknown>(
+export const useAnnouncementControllerPreview = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof announcementControllerPreview>>,
@@ -132,7 +132,7 @@ export const announcementControllerSend = (createAnnouncementDto: CreateAnnounce
 
 export const getAnnouncementControllerSendMutationKey = () => ['announcementControllerSend'] as const;
 
-export const getAnnouncementControllerSendMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAnnouncementControllerSendMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof announcementControllerSend>>,
     TError,
@@ -168,10 +168,10 @@ export type AnnouncementControllerSendMutationResult = NonNullable<
   Awaited<ReturnType<typeof announcementControllerSend>>
 >;
 export type AnnouncementControllerSendMutationBody = CreateAnnouncementDto;
-export type AnnouncementControllerSendMutationError = unknown;
+export type AnnouncementControllerSendMutationError = void;
 export type AnnouncementControllerSendMutationVariables = { data: CreateAnnouncementDto };
 
-export const useAnnouncementControllerSend = <TError = unknown, TContext = unknown>(
+export const useAnnouncementControllerSend = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof announcementControllerSend>>,
@@ -199,7 +199,7 @@ export const getAnnouncementControllerFindAllQueryKey = (params?: AnnouncementCo
 
 export const getAnnouncementControllerFindAllQueryOptions = <
   TData = Awaited<ReturnType<typeof announcementControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: AnnouncementControllerFindAllParams,
   options?: {
@@ -223,11 +223,11 @@ export const getAnnouncementControllerFindAllQueryOptions = <
 export type AnnouncementControllerFindAllQueryResult = NonNullable<
   Awaited<ReturnType<typeof announcementControllerFindAll>>
 >;
-export type AnnouncementControllerFindAllQueryError = unknown;
+export type AnnouncementControllerFindAllQueryError = void;
 
 export function useAnnouncementControllerFindAll<
   TData = Awaited<ReturnType<typeof announcementControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params: undefined | AnnouncementControllerFindAllParams,
   options: {
@@ -245,7 +245,7 @@ export function useAnnouncementControllerFindAll<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAnnouncementControllerFindAll<
   TData = Awaited<ReturnType<typeof announcementControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: AnnouncementControllerFindAllParams,
   options?: {
@@ -263,7 +263,7 @@ export function useAnnouncementControllerFindAll<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAnnouncementControllerFindAll<
   TData = Awaited<ReturnType<typeof announcementControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: AnnouncementControllerFindAllParams,
   options?: {
@@ -273,7 +273,7 @@ export function useAnnouncementControllerFindAll<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAnnouncementControllerFindAll<
   TData = Awaited<ReturnType<typeof announcementControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: AnnouncementControllerFindAllParams,
   options?: {
@@ -304,7 +304,7 @@ export const getAnnouncementControllerFindOneQueryKey = (id: string, params?: An
 
 export const getAnnouncementControllerFindOneQueryOptions = <
   TData = Awaited<ReturnType<typeof announcementControllerFindOne>>,
-  TError = unknown,
+  TError = void,
 >(
   id: string,
   params?: AnnouncementControllerFindOneParams,
@@ -329,11 +329,11 @@ export const getAnnouncementControllerFindOneQueryOptions = <
 export type AnnouncementControllerFindOneQueryResult = NonNullable<
   Awaited<ReturnType<typeof announcementControllerFindOne>>
 >;
-export type AnnouncementControllerFindOneQueryError = unknown;
+export type AnnouncementControllerFindOneQueryError = void;
 
 export function useAnnouncementControllerFindOne<
   TData = Awaited<ReturnType<typeof announcementControllerFindOne>>,
-  TError = unknown,
+  TError = void,
 >(
   id: string,
   params: undefined | AnnouncementControllerFindOneParams,
@@ -352,7 +352,7 @@ export function useAnnouncementControllerFindOne<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAnnouncementControllerFindOne<
   TData = Awaited<ReturnType<typeof announcementControllerFindOne>>,
-  TError = unknown,
+  TError = void,
 >(
   id: string,
   params?: AnnouncementControllerFindOneParams,
@@ -371,7 +371,7 @@ export function useAnnouncementControllerFindOne<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAnnouncementControllerFindOne<
   TData = Awaited<ReturnType<typeof announcementControllerFindOne>>,
-  TError = unknown,
+  TError = void,
 >(
   id: string,
   params?: AnnouncementControllerFindOneParams,
@@ -382,7 +382,7 @@ export function useAnnouncementControllerFindOne<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAnnouncementControllerFindOne<
   TData = Awaited<ReturnType<typeof announcementControllerFindOne>>,
-  TError = unknown,
+  TError = void,
 >(
   id: string,
   params?: AnnouncementControllerFindOneParams,
@@ -422,7 +422,7 @@ export const getAnnouncementControllerFindRecipientsQueryKey = (
 
 export const getAnnouncementControllerFindRecipientsQueryOptions = <
   TData = Awaited<ReturnType<typeof announcementControllerFindRecipients>>,
-  TError = unknown,
+  TError = void,
 >(
   id: string,
   params?: AnnouncementControllerFindRecipientsParams,
@@ -447,11 +447,11 @@ export const getAnnouncementControllerFindRecipientsQueryOptions = <
 export type AnnouncementControllerFindRecipientsQueryResult = NonNullable<
   Awaited<ReturnType<typeof announcementControllerFindRecipients>>
 >;
-export type AnnouncementControllerFindRecipientsQueryError = unknown;
+export type AnnouncementControllerFindRecipientsQueryError = void;
 
 export function useAnnouncementControllerFindRecipients<
   TData = Awaited<ReturnType<typeof announcementControllerFindRecipients>>,
-  TError = unknown,
+  TError = void,
 >(
   id: string,
   params: undefined | AnnouncementControllerFindRecipientsParams,
@@ -470,7 +470,7 @@ export function useAnnouncementControllerFindRecipients<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAnnouncementControllerFindRecipients<
   TData = Awaited<ReturnType<typeof announcementControllerFindRecipients>>,
-  TError = unknown,
+  TError = void,
 >(
   id: string,
   params?: AnnouncementControllerFindRecipientsParams,
@@ -489,7 +489,7 @@ export function useAnnouncementControllerFindRecipients<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAnnouncementControllerFindRecipients<
   TData = Awaited<ReturnType<typeof announcementControllerFindRecipients>>,
-  TError = unknown,
+  TError = void,
 >(
   id: string,
   params?: AnnouncementControllerFindRecipientsParams,
@@ -500,7 +500,7 @@ export function useAnnouncementControllerFindRecipients<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAnnouncementControllerFindRecipients<
   TData = Awaited<ReturnType<typeof announcementControllerFindRecipients>>,
-  TError = unknown,
+  TError = void,
 >(
   id: string,
   params?: AnnouncementControllerFindRecipientsParams,
@@ -524,7 +524,7 @@ export const announcementControllerRetry = (id: string, signal?: AbortSignal) =>
 
 export const getAnnouncementControllerRetryMutationKey = () => ['announcementControllerRetry'] as const;
 
-export const getAnnouncementControllerRetryMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAnnouncementControllerRetryMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof announcementControllerRetry>>,
     TError,
@@ -560,10 +560,10 @@ export type AnnouncementControllerRetryMutationResult = NonNullable<
   Awaited<ReturnType<typeof announcementControllerRetry>>
 >;
 
-export type AnnouncementControllerRetryMutationError = unknown;
+export type AnnouncementControllerRetryMutationError = void;
 export type AnnouncementControllerRetryMutationVariables = { id: string };
 
-export const useAnnouncementControllerRetry = <TError = unknown, TContext = unknown>(
+export const useAnnouncementControllerRetry = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof announcementControllerRetry>>,
