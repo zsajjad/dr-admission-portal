@@ -92,7 +92,8 @@
     "trainingsconfigure",
     "trainingsmanage",
     "trainingsoverride",
-    "trainingspayouts"
+    "trainingspayouts",
+    "retrainable"
   ],
   "ignoreWords": [],
   "import": []

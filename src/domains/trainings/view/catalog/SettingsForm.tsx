@@ -31,16 +31,16 @@ export function SettingsForm() {
   const notify = useNotify();
   const { data } = useTrainingSettings();
   const save = useSaveTrainingSettings();
-  const loaded: TrainingSettings | undefined =
-    data?.data ?? (data?.maxAttempts ? (data as TrainingSettings) : undefined);
+  const loaded: TrainingSettings | undefined = data?.data;
 
-  const [form, setForm] = useState({ maxAttempts: '', autoCloseDays: '', reminderDays: '' });
+  const [form, setForm] = useState({ maxAttempts: '', retrainBelowPct: '', autoCloseDays: '', reminderDays: '' });
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     if (loaded) {
       setForm({
         maxAttempts: String(loaded.maxAttempts),
+        retrainBelowPct: String(loaded.retrainBelowPct),
         autoCloseDays: String(loaded.autoCloseDays),
         reminderDays: loaded.reminderDays.join(', '),
       });
@@ -50,6 +50,7 @@ export function SettingsForm() {
   const input = useMemo(
     () => ({
       maxAttempts: toNumber(form.maxAttempts),
+      retrainBelowPct: toNumber(form.retrainBelowPct),
       autoCloseDays: toNumber(form.autoCloseDays),
       reminderDays: parseDays(form.reminderDays),
     }),
@@ -83,9 +84,10 @@ export function SettingsForm() {
   return (
     <Section title={<FormattedMessage {...messages.settings} />}>
       <Grid container spacing={2}>
-        <Grid size={{ xs: 12, md: 4 }}>{field('maxAttempts', messages.maxAttemptsHelp)}</Grid>
-        <Grid size={{ xs: 12, md: 4 }}>{field('autoCloseDays', messages.autoCloseHelp)}</Grid>
-        <Grid size={{ xs: 12, md: 4 }}>{field('reminderDays', messages.reminderDaysHelp)}</Grid>
+        <Grid size={{ xs: 12, md: 3 }}>{field('maxAttempts', messages.maxAttemptsHelp)}</Grid>
+        <Grid size={{ xs: 12, md: 3 }}>{field('retrainBelowPct', messages.retrainBelowHelp)}</Grid>
+        <Grid size={{ xs: 12, md: 3 }}>{field('autoCloseDays', messages.autoCloseHelp)}</Grid>
+        <Grid size={{ xs: 12, md: 3 }}>{field('reminderDays', messages.reminderDaysHelp)}</Grid>
       </Grid>
       {shown.length > 0 && (
         <Alert severity="error" sx={{ mt: 2 }}>
