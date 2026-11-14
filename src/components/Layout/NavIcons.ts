@@ -12,6 +12,8 @@ import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
 import BarChartRoundedIcon from '@mui/icons-material/BarChartRounded';
 import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined';
 import ClassRoundedIcon from '@mui/icons-material/ClassRounded';
+import GradingOutlinedIcon from '@mui/icons-material/GradingOutlined';
+import GradingRoundedIcon from '@mui/icons-material/GradingRounded';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import PersonSearchOutlinedIcon from '@mui/icons-material/PersonSearchOutlined';
@@ -69,6 +71,10 @@ export const navIcons: Record<string, { filled: MuiIcon; outlined: MuiIcon }> = 
   syncReview: {
     filled: RuleRoundedIcon,
     outlined: RuleOutlinedIcon,
+  },
+  results: {
+    filled: GradingRoundedIcon,
+    outlined: GradingOutlinedIcon,
   },
   questionSets: {
     filled: QuizRoundedIcon,
