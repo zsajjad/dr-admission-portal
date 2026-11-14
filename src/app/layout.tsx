@@ -24,9 +24,25 @@ export const metadata: Metadata = {
     default: config.site.name,
   },
   description: config.site.description,
+  applicationName: config.site.name,
+  // Same icons as the public website (favicon.ico is app/favicon.ico).
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-96x96.png', type: 'image/png', sizes: '96x96' },
+    ],
+    apple: '/apple-touch-icon.png',
+  },
+  manifest: '/site.webmanifest',
+  // Staff tools are not for search engines.
+  robots: { index: false, follow: false },
 };
 
-export const viewport = { width: 'device-width', initialScale: 1 } satisfies Viewport;
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: config.site.themeColor,
+} satisfies Viewport;
 
 const interVariable = localFont({
   src: './fonts/PlusJakartaSans-VariableFont_wght.ttf',
