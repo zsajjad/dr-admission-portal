@@ -318,5 +318,6 @@
   "app.domains.staffUsers.branches": "برانچیں",
   "app.domains.staffUsers.branchesHint": "جن برانچوں کے لیے وہ کام کرتے ہیں۔ فیس ڈیسک پر انہیں صرف ان برانچوں کے داخلے نظر آتے ہیں۔",
   "app.domains.staffUsers.feeDeskNeedsBranch": "کم از کم ایک برانچ چنیں: اس کے بغیر فیس ڈیسک پر انہیں کچھ نظر نہیں آئے گا۔",
-  "app.domains.staffUsers.noBranches": "کوئی نہیں"
+  "app.domains.staffUsers.noBranches": "کوئی نہیں",
+  "app.domains.students.interviewerUnknown": "نامعلوم انٹرویو لینے والا"
 }

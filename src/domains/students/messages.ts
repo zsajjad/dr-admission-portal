@@ -178,6 +178,7 @@ export default defineMessages({
   noInterview: { id: `${scope}.noInterview`, defaultMessage: 'No interview yet' },
   averageRating: { id: `${scope}.averageRating`, defaultMessage: 'Average {value} / 5' },
   interviewBy: { id: `${scope}.interviewBy`, defaultMessage: 'By {name}, {date}' },
+  interviewerUnknown: { id: `${scope}.interviewerUnknown`, defaultMessage: 'an unknown interviewer' },
   notes: { id: `${scope}.notes`, defaultMessage: 'Notes' },
 
   // Attendance

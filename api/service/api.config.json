@@ -10558,6 +10558,98 @@
         ]
       }
     },
+    "/staff/interviews/question-sets": {
+      "get": {
+        "operationId": "StaffInterviewsController_questionSets",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The current session's sets. Cache them for offline use.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StaffQuestionSetDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`code`: TOKEN_INVALID, TOKEN_EXPIRED or DEVICE_REVOKED"
+          },
+          "403": {
+            "description": "`code`: ROLE_REQUIRED (needs TEACHER)"
+          }
+        },
+        "security": [
+          {
+            "staff-jwt": []
+          },
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          }
+        ],
+        "tags": [
+          "Staff App: Interviews"
+        ]
+      }
+    },
+    "/staff/interviews/lookup": {
+      "get": {
+        "operationId": "StaffInterviewsController_lookup",
+        "parameters": [
+          {
+            "name": "gr",
+            "required": true,
+            "in": "query",
+            "description": "An exact GR; old GRs work too",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Only to show the name while online",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffInterviewLookupResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "`code`: TOKEN_INVALID, TOKEN_EXPIRED or DEVICE_REVOKED"
+          },
+          "403": {
+            "description": "`code`: ROLE_REQUIRED (needs TEACHER)"
+          },
+          "404": {
+            "description": "No admission with this GR in the current session and your branches"
+          }
+        },
+        "security": [
+          {
+            "staff-jwt": []
+          },
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          }
+        ],
+        "tags": [
+          "Staff App: Interviews"
+        ]
+      }
+    },
     "/section": {
       "post": {
         "operationId": "SectionController_create",
@@ -15484,6 +15576,26 @@
           "email"
         ]
       },
+      "StaffUserBase": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "staffId": {
+            "type": "string",
+            "description": "The 5-digit staff ID on the card"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "staffId"
+        ]
+      },
       "AdmissionInteractionQuestionSet": {
         "type": "object",
         "properties": {
@@ -15565,10 +15677,18 @@
             "description": "notes"
           },
           "teacher": {
-            "description": "teacher",
+            "description": "The admin who did the interview (portal or mobile app)",
             "allOf": [
               {
                 "$ref": "#/components/schemas/AdmissionInteractionTeacher"
+              }
+            ]
+          },
+          "staffUser": {
+            "description": "The staff app teacher who did the interview",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StaffUserBase"
               }
             ]
           },
@@ -15600,7 +15720,6 @@
         },
         "required": [
           "id",
-          "teacher",
           "questionSet",
           "ratings",
           "createdAt"
@@ -15708,26 +15827,6 @@
           "name",
           "gender",
           "group"
-        ]
-      },
-      "StaffUserBase": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "staffId": {
-            "type": "string",
-            "description": "The 5-digit staff ID on the card"
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "staffId"
         ]
       },
       "Admission": {
@@ -19401,7 +19500,20 @@
             "type": "string"
           },
           "teacher": {
-            "$ref": "#/components/schemas/AdminUserBase"
+            "description": "The admin who did the interview (portal or mobile app)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AdminUserBase"
+              }
+            ]
+          },
+          "staffUser": {
+            "description": "The staff app teacher who did the interview",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StaffUserBase"
+              }
+            ]
           },
           "questionSetTitle": {
             "type": "string"
@@ -19427,7 +19539,6 @@
         },
         "required": [
           "id",
-          "teacher",
           "questionSetTitle",
           "ratings",
           "createdAt"
@@ -20034,10 +20145,18 @@
             "description": "Overall notes"
           },
           "teacher": {
-            "description": "Teacher who conducted the interaction",
+            "description": "The admin who did the interview (portal or mobile app)",
             "allOf": [
               {
                 "$ref": "#/components/schemas/AdminUserBase"
+              }
+            ]
+          },
+          "staffUser": {
+            "description": "The staff app teacher who did the interview",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StaffUserBase"
               }
             ]
           },
@@ -20085,7 +20204,6 @@
         },
         "required": [
           "id",
-          "teacher",
           "student",
           "admission",
           "questionSet",
@@ -23447,6 +23565,21 @@
           "role"
         ]
       },
+      "StaffCurrentSessionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
       "StaffMeResponseDto": {
         "type": "object",
         "properties": {
@@ -23470,13 +23603,24 @@
             "type": "string",
             "example": "1.0.0",
             "description": "Older apps get 426 APP_UPDATE_REQUIRED on sync"
+          },
+          "currentSession": {
+            "nullable": true,
+            "description": "The current session (its id goes in interview.submit), or null when there is none",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StaffCurrentSessionDto"
+              }
+            ]
           }
         },
         "required": [
           "user",
           "roles",
           "sections",
-          "minAppVersion"
+          "minAppVersion",
+          "currentSession"
         ]
       },
       "StaffSkillStepDto": {
@@ -23731,6 +23875,8 @@
           "INVALID_DATE",
           "FUTURE_DATE",
           "NO_CLASS_DAY",
+          "ADMISSION_NOT_FOUND",
+          "ROLE_REQUIRED",
           "SENT_AFTER_LOGOUT",
           "LATE_DAY",
           "SUPERSEDED"
@@ -23786,6 +23932,99 @@
         },
         "required": [
           "results"
+        ]
+      },
+      "StaffInterviewQuestionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "textUr": {
+            "type": "string",
+            "description": "The question as entered in the portal"
+          },
+          "textEn": {
+            "type": "string",
+            "description": "Same text as textUr until questions get an English version"
+          },
+          "order": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "textUr",
+          "textEn",
+          "order"
+        ]
+      },
+      "StaffQuestionSetDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "sessionId": {
+            "type": "string",
+            "description": "Send it in interview.submit"
+          },
+          "classLevelCodes": {
+            "example": [
+              "Muhibaan5-G"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StaffInterviewQuestionDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "sessionId",
+          "classLevelCodes",
+          "questions"
+        ]
+      },
+      "StaffInterviewLookupResponseDto": {
+        "type": "object",
+        "properties": {
+          "admissionId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "fatherName": {
+            "type": "string"
+          },
+          "classLevelCode": {
+            "type": "string",
+            "example": "Muhibaan5-G"
+          },
+          "questionSetId": {
+            "type": "string",
+            "nullable": true,
+            "description": "The question set for the student's class, if any"
+          },
+          "interviewed": {
+            "type": "boolean",
+            "description": "An interview is already saved (another one would replace it)"
+          }
+        },
+        "required": [
+          "admissionId",
+          "name",
+          "fatherName",
+          "classLevelCode",
+          "questionSetId",
+          "interviewed"
         ]
       },
       "CreateSectionDto": {
