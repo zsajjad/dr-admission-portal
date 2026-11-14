@@ -19,7 +19,7 @@ import { routes } from '@/router/routes';
 import { ClosureReason, useEnroll } from '../../api/operations';
 import { useCourses, useResolveCourse } from '../../api/setup';
 import { ActionDialog } from '../../components/ActionDialog';
-import { ReasonField } from '../../components/ReasonField';
+import { ReasonField, reasonMissing } from '../../components/ReasonField';
 import { StaffUserSelect } from '../../components/StaffUserSelect';
 import { useNotify } from '../../components/useNotify';
 import common from '../../messages';
@@ -81,7 +81,7 @@ export function EnrollDialog({ open, onClose, studentId: givenStudentId }: Enrol
   const effectiveCourseId = courseId || resolved?.course?.id;
   const closedBefore = resolved?.completedCourses.find((c) => c.courseId === effectiveCourseId);
   const needsReason = !!closedBefore;
-  const missingReason = needsReason && !reason.trim();
+  const missingReason = needsReason && reasonMissing(reason);
 
   const handleSubmit = () => {
     setSubmitted(true);

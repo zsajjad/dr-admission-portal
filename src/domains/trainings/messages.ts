@@ -25,6 +25,7 @@ export default defineMessages({
   loadError: { id: `${scope}.loadError`, defaultMessage: 'Couldn’t load' },
   required: { id: `${scope}.required`, defaultMessage: 'Required' },
   reason: { id: `${scope}.reason`, defaultMessage: 'Reason' },
+  reasonTooShort: { id: `${scope}.reasonTooShort`, defaultMessage: 'At least 3 characters' },
   reasonHelp: { id: `${scope}.reasonHelp`, defaultMessage: 'Kept in the audit log' },
   active: { id: `${scope}.active`, defaultMessage: 'Active' },
   inactive: { id: `${scope}.inactive`, defaultMessage: 'Inactive' },
@@ -81,5 +82,7 @@ export default defineMessages({
   PART_PAID: { id: `${scope}.PART_PAID`, defaultMessage: 'Part paid' },
   PAID: { id: `${scope}.PAID`, defaultMessage: 'Paid' },
   CANCELLED: { id: `${scope}.CANCELLED`, defaultMessage: 'Cancelled' },
-  VOID: { id: `${scope}.VOID`, defaultMessage: 'Void' },
+  RECORDED: { id: `${scope}.RECORDED`, defaultMessage: 'Recorded' },
+  VOIDED: { id: `${scope}.VOIDED`, defaultMessage: 'Voided' },
+  PENDING: { id: `${scope}.PENDING`, defaultMessage: 'Pending' },
 });

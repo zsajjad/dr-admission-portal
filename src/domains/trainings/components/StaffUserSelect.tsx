@@ -110,3 +110,16 @@ export function StaffUserMultiSelect({
     />
   );
 }
+
+/** Staff names by ID, for history and attempts that carry only IDs */
+export function useStaffNames() {
+  const { isAuthenticated } = useAuthenticatedApi();
+  const { data } = useStaffUserControllerFindAll(
+    { take: 100, includeInActive: true },
+    { query: { enabled: isAuthenticated, staleTime: 5 * 60 * 1000 } },
+  );
+  return useMemo(() => {
+    const names = new Map((data?.data ?? []).map((u) => [u.id, u.name]));
+    return (id?: string | null) => (id ? (names.get(id) ?? '--') : undefined);
+  }, [data]);
+}

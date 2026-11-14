@@ -30,9 +30,10 @@ import { routes } from '@/router/routes';
 
 import { extractNetworkError } from '@/utils/extractNetworkError';
 
-import { EnrollmentDetail, useStudentTrainings } from '../../api/operations';
-import { useResolveCourse } from '../../api/setup';
+import { bestAttempt, EnrollmentListItem, useEnrollment, useStudentTrainings } from '../../api/operations';
+import { PayoutChip } from '../../components/PayoutChip';
 import { StateChip } from '../../components/StateChip';
+import { useSessions } from '../../components/useCurrentSession';
 import common from '../../messages';
 import { useTrainingsAccess } from '../../permissions';
 import { cardStyle, formatAmount, formatDate, formatPct } from '../../utils';
@@ -40,9 +41,13 @@ import { cardStyle, formatAmount, formatDate, formatPct } from '../../utils';
 import { EnrollDialog } from './EnrollDialog';
 import messages from './messages';
 
-function EnrollmentCard({ enrollment: e }: { enrollment: EnrollmentDetail }) {
-  const trainings = [...e.rules.trainings].sort((a, b) => a.sortOrder - b.sortOrder);
-  const done = new Set(e.progress.filter((p) => p.round === e.round && p.completed).map((p) => p.trainingId));
+function EnrollmentCard({ item }: { item: EnrollmentListItem }) {
+  const { sessions } = useSessions();
+  const { data } = useEnrollment(item.id);
+  const e = data?.data;
+  const trainings = e ? [...e.rules.trainings].sort((a, b) => a.sortOrder - b.sortOrder) : [];
+  const best = e ? bestAttempt(e.attempts) : undefined;
+  const sessionName = sessions.find((s) => s.id === item.sessionId)?.name ?? item.sessionId;
   return (
     <Card sx={cardStyle}>
       <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
@@ -50,91 +55,102 @@ function EnrollmentCard({ enrollment: e }: { enrollment: EnrollmentDetail }) {
           <Box>
             <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
               <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-                {e.session.name} · {e.course.code} · {e.course.name}
+                {sessionName} · {item.course.code} · {item.course.name}
               </Typography>
-              <StateChip state={e.state} closureReason={e.closureReason} />
+              <StateChip state={item.state} closureReason={item.closureReason} />
+              <PayoutChip status={item.payout.status} />
             </Stack>
             <Typography variant="body2" color="text.secondary">
               {[
-                e.trainer?.name,
-                `${e.attemptsUsed}/${e.maxAttempts}`,
-                e.bestPct !== null ? formatPct(e.bestPct) : null,
-                e.state === 'CLOSED' ? formatAmount(e.payoutAmount) : null,
-                e.closedAt ? formatDate(e.closedAt) : null,
+                item.trainerName,
+                `${item.attemptsUsed}/${e?.rules.maxAttempts ?? '--'}`,
+                item.bestPct !== undefined ? formatPct(item.bestPct) : null,
+                item.payout.amount !== null ? formatAmount(item.payout.amount) : null,
+                item.closedAt ? formatDate(item.closedAt) : null,
               ]
                 .filter(Boolean)
                 .join(' · ')}
             </Typography>
           </Box>
-          <Button size="small" component={Link} href={routes.trainings.enrollment(e.id)}>
+          <Button size="small" component={Link} href={routes.trainings.enrollment(item.id)}>
             <FormattedMessage {...messages.openEnrollment} />
           </Button>
         </Stack>
 
-        <Box sx={{ overflowX: 'auto', mt: 1 }}>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell />
-                {trainings.map((t) => (
-                  <TableCell key={t.id} align="right">
-                    {t.code}
-                  </TableCell>
-                ))}
-                <TableCell align="right">
-                  <FormattedMessage {...messages.weightedPct} />
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {e.state !== 'CLOSED' && (
+        {!e && <Skeleton height={80} />}
+        {e && (
+          <Box sx={{ overflowX: 'auto', mt: 1 }}>
+            <Table size="small">
+              <TableHead>
                 <TableRow>
-                  <TableCell>
-                    <FormattedMessage {...messages.round} values={{ round: String(e.round) }} />
-                  </TableCell>
+                  <TableCell />
                   {trainings.map((t) => (
-                    <TableCell key={t.id} align="right">
-                      {done.has(t.id) ? (
-                        <Chip size="small" color="success" label={<FormattedMessage {...messages.done} />} />
-                      ) : (
-                        <Chip size="small" variant="outlined" label={<FormattedMessage {...messages.pending} />} />
-                      )}
+                    <TableCell key={t.trainingId} align="right">
+                      {t.code}
                     </TableCell>
                   ))}
-                  <TableCell />
+                  <TableCell align="right">
+                    <FormattedMessage {...messages.weightedPct} />
+                  </TableCell>
                 </TableRow>
-              )}
-              {[...e.attempts]
-                .sort((a, b) => a.attemptNo - b.attemptNo)
-                .map((a) => (
-                  <TableRow key={a.id}>
+              </TableHead>
+              <TableBody>
+                {e.state !== 'CLOSED' && (
+                  <TableRow>
                     <TableCell>
-                      <FormattedMessage {...messages.attemptNo} values={{ n: String(a.attemptNo) }} />
-                      {a.id === e.bestAttemptId && (
-                        <Chip
-                          size="small"
-                          color="success"
-                          sx={{ ml: 1 }}
-                          label={<FormattedMessage {...messages.best} />}
-                        />
-                      )}
+                      <FormattedMessage {...messages.round} values={{ round: String(e.round) }} />
                     </TableCell>
                     {trainings.map((t) => {
-                      const m = a.marks.find((x) => x.trainingId === t.id);
+                      const done = e.trainings.find((p) => p.trainingId === t.trainingId)?.completed;
                       return (
-                        <TableCell key={t.id} align="right" sx={{ color: m && !m.passed ? 'error.main' : undefined }}>
-                          {m?.marks ?? '--'}
+                        <TableCell key={t.trainingId} align="right">
+                          {done ? (
+                            <Chip size="small" color="success" label={<FormattedMessage {...messages.done} />} />
+                          ) : (
+                            <Chip size="small" variant="outlined" label={<FormattedMessage {...messages.pending} />} />
+                          )}
                         </TableCell>
                       );
                     })}
-                    <TableCell align="right" sx={{ fontWeight: 600 }}>
-                      {formatPct(a.weightedPct)}
-                    </TableCell>
+                    <TableCell />
                   </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </Box>
+                )}
+                {[...e.attempts]
+                  .sort((a, b) => a.attemptNo - b.attemptNo)
+                  .map((a) => (
+                    <TableRow key={a.attemptId}>
+                      <TableCell>
+                        <FormattedMessage {...messages.attemptNo} values={{ n: String(a.attemptNo) }} />
+                        {best?.attemptId === a.attemptId && (
+                          <Chip
+                            size="small"
+                            color="success"
+                            sx={{ ml: 1 }}
+                            label={<FormattedMessage {...messages.best} />}
+                          />
+                        )}
+                      </TableCell>
+                      {trainings.map((t) => {
+                        const m = a.marks.find((x) => x.trainingId === t.trainingId);
+                        return (
+                          <TableCell
+                            key={t.trainingId}
+                            align="right"
+                            sx={{ color: m && !m.passed ? 'error.main' : undefined }}
+                          >
+                            {m?.marks ?? '--'}
+                          </TableCell>
+                        );
+                      })}
+                      <TableCell align="right" sx={{ fontWeight: 600 }}>
+                        {formatPct(a.weightedPct)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </Box>
+        )}
       </CardContent>
     </Card>
   );
@@ -146,10 +162,9 @@ export function StudentTrainingsView({ studentId }: { studentId: string }) {
   const [enrollOpen, setEnrollOpen] = useState(false);
   const { data: profileData } = useStudentsControllerGetProfile(studentId);
   const { data, isLoading, error } = useStudentTrainings(studentId);
-  const { data: resolvedData } = useResolveCourse(studentId);
   const student = profileData?.data?.student;
-  const enrollments = [...(data?.data ?? [])].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  const resolved = resolvedData?.data;
+  const resolved = data?.data;
+  const enrollments = [...(resolved?.enrollments ?? [])].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   const hasOpen = enrollments.some((e) => e.state !== 'CLOSED');
 
   return (
@@ -180,7 +195,7 @@ export function StudentTrainingsView({ studentId }: { studentId: string }) {
         </Stack>
       </Stack>
 
-      {error && (
+      {!!error && (
         <Alert severity="error">
           <FormattedMessage {...common.loadError} />: {extractNetworkError(error)}
         </Alert>
@@ -192,7 +207,7 @@ export function StudentTrainingsView({ studentId }: { studentId: string }) {
         </Typography>
       )}
       {enrollments.map((e) => (
-        <EnrollmentCard key={e.id} enrollment={e} />
+        <EnrollmentCard key={e.id} item={e} />
       ))}
 
       {canManage && <EnrollDialog open={enrollOpen} onClose={() => setEnrollOpen(false)} studentId={studentId} />}
@@ -205,7 +220,7 @@ export function StudentTrainingsCard({ studentId }: { studentId: string }) {
   const { canRead } = useTrainingsAccess();
   const { data, isLoading } = useStudentTrainings(canRead ? studentId : undefined);
   if (!canRead) return null;
-  const enrollments = [...(data?.data ?? [])].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const enrollments = [...(data?.data?.enrollments ?? [])].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   const latest = enrollments[0];
   return (
     <Card sx={cardStyle}>
@@ -224,8 +239,8 @@ export function StudentTrainingsCard({ studentId }: { studentId: string }) {
             {latest && (
               <>
                 <Typography variant="body2">
-                  {latest.session.name} · {latest.course.code} · {latest.trainer?.name ?? '--'}
-                  {latest.bestPct !== null ? ` · ${formatPct(latest.bestPct)}` : ''}
+                  {latest.course.code} · {latest.trainerName ?? '--'}
+                  {latest.bestPct !== undefined ? ` · ${formatPct(latest.bestPct)}` : ''}
                 </Typography>
                 <StateChip state={latest.state} closureReason={latest.closureReason} />
                 {enrollments.length > 1 && (

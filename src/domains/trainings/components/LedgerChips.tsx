@@ -11,7 +11,8 @@ const STATUS_COLOR: Record<LedgerStatus, 'default' | 'warning' | 'info' | 'succe
   PART_PAID: 'info',
   PAID: 'success',
   CANCELLED: 'default',
-  VOID: 'default',
+  RECORDED: 'success',
+  VOIDED: 'default',
 };
 
 export function LedgerStatusChip({ status }: { status: LedgerStatus }) {
@@ -19,7 +20,7 @@ export function LedgerStatusChip({ status }: { status: LedgerStatus }) {
     <Chip
       size="small"
       color={STATUS_COLOR[status]}
-      variant={status === 'CANCELLED' || status === 'VOID' ? 'outlined' : 'filled'}
+      variant={status === 'CANCELLED' || status === 'VOIDED' ? 'outlined' : 'filled'}
       label={<FormattedMessage {...messages[status]} />}
     />
   );
