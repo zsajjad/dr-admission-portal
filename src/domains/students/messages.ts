@@ -156,6 +156,7 @@ export default defineMessages({
   sectionPlacedBy: { id: `${scope}.sectionPlacedBy`, defaultMessage: 'Placed by {name} on {date}' },
   sectionPlacedOn: { id: `${scope}.sectionPlacedOn`, defaultMessage: 'Placed on {date}' },
   resultsSlotTitle: { id: `${scope}.resultsSlotTitle`, defaultMessage: 'Result' },
+  lastYearResult: { id: `${scope}.lastYearResult`, defaultMessage: 'Last year’s result, {session}' },
 
   // Results
   resultsNone: { id: `${scope}.resultsNone`, defaultMessage: 'No results for this session yet' },
