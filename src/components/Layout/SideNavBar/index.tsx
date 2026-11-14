@@ -8,11 +8,9 @@ import { usePathname } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 
-import { ImageWrapper } from '@/components/ImageWrapper';
+import { Logo } from '@/components/Logo';
 
 import { colorSchemes } from '@/theme/color-schemes';
-
-import images from '@/assets/images';
 
 import { routes } from '@/router/routes';
 
@@ -36,7 +34,7 @@ export function SideNavBar(): React.JSX.Element {
           href={routes.home}
           sx={{ display: 'flex', justifyContent: 'center', p: '16px 8px' }}
         >
-          <ImageWrapper src={images.Logo} alt="logo" width="40" height="40" objectFit="contain" />
+          <Logo height="44px" label="Danishgah-e-Ramzan" />
         </Box>
         <Divider sx={{ borderColor: palette.stroke, mx: 1 }} />
         <NavList pathname={pathname} items={navItems} />

@@ -200,7 +200,7 @@ function StaffCard({ user }: { user: StaffUserEntity }) {
         display: 'flex',
         flexDirection: 'column',
         fontFamily: 'inherit',
-        color: '#1E1033',
+        color: (theme) => theme.palette.brand.navy,
         bgcolor: '#fff',
       }}
     >
@@ -211,7 +211,7 @@ function StaffCard({ user }: { user: StaffUserEntity }) {
           gap: '2mm',
           px: '3mm',
           height: '11mm',
-          bgcolor: '#1E1033',
+          bgcolor: (theme) => theme.palette.brand.navy,
           color: '#fff',
         }}
       >
