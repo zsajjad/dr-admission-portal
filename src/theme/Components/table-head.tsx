@@ -7,9 +7,12 @@ export const MuiTableHead = {
   styleOverrides: {
     root: {
       [`& .${tableCellClasses.root}`]: {
-        backgroundColor: 'var(--mui-palette-background-level1)',
+        // The same quiet band as the data grids (components/DataTable).
+        backgroundColor: 'var(--mui-palette-background-default)',
         color: 'var(--mui-palette-text-secondary)',
-        lineHeight: 1,
+        fontSize: '0.8125rem',
+        fontWeight: 600,
+        lineHeight: 1.3,
       },
     },
   },
