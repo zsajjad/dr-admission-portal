@@ -41,7 +41,7 @@ export default defineMessages({
   bandColumn: { id: `${scope}.bandColumn`, defaultMessage: 'Weighted score (band)' },
   passedColumn: { id: `${scope}.passedColumn`, defaultMessage: '{count} passed' },
   bandLabelTop: { id: `${scope}.bandLabelTop`, defaultMessage: '{min}%+ ({amount})' },
-  bandLabel: { id: `${scope}.bandLabel`, defaultMessage: '{min}–{below}% ({amount})' },
+  bandLabel: { id: `${scope}.bandLabel`, defaultMessage: '{min}% to under {below}% ({amount})' },
   snapshotNote: {
     id: `${scope}.snapshotNote`,
     defaultMessage: 'Changes apply to new enrollments only. Each enrollment keeps the rules it started under.',
