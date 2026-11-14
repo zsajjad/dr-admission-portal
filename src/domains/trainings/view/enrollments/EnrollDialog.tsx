@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { Search as SearchIcon } from '@mui/icons-material';
-import { Alert, Box, Button, Chip, CircularProgress, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Chip, CircularProgress, MenuItem, Stack, TextField, Typography } from '@mui/material';
 
 import { StaffRole } from '@/providers/service/app.schemas';
 import { useStudentsControllerFindAll } from '@/providers/service/students/students';
@@ -18,6 +18,7 @@ import { useEnroll, useStudentTrainings } from '../../api/operations';
 import { ActionDialog } from '../../components/ActionDialog';
 import { StaffUserSelect } from '../../components/StaffUserSelect';
 import { useNotify } from '../../components/useNotify';
+import { formatPct } from '../../utils';
 
 import messages from './messages';
 
@@ -41,12 +42,14 @@ export function EnrollDialog({ open, onClose, studentId: givenStudentId }: Enrol
   const [gr, setGr] = useState('');
   const [searchGr, setSearchGr] = useState('');
   const [trainerId, setTrainerId] = useState<string | null>(null);
+  const [improveIds, setImproveIds] = useState<string[]>([]);
 
   useEffect(() => {
     if (!open) return;
     setGr('');
     setSearchGr('');
     setTrainerId(null);
+    setImproveIds([]);
   }, [open]);
 
   const { data: found, isFetching: finding } = useStudentsControllerFindAll(
@@ -59,12 +62,17 @@ export function EnrollDialog({ open, onClose, studentId: givenStudentId }: Enrol
   );
   const studentId = givenStudentId ?? student?.id;
   const { student: trainings, isFetching: loading } = useStudentTrainings(open ? studentId : undefined);
-  const nothingRequired = !!trainings && trainings.required.length === 0;
+  const improvable = trainings?.passed.filter((p) => p.improvable) ?? [];
+  const nothingRequired = !!trainings && trainings.required.length === 0 && improveIds.length === 0;
 
   const handleSubmit = () => {
     if (!studentId) return;
     enroll.mutate(
-      { studentId, ...(trainerId && { trainerStaffUserId: trainerId }) },
+      {
+        studentId,
+        ...(trainerId && { trainerStaffUserId: trainerId }),
+        ...(improveIds.length && { improveTrainingIds: improveIds }),
+      },
       {
         onSuccess: (res) => {
           notify.success(enrolledText);
@@ -140,11 +148,28 @@ export function EnrollDialog({ open, onClose, studentId: givenStudentId }: Enrol
             ) : (
               <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" sx={{ mt: 0.5 }}>
                 {trainings.required.map((t) => (
-                  <Chip key={t.trainingId ?? t.id ?? t.code} size="small" label={`${t.code} · ${t.name}`} />
+                  <Chip key={t.trainingId} size="small" label={`${t.code} · ${t.name}`} />
                 ))}
               </Stack>
             )}
           </Box>
+        )}
+        {improvable.length > 0 && (
+          <TextField
+            select
+            size="small"
+            label={<FormattedMessage {...messages.improvePasses} />}
+            value={improveIds}
+            onChange={(e) => setImproveIds(e.target.value as unknown as string[])}
+            helperText={<FormattedMessage {...messages.improvePassesHelp} />}
+            slotProps={{ select: { multiple: true } }}
+          >
+            {improvable.map((p) => (
+              <MenuItem key={p.trainingId} value={p.trainingId}>
+                {p.code} · {p.name} ({formatPct(p.scorePct)})
+              </MenuItem>
+            ))}
+          </TextField>
         )}
         <StaffUserSelect
           role={StaffRole.TRAINER}

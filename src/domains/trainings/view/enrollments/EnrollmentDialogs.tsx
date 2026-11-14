@@ -12,7 +12,6 @@ import { FormattedMessage, useFormattedMessage } from '@/theme/FormattedMessage'
 
 import {
   Attempt,
-  bestAttempt,
   EnrollmentDetail,
   useAssignTester,
   useCloseEnrollment,
@@ -168,7 +167,7 @@ export function CloseEnrollmentDialog({ open, onClose, enrollment }: DialogProps
   const mutation = useCloseEnrollment();
   const done = useDone(onClose);
   const r = useReason(open);
-  const best = bestAttempt(enrollment.attempts);
+  const tested = enrollment.attempts.length > 0;
 
   const handleSubmit = () => {
     r.setSubmitted(true);
@@ -188,10 +187,10 @@ export function CloseEnrollmentDialog({ open, onClose, enrollment }: DialogProps
     >
       <Stack spacing={2}>
         <Alert severity="warning">
-          {best ? (
+          {tested ? (
             <FormattedMessage
               {...messages.closeExplain}
-              values={{ trainer: enrollment.trainerName ?? '--', amount: formatAmount(best.payout) }}
+              values={{ trainer: enrollment.trainerName ?? '--', amount: formatAmount(enrollment.payout.amount) }}
             />
           ) : (
             <FormattedMessage {...messages.closeExplainUntested} />
@@ -244,7 +243,7 @@ export function OverrideMarksDialog({ open, onClose, enrollment, attempt }: Dial
   const done = useDone(onClose);
   const r = useReason(open);
   const noChange = useFormattedMessage(messages.noChange);
-  const { trainings, payoutFloor, bands } = enrollment.rules;
+  const { trainings } = enrollment.rules;
   // v3 grades only the trainings not yet passed, so the attempt's marks say which ones it has
   const ordered = useMemo(
     () =>
@@ -278,8 +277,8 @@ export function OverrideMarksDialog({ open, onClose, enrollment, attempt }: Dial
           {
             maxMarks: t.maxMarks,
             passMarks: t.passMarks,
-            payoutFloor: t.payoutFloor ?? payoutFloor,
-            bands: t.bands ?? bands,
+            payoutFloor: t.payoutFloor,
+            bands: t.bands,
           },
           values[i],
         ),

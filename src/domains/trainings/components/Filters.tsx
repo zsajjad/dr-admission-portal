@@ -111,3 +111,19 @@ export function UrlTextFilter({
     />
   );
 }
+
+/** A date box bound to a URL query param (yyyy-mm-dd) */
+export function UrlDateFilter({ param, label }: { param: string; label: React.ReactNode }) {
+  const { filters, setFilter } = useListingFilters<Record<string, FilterValue>>();
+  return (
+    <TextField
+      size="small"
+      type="date"
+      sx={{ minWidth: 160 }}
+      label={label}
+      value={(filters[param] as string) ?? ''}
+      onChange={(e) => setFilter({ [param]: e.target.value || undefined, page: 0 })}
+      slotProps={{ inputLabel: { shrink: true } }}
+    />
+  );
+}

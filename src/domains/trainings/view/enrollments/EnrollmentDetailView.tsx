@@ -6,7 +6,7 @@ import { useIntl } from 'react-intl';
 
 import Link from 'next/link';
 
-import { CheckCircle as DoneIcon, Flag as FlagIcon, RadioButtonUnchecked as PendingIcon } from '@mui/icons-material';
+import { Flag as FlagIcon } from '@mui/icons-material';
 import {
   Alert,
   Box,
@@ -34,22 +34,12 @@ import { routes } from '@/router/routes';
 
 import { extractNetworkError } from '@/utils/extractNetworkError';
 
-import {
-  Attempt,
-  bestAttempt,
-  EnrollmentDetail,
-  ItemProgress,
-  itemProgress,
-  useEnrollment,
-  useEnrollmentLedger,
-} from '../../api/operations';
+import { Attempt, EnrollmentDetail, ItemProgress, itemProgress, useEnrollment } from '../../api/operations';
 import { useWindows } from '../../api/setup';
 import { LedgerKindLabel, LedgerStatusChip } from '../../components/LedgerChips';
 import { PayoutChip } from '../../components/PayoutChip';
 import { Section } from '../../components/Section';
-import { useStaffNames } from '../../components/StaffUserSelect';
 import { StateChip } from '../../components/StateChip';
-import { useSessions } from '../../components/useCurrentSession';
 import common from '../../messages';
 import { useTrainingsAccess } from '../../permissions';
 import { cardStyle, formatAmount, formatDate, formatDateTime, formatPct } from '../../utils';
@@ -64,6 +54,15 @@ import {
 import messages from './messages';
 
 type DialogName = 'trainer' | 'tester' | 'close' | 'reopen';
+
+const PROGRESS_COLOR: Record<ItemProgress, 'success' | 'info' | 'error' | 'default'> = {
+  DONE: 'success',
+  CAN_RETRAIN: 'info',
+  FAILED: 'error',
+  PENDING: 'default',
+};
+
+const DECISION_KINDS = ['RETRAIN', 'CLOSE', 'AUTO_CLOSE', 'ADMIN_CLOSE', 'REOPEN'] as const;
 
 function Field({ label, children }: { label: ReactNode; children: ReactNode }) {
   return (
@@ -97,38 +96,18 @@ export function EnrollmentDetailView({ enrollmentId }: { enrollmentId: string })
   return <EnrollmentDetailBody enrollment={enrollment} />;
 }
 
-const PROGRESS_COLOR: Record<ItemProgress, 'success' | 'info' | 'error' | 'default'> = {
-  DONE: 'success',
-  CAN_RETRAIN: 'info',
-  FAILED: 'error',
-  PENDING: 'default',
-};
-
-const DECISION_KINDS = ['RETRAIN', 'CLOSE', 'AUTO_CLOSE', 'ADMIN_CLOSE', 'REOPEN'] as const;
-
 export function EnrollmentDetailBody({ enrollment: e }: { enrollment: EnrollmentDetail }) {
   const intl = useIntl();
   const { canManage, canOverride } = useTrainingsAccess();
-  const staffName = useStaffNames();
-  const { sessions } = useSessions();
   const { data: windowsData } = useWindows({ sessionId: e.sessionId, take: 100 });
-  const { data: ledgerData } = useEnrollmentLedger(e.id);
   const [dialog, setDialog] = useState<DialogName | null>(null);
   const [overriding, setOverriding] = useState<Attempt | null>(null);
 
   const closed = e.state === 'CLOSED';
-  const trainings = useMemo(() => [...e.rules.trainings].sort((a, b) => a.sortOrder - b.sortOrder), [e.rules]);
+  const rules = useMemo(() => [...e.rules.trainings].sort((a, b) => a.sortOrder - b.sortOrder), [e.rules]);
+  const code = (id: string) => rules.find((t) => t.trainingId === id)?.code ?? id;
   const attempts = [...e.attempts].sort((a, b) => a.attemptNo - b.attemptNo);
-  const best = bestAttempt(e.attempts);
   const windowName = (id?: string) => windowsData?.data.find((w) => w.id === id)?.name;
-  const sessionName = sessions.find((s) => s.id === e.sessionId)?.name ?? e.sessionId;
-  const ledger = ledgerData?.data ?? [];
-  const actor = (type: string, staffUserId?: string) =>
-    type === 'SYSTEM'
-      ? intl.formatMessage(common.system)
-      : type === 'ADMIN'
-        ? intl.formatMessage(common.admin)
-        : (staffName(staffUserId) ?? '--');
   const unassigned = intl.formatMessage(common.unassigned);
   const reopenFirst = intl.formatMessage(messages.reopenFirst);
 
@@ -147,7 +126,15 @@ export function EnrollmentDetailBody({ enrollment: e }: { enrollment: Enrollment
                 <StateChip state={e.state} closureReason={e.closureReason} />
               </Stack>
               <Typography variant="body2" color="text.secondary">
-                {[e.fatherName, e.classLevelCode, e.branchCode].filter(Boolean).join(' · ')}
+                {[
+                  e.fatherName,
+                  intl.formatMessage(e.gender === 'FEMALE' ? common.girls : common.boys),
+                  e.classLevelCode,
+                  e.branchCode,
+                  e.areaName,
+                ]
+                  .filter(Boolean)
+                  .join(' · ')}
               </Typography>
               <Stack direction="row" spacing={1.5} sx={{ mt: 1 }}>
                 <Button size="small" component={Link} href={routes.students.profile(e.studentId)}>
@@ -187,24 +174,14 @@ export function EnrollmentDetailBody({ enrollment: e }: { enrollment: Enrollment
 
           <Grid container spacing={2} sx={{ mt: 1.5 }}>
             <Grid size={{ xs: 6, md: 3 }}>
-              <Field label={<FormattedMessage {...common.course} />}>
-                {e.course.code} · {e.course.name}
-              </Field>
-            </Grid>
-            <Grid size={{ xs: 6, md: 3 }}>
               <Field label={<FormattedMessage {...common.session} />}>
-                {sessionName}
+                {e.sessionName}
                 <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
                   <FormattedMessage
                     {...messages.enrolledOn}
                     values={{ date: formatDate(e.createdAt), age: String(e.ageAtEnrollment ?? '--') }}
                   />
                 </Typography>
-                {e.repeatReason && (
-                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
-                    <FormattedMessage {...messages.repeatReason} values={{ reason: e.repeatReason }} />
-                  </Typography>
-                )}
               </Field>
             </Grid>
             <Grid size={{ xs: 6, md: 3 }}>
@@ -218,21 +195,23 @@ export function EnrollmentDetailBody({ enrollment: e }: { enrollment: Enrollment
             </Grid>
             <Grid size={{ xs: 6, md: 3 }}>
               <Field label={<FormattedMessage {...messages.nextTester} />}>
-                {staffName(e.testerStaffUserId) ?? <FormattedMessage {...messages.anyTester} />}
+                {e.testerName ?? <FormattedMessage {...messages.anyTester} />}
+              </Field>
+            </Grid>
+            <Grid size={{ xs: 6, md: 3 }}>
+              <Field label={<FormattedMessage {...messages.trainingsPassed} />}>
+                {e.passedCount} / {e.trainingCount}
               </Field>
             </Grid>
             <Grid size={{ xs: 6, md: 3 }}>
               <Field label={<FormattedMessage {...messages.attempts} />}>
                 <FormattedMessage
                   {...messages.attemptsOf}
-                  values={{ used: String(e.attemptsUsed), max: String(e.rules.maxAttempts) }}
+                  values={{ used: String(e.attemptsUsed), max: String(e.maxAttempts) }}
                 />
                 {' · '}
                 <FormattedMessage {...messages.round} values={{ round: String(e.round) }} />
               </Field>
-            </Grid>
-            <Grid size={{ xs: 6, md: 3 }}>
-              <Field label={<FormattedMessage {...messages.bestPct} />}>{formatPct(e.bestPct)}</Field>
             </Grid>
             <Grid size={{ xs: 6, md: 3 }}>
               <Field label={<FormattedMessage {...messages.payout} />}>
@@ -243,9 +222,12 @@ export function EnrollmentDetailBody({ enrollment: e }: { enrollment: Enrollment
               </Field>
             </Grid>
             <Grid size={{ xs: 6, md: 3 }}>
+              <Field label={<FormattedMessage {...messages.lastActivity} />}>{formatDateTime(e.lastActivityAt)}</Field>
+            </Grid>
+            <Grid size={{ xs: 6, md: 3 }}>
               {closed ? (
                 <Field label={<FormattedMessage {...messages.closedOn} values={{ date: formatDate(e.closedAt) }} />}>
-                  <FormattedMessage {...(e.passed ? messages.passedYes : messages.passedNo)} />
+                  {e.closureReason ? <FormattedMessage {...common[e.closureReason]} /> : '--'}
                 </Field>
               ) : (
                 <Field label={<FormattedMessage {...messages.autoCloseAt} />}>{formatDateTime(e.autoCloseAt)}</Field>
@@ -256,12 +238,12 @@ export function EnrollmentDetailBody({ enrollment: e }: { enrollment: Enrollment
           {e.decision && (
             <Alert severity="info" sx={{ mt: 2 }}>
               <FormattedMessage
-                {...(e.decision.suggested === 'RETRAIN' ? messages.decisionDueRetrain : messages.decisionDue)}
+                {...messages.decisionDueV3}
                 values={{
                   n: String(e.decision.attemptNo),
+                  failed: e.decision.failedTrainingIds.map(code).join(', ') || '--',
+                  retrainable: e.decision.retrainableTrainingIds.map(code).join(', ') || '--',
                   now: formatAmount(e.decision.payoutNow),
-                  ifAllPass: formatAmount(e.decision.payoutIfAllPass),
-                  max: formatAmount(e.decision.payoutMax),
                 }}
               />
             </Alert>
@@ -269,255 +251,204 @@ export function EnrollmentDetailBody({ enrollment: e }: { enrollment: Enrollment
         </CardContent>
       </Card>
 
-      <Grid container spacing={2.5}>
-        {/* Progress in the current round */}
-        <Grid size={{ xs: 12, md: 5 }}>
-          <Section
-            title={<FormattedMessage {...messages.progress} />}
-            summary={
-              <Chip size="small" label={<FormattedMessage {...messages.round} values={{ round: String(e.round) }} />} />
-            }
-          >
-            <Table size="small">
-              <TableBody>
-                {e.trainings.map((t) => (
-                  <TableRow key={t.trainingId}>
+      {/* Trainings */}
+      <Section title={<FormattedMessage {...messages.trainingsTitle} />}>
+        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+          <FormattedMessage {...messages.progressHelp} values={{ pct: String(e.rules.retrainBelowPct) }} />
+        </Typography>
+        <Box sx={{ overflowX: 'auto' }}>
+          <Table size="small" sx={{ minWidth: 760 }}>
+            <TableHead>
+              <TableRow>
+                <TableCell>
+                  <FormattedMessage {...messages.training} />
+                </TableCell>
+                <TableCell>
+                  <FormattedMessage {...messages.status} />
+                </TableCell>
+                <TableCell>
+                  <FormattedMessage {...messages.trained} />
+                </TableCell>
+                <TableCell align="right">
+                  <FormattedMessage {...messages.attempts} />
+                </TableCell>
+                <TableCell align="right">
+                  <FormattedMessage {...messages.bestPct} />
+                </TableCell>
+                <TableCell align="right">
+                  <FormattedMessage {...messages.payout} />
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {e.trainings.map((item) => {
+                const rule = rules.find((t) => t.trainingId === item.trainingId);
+                const progress = itemProgress(item);
+                return (
+                  <TableRow key={item.trainingId}>
                     <TableCell>
-                      {t.code} · {t.name}
-                    </TableCell>
-                    <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>
-                      <Stack direction="row" spacing={1} alignItems="center" justifyContent="flex-end">
-                        <Typography variant="caption" color="text.secondary">
-                          {t.completed ? formatDateTime(t.completedAt) : ''}
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {item.code} · {item.name}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                        <FormattedMessage
+                          {...messages.ruleLine}
+                          values={{
+                            pass: String(item.passMarks),
+                            max: String(item.maxMarks),
+                            floor: formatAmount(rule?.payoutFloor),
+                            top: formatAmount(Math.max(0, ...(rule?.bands ?? []).map((b) => b.amount))),
+                          }}
+                        />
+                      </Typography>
+                      {item.improvingFromPct !== undefined && item.improvingFromPct !== null && (
+                        <Typography variant="caption" color="info.main" sx={{ display: 'block' }}>
+                          <FormattedMessage
+                            {...messages.improvingFrom}
+                            values={{ pct: formatPct(item.improvingFromPct) }}
+                          />
                         </Typography>
-                        {t.completed ? (
-                          <DoneIcon fontSize="small" color="success" />
-                        ) : (
-                          <PendingIcon fontSize="small" color="disabled" />
-                        )}
-                      </Stack>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        size="small"
+                        color={PROGRESS_COLOR[progress]}
+                        label={<FormattedMessage {...messages[`progress_${progress}`]} />}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      {item.completed ? (
+                        formatDateTime(item.completedAt)
+                      ) : (
+                        <Typography component="span" variant="body2" color="text.secondary">
+                          <FormattedMessage {...messages.pending} />
+                        </Typography>
+                      )}
+                    </TableCell>
+                    <TableCell align="right">{item.attemptsUsed}</TableCell>
+                    <TableCell align="right">{item.best ? formatPct(item.best.scorePct) : '--'}</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 600 }}>
+                      {formatAmount(item.payout)}
                     </TableCell>
                   </TableRow>
-                ))}
+                );
+              })}
+            </TableBody>
+          </Table>
+        </Box>
+      </Section>
+
+      {/* Attempts */}
+      <Section title={<FormattedMessage {...messages.attemptsTitle} />}>
+        {attempts.length === 0 ? (
+          <Typography color="text.secondary">
+            <FormattedMessage {...messages.noAttempts} />
+          </Typography>
+        ) : (
+          <Box sx={{ overflowX: 'auto' }}>
+            <Table size="small" sx={{ minWidth: 820 }}>
+              <TableHead>
+                <TableRow>
+                  <TableCell />
+                  {rules.map((t) => (
+                    <TableCell key={t.trainingId} align="right">
+                      {t.code}
+                    </TableCell>
+                  ))}
+                  {canOverride && <TableCell />}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {attempts.map((a) => {
+                  const wrongSteps = a.marks.flatMap((m) =>
+                    (m.steps ?? []).filter((s) => !s.correct).map((s) => `${code(m.trainingId)}: ${s.stepCode}`),
+                  );
+                  return (
+                    <TableRow key={a.attemptId} sx={{ verticalAlign: 'top' }}>
+                      <TableCell sx={{ minWidth: 260 }}>
+                        <Stack direction="row" spacing={1} alignItems="center">
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            <FormattedMessage {...messages.attemptNo} values={{ n: String(a.attemptNo) }} />
+                          </Typography>
+                          {a.lateGrade && (
+                            <Tooltip title={intl.formatMessage(messages.flag_LATE_GRADE)}>
+                              <Chip
+                                size="small"
+                                color="warning"
+                                variant="outlined"
+                                icon={<FlagIcon />}
+                                label={<FormattedMessage {...messages.lateGrade} />}
+                              />
+                            </Tooltip>
+                          )}
+                        </Stack>
+                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                          <FormattedMessage {...messages.testedBy} values={{ name: a.testerName ?? '--' }} />
+                          {a.windowId && (
+                            <>
+                              {' '}
+                              <FormattedMessage
+                                {...messages.inWindow}
+                                values={{ window: windowName(a.windowId) ?? '--' }}
+                              />
+                            </>
+                          )}
+                          {' · '}
+                          {formatDateTime(a.testedAt)}
+                        </Typography>
+                        {a.overridden && (
+                          <Typography variant="caption" color="warning.dark" sx={{ display: 'block' }}>
+                            <FormattedMessage
+                              {...messages.overridden}
+                              values={{
+                                name: a.overriddenByName ?? intl.formatMessage(common.admin),
+                                at: formatDateTime(a.overriddenAt),
+                                reason: a.overrideReason ?? '',
+                              }}
+                            />
+                          </Typography>
+                        )}
+                        {wrongSteps.length > 0 && (
+                          <Typography variant="caption" color="error" sx={{ display: 'block' }}>
+                            <FormattedMessage {...messages.wrongSteps} values={{ steps: wrongSteps.join(', ') }} />
+                          </Typography>
+                        )}
+                      </TableCell>
+                      {rules.map((t) => {
+                        const m = a.marks.find((x) => x.trainingId === t.trainingId);
+                        return (
+                          <TableCell
+                            key={t.trainingId}
+                            align="right"
+                            sx={{ color: m && !m.passed ? 'error.main' : 'text.primary', fontWeight: 600 }}
+                          >
+                            {m ? m.marks : '·'}
+                            {m && (
+                              <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                                {formatPct(m.scorePct)} · {formatAmount(m.payout)}
+                              </Typography>
+                            )}
+                          </TableCell>
+                        );
+                      })}
+                      {canOverride && (
+                        <TableCell align="right">
+                          <Button size="small" color="warning" onClick={() => setOverriding(a)}>
+                            <FormattedMessage {...messages.overrideMarks} />
+                          </Button>
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
-          </Section>
-        </Grid>
+          </Box>
+        )}
+      </Section>
 
-        {/* Rules snapshot */}
-        <Grid size={{ xs: 12, md: 7 }}>
-          <Section title={<FormattedMessage {...messages.rulesTitle} />}>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-              <FormattedMessage
-                {...messages.rulesHelp}
-                values={{
-                  threshold: String(e.rules.retrainThresholdPct),
-                  attempts: String(e.rules.maxAttempts),
-                  days: String(e.rules.autoCloseDays),
-                }}
-              />
-            </Typography>
-            <Typography variant="body2" sx={{ mb: 1.5 }}>
-              {trainings
-                .map(
-                  (t) =>
-                    `${t.code} (pass ${t.passMarks}/${t.maxMarks}, ${formatAmount(t.payoutFloor ?? e.rules.payoutFloor)}–${formatAmount(
-                      Math.max(...(t.bands ?? e.rules.bands ?? []).map((b) => b.amount), 0),
-                    )})`,
-                )
-                .join(' · ')}
-            </Typography>
-            {e.items && (
-              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
-                <FormattedMessage {...messages.progressHelp} />
-              </Typography>
-            )}
-            {e.items && (
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>
-                      <FormattedMessage {...messages.training} />
-                    </TableCell>
-                    <TableCell>
-                      <FormattedMessage {...messages.status} />
-                    </TableCell>
-                    <TableCell align="right">
-                      <FormattedMessage {...messages.attempts} />
-                    </TableCell>
-                    <TableCell align="right">
-                      <FormattedMessage {...messages.bestPct} />
-                    </TableCell>
-                    <TableCell align="right">
-                      <FormattedMessage {...messages.payout} />
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {e.items.map((item) => {
-                    const rule = trainings.find((t) => t.trainingId === item.trainingId);
-                    return (
-                      <TableRow key={item.trainingId}>
-                        <TableCell>{item.code ?? rule?.code}</TableCell>
-                        <TableCell>
-                          <Chip
-                            size="small"
-                            color={PROGRESS_COLOR[itemProgress(item)]}
-                            label={<FormattedMessage {...messages[`progress_${itemProgress(item)}`]} />}
-                          />
-                        </TableCell>
-                        <TableCell align="right">{item.attemptsUsed}</TableCell>
-                        <TableCell align="right">{formatPct(item.scorePct)}</TableCell>
-                        <TableCell align="right">{formatAmount(item.payout)}</TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            )}
-          </Section>
-        </Grid>
-
-        {/* Attempts */}
-        <Grid size={12}>
-          <Section title={<FormattedMessage {...messages.attemptsTitle} />}>
-            {attempts.length === 0 ? (
-              <Typography color="text.secondary">
-                <FormattedMessage {...messages.noAttempts} />
-              </Typography>
-            ) : (
-              <Box sx={{ overflowX: 'auto' }}>
-                <Table size="small" sx={{ minWidth: 900 }}>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell />
-                      {trainings.map((t) => (
-                        <TableCell key={t.trainingId} align="right">
-                          {t.code}
-                        </TableCell>
-                      ))}
-                      <TableCell align="right">
-                        <FormattedMessage {...messages.weightedPct} />
-                      </TableCell>
-                      <TableCell align="right">
-                        <FormattedMessage {...messages.passedCount} />
-                      </TableCell>
-                      <TableCell align="right">
-                        <FormattedMessage {...messages.band} />
-                      </TableCell>
-                      <TableCell align="right">
-                        <FormattedMessage {...messages.payout} />
-                      </TableCell>
-                      {canOverride && <TableCell />}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {attempts.map((a) => {
-                      const wrongSteps = a.marks.flatMap((m) =>
-                        (m.steps ?? [])
-                          .filter((s) => !s.correct)
-                          .map((s) => `${trainings.find((t) => t.trainingId === m.trainingId)?.code}: ${s.stepCode}`),
-                      );
-                      return (
-                        <TableRow key={a.attemptId} sx={{ verticalAlign: 'top' }}>
-                          <TableCell sx={{ minWidth: 260 }}>
-                            <Stack direction="row" spacing={1} alignItems="center">
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                                <FormattedMessage {...messages.attemptNo} values={{ n: String(a.attemptNo) }} />
-                              </Typography>
-                              {best?.attemptId === a.attemptId && (
-                                <Chip size="small" color="success" label={<FormattedMessage {...messages.best} />} />
-                              )}
-                              {a.lateGrade && (
-                                <Tooltip title={intl.formatMessage(messages.flag_LATE_GRADE)}>
-                                  <Chip
-                                    size="small"
-                                    color="warning"
-                                    variant="outlined"
-                                    icon={<FlagIcon />}
-                                    label={<FormattedMessage {...messages.lateGrade} />}
-                                  />
-                                </Tooltip>
-                              )}
-                            </Stack>
-                            <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
-                              <FormattedMessage
-                                {...messages.testedBy}
-                                values={{ name: staffName(a.testerStaffUserId) ?? '--' }}
-                              />
-                              {a.windowId && (
-                                <>
-                                  {' '}
-                                  <FormattedMessage
-                                    {...messages.inWindow}
-                                    values={{ window: windowName(a.windowId) ?? '--' }}
-                                  />
-                                </>
-                              )}
-                              {' · '}
-                              {formatDateTime(a.testedAt)}
-                            </Typography>
-                            {a.overridden && (
-                              <Typography variant="caption" color="warning.dark" sx={{ display: 'block' }}>
-                                <FormattedMessage
-                                  {...messages.overridden}
-                                  values={{
-                                    name: intl.formatMessage(common.admin),
-                                    at: formatDateTime(a.overriddenAt),
-                                    reason: a.overrideReason ?? '',
-                                  }}
-                                />
-                              </Typography>
-                            )}
-                            {wrongSteps.length > 0 && (
-                              <Typography variant="caption" color="error" sx={{ display: 'block' }}>
-                                <FormattedMessage {...messages.wrongSteps} values={{ steps: wrongSteps.join(', ') }} />
-                              </Typography>
-                            )}
-                          </TableCell>
-                          {trainings.map((t) => {
-                            const m = a.marks.find((x) => x.trainingId === t.trainingId);
-                            return (
-                              <TableCell
-                                key={t.trainingId}
-                                align="right"
-                                sx={{ color: m && !m.passed ? 'error.main' : 'text.primary', fontWeight: 600 }}
-                              >
-                                {m?.marks ?? '--'}
-                                {m?.scorePct !== undefined && (
-                                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
-                                    {formatPct(m.scorePct)}
-                                    {m.payout !== undefined ? ` · ${formatAmount(m.payout)}` : ''}
-                                  </Typography>
-                                )}
-                              </TableCell>
-                            );
-                          })}
-                          <TableCell align="right">{formatPct(a.weightedPct)}</TableCell>
-                          <TableCell align="right">
-                            {a.passedCount}/{a.totalCount}
-                          </TableCell>
-                          <TableCell align="right">{formatAmount(a.band)}</TableCell>
-                          <TableCell align="right" sx={{ fontWeight: 600 }}>
-                            {formatAmount(a.payout)}
-                          </TableCell>
-                          {canOverride && (
-                            <TableCell align="right">
-                              <Button size="small" color="warning" onClick={() => setOverriding(a)}>
-                                <FormattedMessage {...messages.overrideMarks} />
-                              </Button>
-                            </TableCell>
-                          )}
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </Box>
-            )}
-          </Section>
-        </Grid>
-
+      <Grid container spacing={2.5}>
         {/* Decisions */}
         <Grid size={{ xs: 12, md: 6 }}>
           <Section title={<FormattedMessage {...messages.decisions} />}>
@@ -551,11 +482,7 @@ export function EnrollmentDetailBody({ enrollment: e }: { enrollment: Enrollment
                               <Typography variant="caption" sx={{ display: 'block' }}>
                                 <FormattedMessage
                                   {...messages.retrainChosen}
-                                  values={{
-                                    trainings: d.trainingIds
-                                      .map((id) => trainings.find((t) => t.trainingId === id)?.code ?? id)
-                                      .join(', '),
-                                  }}
+                                  values={{ trainings: d.trainingIds.map(code).join(', ') }}
                                 />
                               </Typography>
                             )}
@@ -565,7 +492,9 @@ export function EnrollmentDetailBody({ enrollment: e }: { enrollment: Enrollment
                               </Typography>
                             )}
                           </TableCell>
-                          <TableCell>{actor(d.actorType, d.staffUserId)}</TableCell>
+                          <TableCell>
+                            {d.actorName ?? intl.formatMessage(d.actorType === 'SYSTEM' ? common.system : common.admin)}
+                          </TableCell>
                         </TableRow>
                       );
                     })}
@@ -594,10 +523,7 @@ export function EnrollmentDetailBody({ enrollment: e }: { enrollment: Enrollment
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>
                             <FormattedMessage
                               {...messages.fromTo}
-                              values={{
-                                from: staffName(a.fromTrainerStaffUserId) ?? unassigned,
-                                to: staffName(a.toTrainerStaffUserId) ?? unassigned,
-                              }}
+                              values={{ from: a.fromTrainerName ?? unassigned, to: a.toTrainerName ?? unassigned }}
                             />
                           </Typography>
                           {a.reason && (
@@ -606,7 +532,7 @@ export function EnrollmentDetailBody({ enrollment: e }: { enrollment: Enrollment
                             </Typography>
                           )}
                         </TableCell>
-                        <TableCell>{a.byAdminUserId ? actor('ADMIN') : actor('STAFF', a.byStaffUserId)}</TableCell>
+                        <TableCell>{a.byName ?? '--'}</TableCell>
                       </TableRow>
                     ))}
                 </TableBody>
@@ -618,7 +544,7 @@ export function EnrollmentDetailBody({ enrollment: e }: { enrollment: Enrollment
         {/* Ledger */}
         <Grid size={12}>
           <Section title={<FormattedMessage {...messages.ledger} />}>
-            {ledger.length === 0 ? (
+            {e.ledgerEntries.length === 0 ? (
               <Typography color="text.secondary">
                 <FormattedMessage {...messages.noLedger} />
               </Typography>
@@ -633,7 +559,7 @@ export function EnrollmentDetailBody({ enrollment: e }: { enrollment: Enrollment
                       <FormattedMessage {...messages.kind} />
                     </TableCell>
                     <TableCell>
-                      <FormattedMessage {...common.trainer} />
+                      <FormattedMessage {...messages.training} />
                     </TableCell>
                     <TableCell align="right">
                       <FormattedMessage {...messages.amount} />
@@ -647,13 +573,13 @@ export function EnrollmentDetailBody({ enrollment: e }: { enrollment: Enrollment
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {ledger.map((l) => (
+                  {e.ledgerEntries.map((l) => (
                     <TableRow key={l.id}>
-                      <TableCell sx={{ whiteSpace: 'nowrap' }}>{formatDateTime(l.createdAt)}</TableCell>
+                      <TableCell sx={{ whiteSpace: 'nowrap' }}>{formatDate(l.date ?? l.createdAt)}</TableCell>
                       <TableCell>
                         <LedgerKindLabel kind={l.kind} />
                       </TableCell>
-                      <TableCell>{staffName(l.trainerStaffUserId)}</TableCell>
+                      <TableCell>{l.training?.code ?? ''}</TableCell>
                       <TableCell align="right" sx={{ fontWeight: 600 }}>
                         {formatAmount(l.amount)}
                       </TableCell>
