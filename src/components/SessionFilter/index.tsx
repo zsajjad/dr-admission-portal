@@ -26,7 +26,12 @@ export interface SessionFilterProps {
   defaultToActive?: boolean;
 }
 
-export function SessionFilter({ size = 'small', minWidth = 280, onSessionChange, defaultToActive }: SessionFilterProps) {
+export function SessionFilter({
+  size = 'small',
+  minWidth = 280,
+  onSessionChange,
+  defaultToActive,
+}: SessionFilterProps) {
   const { filters, setFilter } = useListingFilters<SessionFilterState>();
 
   // Every session, closed ones included, so past seasons stay selectable
