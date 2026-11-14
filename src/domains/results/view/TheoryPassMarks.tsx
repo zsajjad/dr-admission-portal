@@ -94,12 +94,16 @@ export function TheoryPassMarks() {
 
   const handleSave = () => {
     if (!sessionId) return;
-    save.mutate(
+    save.save(
       {
         sessionId,
+        // Only changed rows; an emptied row sends null, which removes its pass mark
         rows: levels
-          .filter((l) => (values[l.id] ?? '').trim() !== '')
-          .map((l) => ({ classLevelId: l.id, passMarks: Number(values[l.id]) })),
+          .filter((l) => (values[l.id] ?? '') !== (initial[l.id] ?? ''))
+          .map((l) => ({
+            classLevelId: l.id,
+            passMarks: (values[l.id] ?? '').trim() === '' ? null : Number(values[l.id]),
+          })),
       },
       {
         onSuccess: () => {

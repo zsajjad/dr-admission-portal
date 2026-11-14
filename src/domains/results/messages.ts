@@ -10,7 +10,7 @@ export default defineMessages({
   help: {
     id: `${scope}.help`,
     defaultMessage:
-      'A student passes the session with theory at or above the pass mark for their class level, and every Fiqh training required for their age passed (in any year). Leave a class level empty to have no pass mark: its results stay blank.',
+      'A student passes the session with theory at or above the pass mark for their class level, and every Fiqh training required for their age passed (in any year). Empty a class level’s box to remove its pass mark: its results stay blank.',
   },
   session: { id: `${scope}.session`, defaultMessage: 'Session' },
   classLevel: { id: `${scope}.classLevel`, defaultMessage: 'Class level' },
