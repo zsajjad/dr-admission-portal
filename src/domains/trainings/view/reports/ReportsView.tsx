@@ -306,7 +306,8 @@ export function ReportsView() {
         onChange={(_, v) => setFilter({ report: v })}
         variant="scrollable"
         scrollButtons="auto"
-        sx={{ '& .MuiTab-root': { textTransform: 'none', fontWeight: 600 } }}
+        // The second row of tabs on the page: a step smaller than the trainings tabs above it.
+        sx={{ minHeight: 36, '& .MuiTab-root': { minHeight: 36, py: 0.75, fontSize: '0.875rem' } }}
       >
         {REPORTS.map((r) => (
           <Tab key={r} value={r} label={t(messages[r])} />
