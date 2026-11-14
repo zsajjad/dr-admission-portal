@@ -19,7 +19,7 @@ export default defineMessages({
   paid: { id: `${scope}.paid`, defaultMessage: 'Paid' },
   due: { id: `${scope}.due`, defaultMessage: 'Balance due' },
   total: { id: `${scope}.total`, defaultMessage: 'Total' },
-  noTrainers: { id: `${scope}.noTrainers`, defaultMessage: 'No trainer has earnings yet' },
+  noTrainers: { id: `${scope}.noTrainers`, defaultMessage: 'No trainer has hadiyaat yet' },
   noEntries: { id: `${scope}.noEntries`, defaultMessage: 'No entries match' },
   showEntries: { id: `${scope}.showEntries`, defaultMessage: 'Entries' },
   approveAll: { id: `${scope}.approveAll`, defaultMessage: 'Approve all' },
@@ -58,7 +58,7 @@ export default defineMessages({
   voidTitle: { id: `${scope}.voidTitle`, defaultMessage: 'Void this {kind} of {amount}?' },
   voidExplain: {
     id: `${scope}.voidExplain`,
-    defaultMessage: 'It stays in the ledger, marked void, and no longer counts in the balance.',
+    defaultMessage: 'It stays in the trainer’s hadiyaat, marked void, and no longer counts in the balance.',
   },
   voided: { id: `${scope}.voided`, defaultMessage: 'Voided {at}: {reason}' },
   paymentTitle: { id: `${scope}.paymentTitle`, defaultMessage: 'Record a payment' },
@@ -80,7 +80,7 @@ export default defineMessages({
   adjustmentExplain: {
     id: `${scope}.adjustmentExplain`,
     defaultMessage:
-      'A correction to the trainer’s earnings, approved when made. Use a negative amount to take money back.',
+      'A correction to the trainer’s hadiyaat, approved when made. Use a negative amount to take money back.',
   },
   enrollmentId: { id: `${scope}.enrollmentId`, defaultMessage: 'Enrollment (optional)' },
   pickTrainer: { id: `${scope}.pickTrainer`, defaultMessage: 'Pick a trainer' },

@@ -528,7 +528,7 @@
   "app.domains.adminPermissions.p_trainings_override": "تربیت کے ٹیسٹ نمبر بدلنا",
   "app.domains.adminPermissions.p_trainings_override_hint": "ٹیسٹر کے بھیجنے کے بعد ٹیسٹ نمبر بدلنا، وجہ کے ساتھ۔",
   "app.domains.adminPermissions.p_trainings_payouts": "ٹرینرز کی ادائیگی",
-  "app.domains.adminPermissions.p_trainings_payouts_hint": "ٹرینرز کی کمائی منظور کرنا، اور انہیں ادائیگی درج کرنا۔",
+  "app.domains.adminPermissions.p_trainings_payouts_hint": "ٹرینرز کے ہدیات منظور کرنا، اور انہیں ادائیگی درج کرنا۔",
   "app.domains.adminPermissions.p_reports_view": "رپورٹیں اور نتائج دیکھنا",
   "app.domains.adminPermissions.p_reports_view_hint": "رپورٹیں اور نتائج کی فہرستیں کھولنا، کچھ بدلے بغیر۔",
   "app.domains.adminPermissions.p_reports_chat": "منصوبہ بندی چیٹ",

@@ -129,7 +129,7 @@ export default defineMessages({
   p_trainings_payouts: { id: `${scope}.p_trainings_payouts`, defaultMessage: 'Trainer payments' },
   p_trainings_payouts_hint: {
     id: `${scope}.p_trainings_payouts_hint`,
-    defaultMessage: 'Approve what trainers have earned, and record payments to them.',
+    defaultMessage: 'Approve trainers’ hadiyaat, and record payments to them.',
   },
   p_reports_view: { id: `${scope}.p_reports_view`, defaultMessage: 'See reports and results' },
   p_reports_view_hint: {

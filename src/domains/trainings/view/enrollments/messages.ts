@@ -127,10 +127,10 @@ export default defineMessages({
   assignments: { id: `${scope}.assignments`, defaultMessage: 'Trainer history' },
   noAssignments: { id: `${scope}.noAssignments`, defaultMessage: 'No changes' },
   fromTo: { id: `${scope}.fromTo`, defaultMessage: '{from} → {to}' },
-  ledger: { id: `${scope}.ledger`, defaultMessage: 'Payout entries' },
+  ledger: { id: `${scope}.ledger`, defaultMessage: 'Hadiya entries' },
   noLedger: {
     id: `${scope}.noLedger`,
-    defaultMessage: 'None yet. Closing the enrollment adds the payout to the trainer’s ledger.',
+    defaultMessage: 'None yet. Closing the enrollment adds the hadiya to the trainer’s hadiyaat.',
   },
   when: { id: `${scope}.when`, defaultMessage: 'When' },
   who: { id: `${scope}.who`, defaultMessage: 'Who' },
@@ -166,7 +166,7 @@ export default defineMessages({
   closeExplain: {
     id: `${scope}.closeExplain`,
     defaultMessage:
-      'It closes as “Closed by admin”, and {trainer} is paid {amount}: each tested training from its best attempt. The payout is fixed and goes to the ledger to approve.',
+      'It closes as “Closed by admin”, and {trainer} is paid {amount}: each tested training from its best attempt. The hadiya is fixed and goes to the trainer’s hadiyaat to approve.',
   },
   closeExplainUntested: {
     id: `${scope}.closeExplainUntested`,
@@ -185,7 +185,7 @@ export default defineMessages({
   },
   overrideClosed: {
     id: `${scope}.overrideClosed`,
-    defaultMessage: 'The enrollment is closed, so the payout is settled again in the ledger.',
+    defaultMessage: 'The enrollment is closed, so the hadiya is settled again in the trainer’s hadiyaat.',
   },
   marksOutOf: { id: `${scope}.marksOutOf`, defaultMessage: 'out of {max}, pass {pass}' },
   marksInvalid: { id: `${scope}.marksInvalid`, defaultMessage: 'Between 0 and {max}, at most 2 decimals' },

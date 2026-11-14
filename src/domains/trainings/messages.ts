@@ -14,7 +14,7 @@ export default defineMessages({
   tabCatalog: { id: `${scope}.tabCatalog`, defaultMessage: 'Training catalog' },
   tabWindows: { id: `${scope}.tabWindows`, defaultMessage: 'Testing windows' },
   tabReports: { id: `${scope}.tabReports`, defaultMessage: 'Reports' },
-  tabLedger: { id: `${scope}.tabLedger`, defaultMessage: 'Trainer ledger' },
+  tabLedger: { id: `${scope}.tabLedger`, defaultMessage: 'Trainers’ hadiyaat' },
 
   // Common
   save: { id: `${scope}.save`, defaultMessage: 'Save' },
@@ -80,7 +80,7 @@ export default defineMessages({
   REOPEN: { id: `${scope}.REOPEN`, defaultMessage: 'Reopened' },
 
   // Ledger entry kinds and statuses
-  PAYOUT: { id: `${scope}.PAYOUT`, defaultMessage: 'Payout' },
+  PAYOUT: { id: `${scope}.PAYOUT`, defaultMessage: 'Hadiya' },
   ADJUSTMENT: { id: `${scope}.ADJUSTMENT`, defaultMessage: 'Adjustment' },
   PAYMENT: { id: `${scope}.PAYMENT`, defaultMessage: 'Payment' },
   ADHOC: { id: `${scope}.ADHOC`, defaultMessage: 'Added amount' },
