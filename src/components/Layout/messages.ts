@@ -48,6 +48,10 @@ export default defineMessages({
     id: `${scope}.interactionReport`,
     defaultMessage: 'Interactions',
   },
+  resultRules: {
+    id: `${scope}.resultRules`,
+    defaultMessage: 'Pass marks',
+  },
   signOut: {
     id: `${scope}.signOut`,
     defaultMessage: 'Sign Out',

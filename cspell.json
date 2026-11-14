@@ -88,7 +88,12 @@
     "sectionsmanage",
     "staffmanage",
     "studentsedit",
-    "studentsmerge"
+    "studentsmerge",
+    "trainingsconfigure",
+    "trainingsmanage",
+    "trainingsoverride",
+    "trainingspayouts",
+    "retrainable"
   ],
   "ignoreWords": [],
   "import": []
