@@ -58,6 +58,12 @@ export const MODULE_REGISTRY = {
     href: routes.students.listing,
     icon: 'students',
   },
+  studentMerge: {
+    title: <FormattedMessage {...messages.studentMerge} />,
+    href: routes.studentMerge.listing,
+    icon: 'studentMerge',
+    permissions: [Permission.studentsmerge],
+  },
   staffUsers: {
     title: <FormattedMessage {...messages.staffUsers} />,
     href: routes.staffUsers.listing,
