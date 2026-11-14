@@ -19,12 +19,7 @@ import { routes } from '@/router/routes';
 import { extractNetworkError } from '@/utils/extractNetworkError';
 
 import { config } from '@/config';
-import {
-  getAuthenticationToken,
-  removeAuthenticationHeader,
-  setAuthenticationHeader,
-  setRefreshToken,
-} from '@/services';
+import { SESSION_EXPIRED_EVENT } from '@/services';
 
 import { useSnackbarContext } from './SnackbarContext';
 
@@ -43,7 +38,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const AuthContextProvider: React.FC<AuthContextProps> = ({ children }) => {
-  const { data: session, status, update: updateSession } = useSession();
+  const { data: session, status } = useSession();
   const adminLogout = useAdminAuthControllerLogout();
 
   const snackbar = useSnackbarContext();
@@ -51,26 +46,11 @@ const AuthContextProvider: React.FC<AuthContextProps> = ({ children }) => {
 
   const { data: user, isLoading } = useAdminAuthControllerGetAdminDetails({ query: { enabled: !!session } });
 
-  const previousToken = getAuthenticationToken();
-  const currentToken = session?.accessToken;
-  const currentRefreshToken = session?.refreshToken;
-
-  if (currentToken && previousToken !== `Bearer ${currentToken}`) {
-    setAuthenticationHeader(currentToken);
-  }
-
-  // Set refresh token for automatic token refresh
-  if (currentRefreshToken) {
-    setRefreshToken(currentRefreshToken);
-  }
-
   const signOut = async (): Promise<void> => {
     // Implement sign out logic here, e.g., clear session, redirect, etc.
     try {
       adminLogout.mutateAsync(undefined, {
         onSuccess: async () => {
-          // Clear authentication header
-          removeAuthenticationHeader();
           sessionStorage.removeItem('isTabActive');
           await nextAuthSignOut({ redirect: true, callbackUrl: routes.auth.signIn });
           snackbar.show({
@@ -132,27 +112,17 @@ const AuthContextProvider: React.FC<AuthContextProps> = ({ children }) => {
     [router, snackbar],
   );
 
-  // Listen for token refresh events and update the NextAuth session
+  // The API client fires this when the login can no longer be refreshed: sign in again.
   useEffect(() => {
-    const handleTokenRefreshed = (event: Event) => {
-      const customEvent = event as CustomEvent<{ accessToken: string; refreshToken: string }>;
-      const { accessToken, refreshToken } = customEvent.detail;
-      // Update the NextAuth session with new tokens using the update function
-      updateSession({ accessToken, refreshToken }).catch((err) => {
-        console.error('Failed to update session:', err);
+    const handleSessionExpired = () => {
+      sessionStorage.removeItem('isTabActive');
+      nextAuthSignOut({ redirect: true, callbackUrl: routes.auth.signIn }).catch((err) => {
+        console.error('Sign out after expired session failed:', err);
       });
     };
-
-    if (typeof window !== 'undefined') {
-      window.addEventListener('tokenRefreshed', handleTokenRefreshed);
-    }
-
-    return () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('tokenRefreshed', handleTokenRefreshed);
-      }
-    };
-  }, [updateSession]);
+    window.addEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired);
+    return () => window.removeEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired);
+  }, []);
 
   useEffect(() => {
     // Set tab as active when session is available

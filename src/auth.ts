@@ -2,15 +2,14 @@ import type { NextAuthConfig, User } from 'next-auth';
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
-import { adminAuthControllerLogin } from '@/providers/service/admin-auth/admin-auth';
+import type { AdminLoginResponseDto, AdminRefreshResponseDto } from '@/providers/service/app.schemas';
 
 import { config } from '@/config';
+import { clientIpFrom, corePostJson } from '@/server/core';
 
 // Keep captcha logic consistent between client UI and server authorize():
 // captcha is only enforced when a Turnstile site key exists AND bypass isn't enabled.
 const isCaptchaEnabled = Boolean(config.TURNSTILE_SITE_KEY) && config.CAPTCHA_BYPASS !== 'true';
-
-const LOGIN_TIMEOUT_MS = Number.parseInt(process.env.AUTH_LOGIN_TIMEOUT_MS ?? '15000', 10);
 
 const defaultCredentials = {
   username: { label: 'Username', type: 'text' },
@@ -31,7 +30,7 @@ export const authConfig = {
       id: config.site.id,
       name: config.site.name,
       credentials: Credentials,
-      async authorize(credentials: Record<string, unknown>): Promise<User | null> {
+      async authorize(credentials: Record<string, unknown>, request: Request): Promise<User | null> {
         try {
           const { username, password, captchaToken } = credentials ?? {};
           if (!username || !password) {
@@ -42,17 +41,17 @@ export const authConfig = {
             return null;
           }
 
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), LOGIN_TIMEOUT_MS);
-
-          const response = await adminAuthControllerLogin(
+          // Runs on the portal's server, which adds the API key and the portal secret. The tokens
+          // stay in the encrypted session cookie; the browser never sees them.
+          const response = await corePostJson<AdminLoginResponseDto>(
+            '/admin/auth/login',
             {
               email: username.toString(),
               password: password.toString(),
               captchaToken: isCaptchaEnabled ? (captchaToken?.toString() ?? '') : '',
             },
-            controller.signal,
-          ).finally(() => clearTimeout(timeoutId));
+            { clientIp: clientIpFrom(request.headers) },
+          );
 
           if (response && response.accessToken && response.refreshToken) {
             const user: User = {
@@ -68,8 +67,8 @@ export const authConfig = {
 
           return null;
         } catch (error) {
-          if (error instanceof DOMException && error.name === 'AbortError') {
-            console.error(`Error in NextAuth authorize: login timed out after ${LOGIN_TIMEOUT_MS}ms`);
+          if (error instanceof DOMException && (error.name === 'AbortError' || error.name === 'TimeoutError')) {
+            console.error('Error in NextAuth authorize: login timed out');
             return null;
           }
           console.error('Error in NextAuth authorize:', error);
@@ -90,31 +89,42 @@ export const authConfig = {
   callbacks: {
     async jwt({ token, user, trigger, session }) {
       if (trigger === 'signIn' && user) {
-        // Initial sign in
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
         token.requiresPasswordChange = user.requiresPasswordChange;
-      } else if (trigger === 'update' && session) {
-        // Update token if session is updated (e.g., after token refresh)
-        if (session.accessToken) {
-          token.accessToken = session.accessToken;
-        }
-        if (session.refreshToken) {
-          token.refreshToken = session.refreshToken;
+        delete token.error;
+        return token;
+      }
+
+      if (trigger === 'update' && session) {
+        // The browser asks for a refresh (`update({ refresh: true })`) after the API answers 401.
+        // Only here, where Auth.js writes the new cookie, because the API replaces the refresh
+        // token on every refresh: a refresh whose cookie is never written would log the user out.
+        if (session.refresh === true && token.refreshToken) {
+          const refreshed = await corePostJson<AdminRefreshResponseDto>('/admin/auth/refresh', {
+            refreshToken: token.refreshToken,
+          }).catch(() => null);
+          if (refreshed?.accessToken && refreshed.refreshToken) {
+            token.accessToken = refreshed.accessToken;
+            token.refreshToken = refreshed.refreshToken;
+            token.requiresPasswordChange = refreshed.requiresPasswordChange;
+            delete token.error;
+          } else {
+            token.error = 'RefreshFailed';
+          }
         }
         if (typeof session.requiresPasswordChange === 'boolean') {
           token.requiresPasswordChange = session.requiresPasswordChange;
         }
-        return token;
       }
       return token;
     },
     async session({ session, token }) {
+      // No tokens here: this object is sent to the browser (/api/auth/session).
       return {
         ...session,
-        accessToken: token.accessToken,
-        refreshToken: token.refreshToken,
         requiresPasswordChange: token.requiresPasswordChange,
+        error: token.error,
       };
     },
   },

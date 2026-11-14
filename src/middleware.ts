@@ -13,6 +13,8 @@ export async function middleware(request: NextRequest) {
     path.startsWith('/auth/sign-up') ||
     path.startsWith('/auth/forgot-password') ||
     path.startsWith('/api/auth') ||
+    // The API proxy checks the login itself and answers 401 in JSON (a redirect would break fetch).
+    path.startsWith('/api/core') ||
     path.startsWith('/error/not-found') ||
     path.startsWith('/_next') ||
     path === '/favicon.ico';
@@ -24,7 +26,8 @@ export async function middleware(request: NextRequest) {
   const session = await auth();
 
   // If there's no session and the path isn't public, redirect to sign-in
-  if (!session?.accessToken) {
+  // A session whose refresh failed (error set) counts as signed out.
+  if (!session || session.error) {
     const signInUrl = new URL('/auth/sign-in', request.url);
     signInUrl.searchParams.set('callbackUrl', request.url);
     return NextResponse.redirect(signInUrl);

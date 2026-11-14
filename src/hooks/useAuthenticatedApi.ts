@@ -3,19 +3,14 @@
 import { useSession } from 'next-auth/react';
 
 /**
- * Hook to check if API calls will be authenticated
- * Useful for conditional rendering or logic
+ * Whether API calls will be authenticated: the user is signed in and the login is still valid.
+ * The access token itself stays on the server (see app/api/core/[...path]/route.ts).
  */
 export const useAuthenticatedApi = () => {
   const { data: session, status } = useSession();
 
-  // Check if session is authenticated and has an access token
-  const isAuthenticated = status === 'authenticated' && !!session?.accessToken;
-  const accessToken = session?.accessToken || null;
-
   return {
-    accessToken,
-    isAuthenticated,
+    isAuthenticated: status === 'authenticated' && !session?.error,
     isLoading: status === 'loading',
   };
 };
