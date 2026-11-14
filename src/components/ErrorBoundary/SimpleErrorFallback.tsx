@@ -2,6 +2,14 @@
 
 import * as React from 'react';
 
+// This page shows when the theme itself may have failed, so the brand colors are written out here
+// (the same values as palette.brand and palette.text in theme/color-schemes.ts).
+const BRAND_GREEN = '#0F4D3A';
+const IVORY = '#FAF6EC';
+const STROKE = '#E6DECB';
+const INK = '#1E2B25';
+const INK_SOFT = '#55635B';
+
 interface SimpleErrorFallbackProps {
   resetErrorBoundary?: () => void;
 }
@@ -14,10 +22,12 @@ export function SimpleErrorFallback({ resetErrorBoundary }: SimpleErrorFallbackP
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: '100vh',
+        // Fixed to the window: the body's default margin would leave a white frame around the ivory.
+        position: 'fixed',
+        inset: 0,
         padding: '24px',
         fontFamily: 'system-ui, -apple-system, sans-serif',
-        backgroundColor: '#f5f5f5',
+        backgroundColor: IVORY,
       }}
     >
       <div
@@ -26,12 +36,12 @@ export function SimpleErrorFallback({ resetErrorBoundary }: SimpleErrorFallbackP
           textAlign: 'center',
           backgroundColor: '#fff',
           padding: '32px',
-          borderRadius: '8px',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+          borderRadius: '20px',
+          border: `1px solid ${STROKE}`,
         }}
       >
-        <h1 style={{ fontSize: '24px', marginBottom: '16px', color: '#333' }}>Something went wrong</h1>
-        <p style={{ fontSize: '16px', marginBottom: '24px', color: '#666' }}>
+        <h1 style={{ fontSize: '24px', marginBottom: '16px', color: INK }}>Something went wrong</h1>
+        <p style={{ fontSize: '16px', marginBottom: '24px', color: INK_SOFT }}>
           An unexpected error occurred. Please try again.
         </p>
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
@@ -43,9 +53,9 @@ export function SimpleErrorFallback({ resetErrorBoundary }: SimpleErrorFallbackP
                 fontSize: '14px',
                 fontWeight: 500,
                 color: '#fff',
-                backgroundColor: '#1976d2',
+                backgroundColor: BRAND_GREEN,
                 border: 'none',
-                borderRadius: '4px',
+                borderRadius: '12px',
                 cursor: 'pointer',
               }}
             >
@@ -58,10 +68,10 @@ export function SimpleErrorFallback({ resetErrorBoundary }: SimpleErrorFallbackP
               padding: '10px 20px',
               fontSize: '14px',
               fontWeight: 500,
-              color: '#1976d2',
+              color: BRAND_GREEN,
               backgroundColor: 'transparent',
-              border: '1px solid #1976d2',
-              borderRadius: '4px',
+              border: `1px solid ${BRAND_GREEN}`,
+              borderRadius: '12px',
               cursor: 'pointer',
             }}
           >
