@@ -17,10 +17,10 @@ export interface Config {
 export const config: Config = {
   site: {
     url: getSiteURL(),
-    themeColor: '#1E1033',
+    themeColor: '#0B2A63',
     id: process.env.NEXT_PUBLIC_APP_ID ?? 'admin-dashboard',
-    description: 'Danishgah e Ramzan Admin Portal',
-    name: process.env.NEXTAPP_NAME ?? 'Danishgah e Ramzan Admin Portal',
+    description: 'Admin portal for Danishgah-e-Ramzan, a program of the Aba Saleh Foundation',
+    name: process.env.NEXTAPP_NAME ?? 'Danishgah-e-Ramzan Admin',
   },
   PUBLIC_API_DOMAIN: process.env.NEXT_PUBLIC_API_DOMAIN ?? '',
   AUTH_LOGIN_URL: process.env.NEXTAUTH_URL ?? '',
