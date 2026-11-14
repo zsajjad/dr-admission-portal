@@ -44,6 +44,10 @@ export default defineMessages({
     id: `${scope}.staffUsers`,
     defaultMessage: 'Staff app users',
   },
+  sections: {
+    id: `${scope}.sections`,
+    defaultMessage: 'Sections',
+  },
   printing: {
     id: `${scope}.printing`,
     defaultMessage: 'Printing',
