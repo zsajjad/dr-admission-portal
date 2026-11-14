@@ -32,7 +32,7 @@ import service from '@/services';
 
 import { cleanParams, useQueryGate, useTrainingsMutation } from './common';
 
-/** An entry; PAYOUTs name their training and whether it was REQUIRED or an IMPROVEMENT */
+/** An entry; PAYOUTs name their training and its route (TRAIN, or RECHECK: retrained after a failed recheck) */
 export type LedgerEntry = TrainerLedgerEntryEntity;
 /** ADHOC: an ad hoc credit, such as an allowance or a bonus */
 export type LedgerKind = TrainerLedgerKind;

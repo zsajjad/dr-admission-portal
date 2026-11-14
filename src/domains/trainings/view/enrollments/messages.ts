@@ -88,10 +88,9 @@ export default defineMessages({
   trained: { id: `${scope}.trained`, defaultMessage: 'Trained' },
   lastActivity: { id: `${scope}.lastActivity`, defaultMessage: 'Last activity' },
   ruleLine: { id: `${scope}.ruleLine`, defaultMessage: 'Pass {pass}/{max} · pays {floor}–{top}' },
-  improvingFrom: {
-    id: `${scope}.improvingFrom`,
-    defaultMessage:
-      'Improving a pass from an earlier session ({pct}, band {band}). It pays only if it reaches a higher band.',
+  retrainAfterRecheck: {
+    id: `${scope}.retrainAfterRecheck`,
+    defaultMessage: 'Passed in an earlier session, but its recheck failed ({pct}, {date}), so it’s trained again.',
   },
   decisionDueV3: {
     id: `${scope}.decisionDueV3`,
@@ -207,16 +206,11 @@ export default defineMessages({
   },
   courseOverride: { id: `${scope}.courseOverride`, defaultMessage: 'Course' },
   useMatrix: { id: `${scope}.useMatrix`, defaultMessage: 'The age matrix’s course' },
-  requiredNow: { id: `${scope}.requiredNow`, defaultMessage: 'Required now (age {age}), not yet passed' },
-  improvePasses: { id: `${scope}.improvePasses`, defaultMessage: 'Also improve (optional)' },
-  improvePassesHelp: {
-    id: `${scope}.improvePassesHelp`,
-    defaultMessage:
-      'Passes from earlier sessions below 90%. They can be trained again to improve the score; they pay only if a higher band is reached.',
-  },
+  requiredNow: { id: `${scope}.requiredNow`, defaultMessage: 'To train this session (age {age})' },
   nothingRequired: {
     id: `${scope}.nothingRequired`,
-    defaultMessage: 'Nothing is required: the student has passed every training for their age.',
+    defaultMessage:
+      'Nothing to train: every training for their age is passed this session, or only rechecks are due. A tester grades rechecks directly.',
   },
   trainerOptional: { id: `${scope}.trainerOptional`, defaultMessage: 'Trainer (optional)' },
   completedBefore: { id: `${scope}.completedBefore`, defaultMessage: 'Courses done before' },
@@ -234,24 +228,46 @@ export default defineMessages({
   openEnrollment: { id: `${scope}.openEnrollment`, defaultMessage: 'Open' },
   profileCardSummary: {
     id: `${scope}.profileCardSummary`,
-    defaultMessage: '{passed} passed, {required} required now',
+    defaultMessage: '{passed} of {total} passed this session · {rechecks} rechecks due · {required} to train',
   },
-  passedTitle: { id: `${scope}.passedTitle`, defaultMessage: 'Passed, in any year' },
+  thisSession: { id: `${scope}.thisSession`, defaultMessage: 'This session (age {age})' },
+  thisSessionHelp: {
+    id: `${scope}.thisSessionHelp`,
+    defaultMessage:
+      'Every training for their age is due each session. One passed in an earlier session is a recheck: a tester grades it directly. A failed recheck, or a training never passed, is trained this session.',
+  },
+  notAdmitted: { id: `${scope}.notAdmitted`, defaultMessage: 'Not admitted this session' },
+  noneForAge: { id: `${scope}.noneForAge`, defaultMessage: 'No training is required for their age' },
+  route: { id: `${scope}.route`, defaultMessage: 'Route' },
+  route_TRAIN: { id: `${scope}.route_TRAIN`, defaultMessage: 'Train' },
+  route_RECHECK: { id: `${scope}.route_RECHECK`, defaultMessage: 'Recheck' },
+  standing: { id: `${scope}.standing`, defaultMessage: 'This session' },
+  recheckThisSession: { id: `${scope}.recheckThisSession`, defaultMessage: 'Recheck' },
+  status_PASSED: { id: `${scope}.status_PASSED`, defaultMessage: 'Passed' },
+  status_RECHECK_DUE: { id: `${scope}.status_RECHECK_DUE`, defaultMessage: 'Recheck due' },
+  status_RECHECK_FAILED: { id: `${scope}.status_RECHECK_FAILED`, defaultMessage: 'Recheck failed, to train' },
+  status_TO_TRAIN: { id: `${scope}.status_TO_TRAIN`, defaultMessage: 'To train' },
+  status_NOT_DUE: { id: `${scope}.status_NOT_DUE`, defaultMessage: 'Nothing due' },
+  rechecksTitle: { id: `${scope}.rechecksTitle`, defaultMessage: 'Rechecks, every session' },
+  noRechecks: { id: `${scope}.noRechecks`, defaultMessage: 'No rechecks yet' },
+  passedTitle: { id: `${scope}.passedTitle`, defaultMessage: 'Passes, every session' },
   noPasses: { id: `${scope}.noPasses`, defaultMessage: 'No trainings passed yet' },
-  improvable: { id: `${scope}.improvable`, defaultMessage: 'Can improve' },
-  passByTest: { id: `${scope}.passByTest`, defaultMessage: 'Passed a test' },
-  passByAdmin: { id: `${scope}.passByAdmin`, defaultMessage: 'Added by an admin' },
+  pass_TRAINING: { id: `${scope}.pass_TRAINING`, defaultMessage: 'Passed a test' },
+  pass_RECHECK: { id: `${scope}.pass_RECHECK`, defaultMessage: 'Passed a recheck' },
+  pass_ADMIN: { id: `${scope}.pass_ADMIN`, defaultMessage: 'Added by an admin' },
+  pass_IMPORT_2026: { id: `${scope}.pass_IMPORT_2026`, defaultMessage: '2026 results' },
   addPass: { id: `${scope}.addPass`, defaultMessage: 'Add a pass' },
   addPassHelp: {
     id: `${scope}.addPassHelp`,
     defaultMessage:
-      'Record a training the student passed outside the app, e.g. from earlier records. It counts for good, pays nobody, and recomputes this session’s result.',
+      'Record a training the student passed outside the app, e.g. from earlier records. It counts as passed this session, pays nobody, and recomputes this session’s result.',
   },
   revoke: { id: `${scope}.revoke`, defaultMessage: 'Revoke' },
   revokeTitle: { id: `${scope}.revokeTitle`, defaultMessage: 'Revoke the {training} pass?' },
   revokeHelp: {
     id: `${scope}.revokeHelp`,
-    defaultMessage: 'The training becomes required again, and this session’s result is recomputed.',
+    defaultMessage:
+      'The pass is removed. The training’s route this session (train or recheck) and the session’s result are worked out again.',
   },
   profileCardLink: { id: `${scope}.profileCardLink`, defaultMessage: 'See all' },
   profileCardThisSession: { id: `${scope}.profileCardThisSession`, defaultMessage: 'Fiqh trainings this session' },

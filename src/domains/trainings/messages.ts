@@ -10,6 +10,7 @@ export default defineMessages({
 
   // Tabs
   tabEnrollments: { id: `${scope}.tabEnrollments`, defaultMessage: 'Enrollments' },
+  tabRechecks: { id: `${scope}.tabRechecks`, defaultMessage: 'Rechecks' },
   tabGrades: { id: `${scope}.tabGrades`, defaultMessage: 'Grades to review' },
   tabCatalog: { id: `${scope}.tabCatalog`, defaultMessage: 'Training catalog' },
   tabWindows: { id: `${scope}.tabWindows`, defaultMessage: 'Testing windows' },

@@ -18,6 +18,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableHead,
   TableRow,
   TextField,
   Typography,
@@ -40,6 +41,7 @@ import {
   useRevokePass,
   useStudentTrainings,
 } from '../../api/operations';
+import { Recheck, SessionTraining } from '../../api/rechecks';
 import { useCatalog } from '../../api/setup';
 import { ActionDialog } from '../../components/ActionDialog';
 import { PayoutChip } from '../../components/PayoutChip';
@@ -49,10 +51,177 @@ import { useSessions } from '../../components/useCurrentSession';
 import { useNotify } from '../../components/useNotify';
 import common from '../../messages';
 import { useTrainingsAccess } from '../../permissions';
+import { SessionStatus, sessionStatus } from '../../rules';
 import { cardStyle, formatAmount, formatDate, formatPct } from '../../utils';
+import rechecksMessages from '../rechecks/messages';
+import { OverrideRecheckDialog, RecheckToOverride } from '../rechecks/RecheckDialogs';
 
 import { EnrollDialog } from './EnrollDialog';
 import messages from './messages';
+
+const STATUS_COLOR: Record<SessionStatus, 'success' | 'info' | 'error' | 'warning' | 'default'> = {
+  PASSED: 'success',
+  RECHECK_DUE: 'info',
+  RECHECK_FAILED: 'error',
+  TO_TRAIN: 'warning',
+  NOT_DUE: 'default',
+};
+
+const PASS_SOURCES = ['TRAINING', 'RECHECK', 'ADMIN', 'IMPORT_2026'] as const;
+type PassSource = (typeof PASS_SOURCES)[number];
+/** Where a pass came from: an attempt, a recheck, an admin or the 2026 results */
+const passSource = (source: string) =>
+  messages[`pass_${PASS_SOURCES.includes(source as PassSource) ? (source as PassSource) : 'TRAINING'}`];
+
+/** A recheck's score: marks out of the maximum, and the % */
+const recheckScore = (r: Pick<Recheck, 'marks' | 'maxMarks' | 'scorePct'>) =>
+  `${r.marks}/${r.maxMarks} · ${formatPct(r.scorePct)}`;
+
+/** Every training the student's age requires this session: its route (train or recheck) and where it stands */
+function SessionTrainingsTable({ rows }: { rows: SessionTraining[] }) {
+  return (
+    <Table size="small">
+      <TableHead>
+        <TableRow>
+          <TableCell>
+            <FormattedMessage {...common.training} />
+          </TableCell>
+          <TableCell>
+            <FormattedMessage {...messages.route} />
+          </TableCell>
+          <TableCell>
+            <FormattedMessage {...messages.standing} />
+          </TableCell>
+          <TableCell>
+            <FormattedMessage {...messages.recheckThisSession} />
+          </TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {rows.map((t) => {
+          const status = sessionStatus(t);
+          return (
+            <TableRow key={t.trainingId}>
+              <TableCell sx={{ fontWeight: 600 }}>
+                {t.code} · {t.name}
+              </TableCell>
+              <TableCell>
+                <Chip
+                  size="small"
+                  variant="outlined"
+                  color={t.route === 'RECHECK' ? 'secondary' : 'primary'}
+                  label={<FormattedMessage {...messages[`route_${t.route}`]} />}
+                />
+              </TableCell>
+              <TableCell>
+                <Chip
+                  size="small"
+                  color={STATUS_COLOR[status]}
+                  label={<FormattedMessage {...messages[`status_${status}`]} />}
+                />
+              </TableCell>
+              <TableCell>
+                {t.recheck ? (
+                  <>
+                    <Typography
+                      variant="body2"
+                      component="span"
+                      color={t.recheck.passed ? 'success.dark' : 'error.main'}
+                      sx={{ fontWeight: 600 }}
+                    >
+                      {recheckScore(t.recheck)}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                      {[formatDate(t.recheck.testedAt), t.recheck.comment].filter(Boolean).join(' · ')}
+                    </Typography>
+                  </>
+                ) : (
+                  '--'
+                )}
+              </TableCell>
+            </TableRow>
+          );
+        })}
+      </TableBody>
+    </Table>
+  );
+}
+
+/** Every recheck, any session, newest first; admins with the override permission can change marks */
+function RechecksCard({
+  rechecks,
+  sessionName,
+  passMarksOf,
+  onOverride,
+}: {
+  rechecks: Recheck[];
+  sessionName: (id: string) => string;
+  passMarksOf: (trainingId: string) => number | undefined;
+  onOverride?: (r: RecheckToOverride) => void;
+}) {
+  return (
+    <Card sx={cardStyle}>
+      <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+        <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
+          <FormattedMessage {...messages.rechecksTitle} />
+        </Typography>
+        {rechecks.length === 0 ? (
+          <Typography variant="body2" color="text.secondary">
+            <FormattedMessage {...messages.noRechecks} />
+          </Typography>
+        ) : (
+          <Box sx={{ overflowX: 'auto' }}>
+            <Table size="small">
+              <TableBody>
+                {rechecks.map((r) => (
+                  <TableRow key={r.recheckId}>
+                    <TableCell sx={{ fontWeight: 600 }}>{[r.code, r.name].filter(Boolean).join(' · ')}</TableCell>
+                    <TableCell>{sessionName(r.sessionId)}</TableCell>
+                    <TableCell>{formatDate(r.testedAt)}</TableCell>
+                    <TableCell>{recheckScore(r)}</TableCell>
+                    <TableCell>
+                      <Chip
+                        size="small"
+                        variant="outlined"
+                        color={r.passed ? 'success' : 'error'}
+                        label={<FormattedMessage {...(r.passed ? rechecksMessages.passed : rechecksMessages.failed)} />}
+                      />
+                      {r.overridden && (
+                        <Chip
+                          size="small"
+                          variant="outlined"
+                          color="warning"
+                          sx={{ ml: 1 }}
+                          label={<FormattedMessage {...rechecksMessages.overridden} />}
+                        />
+                      )}
+                    </TableCell>
+                    <TableCell sx={{ maxWidth: 280 }}>
+                      <Typography variant="caption" color="text.secondary">
+                        {r.comment ?? ''}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right">
+                      {onOverride && (
+                        <Button
+                          size="small"
+                          color="warning"
+                          onClick={() => onOverride({ ...r, passMarks: passMarksOf(r.trainingId) })}
+                        >
+                          <FormattedMessage {...rechecksMessages.overrideMarks} />
+                        </Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Box>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
 
 /** Each training in an enrollment: progress, best score and (optionally) the payout */
 function EnrollmentTrainingsTable({ enrollmentId, showPayout = true }: { enrollmentId: string; showPayout?: boolean }) {
@@ -184,7 +353,7 @@ function AddPassDialog({ open, onClose, studentId }: { open: boolean; onClose: (
   );
 }
 
-/** Revoke a pass; the training becomes required again */
+/** Revoke a pass; the training's route this session and the session's result are worked out again */
 function RevokePassDialog({ pass, onClose }: { pass: TrainingPass | null; onClose: () => void }) {
   const notify = useNotify();
   const revoke = useRevokePass();
@@ -230,17 +399,24 @@ function RevokePassDialog({ pass, onClose }: { pass: TrainingPass | null; onClos
   );
 }
 
-/** A student's Fiqh trainings: what's required now, what's passed (any year), and every enrollment */
+/** A student's Fiqh trainings: this session's trainings and their routes, passes and rechecks (every session), and every enrollment */
 export function StudentTrainingsView({ studentId }: { studentId: string }) {
-  const { canManage } = useTrainingsAccess();
+  const { canManage, canOverride } = useTrainingsAccess();
   const { sessions } = useSessions();
+  const { data: catalog } = useCatalog();
   const [dialog, setDialog] = useState<'enroll' | 'pass' | null>(null);
   const [revoking, setRevoking] = useState<TrainingPass | null>(null);
+  const [overriding, setOverriding] = useState<RecheckToOverride | null>(null);
   const { data: profileData } = useStudentsControllerGetProfile(studentId);
   const { student: trainings, isLoading, error } = useStudentTrainings(studentId);
   const student = profileData?.data?.student;
   const enrollments = [...(trainings?.enrollments ?? [])].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   const hasOpen = enrollments.some((e) => e.state !== 'CLOSED');
+  const sessionName = (id?: string | null) => sessions.find((x) => x.id === id)?.name ?? id ?? '';
+  // This session's pass marks, else the catalog's (for the override preview)
+  const passMarksOf = (trainingId: string) =>
+    trainings?.trainings.find((t) => t.trainingId === trainingId)?.passMarks ??
+    catalog?.data.find((t) => t.id === trainingId)?.passMarks;
 
   return (
     <Stack spacing={2}>
@@ -275,19 +451,22 @@ export function StudentTrainingsView({ studentId }: { studentId: string }) {
       {trainings && (
         <Card sx={cardStyle}>
           <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
-              <FormattedMessage {...messages.requiredNow} values={{ age: String(trainings.age ?? '--') }} />
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 0.5 }}>
+              <FormattedMessage {...messages.thisSession} values={{ age: String(trainings.age ?? '--') }} />
             </Typography>
-            {trainings.required.length === 0 ? (
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              <FormattedMessage {...messages.thisSessionHelp} />
+            </Typography>
+            {trainings.requiredBlockedBy === 'NOT_ADMITTED' ? (
               <Typography variant="body2" color="text.secondary">
-                <FormattedMessage {...messages.nothingRequired} />
+                <FormattedMessage {...messages.notAdmitted} />
+              </Typography>
+            ) : trainings.trainings.length === 0 ? (
+              <Typography variant="body2" color="text.secondary">
+                <FormattedMessage {...messages.noneForAge} />
               </Typography>
             ) : (
-              <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
-                {trainings.required.map((t) => (
-                  <Chip key={t.trainingId} label={`${t.code} · ${t.name}`} />
-                ))}
-              </Stack>
+              <SessionTrainingsTable rows={trainings.trainings} />
             )}
 
             <Typography variant="subtitle1" sx={{ fontWeight: 600, mt: 2, mb: 1 }}>
@@ -304,23 +483,10 @@ export function StudentTrainingsView({ studentId }: { studentId: string }) {
                     <TableRow key={p.id}>
                       <TableCell sx={{ fontWeight: 600 }}>{[p.code, p.name].filter(Boolean).join(' · ')}</TableCell>
                       <TableCell>{formatDate(p.passedAt)}</TableCell>
+                      <TableCell>{formatPct(p.bestScorePct)}</TableCell>
+                      <TableCell>{p.sessionName ?? sessionName(p.sessionId)}</TableCell>
                       <TableCell>
-                        {formatPct(p.bestScorePct)}
-                        {p.improvable && (
-                          <Chip
-                            size="small"
-                            color="info"
-                            variant="outlined"
-                            sx={{ ml: 1 }}
-                            label={<FormattedMessage {...messages.improvable} />}
-                          />
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {p.sessionName ?? sessions.find((x) => x.id === p.sessionId)?.name ?? p.sessionId ?? ''}
-                      </TableCell>
-                      <TableCell>
-                        <FormattedMessage {...(p.source === 'ADMIN' ? messages.passByAdmin : messages.passByTest)} />
+                        <FormattedMessage {...passSource(p.source)} />
                         {p.reason ? ` · ${p.reason}` : ''}
                       </TableCell>
                       <TableCell align="right">
@@ -339,6 +505,15 @@ export function StudentTrainingsView({ studentId }: { studentId: string }) {
         </Card>
       )}
 
+      {trainings && (
+        <RechecksCard
+          rechecks={trainings.rechecks}
+          sessionName={sessionName}
+          passMarksOf={passMarksOf}
+          onOverride={canOverride ? setOverriding : undefined}
+        />
+      )}
+
       {!isLoading && !error && enrollments.length === 0 && (
         <Typography color="text.secondary">
           <FormattedMessage {...messages.studentTrainingsEmpty} />
@@ -355,13 +530,14 @@ export function StudentTrainingsView({ studentId }: { studentId: string }) {
           <RevokePassDialog pass={revoking} onClose={() => setRevoking(null)} />
         </>
       )}
+      {canOverride && <OverrideRecheckDialog recheck={overriding} onClose={() => setOverriding(null)} />}
     </Stack>
   );
 }
 
 /**
  * The student profile's trainings card: this session's enrollment (trainer, tester, each training's progress),
- * what's still required, and a link to every year.
+ * how this session's trainings stand (passed, rechecks due, to train), and a link to every year.
  */
 export function StudentSessionTrainingsCard({ studentId, sessionId }: { studentId: string; sessionId?: string }) {
   const { student: trainings, isLoading } = useStudentTrainings(studentId);
@@ -419,7 +595,12 @@ export function StudentSessionTrainingsCard({ studentId, sessionId }: { studentI
             <Typography variant="body2" color="text.secondary" sx={{ pt: 0.5 }}>
               <FormattedMessage
                 {...messages.profileCardSummary}
-                values={{ passed: String(trainings.passed.length), required: String(trainings.required.length) }}
+                values={{
+                  passed: String(trainings.trainings.filter((t) => t.passedThisSession).length),
+                  total: String(trainings.trainings.length),
+                  rechecks: String(trainings.trainings.filter((t) => sessionStatus(t) === 'RECHECK_DUE').length),
+                  required: String(trainings.required.length),
+                }}
               />
             </Typography>
             {trainings.required.length > 0 && (

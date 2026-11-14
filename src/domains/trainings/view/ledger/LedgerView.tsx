@@ -187,9 +187,9 @@ export function LedgerView() {
           row.training ? (
             <Stack sx={{ py: 0.75, lineHeight: 1.2 }}>
               <span>{row.training.code}</span>
-              {row.itemKind === 'IMPROVEMENT' && (
+              {row.route === 'RECHECK' && (
                 <Typography variant="caption" color="info.main">
-                  {intl.formatMessage(messages.improvement)}
+                  {intl.formatMessage(messages.routeRecheck)}
                 </Typography>
               )}
             </Stack>

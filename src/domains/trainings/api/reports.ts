@@ -1,10 +1,11 @@
 /**
- * The six trainings reports (contract v3: results, trainings and trainers per training).
+ * The trainings reports (contract v3: results, trainings and trainers per training; core #41: rechecks).
  * Every report takes the same filters and an optional groupBy (gender, area or branch).
  */
 import {
   PayoutReportDto,
   PipelineReportDto,
+  RecheckReportDto,
   TrainingResultRowDto,
   TesterReportDto,
   TrainingLevelReportDto,
@@ -12,6 +13,7 @@ import {
 } from '@/providers/service/app.schemas';
 import {
   useTrainingsAdminControllerPipeline,
+  useTrainingsAdminControllerRechecksReport,
   useTrainingsAdminControllerResults,
   useTrainingsAdminControllerTesters,
   useTrainingsAdminControllerTrainers,
@@ -21,14 +23,14 @@ import {
 
 import { cleanParams, useQueryGate } from './common';
 
-export const REPORTS = ['pipeline', 'results', 'trainings', 'trainers', 'testers', 'payouts'] as const;
+export const REPORTS = ['pipeline', 'results', 'trainings', 'rechecks', 'trainers', 'testers', 'payouts'] as const;
 export type ReportName = (typeof REPORTS)[number];
 
 export type ReportFilters = TrainingsAdminControllerPipelineParams;
 
 export type ResultsRow = TrainingResultRowDto & { group: string; label?: string };
 
-export type { PayoutReportDto, PipelineReportDto, TesterReportDto, TrainingLevelReportDto };
+export type { PayoutReportDto, PipelineReportDto, RecheckReportDto, TesterReportDto, TrainingLevelReportDto };
 
 // Each hook runs only while its report is shown
 export const usePipelineReport = (p: ReportFilters, on: boolean) =>
@@ -43,3 +45,6 @@ export const useTestersReport = (p: ReportFilters, on: boolean) =>
   useTrainingsAdminControllerTesters(cleanParams(p), useQueryGate(on));
 export const usePayoutsReport = (p: ReportFilters, on: boolean) =>
   useTrainingsLedgerControllerPayouts(cleanParams(p), useQueryGate(on));
+/** Rechecks per training (with `due` only for a session with no dates or tester) and per tester */
+export const useRechecksReport = (p: ReportFilters, on: boolean) =>
+  useTrainingsAdminControllerRechecksReport(cleanParams(p), useQueryGate(on));

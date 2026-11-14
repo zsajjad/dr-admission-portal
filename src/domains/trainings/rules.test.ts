@@ -5,7 +5,9 @@ import { describe, it } from 'node:test';
 import {
   bandFor,
   grade,
+  gradeRecheck,
   payTable,
+  sessionStatus,
   TRAINING_DEFAULTS,
   type TrainingInput,
   validateSettings,
@@ -93,5 +95,24 @@ describe('validateSettings', () => {
       ),
       ['MAX_ATTEMPTS_RANGE', 'RETRAIN_PCT_RANGE'],
     );
+  });
+});
+
+describe('rechecks', () => {
+  it('grades a recheck against the pass mark, with no pay', () => {
+    assert.deepEqual(gradeRecheck({ maxMarks: 20, passMarks: 15 }, 15), { scorePct: 75, passed: true });
+    assert.deepEqual(gradeRecheck({ maxMarks: 20, passMarks: 15 }, 14.5), { scorePct: 72.5, passed: false });
+  });
+
+  it('says where each training stands this session', () => {
+    const t = { route: 'TRAIN' as const, passedThisSession: false, trainable: true, recheck: null };
+    assert.equal(sessionStatus(t), 'TO_TRAIN');
+    assert.equal(sessionStatus({ ...t, passedThisSession: true, trainable: false }), 'PASSED');
+    const r = { route: 'RECHECK' as const, passedThisSession: false, trainable: false, recheck: null };
+    assert.equal(sessionStatus(r), 'RECHECK_DUE');
+    assert.equal(sessionStatus({ ...r, trainable: true, recheck: { passed: false } }), 'RECHECK_FAILED');
+    assert.equal(sessionStatus({ ...r, passedThisSession: true, recheck: { passed: true } }), 'PASSED');
+    // A passed recheck whose pass was revoked is trained this session
+    assert.equal(sessionStatus({ ...r, trainable: true, recheck: { passed: true } }), 'TO_TRAIN');
   });
 });

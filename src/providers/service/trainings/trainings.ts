@@ -35,11 +35,14 @@ import type {
   ListTestingWindowsResponseDto,
   ListTrainingAttemptsResponseDto,
   ListTrainingEnrollmentsResponseDto,
+  ListTrainingRechecksResponseDto,
   ListTrainingsResponseDto,
   OverrideMarksDto,
+  OverrideRecheckDto,
   PayoutReportDto,
   PipelineReportDto,
   ReasonDto,
+  RecheckReportDto,
   RecordAdhocDto,
   RecordAdjustmentDto,
   RecordPaymentDto,
@@ -54,12 +57,15 @@ import type {
   TrainingEnrollmentResponseDto,
   TrainingLevelReportDto,
   TrainingPassesResponseDto,
+  TrainingRecheckResponseDto,
   TrainingResponseDto,
   TrainingSettingsResponseDto,
   TrainingsAdminControllerAttemptsParams,
   TrainingsAdminControllerListParams,
   TrainingsAdminControllerPassesParams,
   TrainingsAdminControllerPipelineParams,
+  TrainingsAdminControllerRechecksParams,
+  TrainingsAdminControllerRechecksReportParams,
   TrainingsAdminControllerRequiredParams,
   TrainingsAdminControllerResultsParams,
   TrainingsAdminControllerTestersParams,
@@ -2403,6 +2409,184 @@ export const useTrainingsAdminControllerOverride = <TError = void, TContext = un
 > => {
   return useMutation(getTrainingsAdminControllerOverrideMutationOptions(options), queryClient);
 };
+export const trainingsAdminControllerRechecks = (
+  params?: TrainingsAdminControllerRechecksParams,
+  signal?: AbortSignal,
+) => {
+  return service<ListTrainingRechecksResponseDto>({ url: `/trainings/rechecks`, method: 'GET', params, signal });
+};
+
+export const getTrainingsAdminControllerRechecksQueryKey = (params?: TrainingsAdminControllerRechecksParams) => {
+  return [`/trainings/rechecks`, ...(params ? [params] : [])] as const;
+};
+
+export const getTrainingsAdminControllerRechecksQueryOptions = <
+  TData = Awaited<ReturnType<typeof trainingsAdminControllerRechecks>>,
+  TError = void,
+>(
+  params?: TrainingsAdminControllerRechecksParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerRechecks>>, TError, TData>>;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getTrainingsAdminControllerRechecksQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof trainingsAdminControllerRechecks>>> = ({ signal }) =>
+    trainingsAdminControllerRechecks(params, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof trainingsAdminControllerRechecks>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TrainingsAdminControllerRechecksQueryResult = NonNullable<
+  Awaited<ReturnType<typeof trainingsAdminControllerRechecks>>
+>;
+export type TrainingsAdminControllerRechecksQueryError = void;
+
+export function useTrainingsAdminControllerRechecks<
+  TData = Awaited<ReturnType<typeof trainingsAdminControllerRechecks>>,
+  TError = void,
+>(
+  params: undefined | TrainingsAdminControllerRechecksParams,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerRechecks>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof trainingsAdminControllerRechecks>>,
+          TError,
+          Awaited<ReturnType<typeof trainingsAdminControllerRechecks>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useTrainingsAdminControllerRechecks<
+  TData = Awaited<ReturnType<typeof trainingsAdminControllerRechecks>>,
+  TError = void,
+>(
+  params?: TrainingsAdminControllerRechecksParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerRechecks>>, TError, TData>> &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof trainingsAdminControllerRechecks>>,
+          TError,
+          Awaited<ReturnType<typeof trainingsAdminControllerRechecks>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useTrainingsAdminControllerRechecks<
+  TData = Awaited<ReturnType<typeof trainingsAdminControllerRechecks>>,
+  TError = void,
+>(
+  params?: TrainingsAdminControllerRechecksParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerRechecks>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useTrainingsAdminControllerRechecks<
+  TData = Awaited<ReturnType<typeof trainingsAdminControllerRechecks>>,
+  TError = void,
+>(
+  params?: TrainingsAdminControllerRechecksParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerRechecks>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getTrainingsAdminControllerRechecksQueryOptions(params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export const trainingsAdminControllerOverrideRecheck = (
+  id: string,
+  overrideRecheckDto: OverrideRecheckDto,
+  signal?: AbortSignal,
+) => {
+  return service<TrainingRecheckResponseDto>({
+    url: `/trainings/rechecks/${id}/marks`,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    data: overrideRecheckDto,
+    signal,
+  });
+};
+
+export const getTrainingsAdminControllerOverrideRecheckMutationKey = () =>
+  ['trainingsAdminControllerOverrideRecheck'] as const;
+
+export const getTrainingsAdminControllerOverrideRecheckMutationOptions = <TError = void, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof trainingsAdminControllerOverrideRecheck>>,
+    TError,
+    TrainingsAdminControllerOverrideRecheckMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof trainingsAdminControllerOverrideRecheck>>,
+  TError,
+  TrainingsAdminControllerOverrideRecheckMutationVariables,
+  TContext
+> => {
+  const mutationKey = getTrainingsAdminControllerOverrideRecheckMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof trainingsAdminControllerOverrideRecheck>>,
+    TrainingsAdminControllerOverrideRecheckMutationVariables
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return trainingsAdminControllerOverrideRecheck(id, data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type TrainingsAdminControllerOverrideRecheckMutationResult = NonNullable<
+  Awaited<ReturnType<typeof trainingsAdminControllerOverrideRecheck>>
+>;
+export type TrainingsAdminControllerOverrideRecheckMutationBody = OverrideRecheckDto;
+export type TrainingsAdminControllerOverrideRecheckMutationError = void;
+export type TrainingsAdminControllerOverrideRecheckMutationVariables = { id: string; data: OverrideRecheckDto };
+
+export const useTrainingsAdminControllerOverrideRecheck = <TError = void, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof trainingsAdminControllerOverrideRecheck>>,
+      TError,
+      TrainingsAdminControllerOverrideRecheckMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof trainingsAdminControllerOverrideRecheck>>,
+  TError,
+  TrainingsAdminControllerOverrideRecheckMutationVariables,
+  TContext
+> => {
+  return useMutation(getTrainingsAdminControllerOverrideRecheckMutationOptions(options), queryClient);
+};
 export const trainingsAdminControllerRunClock = (signal?: AbortSignal) => {
   return service<RunClockResponseDto>({ url: `/trainings/jobs/auto-close`, method: 'POST', signal });
 };
@@ -2952,6 +3136,114 @@ export function useTrainingsAdminControllerTesters<
   queryClient?: QueryClient,
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
   const queryOptions = getTrainingsAdminControllerTestersQueryOptions(params, options);
+
+  const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
+    queryKey: DataTag<QueryKey, TData, TError>;
+  };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+export const trainingsAdminControllerRechecksReport = (
+  params?: TrainingsAdminControllerRechecksReportParams,
+  signal?: AbortSignal,
+) => {
+  return service<RecheckReportDto>({ url: `/trainings/reports/rechecks`, method: 'GET', params, signal });
+};
+
+export const getTrainingsAdminControllerRechecksReportQueryKey = (
+  params?: TrainingsAdminControllerRechecksReportParams,
+) => {
+  return [`/trainings/reports/rechecks`, ...(params ? [params] : [])] as const;
+};
+
+export const getTrainingsAdminControllerRechecksReportQueryOptions = <
+  TData = Awaited<ReturnType<typeof trainingsAdminControllerRechecksReport>>,
+  TError = void,
+>(
+  params?: TrainingsAdminControllerRechecksReportParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerRechecksReport>>, TError, TData>>;
+  },
+) => {
+  const { query: queryOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getTrainingsAdminControllerRechecksReportQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof trainingsAdminControllerRechecksReport>>> = ({ signal }) =>
+    trainingsAdminControllerRechecksReport(params, signal);
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof trainingsAdminControllerRechecksReport>>,
+    TError,
+    TData
+  > & { queryKey: DataTag<QueryKey, TData, TError> };
+};
+
+export type TrainingsAdminControllerRechecksReportQueryResult = NonNullable<
+  Awaited<ReturnType<typeof trainingsAdminControllerRechecksReport>>
+>;
+export type TrainingsAdminControllerRechecksReportQueryError = void;
+
+export function useTrainingsAdminControllerRechecksReport<
+  TData = Awaited<ReturnType<typeof trainingsAdminControllerRechecksReport>>,
+  TError = void,
+>(
+  params: undefined | TrainingsAdminControllerRechecksReportParams,
+  options: {
+    query: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerRechecksReport>>, TError, TData>> &
+      Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof trainingsAdminControllerRechecksReport>>,
+          TError,
+          Awaited<ReturnType<typeof trainingsAdminControllerRechecksReport>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useTrainingsAdminControllerRechecksReport<
+  TData = Awaited<ReturnType<typeof trainingsAdminControllerRechecksReport>>,
+  TError = void,
+>(
+  params?: TrainingsAdminControllerRechecksReportParams,
+  options?: {
+    query?: Partial<
+      UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerRechecksReport>>, TError, TData>
+    > &
+      Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof trainingsAdminControllerRechecksReport>>,
+          TError,
+          Awaited<ReturnType<typeof trainingsAdminControllerRechecksReport>>
+        >,
+        'initialData'
+      >;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useTrainingsAdminControllerRechecksReport<
+  TData = Awaited<ReturnType<typeof trainingsAdminControllerRechecksReport>>,
+  TError = void,
+>(
+  params?: TrainingsAdminControllerRechecksReportParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerRechecksReport>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+export function useTrainingsAdminControllerRechecksReport<
+  TData = Awaited<ReturnType<typeof trainingsAdminControllerRechecksReport>>,
+  TError = void,
+>(
+  params?: TrainingsAdminControllerRechecksReportParams,
+  options?: {
+    query?: Partial<UseQueryOptions<Awaited<ReturnType<typeof trainingsAdminControllerRechecksReport>>, TError, TData>>;
+  },
+  queryClient?: QueryClient,
+): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+  const queryOptions = getTrainingsAdminControllerRechecksReportQueryOptions(params, options);
 
   const query = useQuery(queryOptions, queryClient) as UseQueryResult<TData, TError> & {
     queryKey: DataTag<QueryKey, TData, TError>;

@@ -61,13 +61,13 @@ export type LedgerEntry = TrainerLedgerEntryEntity;
 export type AttemptRow = TrainingAttemptRowEntity;
 
 /**
- * A training in the enrollment: REQUIRED, or an IMPROVEMENT of a pass below 90% from an earlier
- * session, which pays only if it reaches a higher band than `previousBand`.
+ * A training in the enrollment, by route: TRAIN (never passed), or RECHECK (passed in an earlier
+ * session, but its recheck failed this session; `recheck` is that failed recheck).
  */
 export type EnrollmentItem = EnrollmentItemEntity;
 export type EnrollmentDetail = TrainingEnrollmentDetailEntity;
 
-/** A pass for good, with its best score and whether it can still be improved */
+/** A pass, one per training and session: it decides the route (a recheck in later sessions), not the result */
 export type TrainingPass = TrainingPassEntity;
 export type StudentTrainings = StudentTrainingsDto;
 
@@ -88,7 +88,7 @@ export const useEnrollments = (params: EnrollmentFilters) =>
 export const useEnrollment = (id?: string) =>
   useTrainingsAdminControllerDetail<{ data: EnrollmentDetail }>(id ?? '', useQueryGate(!!id));
 
-/** The student's age now, what's required, what's passed (any year) and every enrollment */
+/** The student's age now, this session's trainings and their routes, passes and rechecks (every session) and every enrollment */
 export function useStudentTrainings(studentId?: string) {
   const query = useTrainingsAdminControllerStudent<{ data: StudentTrainings }>(
     studentId ?? '',
@@ -97,19 +97,19 @@ export function useStudentTrainings(studentId?: string) {
   return { ...query, student: query.data?.data };
 }
 
-/** A manual pass, e.g. from earlier records. It pays nobody. */
+/** A manual pass for a session (by default the current one), e.g. from earlier records. It pays nobody. */
 export const useAddPass = () =>
   useTrainingsMutation((data: AddTrainingPassDto) => trainingsAdminControllerAddPass(data));
 
-/** The training becomes required again */
+/** The pass is removed; the training's route and the session's result are worked out again */
 export const useRevokePass = () =>
   useTrainingsMutation(({ id, reason }: { id: string; reason: string }) =>
     trainingsAdminControllerRevokePass(id, { reason }),
   );
 
 /**
- * Enroll in this session: core answers 400 NOTHING_REQUIRED, INVALID_IMPROVE_SET or 409 ALREADY_ENROLLED.
- * `improveTrainingIds` adds passes below 90% from earlier sessions.
+ * Enroll in this session: the trainings to train (never passed, or a failed recheck). Core answers
+ * 400 NOTHING_REQUIRED when there's nothing to train, or 409 ALREADY_ENROLLED.
  */
 export const useEnroll = () =>
   useTrainingsMutation((data: CreateTrainingEnrollmentDto) => trainingsAdminControllerEnroll(data));
