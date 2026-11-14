@@ -89,7 +89,8 @@
     "staffmanage",
     "studentsedit",
     "studentsmerge",
-    "phonelink"
+    "phonelink",
+    "staffreview"
   ],
   "ignoreWords": [],
   "import": []

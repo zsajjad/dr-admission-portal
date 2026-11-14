@@ -252,6 +252,7 @@ export type Permission = (typeof Permission)[keyof typeof Permission];
 
 export const Permission = {
   staffmanage: 'staff.manage',
+  staffreview: 'staff.review',
   sectionsmanage: 'sections.manage',
   resultsenter: 'results.enter',
   resultslock: 'results.lock',
@@ -4785,6 +4786,89 @@ export interface EnterFinalResultDto {
   reason?: string;
 }
 
+export type StaffSyncFlagReason = (typeof StaffSyncFlagReason)[keyof typeof StaffSyncFlagReason];
+
+export const StaffSyncFlagReason = {
+  SENT_AFTER_LOGOUT: 'SENT_AFTER_LOGOUT',
+  LATE_DAY: 'LATE_DAY',
+} as const;
+
+export interface StaffSyncReviewStaffUser {
+  id: string;
+  /** The 5-digit staff ID on the card */
+  staffId: string;
+  name: string;
+}
+
+export interface StaffSyncReviewDevice {
+  id: string;
+  label: string;
+  /** When an admin logged the phone out */
+  revokedAt?: string;
+  /** Logged out with its unsent work discarded */
+  discardUnsent: boolean;
+}
+
+export interface StaffSyncReviewSection {
+  id: string;
+  displayName: string;
+  classLevelCode: string;
+  branchCode: string;
+}
+
+/**
+ * What the phone sent, as sent
+ */
+export type StaffSyncReviewItemPayload = { [key: string]: unknown };
+
+export interface StaffSyncReviewItem {
+  /** The phone's UUID for the item */
+  id: string;
+  type: string;
+  /** What the phone sent, as sent */
+  payload: StaffSyncReviewItemPayload;
+  /** When it was made on the phone (the phone's clock) */
+  clientTime: string;
+  /** When the server got it */
+  receivedAt: string;
+  flagReason: StaffSyncFlagReason;
+  /** The note sent back to the phone */
+  reason?: string;
+  appVersion?: string;
+  staffUser: StaffSyncReviewStaffUser;
+  /** Missing if the phone record is gone */
+  device?: StaffSyncReviewDevice;
+  /** For items with a sectionId in the payload (attendance.mark) */
+  section?: StaffSyncReviewSection;
+  reviewedAt?: string;
+  reviewedBy?: AdminUserBase;
+  reviewNote?: string;
+}
+
+export interface ListStaffSyncReviewsResponseDto {
+  /** Total number of records */
+  count: number;
+  data: StaffSyncReviewItem[];
+}
+
+export interface ReviewStaffSyncItemsDto {
+  /** Flagged item IDs */
+  ids: string[];
+  /** false puts them back on the list to review */
+  reviewed?: boolean;
+  /** What was checked or done; kept with the item and in the audit log */
+  note?: string;
+}
+
+export interface ReviewStaffSyncItemsResponseDto {
+  /** Message of the action */
+  message: string;
+  /** Items whose review state changed */
+  updated: number;
+  /** Items already in that state */
+  unchanged: number;
+}
+
 export type AssetsControllerUploadPublicParams = {
   type: AssetsControllerUploadPublicType;
   /** Category of the asset */
@@ -5791,4 +5875,39 @@ export type SectionControllerListAdmissionsSortOrder =
 export const SectionControllerListAdmissionsSortOrder = {
   asc: 'asc',
   desc: 'desc',
+} as const;
+
+export type StaffSyncReviewControllerFindAllParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: StaffSyncReviewControllerFindAllSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+  /** false (default): items still to review. true: items already reviewed. */
+  reviewed?: boolean;
+  flagReason?: StaffSyncFlagReason;
+  /** Only items sent by this staff user */
+  staffUserId?: string;
+  type?: string;
+  /** Sort by (newest first by default) */
+  sortBy?: StaffSyncReviewControllerFindAllSortBy;
+};
+
+export type StaffSyncReviewControllerFindAllSortOrder =
+  (typeof StaffSyncReviewControllerFindAllSortOrder)[keyof typeof StaffSyncReviewControllerFindAllSortOrder];
+
+export const StaffSyncReviewControllerFindAllSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type StaffSyncReviewControllerFindAllSortBy =
+  (typeof StaffSyncReviewControllerFindAllSortBy)[keyof typeof StaffSyncReviewControllerFindAllSortBy];
+
+export const StaffSyncReviewControllerFindAllSortBy = {
+  receivedAt: 'receivedAt',
+  clientTime: 'clientTime',
 } as const;

@@ -38,6 +38,9 @@ export const routes = {
     detail: (id: string) => `/sections/${id}`,
     classOverride: '/sections/class-override',
   },
+  syncReview: {
+    listing: '/sync-review',
+  },
   questions: {
     listing: '/questions?includeInActive=true',
     create: '/questions/create',
