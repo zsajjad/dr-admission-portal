@@ -2,7 +2,7 @@
 # https://docs.netlify.com/configure-builds/file-based-configuration/
 
 [build]
-  command = "yarn run build"
+  command = "pnpm run build"
   publish = ".next"
 
 # Next.js plugin is auto-detected, but we can be explicit
@@ -12,6 +12,8 @@
 # Environment variables for build
 [build.environment]
   NODE_VERSION = "26"
+  # Netlify installs this pnpm version when it finds pnpm-lock.yaml; keep it in step with packageManager
+  PNPM_VERSION = "10.34.9"
 
 # Headers for static assets
 [[headers]]
