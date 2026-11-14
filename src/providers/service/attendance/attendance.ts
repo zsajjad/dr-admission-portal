@@ -57,7 +57,7 @@ export const getAttendanceControllerListDaysQueryKey = (params?: AttendanceContr
 
 export const getAttendanceControllerListDaysQueryOptions = <
   TData = Awaited<ReturnType<typeof attendanceControllerListDays>>,
-  TError = unknown,
+  TError = void,
 >(
   params: AttendanceControllerListDaysParams,
   options?: {
@@ -81,11 +81,11 @@ export const getAttendanceControllerListDaysQueryOptions = <
 export type AttendanceControllerListDaysQueryResult = NonNullable<
   Awaited<ReturnType<typeof attendanceControllerListDays>>
 >;
-export type AttendanceControllerListDaysQueryError = unknown;
+export type AttendanceControllerListDaysQueryError = void;
 
 export function useAttendanceControllerListDays<
   TData = Awaited<ReturnType<typeof attendanceControllerListDays>>,
-  TError = unknown,
+  TError = void,
 >(
   params: AttendanceControllerListDaysParams,
   options: {
@@ -103,7 +103,7 @@ export function useAttendanceControllerListDays<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAttendanceControllerListDays<
   TData = Awaited<ReturnType<typeof attendanceControllerListDays>>,
-  TError = unknown,
+  TError = void,
 >(
   params: AttendanceControllerListDaysParams,
   options?: {
@@ -121,7 +121,7 @@ export function useAttendanceControllerListDays<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAttendanceControllerListDays<
   TData = Awaited<ReturnType<typeof attendanceControllerListDays>>,
-  TError = unknown,
+  TError = void,
 >(
   params: AttendanceControllerListDaysParams,
   options?: {
@@ -131,7 +131,7 @@ export function useAttendanceControllerListDays<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAttendanceControllerListDays<
   TData = Awaited<ReturnType<typeof attendanceControllerListDays>>,
-  TError = unknown,
+  TError = void,
 >(
   params: AttendanceControllerListDaysParams,
   options?: {
@@ -164,7 +164,7 @@ export const attendanceControllerBulkUpsert = (
 
 export const getAttendanceControllerBulkUpsertMutationKey = () => ['attendanceControllerBulkUpsert'] as const;
 
-export const getAttendanceControllerBulkUpsertMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAttendanceControllerBulkUpsertMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof attendanceControllerBulkUpsert>>,
     TError,
@@ -200,13 +200,13 @@ export type AttendanceControllerBulkUpsertMutationResult = NonNullable<
   Awaited<ReturnType<typeof attendanceControllerBulkUpsert>>
 >;
 export type AttendanceControllerBulkUpsertMutationBody = BulkUpsertAttendanceRecordsDto;
-export type AttendanceControllerBulkUpsertMutationError = unknown;
+export type AttendanceControllerBulkUpsertMutationError = void;
 export type AttendanceControllerBulkUpsertMutationVariables = {
   attendanceDayId: string;
   data: BulkUpsertAttendanceRecordsDto;
 };
 
-export const useAttendanceControllerBulkUpsert = <TError = unknown, TContext = unknown>(
+export const useAttendanceControllerBulkUpsert = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof attendanceControllerBulkUpsert>>,
@@ -238,7 +238,7 @@ export const getAttendanceControllerSummaryQueryKey = (attendanceDayId: string) 
 
 export const getAttendanceControllerSummaryQueryOptions = <
   TData = Awaited<ReturnType<typeof attendanceControllerSummary>>,
-  TError = unknown,
+  TError = void,
 >(
   attendanceDayId: string,
   options?: {
@@ -265,11 +265,11 @@ export const getAttendanceControllerSummaryQueryOptions = <
 export type AttendanceControllerSummaryQueryResult = NonNullable<
   Awaited<ReturnType<typeof attendanceControllerSummary>>
 >;
-export type AttendanceControllerSummaryQueryError = unknown;
+export type AttendanceControllerSummaryQueryError = void;
 
 export function useAttendanceControllerSummary<
   TData = Awaited<ReturnType<typeof attendanceControllerSummary>>,
-  TError = unknown,
+  TError = void,
 >(
   attendanceDayId: string,
   options: {
@@ -287,7 +287,7 @@ export function useAttendanceControllerSummary<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAttendanceControllerSummary<
   TData = Awaited<ReturnType<typeof attendanceControllerSummary>>,
-  TError = unknown,
+  TError = void,
 >(
   attendanceDayId: string,
   options?: {
@@ -305,7 +305,7 @@ export function useAttendanceControllerSummary<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAttendanceControllerSummary<
   TData = Awaited<ReturnType<typeof attendanceControllerSummary>>,
-  TError = unknown,
+  TError = void,
 >(
   attendanceDayId: string,
   options?: {
@@ -315,7 +315,7 @@ export function useAttendanceControllerSummary<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAttendanceControllerSummary<
   TData = Awaited<ReturnType<typeof attendanceControllerSummary>>,
-  TError = unknown,
+  TError = void,
 >(
   attendanceDayId: string,
   options?: {
@@ -354,7 +354,7 @@ export const getAttendanceControllerStudentHistoryQueryKey = (
 
 export const getAttendanceControllerStudentHistoryQueryOptions = <
   TData = Awaited<ReturnType<typeof attendanceControllerStudentHistory>>,
-  TError = unknown,
+  TError = void,
 >(
   studentId: string,
   params: AttendanceControllerStudentHistoryParams,
@@ -382,11 +382,11 @@ export const getAttendanceControllerStudentHistoryQueryOptions = <
 export type AttendanceControllerStudentHistoryQueryResult = NonNullable<
   Awaited<ReturnType<typeof attendanceControllerStudentHistory>>
 >;
-export type AttendanceControllerStudentHistoryQueryError = unknown;
+export type AttendanceControllerStudentHistoryQueryError = void;
 
 export function useAttendanceControllerStudentHistory<
   TData = Awaited<ReturnType<typeof attendanceControllerStudentHistory>>,
-  TError = unknown,
+  TError = void,
 >(
   studentId: string,
   params: AttendanceControllerStudentHistoryParams,
@@ -405,7 +405,7 @@ export function useAttendanceControllerStudentHistory<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAttendanceControllerStudentHistory<
   TData = Awaited<ReturnType<typeof attendanceControllerStudentHistory>>,
-  TError = unknown,
+  TError = void,
 >(
   studentId: string,
   params: AttendanceControllerStudentHistoryParams,
@@ -424,7 +424,7 @@ export function useAttendanceControllerStudentHistory<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAttendanceControllerStudentHistory<
   TData = Awaited<ReturnType<typeof attendanceControllerStudentHistory>>,
-  TError = unknown,
+  TError = void,
 >(
   studentId: string,
   params: AttendanceControllerStudentHistoryParams,
@@ -435,7 +435,7 @@ export function useAttendanceControllerStudentHistory<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAttendanceControllerStudentHistory<
   TData = Awaited<ReturnType<typeof attendanceControllerStudentHistory>>,
-  TError = unknown,
+  TError = void,
 >(
   studentId: string,
   params: AttendanceControllerStudentHistoryParams,

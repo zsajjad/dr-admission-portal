@@ -6,6 +6,8 @@ const require = createRequire(import.meta.url);
 const configs = require('./api.config.json');
 
 const disabledTags = ['/health', '/metrics'];
+// Routes for the public website and the staff app; the admin portal never calls them.
+const excludedPrefixes = ['/public/', '/staff/', '/staff-auth/'];
 const includeTags: string[] = [];
 const requiredTags: string[] = [];
 
@@ -42,7 +44,8 @@ export default defineConfig({
               return requiredTags.some((t) => v.startsWith(t));
             }
             const included = includeTags.map((a) => v.startsWith(a)).includes(true);
-            const disabled = disabledTags.map((a) => v.includes(a)).includes(true);
+            const disabled =
+              disabledTags.map((a) => v.includes(a)).includes(true) || excludedPrefixes.some((a) => v.startsWith(a));
             return included || !disabled;
           })
           .reduce(

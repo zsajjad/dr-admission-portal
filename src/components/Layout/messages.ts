@@ -24,6 +24,10 @@ export default defineMessages({
     id: `${scope}.branches`,
     defaultMessage: 'Branches',
   },
+  students: {
+    id: `${scope}.students`,
+    defaultMessage: 'Students',
+  },
   van: {
     id: `${scope}.van`,
     defaultMessage: 'Vans',

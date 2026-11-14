@@ -67,7 +67,7 @@ export const announcementTemplateControllerCreate = (
 export const getAnnouncementTemplateControllerCreateMutationKey = () =>
   ['announcementTemplateControllerCreate'] as const;
 
-export const getAnnouncementTemplateControllerCreateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAnnouncementTemplateControllerCreateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof announcementTemplateControllerCreate>>,
     TError,
@@ -103,10 +103,10 @@ export type AnnouncementTemplateControllerCreateMutationResult = NonNullable<
   Awaited<ReturnType<typeof announcementTemplateControllerCreate>>
 >;
 export type AnnouncementTemplateControllerCreateMutationBody = CreateAnnouncementTemplateDto;
-export type AnnouncementTemplateControllerCreateMutationError = unknown;
+export type AnnouncementTemplateControllerCreateMutationError = void;
 export type AnnouncementTemplateControllerCreateMutationVariables = { data: CreateAnnouncementTemplateDto };
 
-export const useAnnouncementTemplateControllerCreate = <TError = unknown, TContext = unknown>(
+export const useAnnouncementTemplateControllerCreate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof announcementTemplateControllerCreate>>,
@@ -144,7 +144,7 @@ export const getAnnouncementTemplateControllerFindAllQueryKey = (
 
 export const getAnnouncementTemplateControllerFindAllQueryOptions = <
   TData = Awaited<ReturnType<typeof announcementTemplateControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: AnnouncementTemplateControllerFindAllParams,
   options?: {
@@ -168,11 +168,11 @@ export const getAnnouncementTemplateControllerFindAllQueryOptions = <
 export type AnnouncementTemplateControllerFindAllQueryResult = NonNullable<
   Awaited<ReturnType<typeof announcementTemplateControllerFindAll>>
 >;
-export type AnnouncementTemplateControllerFindAllQueryError = unknown;
+export type AnnouncementTemplateControllerFindAllQueryError = void;
 
 export function useAnnouncementTemplateControllerFindAll<
   TData = Awaited<ReturnType<typeof announcementTemplateControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params: undefined | AnnouncementTemplateControllerFindAllParams,
   options: {
@@ -190,7 +190,7 @@ export function useAnnouncementTemplateControllerFindAll<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAnnouncementTemplateControllerFindAll<
   TData = Awaited<ReturnType<typeof announcementTemplateControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: AnnouncementTemplateControllerFindAllParams,
   options?: {
@@ -208,7 +208,7 @@ export function useAnnouncementTemplateControllerFindAll<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAnnouncementTemplateControllerFindAll<
   TData = Awaited<ReturnType<typeof announcementTemplateControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: AnnouncementTemplateControllerFindAllParams,
   options?: {
@@ -218,7 +218,7 @@ export function useAnnouncementTemplateControllerFindAll<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAnnouncementTemplateControllerFindAll<
   TData = Awaited<ReturnType<typeof announcementTemplateControllerFindAll>>,
-  TError = unknown,
+  TError = void,
 >(
   params?: AnnouncementTemplateControllerFindAllParams,
   options?: {
@@ -257,7 +257,7 @@ export const getAnnouncementTemplateControllerFindOneQueryKey = (
 
 export const getAnnouncementTemplateControllerFindOneQueryOptions = <
   TData = Awaited<ReturnType<typeof announcementTemplateControllerFindOne>>,
-  TError = unknown,
+  TError = void,
 >(
   id: string,
   params?: AnnouncementTemplateControllerFindOneParams,
@@ -282,11 +282,11 @@ export const getAnnouncementTemplateControllerFindOneQueryOptions = <
 export type AnnouncementTemplateControllerFindOneQueryResult = NonNullable<
   Awaited<ReturnType<typeof announcementTemplateControllerFindOne>>
 >;
-export type AnnouncementTemplateControllerFindOneQueryError = unknown;
+export type AnnouncementTemplateControllerFindOneQueryError = void;
 
 export function useAnnouncementTemplateControllerFindOne<
   TData = Awaited<ReturnType<typeof announcementTemplateControllerFindOne>>,
-  TError = unknown,
+  TError = void,
 >(
   id: string,
   params: undefined | AnnouncementTemplateControllerFindOneParams,
@@ -305,7 +305,7 @@ export function useAnnouncementTemplateControllerFindOne<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAnnouncementTemplateControllerFindOne<
   TData = Awaited<ReturnType<typeof announcementTemplateControllerFindOne>>,
-  TError = unknown,
+  TError = void,
 >(
   id: string,
   params?: AnnouncementTemplateControllerFindOneParams,
@@ -324,7 +324,7 @@ export function useAnnouncementTemplateControllerFindOne<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAnnouncementTemplateControllerFindOne<
   TData = Awaited<ReturnType<typeof announcementTemplateControllerFindOne>>,
-  TError = unknown,
+  TError = void,
 >(
   id: string,
   params?: AnnouncementTemplateControllerFindOneParams,
@@ -335,7 +335,7 @@ export function useAnnouncementTemplateControllerFindOne<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 export function useAnnouncementTemplateControllerFindOne<
   TData = Awaited<ReturnType<typeof announcementTemplateControllerFindOne>>,
-  TError = unknown,
+  TError = void,
 >(
   id: string,
   params?: AnnouncementTemplateControllerFindOneParams,
@@ -370,7 +370,7 @@ export const announcementTemplateControllerUpdate = (
 export const getAnnouncementTemplateControllerUpdateMutationKey = () =>
   ['announcementTemplateControllerUpdate'] as const;
 
-export const getAnnouncementTemplateControllerUpdateMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAnnouncementTemplateControllerUpdateMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof announcementTemplateControllerUpdate>>,
     TError,
@@ -406,10 +406,10 @@ export type AnnouncementTemplateControllerUpdateMutationResult = NonNullable<
   Awaited<ReturnType<typeof announcementTemplateControllerUpdate>>
 >;
 export type AnnouncementTemplateControllerUpdateMutationBody = UpdateAnnouncementTemplateDto;
-export type AnnouncementTemplateControllerUpdateMutationError = unknown;
+export type AnnouncementTemplateControllerUpdateMutationError = void;
 export type AnnouncementTemplateControllerUpdateMutationVariables = { id: string; data: UpdateAnnouncementTemplateDto };
 
-export const useAnnouncementTemplateControllerUpdate = <TError = unknown, TContext = unknown>(
+export const useAnnouncementTemplateControllerUpdate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof announcementTemplateControllerUpdate>>,
@@ -435,7 +435,7 @@ export const getAnnouncementTemplateControllerDeactivateMutationKey = () =>
   ['announcementTemplateControllerDeactivate'] as const;
 
 export const getAnnouncementTemplateControllerDeactivateMutationOptions = <
-  TError = unknown,
+  TError = void,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -473,10 +473,10 @@ export type AnnouncementTemplateControllerDeactivateMutationResult = NonNullable
   Awaited<ReturnType<typeof announcementTemplateControllerDeactivate>>
 >;
 
-export type AnnouncementTemplateControllerDeactivateMutationError = unknown;
+export type AnnouncementTemplateControllerDeactivateMutationError = void;
 export type AnnouncementTemplateControllerDeactivateMutationVariables = { id: string };
 
-export const useAnnouncementTemplateControllerDeactivate = <TError = unknown, TContext = unknown>(
+export const useAnnouncementTemplateControllerDeactivate = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof announcementTemplateControllerDeactivate>>,
@@ -510,7 +510,7 @@ export const announcementTemplateControllerTest = (
 
 export const getAnnouncementTemplateControllerTestMutationKey = () => ['announcementTemplateControllerTest'] as const;
 
-export const getAnnouncementTemplateControllerTestMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+export const getAnnouncementTemplateControllerTestMutationOptions = <TError = void, TContext = unknown>(options?: {
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof announcementTemplateControllerTest>>,
     TError,
@@ -546,10 +546,10 @@ export type AnnouncementTemplateControllerTestMutationResult = NonNullable<
   Awaited<ReturnType<typeof announcementTemplateControllerTest>>
 >;
 export type AnnouncementTemplateControllerTestMutationBody = TestAnnouncementTemplateDto;
-export type AnnouncementTemplateControllerTestMutationError = unknown;
+export type AnnouncementTemplateControllerTestMutationError = void;
 export type AnnouncementTemplateControllerTestMutationVariables = { id: string; data: TestAnnouncementTemplateDto };
 
-export const useAnnouncementTemplateControllerTest = <TError = unknown, TContext = unknown>(
+export const useAnnouncementTemplateControllerTest = <TError = void, TContext = unknown>(
   options?: {
     mutation?: UseMutationOptions<
       Awaited<ReturnType<typeof announcementTemplateControllerTest>>,

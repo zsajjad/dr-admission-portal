@@ -32,6 +32,11 @@ export const MODULE_REGISTRY = {
     href: routes.admission.listing,
     icon: 'admissions',
   },
+  students: {
+    title: <FormattedMessage {...messages.students} />,
+    href: routes.students.listing,
+    icon: 'students',
+  },
   questionSets: {
     title: <FormattedMessage {...messages.questionSets} />,
     href: routes.questions.listing,
