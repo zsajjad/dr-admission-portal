@@ -2,20 +2,30 @@
 
 import { useState } from 'react';
 
+import Link from 'next/link';
+
 import {
   ContentCopy as CopyIcon,
   Description as DocumentsIcon,
   Edit as EditIcon,
+  JoinInner as MergeIcon,
   Lock as LockIcon,
   Phone as PhoneIcon,
 } from '@mui/icons-material';
 import { Avatar, Box, Button, Card, CardContent, Chip, IconButton, Stack, Tooltip, Typography } from '@mui/material';
 
+import { OldGrs } from '@/domains/studentMerge/components/OldGrs';
+import mergeMessages from '@/domains/studentMerge/messages';
+
 import { AssetViewer } from '@/components/Asset';
 
-import { Gender, StudentProfile } from '@/providers/service/app.schemas';
+import { Gender, Permission, StudentProfile } from '@/providers/service/app.schemas';
 
 import { FormattedMessage, useFormattedMessage } from '@/theme/FormattedMessage';
+
+import { usePermissions } from '@/hooks/usePermissions';
+
+import { routes } from '@/router/routes';
 
 import { DocumentsDialog } from '../dialogs/DocumentsDialog';
 import { EditContactDialog } from '../dialogs/EditContactDialog';
@@ -28,6 +38,7 @@ export function ProfileHeader({ profile }: { profile: StudentProfile }) {
   const { student, admissions, permissions } = profile;
   const [dialog, setDialog] = useState<'identity' | 'contact' | 'documents' | null>(null);
   const [copied, setCopied] = useState(false);
+  const { has } = usePermissions();
 
   const copyLabel = useFormattedMessage(messages.copyGr);
   const copiedLabel = useFormattedMessage(messages.copied);
@@ -86,6 +97,7 @@ export function ProfileHeader({ profile }: { profile: StudentProfile }) {
                 </IconButton>
               </Tooltip>
             </Stack>
+            <OldGrs grNumber={student.grNumber} />
             <Typography variant="body1" color="text.secondary" sx={{ mt: 0.25 }}>
               <FormattedMessage
                 {...(student.gender === Gender.FEMALE ? messages.daughterOf : messages.sonOf)}
@@ -161,6 +173,18 @@ export function ProfileHeader({ profile }: { profile: StudentProfile }) {
             >
               <FormattedMessage {...messages.editDocuments} />
             </Button>
+            {has(Permission.studentsmerge) && student.isActive && (
+              <Button
+                variant="outlined"
+                size="small"
+                color="warning"
+                startIcon={<MergeIcon />}
+                component={Link}
+                href={routes.studentMerge.withRecord(student.id)}
+              >
+                <FormattedMessage {...mergeMessages.findDuplicates} />
+              </Button>
+            )}
           </Stack>
         </Stack>
       </CardContent>

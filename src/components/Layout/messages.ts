@@ -44,6 +44,10 @@ export default defineMessages({
     id: `${scope}.adminPermissions`,
     defaultMessage: 'Admin permissions',
   },
+  studentMerge: {
+    id: `${scope}.studentMerge`,
+    defaultMessage: 'Merge students',
+  },
   staffUsers: {
     id: `${scope}.staffUsers`,
     defaultMessage: 'Staff app users',
