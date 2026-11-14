@@ -39,7 +39,20 @@ export type ClosureReason = TrainingClosureReason;
 export type PayoutStatus = TrainingPayoutStatus;
 
 export type EnrollmentListItem = TrainingEnrollmentEntity;
-export type Decision = DecisionEntity;
+/** v3: a RETRAIN decision names the trainings chosen for retraining */
+export type Decision = DecisionEntity & { trainingIds?: string[] | null };
+
+/** Within a session a training is done at 90% or more; below that it can be retrained, even if passed */
+export const DONE_PCT = 90;
+
+export type ItemProgress = 'DONE' | 'CAN_RETRAIN' | 'FAILED' | 'PENDING';
+
+/** Where a training stands: done (90%+), passed but below 90%, failed, or not tested yet */
+export function itemProgress(item: Pick<EnrollmentItem, 'status' | 'scorePct'>): ItemProgress {
+  if (item.status === 'PENDING' || item.scorePct === null) return item.status === 'FAILED' ? 'FAILED' : 'PENDING';
+  if (item.scorePct >= DONE_PCT) return 'DONE';
+  return item.status === 'PASSED' ? 'CAN_RETRAIN' : 'FAILED';
+}
 export type Assignment = AssignmentEntity;
 
 /**
@@ -101,7 +114,8 @@ export interface EnrollmentItem {
   payout: number | null;
 }
 
-export type EnrollmentDetail = Omit<TrainingEnrollmentDetailEntity, 'rules' | 'attempts'> & {
+export type EnrollmentDetail = Omit<TrainingEnrollmentDetailEntity, 'rules' | 'attempts' | 'decisions'> & {
+  decisions: Decision[];
   rules: RulesSnapshot;
   attempts: Attempt[];
   /** v3 */

@@ -34,7 +34,15 @@ import { routes } from '@/router/routes';
 
 import { extractNetworkError } from '@/utils/extractNetworkError';
 
-import { Attempt, bestAttempt, EnrollmentDetail, useEnrollment, useEnrollmentLedger } from '../../api/operations';
+import {
+  Attempt,
+  bestAttempt,
+  EnrollmentDetail,
+  ItemProgress,
+  itemProgress,
+  useEnrollment,
+  useEnrollmentLedger,
+} from '../../api/operations';
 import { useWindows } from '../../api/setup';
 import { LedgerKindLabel, LedgerStatusChip } from '../../components/LedgerChips';
 import { PayoutChip } from '../../components/PayoutChip';
@@ -88,6 +96,13 @@ export function EnrollmentDetailView({ enrollmentId }: { enrollmentId: string })
   }
   return <EnrollmentDetailBody enrollment={enrollment} />;
 }
+
+const PROGRESS_COLOR: Record<ItemProgress, 'success' | 'info' | 'error' | 'default'> = {
+  DONE: 'success',
+  CAN_RETRAIN: 'info',
+  FAILED: 'error',
+  PENDING: 'default',
+};
 
 const DECISION_KINDS = ['RETRAIN', 'CLOSE', 'AUTO_CLOSE', 'ADMIN_CLOSE', 'REOPEN'] as const;
 
@@ -313,6 +328,11 @@ export function EnrollmentDetailBody({ enrollment: e }: { enrollment: Enrollment
                 .join(' · ')}
             </Typography>
             {e.items && (
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+                <FormattedMessage {...messages.progressHelp} />
+              </Typography>
+            )}
+            {e.items && (
               <Table size="small">
                 <TableHead>
                   <TableRow>
@@ -342,10 +362,8 @@ export function EnrollmentDetailBody({ enrollment: e }: { enrollment: Enrollment
                         <TableCell>
                           <Chip
                             size="small"
-                            color={
-                              item.status === 'PASSED' ? 'success' : item.status === 'FAILED' ? 'error' : 'default'
-                            }
-                            label={<FormattedMessage {...messages[`item_${item.status}`]} />}
+                            color={PROGRESS_COLOR[itemProgress(item)]}
+                            label={<FormattedMessage {...messages[`progress_${itemProgress(item)}`]} />}
                           />
                         </TableCell>
                         <TableCell align="right">{item.attemptsUsed}</TableCell>
@@ -529,6 +547,18 @@ export function EnrollmentDetailBody({ enrollment: e }: { enrollment: Enrollment
                                 </Typography>
                               )}
                             </Typography>
+                            {!!d.trainingIds?.length && (
+                              <Typography variant="caption" sx={{ display: 'block' }}>
+                                <FormattedMessage
+                                  {...messages.retrainChosen}
+                                  values={{
+                                    trainings: d.trainingIds
+                                      .map((id) => trainings.find((t) => t.trainingId === id)?.code ?? id)
+                                      .join(', '),
+                                  }}
+                                />
+                              </Typography>
+                            )}
                             {d.reason && (
                               <Typography variant="caption" color="text.secondary">
                                 {d.reason}
