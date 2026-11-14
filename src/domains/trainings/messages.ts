@@ -13,6 +13,7 @@ export default defineMessages({
   tabGrades: { id: `${scope}.tabGrades`, defaultMessage: 'Grades to review' },
   tabCatalog: { id: `${scope}.tabCatalog`, defaultMessage: 'Training catalog' },
   tabWindows: { id: `${scope}.tabWindows`, defaultMessage: 'Testing windows' },
+  tabLedger: { id: `${scope}.tabLedger`, defaultMessage: 'Trainer ledger' },
 
   // Common
   save: { id: `${scope}.save`, defaultMessage: 'Save' },
@@ -36,6 +37,7 @@ export default defineMessages({
   boys: { id: `${scope}.boys`, defaultMessage: 'Boys' },
   girls: { id: `${scope}.girls`, defaultMessage: 'Girls' },
   none: { id: `${scope}.none`, defaultMessage: 'None' },
+  clearFilters: { id: `${scope}.clearFilters`, defaultMessage: 'Clear filters' },
   noRows: { id: `${scope}.noRows`, defaultMessage: 'Nothing here yet' },
   readOnly: {
     id: `${scope}.readOnly`,

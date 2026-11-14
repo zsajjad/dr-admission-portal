@@ -80,6 +80,7 @@ export const routes = {
     catalogCreate: '/trainings/catalog/new',
     catalogTraining: (id: string) => `/trainings/catalog/${id}`,
     windows: '/trainings/windows',
+    ledger: '/trainings/ledger',
   },
   auth: {
     signIn: '/auth/sign-in',
