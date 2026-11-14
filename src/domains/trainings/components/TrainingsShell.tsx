@@ -22,11 +22,15 @@ type Access = ReturnType<typeof useTrainingsAccess>;
 interface TabConfig {
   href: string;
   label: React.ComponentProps<typeof FormattedMessage>;
+  /** Other paths that belong to this tab */
+  also?: string[];
   /** Hidden when this returns false; every tab needs the read permission */
   show?: (access: Access) => boolean;
 }
 
 const TABS: TabConfig[] = [
+  { href: routes.trainings.enrollments, label: messages.tabEnrollments, also: ['/trainings/students'] },
+  { href: routes.trainings.grades, label: messages.tabGrades },
   { href: routes.trainings.catalog, label: messages.tabCatalog },
   { href: routes.trainings.windows, label: messages.tabWindows },
 ];
@@ -36,7 +40,9 @@ export function TrainingsShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const access = useTrainingsAccess();
   const tabs = TABS.filter((tab) => !tab.show || tab.show(access));
-  const current = tabs.find((tab) => pathname === tab.href || pathname.startsWith(`${tab.href}/`))?.href ?? false;
+  const current =
+    tabs.find((tab) => [tab.href, ...(tab.also ?? [])].some((p) => pathname === p || pathname.startsWith(`${p}/`)))
+      ?.href ?? false;
 
   return (
     <Stack>
