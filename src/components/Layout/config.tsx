@@ -18,6 +18,7 @@ const NAV_ORDER: ModuleKey[] = [
   'sections',
   'syncReview',
   'results',
+  'auditLog',
   'questionSets',
   'printing',
   'interactionReport',
