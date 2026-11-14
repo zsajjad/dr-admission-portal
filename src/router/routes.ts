@@ -50,6 +50,7 @@ export const routes = {
     course: (id: string) => `/trainings/courses/${id}`,
     ageMatrix: '/trainings/age-matrix',
     windows: '/trainings/windows',
+    ledger: '/trainings/ledger',
   },
   auth: {
     signIn: '/auth/sign-in',

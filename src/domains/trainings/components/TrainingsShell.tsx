@@ -30,6 +30,7 @@ interface TabConfig {
 
 const TABS: TabConfig[] = [
   { href: routes.trainings.enrollments, label: messages.tabEnrollments, also: ['/trainings/students'] },
+  { href: routes.trainings.ledger, label: messages.tabLedger },
   { href: routes.trainings.courses, label: messages.tabCourses },
   { href: routes.trainings.ageMatrix, label: messages.tabAgeMatrix },
   { href: routes.trainings.windows, label: messages.tabWindows },
