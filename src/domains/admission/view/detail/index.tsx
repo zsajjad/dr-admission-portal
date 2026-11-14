@@ -2,7 +2,10 @@
 
 import { useMemo } from 'react';
 
-import { Box, Card, CardContent, Chip, Grid, Stack, Typography } from '@mui/material';
+import Link from 'next/link';
+
+import { Person as ProfileIcon } from '@mui/icons-material';
+import { Box, Button, Card, CardContent, Chip, Grid, Stack, Typography } from '@mui/material';
 
 import { PrintActions } from '@/domains/admission/components/PrintActions';
 import { VanChip } from '@/domains/van/components/VanChip';
@@ -19,6 +22,8 @@ import { useAdmissionsControllerFindOne } from '@/providers/service/admissions/a
 import { FormattedMessage, useFormattedMessage } from '@/theme/FormattedMessage';
 
 import { useEntityDetailHandler } from '@/hooks/useEntityDetailHandler';
+
+import { routes } from '@/router/routes';
 
 import messages from './messages';
 
@@ -199,7 +204,18 @@ export function AdmissionDetail({ admissionId }: { admissionId: string }) {
               <Chip label={admissionDetail?.status} color={getStatusColor(admissionDetail?.status)} size="small" />
             </Grid>
             <Grid size={{ xs: 12, md: 6, lg: 9 }}>
-              <Stack direction="row" justifyContent={{ xs: 'flex-start', md: 'flex-end' }}>
+              <Stack direction="row" spacing={1} justifyContent={{ xs: 'flex-start', md: 'flex-end' }}>
+                {admissionDetail?.student?.id && (
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    component={Link}
+                    href={routes.students.profile(admissionDetail.student.id)}
+                    startIcon={<ProfileIcon />}
+                  >
+                    <FormattedMessage {...messages.studentProfile} />
+                  </Button>
+                )}
                 <PrintActions admission={admissionDetail} />
               </Stack>
             </Grid>

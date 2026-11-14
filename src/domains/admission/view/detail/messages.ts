@@ -147,4 +147,8 @@ export default defineMessages({
     id: `${scope}.errorSuccess`,
     defaultMessage: 'An error occurred',
   },
+  studentProfile: {
+    id: `${scope}.studentProfile`,
+    defaultMessage: 'Student profile',
+  },
 });
