@@ -28,6 +28,7 @@ import {
 import { GridColDef, GridPaginationModel } from '@mui/x-data-grid';
 
 import { AssetsDrawer } from '@/domains/admission/components/AssetsDrawer';
+import { admissionStatusMessage } from '@/domains/students/utils';
 import { VanChip } from '@/domains/van/components/VanChip';
 
 import { AreaFilter } from '@/components/AreaFilter';
@@ -404,7 +405,7 @@ export function AdmissionListing() {
       {
         field: 'phone',
         headerName: formattedMessages.phoneColumnName,
-        minWidth: 130,
+        minWidth: 140,
         sortable: false,
         renderCell: (params) => {
           const value = getSafeValue(params.row.student?.phone);
@@ -418,7 +419,7 @@ export function AdmissionListing() {
       {
         field: 'branch',
         headerName: formattedMessages.branchColumnName,
-        width: 60,
+        width: 80,
         sortable: false,
         renderCell: (params) => {
           const value = getSafeValue(params.row.branch?.code);
@@ -432,13 +433,16 @@ export function AdmissionListing() {
       {
         field: 'status',
         headerName: formattedMessages.statusColumnName,
-        minWidth: 100,
+        width: 130,
         sortable: false,
-        renderCell: (params) => (
-          <Tooltip title={params.row.status} arrow slotProps={tooltipSlotProps}>
-            <Chip label={params.row.status} color={getStatusColor(params.row.status)} size="small" />
-          </Tooltip>
-        ),
+        renderCell: (params) => {
+          const label = <FormattedMessage {...admissionStatusMessage(params.row.status)} />;
+          return (
+            <Tooltip title={label} arrow slotProps={tooltipSlotProps}>
+              <Chip label={label} color={getStatusColor(params.row.status)} size="small" />
+            </Tooltip>
+          );
+        },
       },
       {
         field: 'isFeePaid',
@@ -627,13 +631,22 @@ export function AdmissionListing() {
         </Alert>
       )}
 
-      {/* Filter Dropdowns */}
+      {/* Filters: two aligned rows of six, then the search button with the slip printer beside it */}
       <Box sx={cardStyle}>
-        <Stack direction="row" spacing={2} flexWrap="wrap" useFlexGap alignItems="center">
+        <Box
+          sx={{
+            display: 'grid',
+            gap: 1.5,
+            gridTemplateColumns: {
+              xs: 'repeat(2, minmax(0, 1fr))',
+              md: 'repeat(4, minmax(0, 1fr))',
+              lg: 'repeat(6, minmax(0, 1fr))',
+            },
+          }}
+        >
           {/* Text Search Filters */}
           <TextField
             size="small"
-            sx={{ minWidth: 120 }}
             label={<FormattedMessage {...messages.grNumberFilterLabel} />}
             value={localGrNumber}
             onChange={(e) => setLocalGrNumber(e.target.value)}
@@ -641,7 +654,6 @@ export function AdmissionListing() {
           />
           <TextField
             size="small"
-            sx={{ minWidth: 150 }}
             label={<FormattedMessage {...messages.nameFilterLabel} />}
             value={localName}
             onChange={(e) => setLocalName(e.target.value)}
@@ -649,7 +661,6 @@ export function AdmissionListing() {
           />
           <TextField
             size="small"
-            sx={{ minWidth: 150 }}
             label={<FormattedMessage {...messages.fatherNameFilterLabel} />}
             value={localFatherName}
             onChange={(e) => setLocalFatherName(e.target.value)}
@@ -657,21 +668,17 @@ export function AdmissionListing() {
           />
           <TextField
             size="small"
-            sx={{ minWidth: 150 }}
             label={<FormattedMessage {...messages.phoneFilterLabel} />}
             value={localPhone}
             onChange={(e) => setLocalPhone(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleApplyTextFilters()}
           />
           {/* Dropdown Filters */}
-          <BranchFilter resetFiltersOnChange={['areaId']} />
-          <SessionFilter />
-          <Button variant="contained" size="small" onClick={handleApplyTextFilters} startIcon={<SearchIcon />}>
-            <FormattedMessage {...messages.applyFilters} />
-          </Button>
-          <AreaFilter />
+          <BranchFilter minWidth={0} resetFiltersOnChange={['areaId']} />
+          <SessionFilter minWidth={0} />
+          <AreaFilter minWidth={0} />
           <ClassLevelFilter
-            minWidth={200}
+            minWidth={0}
             onClassLevelChange={(classLevelId) => {
               // Avoid applying both group + specific level at once.
               // IMPORTANT: include classLevelId here so we don't overwrite
@@ -679,11 +686,10 @@ export function AdmissionListing() {
               setFilter({ classLevelId, classLevelGroup: undefined, page: 0 });
             }}
           />
-          <ClassLevelGroupFilter />
-          <GenderFilter size="small" minWidth={150} />
+          <ClassLevelGroupFilter minWidth={0} />
+          <GenderFilter size="small" minWidth={0} />
           <Autocomplete
             size="small"
-            sx={{ minWidth: 150 }}
             options={statusOptions}
             getOptionLabel={(option) => option.label}
             value={selectedStatus}
@@ -696,7 +702,6 @@ export function AdmissionListing() {
           />
           <Autocomplete
             size="small"
-            sx={{ minWidth: 150 }}
             options={feePaidOptions}
             getOptionLabel={(option) => option.label}
             value={selectedFeePaid}
@@ -707,7 +712,20 @@ export function AdmissionListing() {
               <TextField {...params} label={<FormattedMessage {...messages.feePaidFilterLabel} />} />
             )}
           />
+        </Box>
+        <Stack
+          direction="row"
+          spacing={2}
+          flexWrap="wrap"
+          useFlexGap
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{ mt: 2 }}
+        >
           <PrinterStatus onTestPrint={handleTestPrint} isTestPrinting={printingKey === 'test'} />
+          <Button variant="contained" size="small" onClick={handleApplyTextFilters} startIcon={<SearchIcon />}>
+            <FormattedMessage {...messages.applyFilters} />
+          </Button>
         </Stack>
       </Box>
 

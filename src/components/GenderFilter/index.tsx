@@ -37,10 +37,13 @@ export function GenderFilter({ size = 'small', minWidth = 150, onGenderChange }:
 
   return (
     <FormControl size={size} sx={{ minWidth }}>
-      <InputLabel>
+      {/* The label stays on the border like every other filter; an empty value reads "All". */}
+      <InputLabel shrink>
         <FormattedMessage {...messages.genderLabel} />
       </InputLabel>
       <Select
+        notched
+        displayEmpty
         value={filters.gender || ''}
         label={<FormattedMessage {...messages.genderLabel} />}
         onChange={handleChange}
