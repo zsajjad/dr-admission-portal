@@ -1,3 +1,7 @@
+import { ReactNode } from 'react';
+
+import { Permission } from '@/providers/service/app.schemas';
+
 import { FormattedMessage } from '@/theme/FormattedMessage';
 
 import { routes } from '@/router/routes';
@@ -5,6 +9,15 @@ import { routes } from '@/router/routes';
 import messages from './messages';
 
 // module-registry.ts
+interface ModuleConfig {
+  title: ReactNode;
+  href: string;
+  icon: string;
+  key?: string;
+  /** Shown only to admins with at least one of these */
+  permissions?: Permission[];
+}
+
 export const MODULE_REGISTRY = {
   home: {
     title: <FormattedMessage {...messages.home} />,
@@ -37,6 +50,12 @@ export const MODULE_REGISTRY = {
     href: routes.students.listing,
     icon: 'students',
   },
+  staffUsers: {
+    title: <FormattedMessage {...messages.staffUsers} />,
+    href: routes.staffUsers.listing,
+    icon: 'staffUsers',
+    permissions: [Permission.staffmanage],
+  },
   questionSets: {
     title: <FormattedMessage {...messages.questionSets} />,
     href: routes.questions.listing,
@@ -52,6 +71,6 @@ export const MODULE_REGISTRY = {
     href: routes.interactionReport.listing,
     icon: 'interactionReport',
   },
-} as const;
+} satisfies Record<string, ModuleConfig>;
 
 export type ModuleKey = keyof typeof MODULE_REGISTRY;
