@@ -74,7 +74,7 @@ export function CourseList() {
         </Stack>
       )}
 
-      {error && (
+      {!!error && (
         <Alert severity="error">
           <FormattedMessage {...common.loadError} />: {extractNetworkError(error)}
         </Alert>
