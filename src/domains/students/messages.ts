@@ -139,7 +139,13 @@ export default defineMessages({
 
   // Slots (filled by the sections and results work)
   sectionSlotTitle: { id: `${scope}.sectionSlotTitle`, defaultMessage: 'Section' },
-  sectionSlotEmpty: { id: `${scope}.sectionSlotEmpty`, defaultMessage: 'Sections are not set up yet' },
+  sectionNotPlaced: { id: `${scope}.sectionNotPlaced`, defaultMessage: 'Not placed in a section yet' },
+  sectionPlace: { id: `${scope}.sectionPlace`, defaultMessage: 'Place' },
+  sectionOpen: { id: `${scope}.sectionOpen`, defaultMessage: 'Open section' },
+  sectionClosed: { id: `${scope}.sectionClosed`, defaultMessage: 'Section closed' },
+  sectionNoTeachers: { id: `${scope}.sectionNoTeachers`, defaultMessage: 'No teachers yet' },
+  sectionPlacedBy: { id: `${scope}.sectionPlacedBy`, defaultMessage: 'Placed by {name} on {date}' },
+  sectionPlacedOn: { id: `${scope}.sectionPlacedOn`, defaultMessage: 'Placed on {date}' },
   resultsSlotTitle: { id: `${scope}.resultsSlotTitle`, defaultMessage: 'Result' },
 
   // Results

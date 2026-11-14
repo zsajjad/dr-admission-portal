@@ -114,7 +114,6 @@
   "app.domains.students.confirmFinalize": "{session} کا داخلہ حتمی کریں؟",
   "app.domains.students.confirmRequestCard": "اس طالب علم کو {session} کی کارڈ پرنٹ فہرست میں شامل کریں؟",
   "app.domains.students.sectionSlotTitle": "سیکشن",
-  "app.domains.students.sectionSlotEmpty": "سیکشن ابھی ترتیب نہیں دیے گئے",
   "app.domains.students.resultsSlotTitle": "نتیجہ",
   "app.domains.students.interview": "انٹرویو",
   "app.domains.students.noInterview": "ابھی انٹرویو نہیں ہوا",
@@ -768,5 +767,12 @@
   "app.domains.studentMerge.undoReason": "کیوں (ملانے کے ریکارڈ میں رکھا جائے گا)",
   "app.domains.studentMerge.undoDone": "واپس لے لیا",
   "app.domains.studentMerge.findDuplicates": "دہرے ریکارڈ تلاش کریں",
-  "app.domains.studentMerge.oldGrs": "پرانے جی آر: {list}"
+  "app.domains.studentMerge.oldGrs": "پرانے جی آر: {list}",
+  "app.domains.students.sectionNotPlaced": "ابھی کسی سیکشن میں نہیں",
+  "app.domains.students.sectionPlace": "سیکشن میں رکھیں",
+  "app.domains.students.sectionOpen": "سیکشن کھولیں",
+  "app.domains.students.sectionClosed": "سیکشن بند",
+  "app.domains.students.sectionNoTeachers": "ابھی کوئی استاد نہیں",
+  "app.domains.students.sectionPlacedBy": "{name} نے {date} کو رکھا",
+  "app.domains.students.sectionPlacedOn": "{date} کو رکھا گیا"
 }

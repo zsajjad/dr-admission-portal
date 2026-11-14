@@ -62,7 +62,7 @@ import {
 } from '../utils';
 
 import { AdmissionResults } from './AdmissionResults';
-import { AdmissionSectionSlot } from './AdmissionSectionSlot';
+import { AdmissionSection } from './AdmissionSection';
 import { AttendanceSummary } from './AttendanceSummary';
 import { CardPrintHistory } from './CardPrintHistory';
 import { Field } from './Field';
@@ -335,10 +335,10 @@ export function AdmissionPanel({ studentId, gender, admission, isLatest }: Admis
 
           <Divider sx={{ mb: 2 }} />
 
-          {/* Section (a slot until sections are wired in) and this session's results */}
+          {/* Section and this session's results */}
           <Grid container spacing={2} sx={{ mb: 2 }}>
             <Grid size={{ xs: 12, md: 4 }}>
-              <AdmissionSectionSlot admission={a} />
+              <AdmissionSection admission={a} />
             </Grid>
             <Grid size={{ xs: 12, md: 8 }}>
               <AdmissionResults admission={a} />
