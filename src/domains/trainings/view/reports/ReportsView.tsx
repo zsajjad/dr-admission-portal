@@ -92,8 +92,6 @@ function ReportTable<T>({ columns, rows, total }: { columns: Column<T>[]; rows: 
   );
 }
 
-type ResultsTableRow = ResultsRow & { group: string; label?: string };
-
 const num = (n?: number | null) => (n === undefined || n === null ? '--' : n.toLocaleString('en-PK'));
 
 /** The six trainings reports, sharing one filter bar; groupBy splits by gender, area or branch */
@@ -162,20 +160,25 @@ export function ReportsView() {
         );
       case 'results': {
         const groups = results.data?.groups ?? [];
-        // v3 reports per training inside each group; v2 has one row per group
-        const rows: ResultsTableRow[] = groups.flatMap((g) =>
-          g.trainings?.length ? g.trainings.map((r) => ({ ...r, group: g.group, label: g.label })) : [g],
+        const rows: ResultsRow[] = groups.flatMap((g) =>
+          g.trainings.map((r) => ({ ...r, group: g.group, label: g.label })),
         );
-        const first = groups[0];
+        const first = rows[0];
         return (
           <Stack spacing={2}>
+            {groups.map((g) => (
+              <Typography key={g.group} variant="body2" color="text.secondary">
+                <FormattedMessage
+                  {...messages.allPassedLine}
+                  values={{ group: groupLabel(g), tested: num(g.tested), allPassed: num(g.allPassed) }}
+                />
+              </Typography>
+            ))}
             <ReportTable
               rows={rows}
               columns={[
                 groupCol(),
-                ...(rows.some((r) => r.code)
-                  ? [{ label: t(messages.training), value: (r: ResultsTableRow) => r.code ?? '' }]
-                  : []),
+                { label: t(messages.training), value: (r) => `${r.code} · ${r.name}` },
                 { label: t(messages.tested), align: 'right', value: (r) => num(r.tested) },
                 { label: t(messages.passed), align: 'right', value: (r) => num(r.passed) },
                 { label: t(messages.passRate), align: 'right', value: (r) => formatPct(r.passRate) },
@@ -189,7 +192,10 @@ export function ReportsView() {
             {first?.distribution?.length ? (
               <Box>
                 <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                  <FormattedMessage {...messages.distribution} values={{ group: groupLabel(first) }} />
+                  <FormattedMessage
+                    {...messages.distribution}
+                    values={{ group: `${groupLabel(first)} · ${first.code}` }}
+                  />
                 </Typography>
                 <BarChart
                   height={260}
@@ -225,11 +231,9 @@ export function ReportsView() {
             columns={[
               { label: t(messages.group), value: (r) => groupLabel(r.g) },
               { label: t(common.trainer), value: (r) => r.name },
-              ...((trainers.data?.groups ?? []).some((g) => g.trainers.some((r) => r.code))
-                ? [{ label: t(messages.training), value: (r: { code?: string }) => r.code ?? '' }]
-                : []),
               { label: t(messages.students), align: 'right', value: (r) => num(r.students) },
               { label: t(messages.tested), align: 'right', value: (r) => num(r.tested) },
+              { label: t(messages.trainingsPassed), align: 'right', value: (r) => num(r.trainingsPassed) },
               { label: t(messages.averageScore), align: 'right', value: (r) => formatPct(r.averageScore) },
               {
                 label: (
@@ -251,7 +255,7 @@ export function ReportsView() {
             columns={[
               { label: t(messages.group), value: (r) => groupLabel(r.g) },
               { label: t(common.tester), value: (r) => r.name },
-              { label: t(messages.window), value: (r) => r.windowId ?? '--' },
+              { label: t(messages.window), value: (r) => r.windowName ?? '--' },
               { label: t(messages.graded), align: 'right', value: (r) => num(r.graded) },
               { label: t(messages.averageGiven), align: 'right', value: (r) => formatPct(r.averageScore) },
               { label: t(messages.overridden), align: 'right', value: (r) => num(r.overridden) },

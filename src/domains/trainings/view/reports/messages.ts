@@ -32,6 +32,11 @@ export default defineMessages({
   secondAttempt: { id: `${scope}.secondAttempt`, defaultMessage: '2nd attempt avg' },
   improvement: { id: `${scope}.improvement`, defaultMessage: 'Avg improvement' },
   distribution: { id: `${scope}.distribution`, defaultMessage: 'Score distribution: {group}' },
+  allPassedLine: {
+    id: `${scope}.allPassedLine`,
+    defaultMessage: '{group}: {tested} students tested, {allPassed} passed every training',
+  },
+  trainingsPassed: { id: `${scope}.trainingsPassed`, defaultMessage: 'Trainings passed' },
   students: { id: `${scope}.students`, defaultMessage: 'Students' },
   graded: { id: `${scope}.graded`, defaultMessage: 'Graded' },
   averagePct: { id: `${scope}.averagePct`, defaultMessage: 'Average %' },
