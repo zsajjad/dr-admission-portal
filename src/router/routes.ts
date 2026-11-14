@@ -5,6 +5,10 @@ export const routes = {
     create: '/admin-users?create=true',
     edit: (key: string) => `/admin-users?edit=${key}`,
   },
+  adminPermissions: {
+    listing: '/admin-permissions',
+    user: (adminUserId: string) => `/admin-permissions?user=${adminUserId}`,
+  },
   branches: {
     listing: '/branches?includeInActive=true',
     create: '/branches/create',
