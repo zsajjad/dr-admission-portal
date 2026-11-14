@@ -54,8 +54,10 @@
     "react-dom": "19.1.0",
     "react-dropzone": "14.3.8",
     "react-intl": "7.1.11",
+    "react-markdown": "10.1.0",
     "react-medium-image-zoom": "5.4.0",
     "react-zoom-pan-pinch": "3.7.0",
+    "remark-gfm": "4.0.1",
     "yup": "1.6.1"
   },
   "devDependencies": {

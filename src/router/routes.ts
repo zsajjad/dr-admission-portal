@@ -36,6 +36,10 @@ export const routes = {
   interactionReport: {
     listing: '/interactions/report',
   },
+  planningChat: {
+    listing: '/planning-chat',
+    conversation: (id: string) => `/planning-chat?c=${id}`,
+  },
   auth: {
     signIn: '/auth/sign-in',
     signUp: '/auth/sign-up',

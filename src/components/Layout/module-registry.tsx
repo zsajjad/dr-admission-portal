@@ -1,3 +1,5 @@
+import { Permission } from '@/providers/service/app.schemas';
+
 import { FormattedMessage } from '@/theme/FormattedMessage';
 
 import { routes } from '@/router/routes';
@@ -46,6 +48,12 @@ export const MODULE_REGISTRY = {
     title: <FormattedMessage {...messages.interactionReport} />,
     href: routes.interactionReport.listing,
     icon: 'interactionReport',
+  },
+  planningChat: {
+    title: <FormattedMessage {...messages.planningChat} />,
+    href: routes.planningChat.listing,
+    icon: 'planningChat',
+    permission: Permission.reportschat,
   },
 } as const;
 

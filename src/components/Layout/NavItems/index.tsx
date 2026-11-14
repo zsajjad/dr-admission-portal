@@ -7,6 +7,8 @@ import RouterLink from 'next/link';
 import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
 
+import { usePermissions } from '@/hooks/usePermissions';
+
 import { navIcons } from '../NavIcons';
 import type { NavItemConfig } from '../types';
 import { isNavItemActive } from '../utils/isNavItemActive';
@@ -19,10 +21,12 @@ interface NavListProps {
 }
 
 export function NavList({ items = [], pathname }: NavListProps): React.JSX.Element {
+  const { has } = usePermissions();
+  const visible = items.filter((item) => !item.permission || has(item.permission));
   return (
     <NavContainer>
       <Stack component="ul" spacing={1} sx={{ listStyle: 'none', m: 0, p: 0, alignItems: 'center' }}>
-        {items.map(({ key, ...item }) => (
+        {visible.map(({ key, ...item }) => (
           <NavListItem key={key} pathname={pathname} {...item} />
         ))}
       </Stack>
