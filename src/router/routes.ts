@@ -40,6 +40,9 @@ export const routes = {
   interactionReport: {
     listing: '/interactions/report',
   },
+  results: {
+    passMarks: '/results/pass-marks',
+  },
   auth: {
     signIn: '/auth/sign-in',
     signUp: '/auth/sign-up',
