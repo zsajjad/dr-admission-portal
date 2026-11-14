@@ -1,16 +1,12 @@
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 
-export const Container = styled(Box)({
+export const Container = styled(Box)(({ theme }) => ({
   display: 'flex',
   height: '100vh',
-  background: `
-    linear-gradient(135deg, rgba(99, 102, 241, 0.03) 0%, rgba(139, 92, 246, 0.02) 50%, rgba(236, 72, 153, 0.03) 100%),
-    linear-gradient(225deg, rgba(59, 130, 246, 0.04) 0%, transparent 50%),
-    linear-gradient(315deg, rgba(16, 185, 129, 0.02) 0%, transparent 40%)
-  `,
-  backgroundColor: '#f8fafc',
-});
+  // The ivory page; cards sit on it in white.
+  backgroundColor: theme.palette.background.default,
+}));
 
 export const ContentContainer = styled(Box)(({ theme }) => ({
   display: 'flex',

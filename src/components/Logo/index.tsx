@@ -17,7 +17,7 @@ export interface LogoProps {
   height?: string;
   /** CSS width, used only when no height is given. */
   width?: string;
-  /** Color of the lettering. Defaults to the brand navy; pass white on dark backgrounds. */
+  /** Color of the lettering. Defaults to the brand green; pass ivory or white on dark backgrounds. */
   lettersColor?: string;
   /** Accessible name. Without it the logo is decorative. */
   label?: string;
@@ -25,7 +25,7 @@ export interface LogoProps {
 }
 
 /**
- * The Danishgah-e-Ramzan logo, drawn inline: the frame and diamond in brand gold, the lettering in navy
+ * The Danishgah-e-Ramzan logo, drawn inline: the frame and diamond in brand gold, the lettering in green
  * (or `lettersColor`). The same paths as the public website, so both stay identical.
  */
 export function Logo({ height, width, lettersColor, label, sx }: LogoProps): JSX.Element {
@@ -41,7 +41,7 @@ export function Logo({ height, width, lettersColor, label, sx }: LogoProps): JSX
       sx={[{ display: 'block', flexShrink: 0, aspectRatio: `${ASPECT}`, ...size }, ...(Array.isArray(sx) ? sx : [sx])]}
     >
       <Box component="path" d={LOGO_ORNAMENT} sx={{ fill: (theme) => theme.palette.brand.gold }} />
-      <Box component="path" d={LOGO_LETTERS} sx={{ fill: (theme) => lettersColor ?? theme.palette.brand.navy }} />
+      <Box component="path" d={LOGO_LETTERS} sx={{ fill: (theme) => lettersColor ?? theme.palette.brand.green }} />
     </Box>
   );
 }
@@ -67,7 +67,7 @@ export function Brand({ logoHeight = '48px', inverse = false, size = 'md' }: Bra
             fontSize: size === 'sm' ? '0.95rem' : '1.05rem',
             lineHeight: 1.2,
             whiteSpace: 'nowrap',
-            color: inverse ? 'common.white' : 'brand.navy',
+            color: inverse ? 'common.white' : 'brand.green',
           }}
         >
           Danishgah-e-Ramzan

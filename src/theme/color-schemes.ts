@@ -2,25 +2,27 @@ export const colorSchemes = {
   light: {
     palette: {
       transparent: 'rgba(255, 255, 255, 0)',
-      // Danishgah-e-Ramzan brand, the same tokens as the public website: navy, a lapis accent,
-      // and gold for the logo and ornament only (never for text: 2.97:1 on white).
+      // Danishgah-e-Ramzan brand (decided 14 Nov 2026), shared with the staff app: deep green,
+      // gold for ornament and highlights (goldText where gold must be read), ivory surfaces.
       primary: {
-        main: '#0B2A63',
-        light: '#133A84',
-        dark: '#0A1631',
+        main: '#0F4D3A',
+        light: '#1D6B52',
+        dark: '#0A3528',
         contrastText: '#FFFFFF',
       },
+      // The readable gold: focus rings and the odd highlight button. White text on it is 5.6:1.
       secondary: {
-        main: '#2152CC',
-        light: '#6D96FF',
-        dark: '#173C99',
+        main: '#8A6416',
+        light: '#B8892B',
+        dark: '#6B4D0F',
         contrastText: '#FFFFFF',
       },
       brand: {
-        navy: '#0B2A63',
-        gold: '#B0892C',
-        goldText: '#8A6A1F',
-        goldSoft: 'rgba(184, 144, 47, 0.1)',
+        green: '#0F4D3A',
+        gold: '#B8892B',
+        goldText: '#8A6416',
+        goldSoft: 'rgba(184, 137, 43, 0.12)',
+        ivory: '#FAF6EC',
       },
       grey: {
         50: '#FFFFFF',
@@ -35,29 +37,30 @@ export const colorSchemes = {
         900: '#808080',
       },
       background: {
-        default: '#FFFFFF',
-        paper: '#FAFBFD',
+        default: '#FAF6EC',
+        paper: '#FFFFFF',
       },
       common: { black: '#000000', white: '#FFFFFF' },
-      stroke: '#E1E7F1',
+      stroke: '#E6DECB',
       text: {
-        primary: '#0A1631',
-        secondary: '#55647E',
+        primary: '#1E2B25',
+        secondary: '#55635B',
       },
       general_main: {
         1: '#FDFDFD',
-        2: '#EAF0FF',
-        3: '#F5F7FB',
+        2: '#E7F0EB',
+        3: '#F3F7F4',
       },
       error: {
         main: '#D32F2F',
         light: '#EF5350',
         dark: '#C62828',
       },
+      // Brighter and yellower than the primary green, so a success never looks like a button.
       success: {
-        main: '#2E7D32',
-        light: '#4CAF50',
-        dark: '#1B5E20',
+        main: '#33802A',
+        light: '#5DAA4F',
+        dark: '#25611E',
       },
       warning: {
         main: '#ED6C02',
@@ -82,22 +85,23 @@ export const colorSchemes = {
     palette: {
       transparent: 'rgba(0, 0, 0, 0)',
       primary: {
-        main: '#2A64F6',
-        light: '#6D96FF',
-        dark: '#0B2A63',
-        contrastText: '#FFFFFF',
+        main: '#4CAF86',
+        light: '#7CC9A8',
+        dark: '#0F4D3A',
+        contrastText: '#08130E',
       },
       secondary: {
-        main: '#6D96FF',
-        light: '#A9C1FF',
-        dark: '#2152CC',
-        contrastText: '#01040C',
+        main: '#D4AE5F',
+        light: '#E2C583',
+        dark: '#B8892B',
+        contrastText: '#08130E',
       },
       brand: {
-        navy: '#0B2A63',
-        gold: '#D4B36A',
+        green: '#0F4D3A',
+        gold: '#D4AE5F',
         goldText: '#E2C583',
-        goldSoft: 'rgba(212, 179, 106, 0.12)',
+        goldSoft: 'rgba(212, 174, 95, 0.14)',
+        ivory: '#FAF6EC',
       },
       grey: {
         50: '#101010',
@@ -112,19 +116,19 @@ export const colorSchemes = {
         900: '#696969',
       },
       background: {
-        default: '#01040C',
-        paper: '#08132C',
+        default: '#08130E',
+        paper: '#0F2119',
       },
       common: { black: '#000000', white: '#FFFFFF' },
-      stroke: '#152448',
+      stroke: '#1E3A2D',
       text: {
-        primary: '#E6ECF8',
-        secondary: '#8A9ABA',
+        primary: '#E8EFEA',
+        secondary: '#A0B3A8',
       },
       general_main: {
         1: '#1A1A1A',
-        2: '#0D1D45',
-        3: '#050D21',
+        2: '#123326',
+        3: '#0B1A13',
       },
       error: {
         main: '#D32F2F',
@@ -132,9 +136,9 @@ export const colorSchemes = {
         dark: '#C62828',
       },
       success: {
-        main: '#2E7D32',
-        light: '#4CAF50',
-        dark: '#1B5E20',
+        main: '#6CC05A',
+        light: '#8FD37F',
+        dark: '#33802A',
       },
       warning: {
         main: '#ED6C02',
