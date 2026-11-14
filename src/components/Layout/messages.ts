@@ -56,6 +56,10 @@ export default defineMessages({
     id: `${scope}.syncReview`,
     defaultMessage: 'Flagged staff app work',
   },
+  results: {
+    id: `${scope}.results`,
+    defaultMessage: 'Results',
+  },
   printing: {
     id: `${scope}.printing`,
     defaultMessage: 'Printing',
