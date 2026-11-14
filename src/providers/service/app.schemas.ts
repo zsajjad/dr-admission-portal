@@ -810,6 +810,66 @@ export interface LegacyAdmissionPrefill {
   alternatePhone?: string;
   /** address */
   address?: string;
+  /** schoolName */
+  schoolName?: string;
+  /** schoolClass */
+  schoolClass?: string;
+  /** lastYearClass */
+  lastYearClass?: string;
+  /** vanRequired */
+  vanRequired?: boolean;
+  /** isMarried */
+  isMarried?: boolean;
+  /** isWorking */
+  isWorking?: boolean;
+}
+
+export interface LegacyStudentRow {
+  /** id */
+  id: string;
+  /** true if this student already has an admission */
+  alreadyRegistered: boolean;
+  /** grNumber (legacy gr_no) */
+  grNumber?: string;
+  /** name */
+  name?: string;
+  /** fatherName (legacy fathers_name) */
+  fatherName?: string;
+  /** gender (legacy free-form text) */
+  gender?: string;
+  /** phone */
+  phone?: string;
+  /** prefill payload for admission create form */
+  prefill: LegacyAdmissionPrefill;
+}
+
+export interface SearchLegacyAdmissionsResponseDto {
+  /** Total number of records */
+  count: number;
+  data: LegacyStudentRow[];
+}
+
+export interface LegacyAdmissionFullPrefill {
+  /** legacyStudentId */
+  legacyStudentId?: string;
+  /** branchId (auto-resolved if possible) */
+  branchId?: string;
+  /** areaId (auto-resolved if possible) */
+  areaId?: string;
+  /** student name */
+  name?: string;
+  /** father/guardian name */
+  fatherName?: string;
+  /** dateOfBirth */
+  dateOfBirth?: string;
+  /** normalized gender (if possible) */
+  gender?: Gender;
+  /** phone */
+  phone?: string;
+  /** alternatePhone */
+  alternatePhone?: string;
+  /** address */
+  address?: string;
   /** identityNumber (B-Form/CNIC as text) */
   identityNumber?: string;
   /** schoolName */
@@ -837,7 +897,7 @@ export interface LegacyAdmissionRaw {
   imageUrl?: string;
 }
 
-export interface LegacyStudentRow {
+export interface LegacyStudentFullRow {
   /** id */
   id: string;
   /** true if an admission already exists for this phone */
@@ -859,17 +919,17 @@ export interface LegacyStudentRow {
   /** isVerified */
   isVerified?: boolean;
   /** prefill payload for admission create form */
-  prefill: LegacyAdmissionPrefill;
+  prefill: LegacyAdmissionFullPrefill;
   /** warnings produced while building prefill */
   warnings: string[];
   /** raw legacy fields for display/debug */
   raw: LegacyAdmissionRaw;
 }
 
-export interface SearchLegacyAdmissionsResponseDto {
+export interface SearchLegacyAdmissionsAdminResponseDto {
   /** Total number of records */
   count: number;
-  data: LegacyStudentRow[];
+  data: LegacyStudentFullRow[];
 }
 
 export interface CreateAdmissionDto {
@@ -2227,6 +2287,396 @@ export interface CancelCardPrintRequestResponseDto {
   data: CardPrintRequestEntity;
 }
 
+/**
+ * Custom variable overrides (e.g. group links, dates)
+ */
+export type PreviewAnnouncementDtoCustomVariables = { [key: string]: unknown };
+
+export interface PreviewAnnouncementDto {
+  /** sessionId */
+  sessionId: string;
+  /** templateId */
+  templateId: string;
+  /** branchId */
+  branchId?: string;
+  /** areaId */
+  areaId?: string;
+  /** classLevelId */
+  classLevelId?: string;
+  /** classLevelGroup */
+  classLevelGroup?: ClassLevelGroup;
+  /** student gender */
+  gender?: Gender;
+  status?: AdmissionStatus;
+  /** isFeePaid */
+  isFeePaid?: boolean;
+  /** grNumber (exact match) */
+  grNumber?: string;
+  /** phone (contains) */
+  phone?: string;
+  /** name (contains) */
+  name?: string;
+  /** fatherName (contains) */
+  fatherName?: string;
+  /** One search to query all fields */
+  search?: string;
+  /** Custom variable overrides (e.g. group links, dates) */
+  customVariables?: PreviewAnnouncementDtoCustomVariables;
+}
+
+export interface ClassLevelBreakdown {
+  classLevelName: string;
+  count: number;
+}
+
+export type PreviewRecipientSampleResolvedVariables = { [key: string]: unknown };
+
+export interface PreviewRecipientSample {
+  phone: string;
+  studentName: string;
+  classLevelName: string;
+  resolvedVariables: PreviewRecipientSampleResolvedVariables;
+}
+
+export interface PreviewAnnouncementResponseDto {
+  /** Total matching recipients */
+  totalRecipients: number;
+  /** Unique phone numbers */
+  uniquePhones: number;
+  /** Breakdown by class level */
+  classLevelBreakdown: ClassLevelBreakdown[];
+  /** Sample recipients with resolved variables */
+  samples: PreviewRecipientSample[];
+}
+
+/**
+ * Custom variable overrides (e.g. group links, dates)
+ */
+export type CreateAnnouncementDtoCustomVariables = { [key: string]: unknown };
+
+export interface CreateAnnouncementDto {
+  /** Admin label for this announcement */
+  title: string;
+  /** sessionId */
+  sessionId: string;
+  /** templateId */
+  templateId: string;
+  /** branchId */
+  branchId?: string;
+  /** areaId */
+  areaId?: string;
+  /** classLevelId */
+  classLevelId?: string;
+  /** classLevelGroup */
+  classLevelGroup?: ClassLevelGroup;
+  /** student gender */
+  gender?: Gender;
+  status?: AdmissionStatus;
+  /** isFeePaid */
+  isFeePaid?: boolean;
+  /** grNumber (exact match) */
+  grNumber?: string;
+  /** phone (contains) */
+  phone?: string;
+  /** name (contains) */
+  name?: string;
+  /** fatherName (contains) */
+  fatherName?: string;
+  /** One search to query all fields */
+  search?: string;
+  /** Custom variable overrides (e.g. group links, dates) */
+  customVariables?: CreateAnnouncementDtoCustomVariables;
+}
+
+export interface AnnouncementSession {
+  id: string;
+  name: string;
+}
+
+export interface AnnouncementTemplateSummary {
+  id: string;
+  name: string;
+  description: string;
+}
+
+/**
+ * Filters snapshot
+ */
+export type AnnouncementFilters = { [key: string]: unknown };
+
+/**
+ * Custom variable overrides
+ */
+export type AnnouncementCustomVariables = { [key: string]: unknown };
+
+/**
+ * Announcement status
+ */
+export type AnnouncementStatusProperty = (typeof AnnouncementStatusProperty)[keyof typeof AnnouncementStatusProperty];
+
+export const AnnouncementStatusProperty = {
+  DRAFT: 'DRAFT',
+  QUEUED: 'QUEUED',
+  SENDING: 'SENDING',
+  COMPLETED: 'COMPLETED',
+  PARTIALLY_FAILED: 'PARTIALLY_FAILED',
+} as const;
+
+export interface Announcement {
+  /** id */
+  id: string;
+  /** session */
+  session: AnnouncementSession;
+  /** template */
+  template: AnnouncementTemplateSummary;
+  /** Admin label */
+  title: string;
+  /** Filters snapshot */
+  filters: AnnouncementFilters;
+  /** Custom variable overrides */
+  customVariables?: AnnouncementCustomVariables;
+  /** Announcement status */
+  status: AnnouncementStatusProperty;
+  /** Total recipients */
+  totalRecipients: number;
+  /** Sent count */
+  sentCount: number;
+  /** Delivered count */
+  deliveredCount: number;
+  /** Read count */
+  readCount: number;
+  /** Failed count */
+  failedCount: number;
+  /** triggeredByAdmin */
+  triggeredByAdmin: AdminUserBase;
+  /** triggeredAt */
+  triggeredAt: string;
+  /** completedAt */
+  completedAt?: string;
+  /** isActive */
+  isActive: boolean;
+  /** createdAt */
+  createdAt: string;
+  /** updatedAt */
+  updatedAt?: string;
+}
+
+export interface CreateAnnouncementResponseDto {
+  /** Message of the action */
+  message: string;
+  data: Announcement;
+}
+
+export type AnnouncementStatus = (typeof AnnouncementStatus)[keyof typeof AnnouncementStatus];
+
+export const AnnouncementStatus = {
+  DRAFT: 'DRAFT',
+  QUEUED: 'QUEUED',
+  SENDING: 'SENDING',
+  COMPLETED: 'COMPLETED',
+  PARTIALLY_FAILED: 'PARTIALLY_FAILED',
+} as const;
+
+export interface ListAnnouncementsResponseDto {
+  /** Total number of records */
+  count: number;
+  data: Announcement[];
+}
+
+export interface DetailAnnouncementResponseDto {
+  /** Message of the action */
+  message: string;
+  data: Announcement;
+}
+
+/**
+ * Resolved template variables
+ */
+export type AnnouncementRecipientResolvedVariables = { [key: string]: unknown };
+
+/**
+ * Recipient status
+ */
+export type AnnouncementRecipientStatus =
+  (typeof AnnouncementRecipientStatus)[keyof typeof AnnouncementRecipientStatus];
+
+export const AnnouncementRecipientStatus = {
+  PENDING: 'PENDING',
+  SENT: 'SENT',
+  DELIVERED: 'DELIVERED',
+  READ: 'READ',
+  FAILED: 'FAILED',
+} as const;
+
+export interface AnnouncementRecipient {
+  /** id */
+  id: string;
+  /** announcementId */
+  announcementId: string;
+  /** admissionId */
+  admissionId: string;
+  /** Phone number */
+  phone: string;
+  /** Student name */
+  studentName: string;
+  /** Class level name */
+  classLevelName: string;
+  /** Resolved template variables */
+  resolvedVariables: AnnouncementRecipientResolvedVariables;
+  /** Recipient status */
+  status: AnnouncementRecipientStatus;
+  /** WhatsApp message ID */
+  whatsappMessageId?: string;
+  /** Error message */
+  errorMessage?: string;
+  /** sentAt */
+  sentAt?: string;
+  /** deliveredAt */
+  deliveredAt?: string;
+  /** readAt */
+  readAt?: string;
+  /** failedAt */
+  failedAt?: string;
+  /** createdAt */
+  createdAt: string;
+  /** updatedAt */
+  updatedAt?: string;
+}
+
+export interface ListAnnouncementRecipientsResponseDto {
+  /** Total number of records */
+  count: number;
+  data: AnnouncementRecipient[];
+}
+
+export type CreateAnnouncementTemplateDtoVariablesItem = { [key: string]: unknown };
+
+export interface CreateAnnouncementTemplateDto {
+  /** Template name as registered with Meta */
+  name: string;
+  /** Template language code */
+  language?: string;
+  /** Admin-friendly description */
+  description: string;
+  /** Variable mapping array: [{ position, key, source }] */
+  variables: CreateAnnouncementTemplateDtoVariablesItem[];
+  /** Sample rendered text for admin preview */
+  sampleBody: string;
+}
+
+/**
+ * Variable mapping array
+ */
+export type AnnouncementTemplateVariables = { [key: string]: unknown };
+
+export interface AnnouncementTemplate {
+  /** id */
+  id: string;
+  /** Template name as registered with Meta */
+  name: string;
+  /** Template language code */
+  language: string;
+  /** Admin-friendly description */
+  description: string;
+  /** Variable mapping array */
+  variables: AnnouncementTemplateVariables;
+  /** Sample rendered text for preview */
+  sampleBody: string;
+  /** isActive */
+  isActive: boolean;
+  /** createdAt */
+  createdAt: string;
+  /** updatedAt */
+  updatedAt?: string;
+  /** createdBy */
+  createdBy?: AdminUserBase;
+  /** updatedBy */
+  updatedBy?: AdminUserBase;
+}
+
+export interface CreateAnnouncementTemplateResponseDto {
+  /** Message of the action */
+  message: string;
+  data: AnnouncementTemplate;
+}
+
+export interface ListAnnouncementTemplatesResponseDto {
+  /** Total number of records */
+  count: number;
+  data: AnnouncementTemplate[];
+}
+
+export interface DetailAnnouncementTemplateResponseDto {
+  /** Message of the action */
+  message: string;
+  data: AnnouncementTemplate;
+}
+
+export type UpdateAnnouncementTemplateDtoVariablesItem = { [key: string]: unknown };
+
+export interface UpdateAnnouncementTemplateDto {
+  /** Template name as registered with Meta */
+  name?: string;
+  /** Template language code */
+  language?: string;
+  /** Admin-friendly description */
+  description?: string;
+  /** Variable mapping array: [{ position, key, source }] */
+  variables?: UpdateAnnouncementTemplateDtoVariablesItem[];
+  /** Sample rendered text for admin preview */
+  sampleBody?: string;
+}
+
+export interface UpdateAnnouncementTemplateResponseDto {
+  /** Message of the action */
+  message: string;
+  data?: AnnouncementTemplate;
+}
+
+/**
+ * Custom variable values to use in the template (keys matching "custom.*" sources)
+ */
+export type TestAnnouncementTemplateDtoCustomVariables = { [key: string]: unknown };
+
+/**
+ * Override values for auto-resolved variables (e.g. student.name). Useful for testing when you do not have real admission data.
+ */
+export type TestAnnouncementTemplateDtoVariableOverrides = { [key: string]: unknown };
+
+export interface TestAnnouncementTemplateDto {
+  /** Phone numbers to send the test message to (international format, e.g. "923001234567") */
+  phones: string[];
+  /** Custom variable values to use in the template (keys matching "custom.*" sources) */
+  customVariables?: TestAnnouncementTemplateDtoCustomVariables;
+  /** Override values for auto-resolved variables (e.g. student.name). Useful for testing when you do not have real admission data. */
+  variableOverrides?: TestAnnouncementTemplateDtoVariableOverrides;
+}
+
+export interface TestSendResult {
+  /** Phone number the message was sent to */
+  phone: string;
+  /** Whether the send succeeded */
+  success: boolean;
+  /** WhatsApp message ID on success */
+  whatsappMessageId?: string;
+  /** Error message on failure */
+  error?: string;
+}
+
+/**
+ * Resolved variables that were sent
+ */
+export type TestAnnouncementTemplateResponseDtoResolvedVariables = { [key: string]: unknown };
+
+export interface TestAnnouncementTemplateResponseDto {
+  /** Summary message */
+  message: string;
+  /** Results per phone number */
+  results: TestSendResult[];
+  /** Resolved variables that were sent */
+  resolvedVariables: TestAnnouncementTemplateResponseDtoResolvedVariables;
+}
+
 export type AssetsControllerUploadPublicParams = {
   type: AssetsControllerUploadPublicType;
   /** Category of the asset */
@@ -2581,9 +3031,9 @@ export type AdmissionsControllerSearchLegacyParams = {
   sortOrder?: AdmissionsControllerSearchLegacySortOrder;
   /** Include deactivated records */
   includeInActive?: boolean;
-  /** Search query (GR, phone, name, father name) */
+  /** A full phone number or a full GR number */
   query: string;
-  /** Sort by */
+  /** Ignored */
   sortBy?: AdmissionsControllerSearchLegacySortBy;
 };
 
@@ -2599,6 +3049,41 @@ export type AdmissionsControllerSearchLegacySortBy =
   (typeof AdmissionsControllerSearchLegacySortBy)[keyof typeof AdmissionsControllerSearchLegacySortBy];
 
 export const AdmissionsControllerSearchLegacySortBy = {
+  grNo: 'grNo',
+  name: 'name',
+  fathersName: 'fathersName',
+  phoneNumber: 'phoneNumber',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
+
+export type AdmissionsControllerSearchLegacyAdminParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: AdmissionsControllerSearchLegacyAdminSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+  /** Search query (exact GR, or part of a phone number) */
+  query: string;
+  /** Sort by */
+  sortBy?: AdmissionsControllerSearchLegacyAdminSortBy;
+};
+
+export type AdmissionsControllerSearchLegacyAdminSortOrder =
+  (typeof AdmissionsControllerSearchLegacyAdminSortOrder)[keyof typeof AdmissionsControllerSearchLegacyAdminSortOrder];
+
+export const AdmissionsControllerSearchLegacyAdminSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type AdmissionsControllerSearchLegacyAdminSortBy =
+  (typeof AdmissionsControllerSearchLegacyAdminSortBy)[keyof typeof AdmissionsControllerSearchLegacyAdminSortBy];
+
+export const AdmissionsControllerSearchLegacyAdminSortBy = {
   grNo: 'grNo',
   name: 'name',
   fathersName: 'fathersName',
@@ -2637,6 +3122,8 @@ export type AdmissionsControllerFindAllParams = {
   /** classLevelGroup */
   classLevelGroup?: ClassLevelGroup;
   status?: AdmissionStatus;
+  /** student gender */
+  gender?: Gender;
   /** isFeePaid */
   isFeePaid?: boolean;
   /** Sort by */
@@ -2881,4 +3368,106 @@ export type PrintingControllerCountCardPrintRequestsParams = {
   branchId?: string;
   /** Status filter */
   status?: CardPrintRequestStatus;
+};
+
+export type AnnouncementControllerFindAllParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: AnnouncementControllerFindAllSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+  /** sessionId */
+  sessionId?: string;
+  status?: AnnouncementStatus;
+  /** title (contains) */
+  title?: string;
+  /** Sort by */
+  sortBy?: AnnouncementControllerFindAllSortBy;
+};
+
+export type AnnouncementControllerFindAllSortOrder =
+  (typeof AnnouncementControllerFindAllSortOrder)[keyof typeof AnnouncementControllerFindAllSortOrder];
+
+export const AnnouncementControllerFindAllSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type AnnouncementControllerFindAllSortBy =
+  (typeof AnnouncementControllerFindAllSortBy)[keyof typeof AnnouncementControllerFindAllSortBy];
+
+export const AnnouncementControllerFindAllSortBy = {
+  createdAt: 'createdAt',
+  triggeredAt: 'triggeredAt',
+  status: 'status',
+} as const;
+
+export type AnnouncementControllerFindOneParams = {
+  /** Include deactivated records (admins only) */
+  includeInActive?: boolean;
+};
+
+export type AnnouncementControllerFindRecipientsParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: AnnouncementControllerFindRecipientsSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+};
+
+export type AnnouncementControllerFindRecipientsSortOrder =
+  (typeof AnnouncementControllerFindRecipientsSortOrder)[keyof typeof AnnouncementControllerFindRecipientsSortOrder];
+
+export const AnnouncementControllerFindRecipientsSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type AnnouncementTemplateControllerFindAllParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: AnnouncementTemplateControllerFindAllSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+  /** Template name (contains) */
+  name?: string;
+  /** Sort by */
+  sortBy?: AnnouncementTemplateControllerFindAllSortBy;
+};
+
+export type AnnouncementTemplateControllerFindAllSortOrder =
+  (typeof AnnouncementTemplateControllerFindAllSortOrder)[keyof typeof AnnouncementTemplateControllerFindAllSortOrder];
+
+export const AnnouncementTemplateControllerFindAllSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type AnnouncementTemplateControllerFindAllSortBy =
+  (typeof AnnouncementTemplateControllerFindAllSortBy)[keyof typeof AnnouncementTemplateControllerFindAllSortBy];
+
+export const AnnouncementTemplateControllerFindAllSortBy = {
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  name: 'name',
+} as const;
+
+export type AnnouncementTemplateControllerFindOneParams = {
+  /** Include deactivated records (admins only) */
+  includeInActive?: boolean;
+};
+
+export type AnnouncementWebhookControllerVerifyParams = {
+  'hub.mode': string;
+  'hub.verify_token': string;
+  'hub.challenge': string;
 };
