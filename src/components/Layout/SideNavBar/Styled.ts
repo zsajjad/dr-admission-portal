@@ -7,7 +7,7 @@ export const SideNav = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   scrollbarWidth: 'none',
   borderRadius: 16,
-  height: 'calc(100vh - 32px)',
+  height: '100%',
   width: 'var(--SideNav-width)',
   overflow: 'hidden',
   boxShadow: '0 4px 20px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)',
@@ -21,6 +21,7 @@ export const SideNav = styled(Box)(({ theme }) => ({
 
 export const SideNavContainer = styled(Box)(({ theme }) => ({
   padding: '16px 0 16px 16px',
+  height: '100%',
   [theme.breakpoints.down('lg')]: {
     display: 'none',
   },

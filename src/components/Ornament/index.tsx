@@ -70,3 +70,16 @@ export function khatamPattern(color: string, opacity = 0.1, tile = 56): string {
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${tile}' height='${tile}'>${star(half, half)}${star(0, 0)}${star(tile, 0)}${star(0, tile)}${star(tile, tile)}</svg>`;
   return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
 }
+
+/**
+ * A thin band of small stars joined by short rules (✦—✦—), as a CSS background repeated along x.
+ * For the gold band under the top bar.
+ */
+export function khatamBand(color: string, height = 10, step = 28): string {
+  const mid = height / 2;
+  const star = `<polygon points='${khatamPoints(step / 2, mid, height * 0.36)}' fill='${color}'/>`;
+  const rule = `<line x1='${step / 2 + height * 0.55}' y1='${mid}' x2='${step + step / 2 - height * 0.55}' y2='${mid}' stroke='${color}' stroke-width='1' stroke-opacity='0.8'/>`;
+  const leftRule = `<line x1='0' y1='${mid}' x2='${step / 2 - height * 0.55}' y2='${mid}' stroke='${color}' stroke-width='1' stroke-opacity='0.8'/>`;
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${step}' height='${height}'>${leftRule}${star}${rule}</svg>`;
+  return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+}
