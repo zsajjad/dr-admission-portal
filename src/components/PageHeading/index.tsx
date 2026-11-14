@@ -33,12 +33,7 @@ export function PageHeading({
         justifyContent: 'space-between',
         alignItems: { sm: 'center' },
         gap: 2,
-        mb: 3,
-        p: 2.5,
-        bgcolor: 'background.paper',
-        borderRadius: 4,
-        border: '1px solid',
-        borderColor: 'divider',
+        mb: 2.5,
       }}
     >
       <Typography
