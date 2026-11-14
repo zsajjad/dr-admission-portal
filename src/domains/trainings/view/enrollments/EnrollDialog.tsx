@@ -2,12 +2,10 @@
 
 import { useEffect, useMemo, useState } from 'react';
 
-import { useIntl } from 'react-intl';
-
 import { useRouter } from 'next/navigation';
 
 import { Search as SearchIcon } from '@mui/icons-material';
-import { Alert, Box, Button, CircularProgress, MenuItem, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Chip, CircularProgress, Stack, TextField, Typography } from '@mui/material';
 
 import { StaffRole } from '@/providers/service/app.schemas';
 import { useStudentsControllerFindAll } from '@/providers/service/students/students';
@@ -16,14 +14,10 @@ import { FormattedMessage, useFormattedMessage } from '@/theme/FormattedMessage'
 
 import { routes } from '@/router/routes';
 
-import { ClosureReason, useEnroll } from '../../api/operations';
-import { useCourses, useResolveCourse } from '../../api/setup';
+import { useEnroll, useStudentTrainings } from '../../api/operations';
 import { ActionDialog } from '../../components/ActionDialog';
-import { ReasonField, reasonMissing } from '../../components/ReasonField';
 import { StaffUserSelect } from '../../components/StaffUserSelect';
 import { useNotify } from '../../components/useNotify';
-import common from '../../messages';
-import { formatPct } from '../../utils';
 
 import messages from './messages';
 
@@ -34,36 +28,25 @@ interface EnrollDialogProps {
   studentId?: string;
 }
 
-const MATRIX = '';
-
 /**
- * Enroll a student by GR. The course comes from the age matrix unless the admin picks one;
- * enrolling again in a course the student has closed needs a reason.
+ * Enroll a student by GR in this session. The trainings come from the catalog: every one required
+ * for their age and gender that they haven't passed. Core answers NOTHING_REQUIRED when there are none.
  */
 export function EnrollDialog({ open, onClose, studentId: givenStudentId }: EnrollDialogProps) {
   const router = useRouter();
-  const intl = useIntl();
   const notify = useNotify();
   const enroll = useEnroll();
   const enrolledText = useFormattedMessage(messages.enrolled);
-  const { data: coursesData } = useCourses();
-  const courses = (coursesData?.data ?? []).filter((c) => c.isActive);
 
   const [gr, setGr] = useState('');
   const [searchGr, setSearchGr] = useState('');
-  const [courseId, setCourseId] = useState(MATRIX);
   const [trainerId, setTrainerId] = useState<string | null>(null);
-  const [reason, setReason] = useState('');
-  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     if (!open) return;
     setGr('');
     setSearchGr('');
-    setCourseId(MATRIX);
     setTrainerId(null);
-    setReason('');
-    setSubmitted(false);
   }, [open]);
 
   const { data: found, isFetching: finding } = useStudentsControllerFindAll(
@@ -75,24 +58,13 @@ export function EnrollDialog({ open, onClose, studentId: givenStudentId }: Enrol
     [found, searchGr],
   );
   const studentId = givenStudentId ?? student?.id;
-
-  const { data: resolvedData, isFetching: resolving } = useResolveCourse(open ? studentId : undefined);
-  const resolved = resolvedData?.data;
-  const effectiveCourseId = courseId || resolved?.course?.id;
-  const closedBefore = resolved?.completedCourses.find((c) => c.courseId === effectiveCourseId);
-  const needsReason = !!closedBefore;
-  const missingReason = needsReason && reasonMissing(reason);
+  const { student: trainings, isFetching: loading } = useStudentTrainings(open ? studentId : undefined);
+  const nothingRequired = !!trainings && trainings.required.length === 0;
 
   const handleSubmit = () => {
-    setSubmitted(true);
-    if (!studentId || !effectiveCourseId || missingReason) return;
+    if (!studentId) return;
     enroll.mutate(
-      {
-        studentId,
-        ...(courseId && { courseId }),
-        ...(trainerId && { trainerStaffUserId: trainerId }),
-        ...(needsReason && { reason: reason.trim() }),
-      },
+      { studentId, ...(trainerId && { trainerStaffUserId: trainerId }) },
       {
         onSuccess: (res) => {
           notify.success(enrolledText);
@@ -112,7 +84,7 @@ export function EnrollDialog({ open, onClose, studentId: givenStudentId }: Enrol
       onSubmit={handleSubmit}
       isSubmitting={enroll.isPending}
       submitLabel={<FormattedMessage {...messages.enroll} />}
-      submitDisabled={!studentId || !effectiveCourseId}
+      submitDisabled={!studentId || nothingRequired}
     >
       <Stack spacing={2}>
         {!givenStudentId && (
@@ -147,7 +119,6 @@ export function EnrollDialog({ open, onClose, studentId: givenStudentId }: Enrol
             <FormattedMessage {...messages.studentNotFound} />
           </Alert>
         )}
-
         {student && (
           <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: 'action.hover' }}>
             <Typography sx={{ fontWeight: 600 }}>{student.name}</Typography>
@@ -156,81 +127,31 @@ export function EnrollDialog({ open, onClose, studentId: givenStudentId }: Enrol
             </Typography>
           </Box>
         )}
-
-        {studentId && resolving && <CircularProgress size={20} />}
-        {resolved && (
-          <>
-            {resolved.course ? (
-              <Alert severity="info">
-                <FormattedMessage
-                  {...messages.matrixCourse}
-                  values={{ course: `${resolved.course.code} · ${resolved.course.name}` }}
-                />
+        {studentId && loading && <CircularProgress size={20} />}
+        {trainings && (
+          <Box>
+            <Typography variant="caption" color="text.secondary">
+              <FormattedMessage {...messages.requiredNow} values={{ age: String(trainings.age ?? '--') }} />
+            </Typography>
+            {nothingRequired ? (
+              <Alert severity="info" sx={{ mt: 0.5 }}>
+                <FormattedMessage {...messages.nothingRequired} />
               </Alert>
             ) : (
-              <Alert severity="warning">
-                <FormattedMessage {...messages.matrixNone} values={{ age: String(resolved.age ?? '--') }} />
-              </Alert>
-            )}
-            {resolved.completedCourses.length > 0 && (
-              <Box>
-                <Typography variant="caption" color="text.secondary">
-                  <FormattedMessage {...messages.completedBefore} />
-                </Typography>
-                {resolved.completedCourses.map((c) => (
-                  <Typography key={c.enrollmentId} variant="body2">
-                    <FormattedMessage
-                      {...messages.completedLine}
-                      values={{
-                        course: c.courseName,
-                        session: c.sessionName,
-                        result: intl.formatMessage(
-                          common[(c.passed ? 'PASSED' : c.closureReason) as ClosureReason] ?? common.CLOSED,
-                        ),
-                        pct: formatPct(c.bestPct),
-                      }}
-                    />
-                  </Typography>
+              <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" sx={{ mt: 0.5 }}>
+                {trainings.required.map((t) => (
+                  <Chip key={t.trainingId ?? t.id ?? t.code} size="small" label={`${t.code} · ${t.name}`} />
                 ))}
-              </Box>
+              </Stack>
             )}
-          </>
+          </Box>
         )}
-
-        <TextField
-          select
-          size="small"
-          label={<FormattedMessage {...messages.courseOverride} />}
-          value={courseId}
-          onChange={(e) => setCourseId(e.target.value)}
-          error={submitted && !effectiveCourseId}
-          slotProps={{ select: { displayEmpty: true }, inputLabel: { shrink: true } }}
-        >
-          <MenuItem value={MATRIX}>
-            <FormattedMessage {...messages.useMatrix} />
-          </MenuItem>
-          {courses.map((c) => (
-            <MenuItem key={c.id} value={c.id}>
-              {c.code} · {c.name}
-            </MenuItem>
-          ))}
-        </TextField>
-
         <StaffUserSelect
           role={StaffRole.TRAINER}
           label={<FormattedMessage {...messages.trainerOptional} />}
           value={trainerId}
           onChange={setTrainerId}
         />
-
-        {needsReason && (
-          <>
-            <Alert severity="warning">
-              <FormattedMessage {...messages.enrollAgainReason} values={{ course: closedBefore?.courseName ?? '' }} />
-            </Alert>
-            <ReasonField value={reason} onChange={setReason} showError={submitted} />
-          </>
-        )}
       </Stack>
     </ActionDialog>
   );
