@@ -5,6 +5,7 @@ import { Alert, Box, Grid, Skeleton, Stack } from '@mui/material';
 import FormattedMessage from '@/theme/FormattedMessage';
 
 import { useListingFilters } from '@/hooks/useListingFilters';
+import { useSessions } from '@/hooks/useSessions';
 
 import { extractNetworkError } from '@/utils/extractNetworkError';
 
@@ -37,6 +38,10 @@ const cardStyle = {
 
 export function AdmissionDashboard() {
   const { filters } = useListingFilters<DashboardFilterState>();
+  // Every number on the dashboard is for one session: the one chosen, or else the active session.
+  // Wait for the session list rather than briefly loading every session's data together.
+  const { activeSession, isFetched: sessionsFetched } = useSessions();
+  const sessionId = filters.sessionId || activeSession?.id;
 
   const {
     isLoading,
@@ -53,7 +58,11 @@ export function AdmissionDashboard() {
     muhibanBoysFeeChartData,
     muhibanGirlsFeeChartData,
     nasiranFeeChartData,
-  } = useDashboardData({ branchId: filters.branchId, sessionId: filters.sessionId });
+  } = useDashboardData({
+    branchId: filters.branchId,
+    sessionId,
+    enabled: Boolean(filters.sessionId) || sessionsFetched,
+  });
 
   if (isLoading) {
     return (
