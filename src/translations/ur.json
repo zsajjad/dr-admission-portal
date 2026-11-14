@@ -943,5 +943,7 @@
   "app.domains.students.absentStreak": "مسلسل آخری {days} دن غیر حاضر",
   "app.domains.students.attendanceSoFar": "اب تک {marked} میں سے {attended} دن",
   "app.domains.students.daysLeft": "{days} باقی",
-  "app.domains.students.lastYearResult": "پچھلے سال کا نتیجہ، {session}"
+  "app.domains.students.lastYearResult": "پچھلے سال کا نتیجہ، {session}",
+  "app.components.RowMenu.more": "مزید اقدامات",
+  "app.domains.admission.view.listing.printVerificationSlip": "تصدیقی سلپ پرنٹ کریں"
 }

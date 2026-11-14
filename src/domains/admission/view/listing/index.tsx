@@ -6,6 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import {
   CheckCircle as PaidIcon,
+  Edit as EditIcon,
   FactCheck as VerifyIcon,
   Person as ProfileIcon,
   Print as PrintIcon,
@@ -38,7 +39,8 @@ import { ClassLevelFilter } from '@/components/ClassLevelFilter';
 import { ClassLevelGroupFilter } from '@/components/ClassLevelGroupFilter';
 import { DataTable } from '@/components/DataTable';
 import { GenderFilter } from '@/components/GenderFilter';
-import { RowActions } from '@/components/RowActions';
+import rowActionMessages from '@/components/RowActions/messages';
+import { RowMenu, RowMenuItem } from '@/components/RowMenu';
 import { SessionFilter } from '@/components/SessionFilter';
 import { PrinterStatus, useSlipPrinter } from '@/components/ThermalPrinter';
 
@@ -115,6 +117,47 @@ interface AdmissionFilters {
   name?: string;
   phone?: string;
   fatherName?: string;
+}
+
+/** A cell with a main line and a quieter one under it. */
+function TwoLineCell({
+  first,
+  second,
+  tooltip,
+  strong,
+  ltr,
+}: {
+  first: string;
+  second?: string | null;
+  /** What the second line is, shown on hover */
+  tooltip: string;
+  strong?: boolean;
+  /** Numbers (GR, phone) read left to right in Urdu too */
+  ltr?: boolean;
+}) {
+  return (
+    <Box
+      dir={ltr ? 'ltr' : undefined}
+      sx={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        minWidth: 0,
+        lineHeight: 1.35,
+        '& > *': { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
+      }}
+    >
+      <Box component="span" title={first} sx={{ fontWeight: strong ? 600 : 400 }}>
+        {first}
+      </Box>
+      {second ? (
+        <Box component="span" title={`${tooltip}: ${second}`} sx={{ fontSize: '0.8125rem', color: 'text.secondary' }}>
+          {second}
+        </Box>
+      ) : null}
+    </Box>
+  );
 }
 
 const cardStyle = {
@@ -203,6 +246,7 @@ export function AdmissionListing() {
     grNumberColumnName: useFormattedMessage(messages.grNumberColumnName),
     nameColumnName: useFormattedMessage(messages.nameColumnName),
     fatherNameColumnName: useFormattedMessage(messages.fatherNameColumnName),
+    edit: useFormattedMessage(rowActionMessages.edit),
     phoneColumnName: useFormattedMessage(messages.phoneColumnName),
     statusColumnName: useFormattedMessage(messages.statusColumnName),
     classLevelColumnName: useFormattedMessage(messages.classLevelColumnName),
@@ -361,65 +405,40 @@ export function AdmissionListing() {
   const columns: GridColDef[] = useMemo(
     () => [
       {
+        // The GR number with the phone under it, so the row's actions fit without scrolling sideways.
         field: 'grNumber',
         headerName: formattedMessages.grNumberColumnName,
         width: 160,
         sortable: false,
-        renderCell: (params) => {
-          const value = getSafeValue(params.row.student?.grNumber);
-          return (
-            <Tooltip title={value} arrow slotProps={tooltipSlotProps}>
-              <span>{value}</span>
-            </Tooltip>
-          );
-        },
+        renderCell: (params) => (
+          <TwoLineCell
+            first={getSafeValue(params.row.student?.grNumber)}
+            second={params.row.student?.phone}
+            tooltip={formattedMessages.phoneColumnName}
+            ltr
+          />
+        ),
       },
       {
+        // The student with the father's name under it.
         field: 'name',
         headerName: formattedMessages.nameColumnName,
         minWidth: 180,
+        flex: 1,
         sortable: false,
-        renderCell: (params) => {
-          const value = getSafeValue(params.row.student?.name);
-          return (
-            <Tooltip title={value} arrow slotProps={tooltipSlotProps}>
-              <span>{value}</span>
-            </Tooltip>
-          );
-        },
-      },
-      {
-        field: 'fatherName',
-        headerName: formattedMessages.fatherNameColumnName,
-        minWidth: 180,
-        sortable: false,
-        renderCell: (params) => {
-          const value = getSafeValue(params.row.student?.fatherName);
-          return (
-            <Tooltip title={value} arrow slotProps={tooltipSlotProps}>
-              <span>{value}</span>
-            </Tooltip>
-          );
-        },
-      },
-      {
-        field: 'phone',
-        headerName: formattedMessages.phoneColumnName,
-        minWidth: 140,
-        sortable: false,
-        renderCell: (params) => {
-          const value = getSafeValue(params.row.student?.phone);
-          return (
-            <Tooltip title={value} arrow slotProps={tooltipSlotProps}>
-              <span>{value}</span>
-            </Tooltip>
-          );
-        },
+        renderCell: (params) => (
+          <TwoLineCell
+            first={getSafeValue(params.row.student?.name)}
+            second={params.row.student?.fatherName}
+            tooltip={formattedMessages.fatherNameColumnName}
+            strong
+          />
+        ),
       },
       {
         field: 'branch',
         headerName: formattedMessages.branchColumnName,
-        width: 80,
+        width: 76,
         sortable: false,
         renderCell: (params) => {
           const value = getSafeValue(params.row.branch?.code);
@@ -433,7 +452,7 @@ export function AdmissionListing() {
       {
         field: 'status',
         headerName: formattedMessages.statusColumnName,
-        width: 130,
+        width: 120,
         sortable: false,
         renderCell: (params) => {
           const label = <FormattedMessage {...admissionStatusMessage(params.row.status)} />;
@@ -447,7 +466,7 @@ export function AdmissionListing() {
       {
         field: 'isFeePaid',
         headerName: formattedMessages.feePaidColumnName,
-        minWidth: 100,
+        width: 90,
         sortable: false,
         filterable: false,
         renderCell: (params) => {
@@ -462,7 +481,7 @@ export function AdmissionListing() {
       {
         field: 'classLevel',
         headerName: formattedMessages.classLevelColumnName,
-        minWidth: 170,
+        width: 120,
         sortable: false,
         filterable: false,
         renderCell: (params) => {
@@ -479,7 +498,7 @@ export function AdmissionListing() {
       {
         field: 'van',
         headerName: formattedMessages.vanColumnName,
-        minWidth: 140,
+        width: 120,
         sortable: false,
         filterable: false,
         renderCell: (params) => {
@@ -515,18 +534,46 @@ export function AdmissionListing() {
             admission.status === 'MANUAL_VERIFICATION_REQUIRED' ||
             admission.status === 'REJECTED';
 
-          return (
-            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', justifyContent: 'flex-end' }}>
-              {/* Verify - Opens drawer for verification */}
-              {canVerify && (
-                <Tooltip title={formattedMessages.verify}>
-                  <IconButton size="small" color="warning" onClick={stopPropagation(() => handleOpenDrawer(admission))}>
-                    <VerifyIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
-              )}
+          // Less used actions, behind the ⋮ at the end of the row.
+          const menuItems: RowMenuItem[] = [
+            ...(canVerify
+              ? [
+                  {
+                    key: 'verify',
+                    label: formattedMessages.verify,
+                    icon: <VerifyIcon fontSize="small" color="warning" />,
+                    onClick: () => handleOpenDrawer(admission),
+                  },
+                ]
+              : []),
+            {
+              key: 'verification-slip',
+              label: formattedMessages.printVerificationSlip,
+              icon: isPrintingSlip ? <CircularProgress size={18} /> : <PrintIcon fontSize="small" />,
+              onClick: () => handlePrintVerificationSlip(admission),
+              disabled: isPrintingSlip,
+            },
+            ...(admission.student?.id
+              ? [
+                  {
+                    key: 'profile',
+                    label: formattedMessages.studentProfile,
+                    icon: <ProfileIcon fontSize="small" />,
+                    onClick: () => route({ url: routes.students.profile(admission.student.id) }),
+                  },
+                ]
+              : []),
+            {
+              key: 'edit',
+              label: formattedMessages.edit,
+              icon: <EditIcon fontSize="small" />,
+              onClick: () => route({ url: routes.admission.edit(admission?.id) }),
+            },
+          ];
 
-              {/* Mark Fee Paid/Unpaid - Primary Action Button */}
+          return (
+            <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center', justifyContent: 'flex-end', width: '100%' }}>
+              {/* Mark Fee Paid/Unpaid - the row's main button */}
               <Button
                 size="small"
                 variant={admission.isFeePaid ? 'outlined' : 'contained'}
@@ -542,54 +589,35 @@ export function AdmissionListing() {
                     <PaidIcon />
                   )
                 }
-                sx={{ minWidth: 120, textTransform: 'none' }}
+                sx={{ minWidth: 120, textTransform: 'none', whiteSpace: 'nowrap', mr: 0.5 }}
               >
                 {admission.isFeePaid ? formattedMessages.markAsUnpaid : formattedMessages.markAsPaid}
               </Button>
 
-              {/* Print Slip - Primary Action Button */}
-              <Button
-                size="small"
-                variant="contained"
-                color="primary"
-                onClick={stopPropagation(() => handlePrintQR(admission))}
-                disabled={isPrintingQR}
-                startIcon={isPrintingQR ? <CircularProgress size={16} color="inherit" /> : <QrCodeIcon />}
-                sx={{ minWidth: 100, textTransform: 'none' }}
-              >
-                {formattedMessages.printSlip}
-              </Button>
-
-              {/* Existing Row Actions (View, Edit, Print Verification Slip) */}
-              <Tooltip title={formattedMessages.printVerificationSlip}>
-                <IconButton
-                  size="small"
-                  color="secondary"
-                  onClick={stopPropagation(() => handlePrintVerificationSlip(admission))}
-                  disabled={isPrintingSlip}
-                >
-                  {isPrintingSlip ? <CircularProgress size={18} /> : <PrintIcon fontSize="small" />}
-                </IconButton>
-              </Tooltip>
-              {admission.student?.id && (
-                <Tooltip title={formattedMessages.studentProfile}>
+              {/* Print Slip */}
+              <Tooltip title={formattedMessages.printSlip}>
+                <span>
                   <IconButton
                     size="small"
                     color="primary"
-                    onClick={stopPropagation(() => route({ url: routes.students.profile(admission.student.id) }))}
+                    aria-label={formattedMessages.printSlip}
+                    onClick={stopPropagation(() => handlePrintQR(admission))}
+                    disabled={isPrintingQR}
                   >
-                    <ProfileIcon fontSize="small" />
+                    {isPrintingQR ? <CircularProgress size={18} /> : <QrCodeIcon fontSize="small" />}
                   </IconButton>
-                </Tooltip>
-              )}
-              <RowActions onEdit={() => route({ url: routes.admission.edit(admission?.id) })} />
+                </span>
+              </Tooltip>
+
+              <RowMenu items={menuItems} />
             </Box>
           );
         },
         filterable: false,
         sortable: false,
-        flex: 1,
-        // width: 340,
+        align: 'right',
+        headerAlign: 'right',
+        width: 236,
       },
     ],
     [
@@ -610,6 +638,7 @@ export function AdmissionListing() {
       formattedMessages.printVerificationSlip,
       formattedMessages.verify,
       formattedMessages.studentProfile,
+      formattedMessages.edit,
       route,
       handleOpenDrawer,
       handlePrintQR,
@@ -748,6 +777,7 @@ export function AdmissionListing() {
         paginationModel={paginationModel}
         noDataFound={formattedMessages.noRowsLabel}
         rowClickUrl={(row) => `${routes.admission.detail(row?.id?.toString())}`}
+        rowHeight={56}
       />
 
       {/* Assets Drawer */}
