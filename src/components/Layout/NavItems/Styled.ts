@@ -37,7 +37,7 @@ export const NavItemBox = styled(Box, {
   alignItems: 'center',
   gap: 12,
   width: '100%',
-  height: 36,
+  height: 32,
   padding: '0 12px',
   borderRadius: '10px',
   cursor: 'pointer',

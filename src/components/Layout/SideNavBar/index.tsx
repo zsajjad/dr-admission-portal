@@ -14,14 +14,14 @@ import { colorSchemes } from '@/theme/color-schemes';
 
 import { routes } from '@/router/routes';
 
-import { useNavItems } from '../config';
+import { useNavGroups } from '../config';
 import { NavList } from '../NavItems';
 
 import { SideNav, SideNavContainer } from './Styled';
 
 export function SideNavBar(): React.JSX.Element {
   const pathname = usePathname();
-  const navItems = useNavItems();
+  const navGroups = useNavGroups();
   const {
     light: { palette },
   } = colorSchemes;
@@ -37,7 +37,7 @@ export function SideNavBar(): React.JSX.Element {
           <Brand logoHeight="36px" size="sm" />
         </Box>
         <Divider sx={{ borderColor: palette.stroke, mx: 1 }} />
-        <NavList pathname={pathname} items={navItems} />
+        <NavList pathname={pathname} groups={navGroups} />
       </SideNav>
     </SideNavContainer>
   );
