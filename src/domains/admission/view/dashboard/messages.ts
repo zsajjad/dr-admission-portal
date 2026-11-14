@@ -1,212 +1,345 @@
+/*
+ * Session dashboard messages
+ */
 import { defineMessages } from 'react-intl';
 
+const scope = 'app.admission.sessionDashboard';
+
 export default defineMessages({
-  dashboardTitle: {
-    id: 'app.admission.dashboard.title',
-    defaultMessage: 'Admissions Dashboard',
+  title: {
+    id: `${scope}.title`,
+    defaultMessage: 'Session dashboard',
   },
-  dashboardSubtitle: {
-    id: 'app.admission.dashboard.subtitle',
-    defaultMessage: 'Overview of admission statistics and trends',
+  subtitle: {
+    id: `${scope}.subtitle`,
+    defaultMessage: 'How this session is going, compared with the last one',
   },
-  filterByBranch: {
-    id: 'app.admission.dashboard.filterByBranch',
-    defaultMessage: 'Branch',
-  },
-  filterBySession: {
-    id: 'app.admission.dashboard.filterBySession',
+  sessionLabel: {
+    id: `${scope}.sessionLabel`,
     defaultMessage: 'Session',
   },
-  allBranches: {
-    id: 'app.admission.dashboard.allBranches',
-    defaultMessage: 'All Branches',
+  compareLabel: {
+    id: `${scope}.compareLabel`,
+    defaultMessage: 'Compare with',
   },
-  allSessions: {
-    id: 'app.admission.dashboard.allSessions',
-    defaultMessage: 'All Sessions',
+  contextBefore: {
+    id: `${scope}.contextBefore`,
+    defaultMessage: '{days} days until {session} starts ({date})',
   },
-  totalAdmissions: {
-    id: 'app.admission.dashboard.totalAdmissions',
-    defaultMessage: 'Total Admissions',
+  contextStartDay: {
+    id: `${scope}.contextStartDay`,
+    defaultMessage: '{session} starts today',
+  },
+  contextAfter: {
+    id: `${scope}.contextAfter`,
+    defaultMessage: 'Day {days} since {session} started ({date})',
+  },
+  contextCompare: {
+    id: `${scope}.contextCompare`,
+    defaultMessage: 'Compared with {compare} on the same day of its season ({date})',
+  },
+  contextNoAlign: {
+    id: `${scope}.contextNoAlign`,
+    defaultMessage: 'Same-day comparison is not available because a session has no start date',
+  },
+  contextNoCompare: {
+    id: `${scope}.contextNoCompare`,
+    defaultMessage: 'There is no earlier session to compare with',
+  },
+  noPermission: {
+    id: `${scope}.noPermission`,
+    defaultMessage: 'You need the “View reports” permission to see this dashboard. Ask a super admin to grant it.',
+  },
+  applications: {
+    id: `${scope}.applications`,
+    defaultMessage: 'Applications',
   },
   feePaid: {
-    id: 'app.admission.dashboard.feePaid',
-    defaultMessage: 'Fee Paid',
+    id: `${scope}.feePaid`,
+    defaultMessage: 'Fee paid',
   },
   finalized: {
-    id: 'app.admission.dashboard.finalized',
+    id: `${scope}.finalized`,
     defaultMessage: 'Finalized',
   },
-  interactionSubmitted: {
-    id: 'app.admission.dashboard.interactionSubmitted',
-    defaultMessage: 'Interactions',
+  stillToReturn: {
+    id: `${scope}.stillToReturn`,
+    defaultMessage: 'Yet to come back',
   },
-  statusDistribution: {
-    id: 'app.admission.dashboard.statusDistribution',
-    defaultMessage: 'Status Distribution',
+  retentionRate: {
+    id: `${scope}.retentionRate`,
+    defaultMessage: 'Came back',
   },
-  genderDistribution: {
-    id: 'app.admission.dashboard.genderDistribution',
-    defaultMessage: 'Gender Distribution',
+  vsSameDay: {
+    id: `${scope}.vsSameDay`,
+    defaultMessage: '{compare} had {value} on the same day',
   },
-  admissionTrend: {
-    id: 'app.admission.dashboard.admissionTrend',
-    defaultMessage: 'Admission Trend (Last {days} Days)',
+  noSameDay: {
+    id: `${scope}.noSameDay`,
+    defaultMessage: 'No same-day number to compare',
   },
-  groupStats: {
-    id: 'app.admission.dashboard.groupStats',
-    defaultMessage: 'Admissions by Group',
+  endedWith: {
+    id: `${scope}.endedWith`,
+    defaultMessage: '{compare} ended with {value}',
   },
-  funnelMetrics: {
-    id: 'app.admission.dashboard.funnelMetrics',
-    defaultMessage: 'Funnel Metrics',
+  ofPool: {
+    id: `${scope}.ofPool`,
+    defaultMessage: 'of {pool} {compare} students who can return',
   },
-  conversionRates: {
-    id: 'app.admission.dashboard.conversionRates',
-    defaultMessage: 'Conversion Rates',
+  returnedSoFar: {
+    id: `${scope}.returnedSoFar`,
+    defaultMessage: '{returned} have applied again',
   },
-  areaComparison: {
-    id: 'app.admission.dashboard.areaComparison',
-    defaultMessage: 'Area Comparison (YoY)',
+  points: {
+    id: `${scope}.points`,
+    defaultMessage: 'pts',
   },
-  classLevelStats: {
-    id: 'app.admission.dashboard.classLevelStats',
-    defaultMessage: 'Admissions by Class Level',
+  timelineTitle: {
+    id: `${scope}.timelineTitle`,
+    defaultMessage: 'Progress by day',
   },
-  tiflanFeeBreakdown: {
-    id: 'app.admission.dashboard.tiflanFeeBreakdown',
-    defaultMessage: 'Tiflan',
+  timelineSubtitle: {
+    id: `${scope}.timelineSubtitle`,
+    defaultMessage: 'Running total, with both sessions lined up by days before classes start',
   },
-  muhibanBoysFeeBreakdown: {
-    id: 'app.admission.dashboard.muhibanBoysFeeBreakdown',
-    defaultMessage: 'Muhiban Boys',
+  axisDays: {
+    id: `${scope}.axisDays`,
+    defaultMessage: 'Days from the first class day (0 = start)',
   },
-  muhibanGirlsFeeBreakdown: {
-    id: 'app.admission.dashboard.muhibanGirlsFeeBreakdown',
-    defaultMessage: 'Muhiban Girls',
+  today: {
+    id: `${scope}.today`,
+    defaultMessage: 'Today',
   },
-  nasiranFeeBreakdown: {
-    id: 'app.admission.dashboard.nasiranFeeBreakdown',
-    defaultMessage: 'Nasiran',
+  start: {
+    id: `${scope}.start`,
+    defaultMessage: 'Start',
   },
-  // Status labels
-  unverified: {
-    id: 'app.admission.dashboard.unverified',
-    defaultMessage: 'Unverified',
+  funnelTitle: {
+    id: `${scope}.funnelTitle`,
+    defaultMessage: 'From application to class',
   },
-  verified: {
-    id: 'app.admission.dashboard.verified',
+  funnelSubtitle: {
+    id: `${scope}.funnelSubtitle`,
+    defaultMessage: 'Each step as a share of applications',
+  },
+  stepApplied: {
+    id: `${scope}.stepApplied`,
+    defaultMessage: 'Applied',
+  },
+  stepVerified: {
+    id: `${scope}.stepVerified`,
     defaultMessage: 'Verified',
   },
-  rejected: {
-    id: 'app.admission.dashboard.rejected',
-    defaultMessage: 'Rejected',
+  stepFeePaid: {
+    id: `${scope}.stepFeePaid`,
+    defaultMessage: 'Fee paid',
   },
-  // Gender labels
-  male: {
-    id: 'app.admission.dashboard.male',
-    defaultMessage: 'Male',
+  stepFinalized: {
+    id: `${scope}.stepFinalized`,
+    defaultMessage: 'Finalized',
   },
-  female: {
-    id: 'app.admission.dashboard.female',
-    defaultMessage: 'Female',
+  stepPlaced: {
+    id: `${scope}.stepPlaced`,
+    defaultMessage: 'Placed in a section',
   },
-  // Funnel labels
-  verifiedNotFeePaid: {
-    id: 'app.admission.dashboard.verifiedNotFeePaid',
-    defaultMessage: 'Verified (Not Paid)',
+  stepInterviewed: {
+    id: `${scope}.stepInterviewed`,
+    defaultMessage: 'Interviewed',
   },
-  feePaidNotFinalized: {
-    id: 'app.admission.dashboard.feePaidNotFinalized',
-    defaultMessage: 'Paid (Not Final)',
+  dropOff: {
+    id: `${scope}.dropOff`,
+    defaultMessage: '{count} fewer than the step above',
   },
-  // Rate labels
-  feePaidRate: {
-    id: 'app.admission.dashboard.feePaidRate',
-    defaultMessage: 'Fee Paid Rate',
+  lastSessionFinal: {
+    id: `${scope}.lastSessionFinal`,
+    defaultMessage: '{compare} final',
   },
-  finalizedRate: {
-    id: 'app.admission.dashboard.finalizedRate',
-    defaultMessage: 'Finalized Rate',
+  rejectedNote: {
+    id: `${scope}.rejectedNote`,
+    defaultMessage: '{count} rejected applications are not counted',
   },
-  interactionRate: {
-    id: 'app.admission.dashboard.interactionRate',
-    defaultMessage: 'Interaction Rate',
+  breakdownTitle: {
+    id: `${scope}.breakdownTitle`,
+    defaultMessage: 'By branch, group and gender',
   },
-  // Chart labels
-  admissionsCreated: {
-    id: 'app.admission.dashboard.admissionsCreated',
-    defaultMessage: 'Admissions',
+  colBranch: {
+    id: `${scope}.colBranch`,
+    defaultMessage: 'Branch',
   },
-  interactionsSubmitted: {
-    id: 'app.admission.dashboard.interactionsSubmitted',
-    defaultMessage: 'Interactions',
+  colGroup: {
+    id: `${scope}.colGroup`,
+    defaultMessage: 'Group',
   },
-  // Area table
-  areaName: {
-    id: 'app.admission.dashboard.areaName',
-    defaultMessage: 'Area',
+  colGender: {
+    id: `${scope}.colGender`,
+    defaultMessage: 'Gender',
   },
-  areaId: {
-    id: 'app.admission.dashboard.areaId',
-    defaultMessage: 'Area ID',
+  colSameDay: {
+    id: `${scope}.colSameDay`,
+    defaultMessage: '{compare}, same day',
   },
-  tiflanMale: {
-    id: 'app.admission.dashboard.tiflanMale',
-    defaultMessage: 'Tiflan M',
+  colDiff: {
+    id: `${scope}.colDiff`,
+    defaultMessage: 'Difference',
   },
-  tiflanFemale: {
-    id: 'app.admission.dashboard.tiflanFemale',
-    defaultMessage: 'Tiflan F',
+  colFinal: {
+    id: `${scope}.colFinal`,
+    defaultMessage: '{compare}, final',
   },
-  muhibanMale: {
-    id: 'app.admission.dashboard.muhibanMale',
-    defaultMessage: 'Muhiban M',
-  },
-  muhibanFemale: {
-    id: 'app.admission.dashboard.muhibanFemale',
-    defaultMessage: 'Muhiban F',
-  },
-  nasiranMale: {
-    id: 'app.admission.dashboard.nasiranMale',
-    defaultMessage: 'Nasiran M',
-  },
-  nasiranFemale: {
-    id: 'app.admission.dashboard.nasiranFemale',
-    defaultMessage: 'Nasiran F',
-  },
-  thisYear: {
-    id: 'app.admission.dashboard.thisYear',
+  total: {
+    id: `${scope}.total`,
     defaultMessage: 'Total',
   },
-  lastYear: {
-    id: 'app.admission.dashboard.lastYear',
-    defaultMessage: 'Last Year',
+  girls: {
+    id: `${scope}.girls`,
+    defaultMessage: 'Girls',
   },
-  change: {
-    id: 'app.admission.dashboard.change',
-    defaultMessage: 'Change',
+  boys: {
+    id: `${scope}.boys`,
+    defaultMessage: 'Boys',
   },
-  // Averages
-  avgDaysToFeePaid: {
-    id: 'app.admission.dashboard.avgDaysToFeePaid',
-    defaultMessage: 'Avg. Days to Fee Paid',
+  groupTiflan: {
+    id: `${scope}.groupTiflan`,
+    defaultMessage: 'Tiflan',
   },
-  avgDaysToFinalized: {
-    id: 'app.admission.dashboard.avgDaysToFinalized',
-    defaultMessage: 'Avg. Days to Finalized',
+  groupMuhiban: {
+    id: `${scope}.groupMuhiban`,
+    defaultMessage: 'Muhibaan',
   },
-  // Error
-  errorLoading: {
-    id: 'app.admission.dashboard.errorLoading',
-    defaultMessage: 'Error loading dashboard data',
+  groupNasiran: {
+    id: `${scope}.groupNasiran`,
+    defaultMessage: 'Nasiran',
+  },
+  poolTitle: {
+    id: `${scope}.poolTitle`,
+    defaultMessage: 'Last session’s students who have not come back',
+  },
+  poolSubtitle: {
+    id: `${scope}.poolSubtitle`,
+    defaultMessage: 'Admitted in {compare}, still the right age, and no application in {session} yet',
+  },
+  poolSummary: {
+    id: `${scope}.poolSummary`,
+    defaultMessage: '{remaining} of {pool} have not applied yet',
+  },
+  poolLeftOut: {
+    id: `${scope}.poolLeftOut`,
+    defaultMessage: 'Not counted: {agedOut} now too old, {terminated} terminated',
+  },
+  poolEmpty: {
+    id: `${scope}.poolEmpty`,
+    defaultMessage: 'There is no earlier session to draw returning students from.',
+  },
+  byArea: {
+    id: `${scope}.byArea`,
+    defaultMessage: 'By area',
+  },
+  byClass: {
+    id: `${scope}.byClass`,
+    defaultMessage: 'By class',
+  },
+  byGroup: {
+    id: `${scope}.byGroup`,
+    defaultMessage: 'By group',
+  },
+  byBranch: {
+    id: `${scope}.byBranch`,
+    defaultMessage: 'By branch',
+  },
+  colArea: {
+    id: `${scope}.colArea`,
+    defaultMessage: 'Area',
+  },
+  colClass: {
+    id: `${scope}.colClass`,
+    defaultMessage: 'Class this session',
+  },
+  colPool: {
+    id: `${scope}.colPool`,
+    defaultMessage: 'Could return',
+  },
+  colReturned: {
+    id: `${scope}.colReturned`,
+    defaultMessage: 'Came back',
+  },
+  colRemaining: {
+    id: `${scope}.colRemaining`,
+    defaultMessage: 'Not yet',
+  },
+  showAll: {
+    id: `${scope}.showAll`,
+    defaultMessage: 'Show all {count}',
+  },
+  showLess: {
+    id: `${scope}.showLess`,
+    defaultMessage: 'Show fewer',
+  },
+  mixTitle: {
+    id: `${scope}.mixTitle`,
+    defaultMessage: 'New and returning applicants',
+  },
+  mixReturning: {
+    id: `${scope}.mixReturning`,
+    defaultMessage: 'Returning',
+  },
+  mixNew: {
+    id: `${scope}.mixNew`,
+    defaultMessage: 'New',
+  },
+  mixNote: {
+    id: `${scope}.mixNote`,
+    defaultMessage: 'Returning means admitted in an earlier session, or found in the 2025 records.',
+  },
+  feeTitle: {
+    id: `${scope}.feeTitle`,
+    defaultMessage: 'Fee collection',
+  },
+  feeInProgress: {
+    id: `${scope}.feeInProgress`,
+    defaultMessage: 'In progress',
+  },
+  feePaidToday: {
+    id: `${scope}.feePaidToday`,
+    defaultMessage: 'Paid today',
+  },
+  feeAwaiting: {
+    id: `${scope}.feeAwaiting`,
+    defaultMessage: 'Verified, fee not paid yet',
+  },
+  feeNone: {
+    id: `${scope}.feeNone`,
+    defaultMessage: 'No fees have been marked paid yet.',
+  },
+  colDate: {
+    id: `${scope}.colDate`,
+    defaultMessage: 'Date',
+  },
+  recordTitle: {
+    id: `${scope}.recordTitle`,
+    defaultMessage: 'All sessions on record',
+  },
+  recordAdmitted: {
+    id: `${scope}.recordAdmitted`,
+    defaultMessage: 'admitted',
+  },
+  recordApplications: {
+    id: `${scope}.recordApplications`,
+    defaultMessage: '{count} applications',
+  },
+  recordMix: {
+    id: `${scope}.recordMix`,
+    defaultMessage: '{returning} returning · {newStudents} new',
+  },
+  recordLegacy: {
+    id: `${scope}.recordLegacy`,
+    defaultMessage: 'records on file',
+  },
+  recordUnique: {
+    id: `${scope}.recordUnique`,
+    defaultMessage: '{count} different students admitted across all sessions',
   },
   noData: {
-    id: 'app.admission.dashboard.noData',
-    defaultMessage: 'No data available',
-  },
-  loading: {
-    id: 'app.admission.dashboard.loading',
-    defaultMessage: 'Loading dashboard...',
+    id: `${scope}.noData`,
+    defaultMessage: 'No data yet',
   },
 });

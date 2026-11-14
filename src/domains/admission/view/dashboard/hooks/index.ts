@@ -1,2 +1,2 @@
-export { useDashboardData } from './useDashboardData';
-export type { UseDashboardDataProps } from './useDashboardData';
+export { useSessionDashboard } from './useSessionDashboard';
+export type { SessionDashboardFilters } from './useSessionDashboard';

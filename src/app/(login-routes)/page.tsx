@@ -11,11 +11,11 @@ import FormattedMessage from '@/theme/FormattedMessage';
 const messages = defineMessages({
   welcome: {
     id: 'app.home.welcome',
-    defaultMessage: 'Admissions Dashboard',
+    defaultMessage: 'Session dashboard',
   },
   subtitle: {
     id: 'app.home.subtitle',
-    defaultMessage: 'Overview of admission statistics and trends',
+    defaultMessage: 'How this session is going, compared with the last one',
   },
 });
 

@@ -1,22 +1,15 @@
-// Status colors for charts
-export const STATUS_COLORS: Record<string, string> = {
-  UNVERIFIED: '#E67E22',
-  VERIFIED: '#27AE60',
-  REJECTED: '#C0392B',
-  DUPLICATE_MERGED: '#7F8C8D',
+/** Chart colors. Blue and orange are a checked color-blind-safe pair; grey is the comparison session. */
+export const SERIES_COLORS = {
+  current: '#2a78d6',
+  previous: '#8b9199',
+  returning: '#2a78d6',
+  newStudents: '#eb6834',
 };
 
-// Gender colors for charts
-export const GENDER_COLORS: Record<string, string> = {
-  MALE: '#1565C0',
-  FEMALE: '#E91E63',
-};
+export type DashboardMetric = 'applied' | 'feePaid' | 'finalized';
 
-// Stat card colors
-export const STAT_COLORS = {
-  totalAdmissions: '#1976D2',
-  feePaid: '#2E7D32',
-  finalized: '#0277BD',
-  interactions: '#7B1FA2',
-  rejected: '#C0392B',
-};
+export const DASHBOARD_METRICS: DashboardMetric[] = ['applied', 'feePaid', 'finalized'];
+
+/** Digits of equal width, so numbers line up in columns. */
+// cspell:disable-next-line
+export const NUMERIC = { fontVariantNumeric: 'tabular-nums' } as const;
