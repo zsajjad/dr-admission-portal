@@ -1,4 +1,5 @@
-import { Box, Grid, Stack, Typography } from '@mui/material';
+import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Grid, Stack, Typography } from '@mui/material';
 
 import { AssetViewer } from '@/components/Asset';
 
@@ -7,10 +8,9 @@ import { Gender, StudentProfileAsset, StudentProfileIdentity } from '@/providers
 import { FormattedMessage } from '@/theme/FormattedMessage';
 
 import messages from '../messages';
-import { formatBirthDate, formatDateTime } from '../utils';
+import { cardStyle, formatBirthDate, formatDateTime } from '../utils';
 
 import { Field } from './Field';
-import { SectionCard } from './SectionCard';
 
 function DocumentThumb({ label, asset }: { label: React.ReactNode; asset?: StudentProfileAsset }) {
   return (
@@ -44,79 +44,92 @@ function DocumentThumb({ label, asset }: { label: React.ReactNode; asset?: Stude
   );
 }
 
+/** Identity, contact and documents. Rarely needed while classes run, so it starts collapsed. */
 export function IdentitySection({ student }: { student: StudentProfileIdentity }) {
   return (
-    <SectionCard title={<FormattedMessage {...messages.identityAndContact} />}>
-      <Grid container spacing={2}>
-        <Grid size={{ xs: 12, lg: 8 }}>
-          <Grid container spacing={2}>
-            <Grid size={{ xs: 6, md: 4 }}>
-              <Field label={<FormattedMessage {...messages.grNumber} />} value={student.grNumber} dir="ltr" />
-            </Grid>
-            <Grid size={{ xs: 6, md: 4 }}>
-              <Field label={<FormattedMessage {...messages.name} />} value={student.name} />
-            </Grid>
-            <Grid size={{ xs: 6, md: 4 }}>
-              <Field label={<FormattedMessage {...messages.fatherName} />} value={student.fatherName} />
-            </Grid>
-            <Grid size={{ xs: 6, md: 4 }}>
-              <Field
-                label={<FormattedMessage {...messages.dateOfBirth} />}
-                value={formatBirthDate(student.dateOfBirth)}
-                dir="ltr"
-              />
-            </Grid>
-            <Grid size={{ xs: 6, md: 4 }}>
-              <Field
-                label={<FormattedMessage {...messages.gender} />}
-                value={<FormattedMessage {...(student.gender === Gender.FEMALE ? messages.female : messages.male)} />}
-              />
-            </Grid>
-            <Grid size={{ xs: 6, md: 4 }}>
-              <Field
-                label={<FormattedMessage {...messages.identityNumber} />}
-                value={student.identityNumber}
-                dir="ltr"
-              />
-            </Grid>
-            <Grid size={{ xs: 6, md: 4 }}>
-              <Field label={<FormattedMessage {...messages.phone} />} value={student.phone} dir="ltr" />
-            </Grid>
-            <Grid size={{ xs: 6, md: 4 }}>
-              <Field
-                label={<FormattedMessage {...messages.alternatePhone} />}
-                value={student.alternatePhone}
-                dir="ltr"
-              />
-            </Grid>
-            <Grid size={{ xs: 6, md: 4 }}>
-              <Field
-                label={<FormattedMessage {...messages.branchOnRecord} />}
-                value={[student.branch?.code, student.area?.name].filter(Boolean).join(' · ')}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, md: 8 }}>
-              <Field label={<FormattedMessage {...messages.address} />} value={student.address} />
-            </Grid>
-            <Grid size={{ xs: 6, md: 4 }}>
-              <Field
-                label={<FormattedMessage {...messages.lastChangedBy} />}
-                value={formatDateTime(student.updatedAt)}
-                caption={student.updatedByAdmin?.name}
-              />
+    <Accordion disableGutters sx={{ ...cardStyle, '&:before': { display: 'none' }, overflow: 'hidden' }}>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 2.5 }}>
+        <Stack direction="row" spacing={1.5} alignItems="baseline" flexWrap="wrap" useFlexGap>
+          <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+            <FormattedMessage {...messages.identityAndContact} />
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            <FormattedMessage {...messages.identitySummary} />
+          </Typography>
+        </Stack>
+      </AccordionSummary>
+      <AccordionDetails sx={{ px: 2.5, pb: 2.5 }}>
+        <Grid container spacing={2}>
+          <Grid size={{ xs: 12, lg: 8 }}>
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 6, md: 4 }}>
+                <Field label={<FormattedMessage {...messages.grNumber} />} value={student.grNumber} dir="ltr" />
+              </Grid>
+              <Grid size={{ xs: 6, md: 4 }}>
+                <Field label={<FormattedMessage {...messages.name} />} value={student.name} />
+              </Grid>
+              <Grid size={{ xs: 6, md: 4 }}>
+                <Field label={<FormattedMessage {...messages.fatherName} />} value={student.fatherName} />
+              </Grid>
+              <Grid size={{ xs: 6, md: 4 }}>
+                <Field
+                  label={<FormattedMessage {...messages.dateOfBirth} />}
+                  value={formatBirthDate(student.dateOfBirth)}
+                  dir="ltr"
+                />
+              </Grid>
+              <Grid size={{ xs: 6, md: 4 }}>
+                <Field
+                  label={<FormattedMessage {...messages.gender} />}
+                  value={<FormattedMessage {...(student.gender === Gender.FEMALE ? messages.female : messages.male)} />}
+                />
+              </Grid>
+              <Grid size={{ xs: 6, md: 4 }}>
+                <Field
+                  label={<FormattedMessage {...messages.identityNumber} />}
+                  value={student.identityNumber}
+                  dir="ltr"
+                />
+              </Grid>
+              <Grid size={{ xs: 6, md: 4 }}>
+                <Field label={<FormattedMessage {...messages.phone} />} value={student.phone} dir="ltr" />
+              </Grid>
+              <Grid size={{ xs: 6, md: 4 }}>
+                <Field
+                  label={<FormattedMessage {...messages.alternatePhone} />}
+                  value={student.alternatePhone}
+                  dir="ltr"
+                />
+              </Grid>
+              <Grid size={{ xs: 6, md: 4 }}>
+                <Field
+                  label={<FormattedMessage {...messages.branchOnRecord} />}
+                  value={[student.branch?.code, student.area?.name].filter(Boolean).join(' · ')}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 8 }}>
+                <Field label={<FormattedMessage {...messages.address} />} value={student.address} />
+              </Grid>
+              <Grid size={{ xs: 6, md: 4 }}>
+                <Field
+                  label={<FormattedMessage {...messages.lastChangedBy} />}
+                  value={formatDateTime(student.updatedAt)}
+                  caption={student.updatedByAdmin?.name}
+                />
+              </Grid>
             </Grid>
           </Grid>
+          <Grid size={{ xs: 12, lg: 4 }}>
+            <Stack direction="row" spacing={2}>
+              <DocumentThumb label={<FormattedMessage {...messages.photo} />} asset={student.photoAsset} />
+              <DocumentThumb
+                label={<FormattedMessage {...messages.identityProof} />}
+                asset={student.identityProofAsset}
+              />
+            </Stack>
+          </Grid>
         </Grid>
-        <Grid size={{ xs: 12, lg: 4 }}>
-          <Stack direction="row" spacing={2}>
-            <DocumentThumb label={<FormattedMessage {...messages.photo} />} asset={student.photoAsset} />
-            <DocumentThumb
-              label={<FormattedMessage {...messages.identityProof} />}
-              asset={student.identityProofAsset}
-            />
-          </Stack>
-        </Grid>
-      </Grid>
-    </SectionCard>
+      </AccordionDetails>
+    </Accordion>
   );
 }

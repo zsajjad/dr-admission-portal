@@ -60,6 +60,11 @@ export default defineMessages({
   },
   editContact: { id: `${scope}.editContact`, defaultMessage: 'Edit contact' },
   editDocuments: { id: `${scope}.editDocuments`, defaultMessage: 'Documents' },
+  editMenu: { id: `${scope}.editMenu`, defaultMessage: 'Edit' },
+  identitySummary: {
+    id: `${scope}.identitySummary`,
+    defaultMessage: 'B-Form, birth date, phones, address, photo and identity document',
+  },
 
   // Admissions
   admissionsHeading: { id: `${scope}.admissionsHeading`, defaultMessage: 'Admissions ({count})' },
@@ -95,7 +100,9 @@ export default defineMessages({
   yes: { id: `${scope}.yes`, defaultMessage: 'Yes' },
   no: { id: `${scope}.no`, defaultMessage: 'No' },
   openAdmission: { id: `${scope}.openAdmission`, defaultMessage: 'Open admission page' },
-  current: { id: `${scope}.current`, defaultMessage: 'Current' },
+  thisSession: { id: `${scope}.thisSession`, defaultMessage: 'This session' },
+  recentAdmissions: { id: `${scope}.recentAdmissions`, defaultMessage: 'Last two admissions' },
+  details: { id: `${scope}.details`, defaultMessage: 'Details' },
 
   // Statuses
   statusUNVERIFIED: { id: `${scope}.statusUNVERIFIED`, defaultMessage: 'Unverified' },
@@ -140,6 +147,8 @@ export default defineMessages({
   // Slots (filled by the sections and results work)
   sectionSlotTitle: { id: `${scope}.sectionSlotTitle`, defaultMessage: 'Section' },
   sectionNotPlaced: { id: `${scope}.sectionNotPlaced`, defaultMessage: 'Not placed in a section yet' },
+  sectionNotPlacedShort: { id: `${scope}.sectionNotPlacedShort`, defaultMessage: 'No section' },
+  sectionLetter: { id: `${scope}.sectionLetter`, defaultMessage: 'Section {letter}' },
   sectionPlace: { id: `${scope}.sectionPlace`, defaultMessage: 'Place' },
   sectionOpen: { id: `${scope}.sectionOpen`, defaultMessage: 'Open section' },
   sectionClosed: { id: `${scope}.sectionClosed`, defaultMessage: 'Section closed' },
@@ -191,6 +200,15 @@ export default defineMessages({
   attendance: { id: `${scope}.attendance`, defaultMessage: 'Attendance' },
   attendanceSummary: { id: `${scope}.attendanceSummary`, defaultMessage: '{attended} of {total} days' },
   attendanceNone: { id: `${scope}.attendanceNone`, defaultMessage: 'No attendance recorded' },
+  attendanceSoFar: { id: `${scope}.attendanceSoFar`, defaultMessage: '{attended} of {marked} days so far' },
+  daysLeft: { id: `${scope}.daysLeft`, defaultMessage: '{days} to go' },
+  attendanceThisSession: { id: `${scope}.attendanceThisSession`, defaultMessage: 'Attendance, {session}' },
+  attendanceLoadError: { id: `${scope}.attendanceLoadError`, defaultMessage: 'Could not load the days' },
+  notAdmittedThisSession: {
+    id: `${scope}.notAdmittedThisSession`,
+    defaultMessage: 'Not admitted this session',
+  },
+  absentStreak: { id: `${scope}.absentStreak`, defaultMessage: 'Absent the last {days} days in a row' },
   present: { id: `${scope}.present`, defaultMessage: 'Present' },
   late: { id: `${scope}.late`, defaultMessage: 'Late' },
   absent: { id: `${scope}.absent`, defaultMessage: 'Absent' },

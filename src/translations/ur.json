@@ -93,7 +93,6 @@
   "app.domains.students.yes": "ہاں",
   "app.domains.students.no": "نہیں",
   "app.domains.students.openAdmission": "داخلے کا صفحہ کھولیں",
-  "app.domains.students.current": "موجودہ",
   "app.domains.students.statusUNVERIFIED": "غیر تصدیق شدہ",
   "app.domains.students.statusVERIFIED": "تصدیق شدہ",
   "app.domains.students.statusMANUAL_VERIFICATION_REQUIRED": "دستی تصدیق درکار",
@@ -930,5 +929,18 @@
   "app.components.Layout.admissions": "داخلے",
   "app.components.Layout.questionSets": "سوالات کے سیٹ",
   "app.components.Layout.printing": "پرنٹنگ",
-  "app.components.Layout.interactionReport": "انٹرویوز"
+  "app.components.Layout.interactionReport": "انٹرویوز",
+  "app.domains.students.editMenu": "ترمیم",
+  "app.domains.students.identitySummary": "ب فارم، تاریخ پیدائش، فون، پتہ، تصویر اور شناختی دستاویز",
+  "app.domains.students.thisSession": "یہ سیشن",
+  "app.domains.students.recentAdmissions": "آخری دو داخلے",
+  "app.domains.students.details": "تفصیل",
+  "app.domains.students.sectionNotPlacedShort": "سیکشن نہیں",
+  "app.domains.students.sectionLetter": "سیکشن {letter}",
+  "app.domains.students.attendanceThisSession": "حاضری، {session}",
+  "app.domains.students.attendanceLoadError": "دن لوڈ نہیں ہو سکے",
+  "app.domains.students.notAdmittedThisSession": "اس سیشن میں داخلہ نہیں",
+  "app.domains.students.absentStreak": "مسلسل آخری {days} دن غیر حاضر",
+  "app.domains.students.attendanceSoFar": "اب تک {marked} میں سے {attended} دن",
+  "app.domains.students.daysLeft": "{days} باقی"
 }

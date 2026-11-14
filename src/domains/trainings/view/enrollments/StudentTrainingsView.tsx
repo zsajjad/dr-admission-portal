@@ -25,7 +25,7 @@ import {
 
 import { useStudentsControllerGetProfile } from '@/providers/service/students/students';
 
-import { FormattedMessage } from '@/theme/FormattedMessage';
+import { FormattedMessage, useFormattedMessage } from '@/theme/FormattedMessage';
 
 import { routes } from '@/router/routes';
 
@@ -54,9 +54,40 @@ import { cardStyle, formatAmount, formatDate, formatPct } from '../../utils';
 import { EnrollDialog } from './EnrollDialog';
 import messages from './messages';
 
-function EnrollmentCard({ item }: { item: EnrollmentListItem }) {
-  const { data } = useEnrollment(item.id);
+/** Each training in an enrollment: progress, best score and (optionally) the payout */
+function EnrollmentTrainingsTable({ enrollmentId, showPayout = true }: { enrollmentId: string; showPayout?: boolean }) {
+  const { data } = useEnrollment(enrollmentId);
   const e = data?.data;
+  if (!e) return <Skeleton height={60} />;
+  return (
+    <Table size="small" sx={{ mt: 1 }}>
+      <TableBody>
+        {e.trainings.map((t) => {
+          const progress = itemProgress(t);
+          return (
+            <TableRow key={t.trainingId}>
+              <TableCell>
+                {t.code} · {t.name}
+              </TableCell>
+              <TableCell>
+                <Chip
+                  size="small"
+                  variant="outlined"
+                  color={progress === 'DONE' ? 'success' : progress === 'FAILED' ? 'error' : 'default'}
+                  label={<FormattedMessage {...messages[`progress_${progress}`]} />}
+                />
+              </TableCell>
+              <TableCell align="right">{t.best ? formatPct(t.best.scorePct) : '--'}</TableCell>
+              {showPayout && <TableCell align="right">{formatAmount(t.payout)}</TableCell>}
+            </TableRow>
+          );
+        })}
+      </TableBody>
+    </Table>
+  );
+}
+
+function EnrollmentCard({ item }: { item: EnrollmentListItem }) {
   return (
     <Card sx={cardStyle}>
       <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
@@ -84,33 +115,7 @@ function EnrollmentCard({ item }: { item: EnrollmentListItem }) {
             <FormattedMessage {...messages.openEnrollment} />
           </Button>
         </Stack>
-        {!e && <Skeleton height={60} />}
-        {e && (
-          <Table size="small" sx={{ mt: 1 }}>
-            <TableBody>
-              {e.trainings.map((t) => {
-                const progress = itemProgress(t);
-                return (
-                  <TableRow key={t.trainingId}>
-                    <TableCell>
-                      {t.code} · {t.name}
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        size="small"
-                        variant="outlined"
-                        color={progress === 'DONE' ? 'success' : progress === 'FAILED' ? 'error' : 'default'}
-                        label={<FormattedMessage {...messages[`progress_${progress}`]} />}
-                      />
-                    </TableCell>
-                    <TableCell align="right">{t.best ? formatPct(t.best.scorePct) : '--'}</TableCell>
-                    <TableCell align="right">{formatAmount(t.payout)}</TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        )}
+        <EnrollmentTrainingsTable enrollmentId={item.id} />
       </CardContent>
     </Card>
   );
@@ -354,35 +359,78 @@ export function StudentTrainingsView({ studentId }: { studentId: string }) {
   );
 }
 
-/** A small card for the student profile: what's passed and required, and a link to every year */
-export function StudentTrainingsCard({ studentId }: { studentId: string }) {
-  const { canRead } = useTrainingsAccess();
-  const { student: trainings, isLoading } = useStudentTrainings(canRead ? studentId : undefined);
-  if (!canRead) return null;
-  const latest = [...(trainings?.enrollments ?? [])].sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
+/**
+ * The student profile's trainings card: this session's enrollment (trainer, tester, each training's progress),
+ * what's still required, and a link to every year.
+ */
+export function StudentSessionTrainingsCard({ studentId, sessionId }: { studentId: string; sessionId?: string }) {
+  const { student: trainings, isLoading } = useStudentTrainings(studentId);
+  const trainerLabel = useFormattedMessage(common.trainer);
+  const testerLabel = useFormattedMessage(common.tester);
+  const enrollment = sessionId
+    ? [...(trainings?.enrollments ?? [])]
+        .filter((e) => e.sessionId === sessionId)
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0]
+    : undefined;
+
   return (
-    <Card sx={cardStyle}>
+    <Card sx={{ ...cardStyle, height: '100%' }}>
       <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
-          <Stack direction="row" alignItems="center" spacing={1.5} flexWrap="wrap" useFlexGap>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1} sx={{ mb: 1 }}>
+          <Stack direction="row" alignItems="center" spacing={1} flexWrap="wrap" useFlexGap>
             <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-              <FormattedMessage {...messages.profileCard} />
+              <FormattedMessage {...messages.profileCardThisSession} />
             </Typography>
-            {isLoading && <Skeleton width={160} />}
-            {trainings && (
+            {enrollment && <StateChip state={enrollment.state} closureReason={enrollment.closureReason} />}
+          </Stack>
+          <Stack direction="row" spacing={0.5}>
+            {enrollment && (
+              <Button size="small" component={Link} href={routes.trainings.enrollment(enrollment.id)}>
+                <FormattedMessage {...messages.openEnrollment} />
+              </Button>
+            )}
+            <Button size="small" component={Link} href={routes.trainings.student(studentId)}>
+              <FormattedMessage {...messages.profileCardLink} />
+            </Button>
+          </Stack>
+        </Stack>
+
+        {isLoading && <Skeleton variant="rounded" height={80} />}
+        {trainings && (
+          <Stack spacing={1}>
+            {enrollment ? (
+              <>
+                <Typography variant="body2" color="text.secondary">
+                  {[
+                    enrollment.trainerName && `${trainerLabel}: ${enrollment.trainerName}`,
+                    enrollment.testerName && `${testerLabel}: ${enrollment.testerName}`,
+                    `${enrollment.passedCount}/${enrollment.trainingCount}`,
+                  ]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </Typography>
+                <EnrollmentTrainingsTable enrollmentId={enrollment.id} showPayout={false} />
+              </>
+            ) : (
               <Typography variant="body2" color="text.secondary">
-                <FormattedMessage
-                  {...messages.profileCardSummary}
-                  values={{ passed: String(trainings.passed.length), required: String(trainings.required.length) }}
-                />
+                <FormattedMessage {...messages.notEnrolledThisSession} />
               </Typography>
             )}
-            {latest && <StateChip state={latest.state} closureReason={latest.closureReason} />}
+            <Typography variant="body2" color="text.secondary" sx={{ pt: 0.5 }}>
+              <FormattedMessage
+                {...messages.profileCardSummary}
+                values={{ passed: String(trainings.passed.length), required: String(trainings.required.length) }}
+              />
+            </Typography>
+            {trainings.required.length > 0 && (
+              <Stack direction="row" spacing={0.5} useFlexGap flexWrap="wrap">
+                {trainings.required.map((t) => (
+                  <Chip key={t.trainingId} size="small" variant="outlined" label={`${t.code} · ${t.name}`} />
+                ))}
+              </Stack>
+            )}
           </Stack>
-          <Button size="small" component={Link} href={routes.trainings.student(studentId)}>
-            <FormattedMessage {...messages.profileCardLink} />
-          </Button>
-        </Stack>
+        )}
       </CardContent>
     </Card>
   );
