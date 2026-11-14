@@ -75,11 +75,27 @@ interface AdmissionPanelProps {
   studentId: string;
   gender: Gender;
   admission: StudentProfileAdmission;
-  isLatest: boolean;
+  /** This session's admission */
+  isCurrent: boolean;
+  expanded: boolean;
+  onExpandedChange: (expanded: boolean) => void;
+  /** Leave out the attendance card, e.g. when the page already shows it day by day */
+  hideAttendance?: boolean;
 }
 
+/** The element id of an admission's panel, to scroll to it */
+export const admissionPanelId = (admissionId: string) => `admission-${admissionId}`;
+
 /** One admission (one session): summary row, details, actions and history */
-export function AdmissionPanel({ studentId, gender, admission, isLatest }: AdmissionPanelProps) {
+export function AdmissionPanel({
+  studentId,
+  gender,
+  admission,
+  isCurrent,
+  expanded,
+  onExpandedChange,
+  hideAttendance,
+}: AdmissionPanelProps) {
   const [dialog, setDialog] = useState<DialogName>(null);
   const close = () => setDialog(null);
   const { onSuccess, onError } = useProfileActions(studentId);
@@ -162,17 +178,25 @@ export function AdmissionPanel({ studentId, gender, admission, isLatest }: Admis
   return (
     <>
       <Accordion
-        defaultExpanded={isLatest}
+        id={admissionPanelId(admission.id)}
+        expanded={expanded}
+        onChange={(_, value) => onExpandedChange(value)}
         disableGutters
-        sx={{ ...cardStyle, '&:before': { display: 'none' }, overflow: 'hidden', opacity: a.isActive ? 1 : 0.75 }}
+        sx={{
+          ...cardStyle,
+          '&:before': { display: 'none' },
+          overflow: 'hidden',
+          opacity: a.isActive ? 1 : 0.75,
+          scrollMarginTop: 96,
+        }}
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 2.5, py: 0.5 }}>
           <Stack direction="row" spacing={1.5} alignItems="center" flexWrap="wrap" useFlexGap sx={{ width: '100%' }}>
             <Typography variant="subtitle1" sx={{ fontWeight: 700, minWidth: 80 }}>
               {a.session.name}
             </Typography>
-            {isLatest && a.isActive && (
-              <Chip size="small" color="primary" label={<FormattedMessage {...messages.current} />} />
+            {isCurrent && a.isActive && (
+              <Chip size="small" color="primary" label={<FormattedMessage {...messages.thisSession} />} />
             )}
             {!a.isActive && <Chip size="small" label={<FormattedMessage {...messages.deactivated} />} />}
             <Chip
@@ -346,12 +370,14 @@ export function AdmissionPanel({ studentId, gender, admission, isLatest }: Admis
           </Grid>
 
           <Grid container spacing={2}>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid size={{ xs: 12, md: hideAttendance ? 12 : 6 }}>
               <InterviewSummary interview={a.interview} />
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
-              <AttendanceSummary attendance={a.attendance} />
-            </Grid>
+            {!hideAttendance && (
+              <Grid size={{ xs: 12, md: 6 }}>
+                <AttendanceSummary attendance={a.attendance} />
+              </Grid>
+            )}
             <Grid size={{ xs: 12, md: 5 }}>
               <CardPrintHistory cardPrints={a.cardPrints} />
             </Grid>

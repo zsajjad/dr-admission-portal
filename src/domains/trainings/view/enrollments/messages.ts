@@ -232,7 +232,6 @@ export default defineMessages({
   studentTrainingsEmpty: { id: `${scope}.studentTrainingsEmpty`, defaultMessage: 'No Fiqh trainings yet' },
   matrixNow: { id: `${scope}.matrixNow`, defaultMessage: 'The age matrix gives {course} now' },
   openEnrollment: { id: `${scope}.openEnrollment`, defaultMessage: 'Open' },
-  profileCard: { id: `${scope}.profileCard`, defaultMessage: 'Fiqh trainings' },
   profileCardSummary: {
     id: `${scope}.profileCardSummary`,
     defaultMessage: '{passed} passed, {required} required now',
@@ -255,4 +254,9 @@ export default defineMessages({
     defaultMessage: 'The training becomes required again, and this session’s result is recomputed.',
   },
   profileCardLink: { id: `${scope}.profileCardLink`, defaultMessage: 'See all' },
+  profileCardThisSession: { id: `${scope}.profileCardThisSession`, defaultMessage: 'Fiqh trainings this session' },
+  notEnrolledThisSession: {
+    id: `${scope}.notEnrolledThisSession`,
+    defaultMessage: 'Not enrolled in a training this session',
+  },
 });
