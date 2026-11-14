@@ -19,7 +19,6 @@ import { routes } from '@/router/routes';
 import { extractNetworkError } from '@/utils/extractNetworkError';
 
 import { config } from '@/config';
-import { removeAuthenticationHeader } from '@/services';
 
 import { Captcha } from '../Captcha';
 import { PasswordField } from '../Components/PasswordField';
@@ -67,7 +66,6 @@ export function CreatePasswordForm(): React.JSX.Element {
                 type: 'success',
                 message: success.message,
               });
-              removeAuthenticationHeader();
               sessionStorage.removeItem('isTabActive');
               await signOut({ redirect: true, callbackUrl: routes.auth.signIn });
             },

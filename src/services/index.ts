@@ -1,130 +1,49 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { getCsrfToken } from 'next-auth/react';
 import qs from 'query-string';
 
-import { config } from '@/config';
+/**
+ * The browser's API client (the orval mutator).
+ *
+ * Every call goes to this app's own server (/api/core/*, app/api/core/[...path]/route.ts), which
+ * adds the user's access token, the API key and the portal secret. The browser holds none of them.
+ */
+const CORE_PROXY = '/api/core';
 
-const API_URL = config.PUBLIC_API_DOMAIN;
-const API_KEY = config.API_KEY;
+/** Fired when the login can't be refreshed any more; AuthContext signs the user out. */
+export const SESSION_EXPIRED_EVENT = 'sessionExpired';
 
-interface IDefaultHeadersProps {
-  medium: string;
-  'Content-Type': string;
-  Authorization?: string;
-  'x-api-key'?: string;
-  'x-channel': string;
-}
+// One refresh at a time: the API replaces the refresh token on every refresh, so parallel
+// refreshes would undo each other.
+let refreshInFlight: Promise<boolean> | null = null;
 
-const defaultHeaders: IDefaultHeadersProps = {
-  medium: 'platform-web',
-  'Content-Type': 'application/json',
-  'x-api-key': API_KEY,
-  'x-channel': 'APP_PORTAL',
-};
-
-// Token refresh state
-let isRefreshing = false;
-let refreshPromise: Promise<boolean> | null = null;
-let refreshTokenValue: string | null = null;
-let onTokenRefreshed: ((success: boolean) => void) | null = null;
-
-export function setAuthenticationHeader(token: string): void {
-  defaultHeaders.Authorization = `Bearer ${token}`;
-}
-
-export function getAuthenticationToken(): string | undefined {
-  return defaultHeaders?.Authorization;
-}
-
-export function removeAuthenticationHeader(): void {
-  delete defaultHeaders.Authorization;
-}
-
-export function setRefreshToken(token: string): void {
-  refreshTokenValue = token;
-}
-
-export function getRefreshToken(): string | null {
-  return refreshTokenValue;
-}
-
-export function setTokenRefreshCallback(callback: (success: boolean) => void): void {
-  onTokenRefreshed = callback;
-}
-
-// Refresh the access token using the refresh token
-async function refreshAccessToken(): Promise<boolean> {
-  if (!refreshTokenValue) {
-    return false;
-  }
-
+/**
+ * Asks Auth.js to refresh the login on the server (the jwt callback in auth.ts), which writes the
+ * new tokens into the session cookie. Same request as `useSession().update({ refresh: true })`.
+ */
+async function refreshLogin(): Promise<boolean> {
   try {
-    const response = await fetch(`${API_URL}/admin/auth/refresh`, {
+    const csrfToken = await getCsrfToken();
+    const response = await fetch('/api/auth/session', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': API_KEY,
-        'x-channel': 'APP_PORTAL',
-        medium: 'platform-web',
-      },
-      body: JSON.stringify({ refreshToken: refreshTokenValue }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ csrfToken, data: { refresh: true } }),
     });
-
-    if (!response.ok) {
-      return false;
-    }
-
-    const data = await response.json();
-
-    if (data.accessToken && data.refreshToken) {
-      // Update tokens
-      setAuthenticationHeader(data.accessToken);
-      refreshTokenValue = data.refreshToken;
-
-      // Notify callback (to update NextAuth session)
-      if (onTokenRefreshed) {
-        onTokenRefreshed(true);
-      }
-
-      // Dispatch custom event for session update
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(
-          new CustomEvent('tokenRefreshed', {
-            detail: {
-              accessToken: data.accessToken,
-              refreshToken: data.refreshToken,
-            },
-          }),
-        );
-      }
-
-      return true;
-    }
-
-    return false;
+    const session = response.ok ? await response.json() : null;
+    return Boolean(session && !session.error);
   } catch (error) {
-    console.error('Token refresh failed:', error);
+    console.error('Login refresh failed:', error);
     return false;
   }
 }
 
-// Handle token refresh with request queuing
-async function handleTokenRefresh(): Promise<boolean> {
-  if (isRefreshing && refreshPromise) {
-    // Wait for the ongoing refresh
-    return refreshPromise;
-  }
-
-  isRefreshing = true;
-  refreshPromise = refreshAccessToken();
-
-  try {
-    const result = await refreshPromise;
-    return result;
-  } finally {
-    isRefreshing = false;
-    refreshPromise = null;
-  }
+function refreshLoginOnce(): Promise<boolean> {
+  refreshInFlight ??= refreshLogin().finally(() => {
+    refreshInFlight = null;
+  });
+  return refreshInFlight;
 }
+
 export interface IAPArgs {
   url: string;
   method: UpperHttpMethod | Lowercase<UpperHttpMethod>;
@@ -134,6 +53,7 @@ export interface IAPArgs {
   params?: Record<string, any>;
   noAuth?: boolean;
   formData?: boolean;
+  /** Another service's absolute URL, called directly without the portal's credentials. */
   baseDomain?: string;
   parseJSON?: boolean;
   signal?: AbortSignal;
@@ -153,72 +73,54 @@ async function request<T = any>(args: IAPArgs, isRetry: boolean): Promise<T> {
     parseJSON = true,
     params = {},
     responseType = 'json',
-    ...extraProps
+    noAuth,
+    signal,
   } = args;
 
-  const props: RequestInit & { noAuth?: boolean } = {
-    method: (method as string).toUpperCase() as UpperHttpMethod,
-    headers: { ...defaultHeaders, ...headers } as Record<string, string>,
-    ...extraProps,
-  };
+  const upperMethod = (method as string).toUpperCase() as UpperHttpMethod;
+  const requestHeaders: Record<string, string> = { 'Content-Type': 'application/json', ...headers };
+  const props: RequestInit = { method: upperMethod, headers: requestHeaders, signal };
 
-  const isGet = (method as string).toUpperCase() === 'GET';
-  if (isGet) {
+  if (upperMethod === 'GET') {
     props.body = null;
-    // @ts-expect-error content type checking
-  } else if (props?.headers?.['Content-Type'] !== 'multipart/form-data' && !formData) {
+  } else if (requestHeaders['Content-Type'] !== 'multipart/form-data' && !formData) {
     props.body = JSON.stringify(data);
   } else {
     props.body = data as BodyInit;
   }
+  // Let the browser set multipart/form-data with its boundary.
+  if (requestHeaders['Content-Type'] === 'multipart/form-data' || formData) {
+    delete requestHeaders['Content-Type'];
+  }
 
-  // @ts-expect-error content type checking
-  if (props?.headers?.['Content-Type'] === 'multipart/form-data') {
-    delete (props.headers as Record<string, string>)['Content-Type'];
-  }
-  if (extraProps.noAuth) {
-    delete (props.headers as Record<string, string>).Authorization;
-  }
-  let fetchUrl = `${baseDomain || API_URL}${url}`;
+  let fetchUrl = `${baseDomain ?? CORE_PROXY}${url}`;
   if (params) {
-    fetchUrl = `${fetchUrl}?${qs.stringify(params, {
-      arrayFormat: 'bracket',
-    })}`;
+    const query = qs.stringify(params, { arrayFormat: 'bracket' });
+    if (query) fetchUrl = `${fetchUrl}?${query}`;
   }
 
-  try {
-    // logSuccess('REQUESTING', fetchUrl, JSON.stringify(props));
-    const response = await fetch(fetchUrl, props);
+  const response = await fetch(fetchUrl, props);
 
-    // Handle 401 Unauthorized - attempt token refresh
-    if (response.status === 401 && !isRetry && !extraProps.noAuth) {
-      // Don't try to refresh for auth endpoints
-      const isAuthEndpoint = url.includes('/admin/auth/');
-      if (!isAuthEndpoint) {
-        const refreshSuccess = await handleTokenRefresh();
-        if (refreshSuccess) {
-          // Retry the original request with new token
-          return request<T>(args, true);
-        }
-      }
-      // Refresh failed or auth endpoint - throw 401 error
-      const error = await response.json().catch(() => ({ statusCode: 401, message: 'Unauthorized' }));
-      throw { ...error, statusCode: 401 };
+  if (response.status === 401 && !isRetry && !noAuth && !baseDomain && !url.includes('/admin/auth/')) {
+    if (await refreshLoginOnce()) {
+      return request<T>(args, true);
     }
-
-    if (response.status >= 400) {
-      const error = await response.json();
-      throw error;
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT));
     }
-    // logSuccess('RESPONSE', fetchUrl, response);
-    if (responseType === 'json') {
-      return parseJSON ? await response.json() : (response as T);
-    } else {
-      return response as T;
-    }
-  } catch (error) {
-    throw error;
   }
+
+  if (response.status === 401) {
+    const error = await response.json().catch(() => ({ statusCode: 401, message: 'Unauthorized' }));
+    throw { ...error, statusCode: 401 };
+  }
+  if (response.status >= 400) {
+    throw await response.json().catch(() => ({ statusCode: response.status, message: response.statusText }));
+  }
+  if (responseType === 'json') {
+    return parseJSON ? await response.json() : (response as T);
+  }
+  return response as T;
 }
 
 // The orval mutator. It takes a single argument on purpose: orval adds a
