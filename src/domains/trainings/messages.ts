@@ -79,6 +79,7 @@ export default defineMessages({
   PAYOUT: { id: `${scope}.PAYOUT`, defaultMessage: 'Payout' },
   ADJUSTMENT: { id: `${scope}.ADJUSTMENT`, defaultMessage: 'Adjustment' },
   PAYMENT: { id: `${scope}.PAYMENT`, defaultMessage: 'Payment' },
+  ADHOC: { id: `${scope}.ADHOC`, defaultMessage: 'Added amount' },
   PAYABLE: { id: `${scope}.PAYABLE`, defaultMessage: 'Awaiting approval' },
   APPROVED: { id: `${scope}.APPROVED`, defaultMessage: 'Approved' },
   PART_PAID: { id: `${scope}.PART_PAID`, defaultMessage: 'Part paid' },

@@ -24,6 +24,15 @@ export default defineMessages({
   showEntries: { id: `${scope}.showEntries`, defaultMessage: 'Entries' },
   approveAll: { id: `${scope}.approveAll`, defaultMessage: 'Approve all' },
   recordPayment: { id: `${scope}.recordPayment`, defaultMessage: 'Record payment' },
+  addAmount: { id: `${scope}.addAmount`, defaultMessage: 'Add amount' },
+  addAmountTitle: { id: `${scope}.addAmountTitle`, defaultMessage: 'Add an amount' },
+  addAmountExplain: {
+    id: `${scope}.addAmountExplain`,
+    defaultMessage:
+      'An ad hoc credit to the trainer, such as an allowance or a bonus. It’s approved when made and adds to the balance due. Use an adjustment to correct an amount.',
+  },
+  title: { id: `${scope}.title`, defaultMessage: 'Title' },
+  titlePlaceholder: { id: `${scope}.titlePlaceholder`, defaultMessage: 'e.g. Travel allowance' },
   addAdjustment: { id: `${scope}.addAdjustment`, defaultMessage: 'Add adjustment' },
   kind: { id: `${scope}.kind`, defaultMessage: 'Kind' },
   status: { id: `${scope}.status`, defaultMessage: 'Status' },
