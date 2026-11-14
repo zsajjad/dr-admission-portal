@@ -336,8 +336,8 @@ export function AgeMatrixEditor() {
                             matches.length > 1
                               ? theme.palette.error.light
                               : matches.length
-                                ? alpha(theme.palette.primary.main, 0.12)
-                                : theme.palette.grey[100],
+                                ? alpha(theme.palette.success.main, 0.14)
+                                : alpha(theme.palette.warning.main, 0.12),
                           color: matches.length > 1 ? 'error.contrastText' : 'text.primary',
                           fontFamily: 'monospace',
                           fontSize: 12,

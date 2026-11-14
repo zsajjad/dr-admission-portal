@@ -26,6 +26,7 @@ import {
   TableRow,
   TextField,
   Tooltip,
+  Typography,
 } from '@mui/material';
 
 import { DataNotFound } from '@/components/DataNotFound';
@@ -297,6 +298,12 @@ export function CourseEditor({ courseId }: { courseId?: string }) {
 
   return (
     <Stack spacing={2.5}>
+      <Stack direction="row" alignItems="center" spacing={1}>
+        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+          {course ? `${course.code} · ${course.name}` : <FormattedMessage {...messages.newCourseTitle} />}
+        </Typography>
+        {course && !course.isActive && <Chip size="small" label={<FormattedMessage {...common.inactive} />} />}
+      </Stack>
       {readOnly && (
         <Alert severity="info">
           <FormattedMessage {...common.readOnly} values={{ permission: TrainingsPermission.configure }} />
