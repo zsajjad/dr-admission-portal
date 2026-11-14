@@ -47,6 +47,32 @@ export function CustomThemeProvider({ children }: ThemeProviderProps): React.JSX
               height: 'auto',
               minHeight: 24,
             },
+            // MUI sets icon gaps with left/right margins, which don't flip with the page direction.
+            // In Urdu the icon sits on the right of its label, so the gap moves to the icon's left.
+            'html[lang="ur"] .MuiButton-startIcon': {
+              marginLeft: 8,
+              marginRight: -4,
+            },
+            'html[lang="ur"] .MuiButton-endIcon': {
+              marginLeft: -4,
+              marginRight: 8,
+            },
+            'html[lang="ur"] .MuiChip-icon': {
+              marginLeft: -6,
+              marginRight: 5,
+            },
+            'html[lang="ur"] .MuiTab-root > .MuiTab-icon': {
+              marginLeft: 8,
+              marginRight: 0,
+            },
+            // GR numbers, phones, staff IDs and B-form numbers read left to right in Urdu too. Without this a
+            // cut-off number loses its first digits, not its last. They stay on the right of their column.
+            [['grNumber', 'phone', 'alternatePhone', 'staffId', 'identityNumber', 'survivorGrNumber', 'mergedGrNumbers']
+              .map((field) => `html[lang="ur"] .MuiDataGrid-cell[data-field="${field}"]`)
+              .join(', ')]: {
+              direction: 'ltr',
+              textAlign: 'right',
+            },
             'html[lang="ur"] .MuiChip-label': {
               overflow: 'visible',
               lineHeight: 1.9,
