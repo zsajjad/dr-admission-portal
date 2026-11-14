@@ -16,7 +16,7 @@ import images from '@/assets/images';
 
 import { routes } from '@/router/routes';
 
-import { navItems } from '../config';
+import { useNavItems } from '../config';
 import { NavList } from '../NavItems';
 
 import { MobileDrawer } from './Styled';
@@ -28,6 +28,7 @@ export interface MobileNavProps {
 
 export function MobileNav({ open, onClose }: MobileNavProps): React.JSX.Element {
   const pathname = usePathname();
+  const navItems = useNavItems();
   const { light } = colorSchemes;
   const { palette } = light;
 

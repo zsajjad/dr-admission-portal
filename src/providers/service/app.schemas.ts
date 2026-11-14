@@ -260,6 +260,10 @@ export const Permission = {
   studentsmerge: 'students.merge',
   reportsview: 'reports.view',
   auditview: 'audit.view',
+  trainingsconfigure: 'trainings.configure',
+  trainingsmanage: 'trainings.manage',
+  trainingsoverride: 'trainings.override',
+  trainingspayouts: 'trainings.payouts',
 } as const;
 
 export interface PermissionDefinition {
@@ -4213,9 +4217,35 @@ export const StaffSyncReasonCode = {
   INVALID_DATE: 'INVALID_DATE',
   FUTURE_DATE: 'FUTURE_DATE',
   NO_CLASS_DAY: 'NO_CLASS_DAY',
+  ROLE_REQUIRED: 'ROLE_REQUIRED',
+  STUDENT_NOT_FOUND: 'STUDENT_NOT_FOUND',
+  NOT_ADMITTED: 'NOT_ADMITTED',
+  NOTHING_REQUIRED: 'NOTHING_REQUIRED',
+  OTHER_TRAINER: 'OTHER_TRAINER',
+  ALREADY_PASSED: 'ALREADY_PASSED',
+  NOT_ENROLLED: 'NOT_ENROLLED',
+  NOT_YOUR_STUDENT: 'NOT_YOUR_STUDENT',
+  UNKNOWN_TRAINING: 'UNKNOWN_TRAINING',
+  WRONG_STATE: 'WRONG_STATE',
+  TRAININGS_PENDING: 'TRAININGS_PENDING',
+  NOT_TESTED: 'NOT_TESTED',
+  WRONG_ATTEMPT: 'WRONG_ATTEMPT',
+  NO_ATTEMPTS_LEFT: 'NO_ATTEMPTS_LEFT',
+  ENROLLMENT_CLOSED: 'ENROLLMENT_CLOSED',
+  NOT_READY: 'NOT_READY',
+  NO_WINDOW: 'NO_WINDOW',
+  ASSIGNED_TO_OTHER: 'ASSIGNED_TO_OTHER',
+  OWN_TRAINEE: 'OWN_TRAINEE',
+  ALREADY_GRADED: 'ALREADY_GRADED',
+  MARKS_INVALID: 'MARKS_INVALID',
+  INVALID_RETRAIN_SET: 'INVALID_RETRAIN_SET',
+  NOT_DUE: 'NOT_DUE',
+  INVALID_IMPROVE_SET: 'INVALID_IMPROVE_SET',
   SENT_AFTER_LOGOUT: 'SENT_AFTER_LOGOUT',
   LATE_DAY: 'LATE_DAY',
+  LATE_GRADE: 'LATE_GRADE',
   SUPERSEDED: 'SUPERSEDED',
+  NO_CHANGE: 'NO_CHANGE',
 } as const;
 
 export interface StaffSyncResultDto {
@@ -4610,10 +4640,40 @@ export interface ComputeRanksResponseDto {
   message: string;
   /** Groups (branch + class level) ranked */
   groups: number;
-  /** Students given a rank */
+  /** Students given a position (only students who passed get one) */
   ranked: number;
   /** Final results changed */
   changed: number;
+}
+
+export interface TheoryPassMarkEntity {
+  classLevelId: string;
+  classLevelCode: string;
+  /** In theory marks */
+  passMarks: number;
+  updatedAt?: string;
+}
+
+export interface TheoryPassMarksResponseDto {
+  /** Message of the action */
+  message: string;
+  sessionId: string;
+  data: TheoryPassMarkEntity[];
+}
+
+export interface TheoryPassMarkRowDto {
+  classLevelId: string;
+  /**
+   * In theory marks; null removes it
+   * @nullable
+   */
+  passMarks: number | null;
+}
+
+export interface SetTheoryPassMarksDto {
+  sessionId: string;
+  /** Class levels not listed keep their pass mark */
+  rows: TheoryPassMarkRowDto[];
 }
 
 export interface ResultStepEntity {
@@ -4652,12 +4712,12 @@ export interface FinalResultEntity {
   maxTotal?: number | null;
   result?: FinalResultStatus | null;
   /**
-   * Rank in the branch and class level
+   * Position among the students who passed, in the branch and class level
    * @nullable
    */
   branchRank?: number | null;
   /**
-   * How many were ranked in that group
+   * How many passed in that group
    * @nullable
    */
   rankedOf?: number | null;
@@ -4783,6 +4843,1396 @@ export interface EnterFinalResultDto {
   result: FinalResultStatus;
   /** Why, for the audit log */
   reason?: string;
+}
+
+export interface PayoutBandEntity {
+  /** Lowest score % that earns this band */
+  minPct: number;
+  /** PKR */
+  amount: number;
+}
+
+/**
+ * Graded step by step with these step codes (GET /results/steps)
+ */
+export type TrainingEntityStepSkill = (typeof TrainingEntityStepSkill)[keyof typeof TrainingEntityStepSkill];
+
+export const TrainingEntityStepSkill = {
+  WAZU: 'WAZU',
+  NAMAZ: 'NAMAZ',
+} as const;
+
+export interface TrainingEntity {
+  id: string;
+  code: string;
+  name: string;
+  nameUr?: string;
+  /** Required from this age at admission */
+  requiredFromAge: number;
+  /** Missing: both genders */
+  gender?: Gender;
+  maxMarks: number;
+  passMarks: number;
+  /** PKR paid for a tested but failed training */
+  payoutFloor: number;
+  /** PKR paid for a pass, by score %; highest first */
+  bands: PayoutBandEntity[];
+  /** Graded step by step with these step codes (GET /results/steps) */
+  stepSkill?: TrainingEntityStepSkill;
+  sortOrder: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface ListTrainingsResponseDto {
+  /** Total number of records */
+  count: number;
+  data: TrainingEntity[];
+}
+
+export interface TrainingResponseDto {
+  /** Message of the action */
+  message: string;
+  data: TrainingEntity;
+}
+
+export interface PayoutBandDto {
+  minPct: number;
+  /** PKR */
+  amount: number;
+}
+
+/**
+ * Grade it step by step with the WAZU or NAMAZ step codes; leave out for marks only
+ * @nullable
+ */
+export type CreateTrainingDtoStepSkill =
+  | (typeof CreateTrainingDtoStepSkill)[keyof typeof CreateTrainingDtoStepSkill]
+  | null;
+
+export const CreateTrainingDtoStepSkill = {
+  WAZU: 'WAZU',
+  NAMAZ: 'NAMAZ',
+} as const;
+
+export interface CreateTrainingDto {
+  /** Letters, digits, - and _; unique */
+  code: string;
+  name: string;
+  nameUr?: string;
+  /** Required from this age at admission */
+  requiredFromAge: number;
+  /** Leave out for both genders */
+  gender?: Gender | null;
+  maxMarks: number;
+  passMarks: number;
+  /** PKR for a tested but failed training */
+  payoutFloor?: number;
+  /** PKR for a pass by score %; default 90→1000, 75→750, 50→500, 0→350 */
+  bands?: PayoutBandDto[];
+  /**
+   * Grade it step by step with the WAZU or NAMAZ step codes; leave out for marks only
+   * @nullable
+   */
+  stepSkill?: CreateTrainingDtoStepSkill;
+  sortOrder?: number;
+}
+
+/**
+ * Grade it step by step with the WAZU or NAMAZ step codes; leave out for marks only
+ * @nullable
+ */
+export type UpdateTrainingDtoStepSkill =
+  | (typeof UpdateTrainingDtoStepSkill)[keyof typeof UpdateTrainingDtoStepSkill]
+  | null;
+
+export const UpdateTrainingDtoStepSkill = {
+  WAZU: 'WAZU',
+  NAMAZ: 'NAMAZ',
+} as const;
+
+export interface UpdateTrainingDto {
+  /** Letters, digits, - and _; unique */
+  code?: string;
+  name?: string;
+  nameUr?: string;
+  /** Required from this age at admission */
+  requiredFromAge?: number;
+  /** Leave out for both genders */
+  gender?: Gender | null;
+  maxMarks?: number;
+  passMarks?: number;
+  /** PKR for a tested but failed training */
+  payoutFloor?: number;
+  /** PKR for a pass by score %; default 90→1000, 75→750, 50→500, 0→350 */
+  bands?: PayoutBandDto[];
+  /**
+   * Grade it step by step with the WAZU or NAMAZ step codes; leave out for marks only
+   * @nullable
+   */
+  stepSkill?: UpdateTrainingDtoStepSkill;
+  sortOrder?: number;
+  /** Why, for the audit log */
+  reason?: string;
+}
+
+export interface TrainingSettingsEntity {
+  /** Attempts per training per session */
+  maxAttempts: number;
+  /** A training scored below this % (failed, or passed below it) can be retrained in the session */
+  retrainBelowPct: number;
+  /** Days with no next step before an enrollment closes */
+  autoCloseDays: number;
+  reminderDays: number[];
+  updatedAt?: string;
+}
+
+export interface TrainingSettingsResponseDto {
+  /** Message of the action */
+  message: string;
+  data: TrainingSettingsEntity;
+}
+
+export interface UpdateTrainingSettingsDto {
+  /** Attempts per training per session */
+  maxAttempts?: number;
+  /** A training scored below this % can be retrained in the session */
+  retrainBelowPct?: number;
+  autoCloseDays?: number;
+  reminderDays?: number[];
+}
+
+export interface TestingWindowEntity {
+  id: string;
+  sessionId: string;
+  /** Missing: every branch */
+  branchId?: string;
+  branchCode?: string;
+  name: string;
+  opensAt: string;
+  closesAt: string;
+  /** Closed early by an admin */
+  closedAt?: string;
+  /** Open right now */
+  isOpen: boolean;
+  /** Staff user IDs; empty: every tester */
+  testerStaffUserIds: string[];
+  createdAt: string;
+}
+
+export interface ListTestingWindowsResponseDto {
+  /** Total number of records */
+  count: number;
+  data: TestingWindowEntity[];
+}
+
+export interface TestingWindowResponseDto {
+  /** Message of the action */
+  message: string;
+  data: TestingWindowEntity;
+}
+
+export interface CreateTestingWindowDto {
+  sessionId: string;
+  name: string;
+  /**
+   * Leave out (or null) for every branch; in PATCH, null resets a window to every branch
+   * @nullable
+   */
+  branchId?: string | null;
+  /** Defaults to now */
+  opensAt?: string;
+  closesAt: string;
+  /** Only these testers; leave out or empty for every tester */
+  testerStaffUserIds?: string[];
+}
+
+export interface UpdateTestingWindowDto {
+  sessionId?: string;
+  name?: string;
+  /**
+   * Leave out (or null) for every branch; in PATCH, null resets a window to every branch
+   * @nullable
+   */
+  branchId?: string | null;
+  /** Defaults to now */
+  opensAt?: string;
+  closesAt?: string;
+  /** Only these testers; leave out or empty for every tester */
+  testerStaffUserIds?: string[];
+}
+
+export interface CloseTestingWindowDto {
+  /** Why, for the audit log */
+  reason?: string;
+}
+
+export type TrainingEnrollmentState = (typeof TrainingEnrollmentState)[keyof typeof TrainingEnrollmentState];
+
+export const TrainingEnrollmentState = {
+  REGISTERED: 'REGISTERED',
+  IN_TRAINING: 'IN_TRAINING',
+  READY_FOR_TEST: 'READY_FOR_TEST',
+  TESTED: 'TESTED',
+  CLOSED: 'CLOSED',
+} as const;
+
+export type TrainingClosureReason = (typeof TrainingClosureReason)[keyof typeof TrainingClosureReason];
+
+export const TrainingClosureReason = {
+  ALL_PASSED: 'ALL_PASSED',
+  TRAINER_CLOSED: 'TRAINER_CLOSED',
+  ATTEMPTS_USED: 'ATTEMPTS_USED',
+  AUTO_CLOSED: 'AUTO_CLOSED',
+  ADMIN_CLOSED: 'ADMIN_CLOSED',
+  SESSION_ENDED: 'SESSION_ENDED',
+} as const;
+
+export type TrainingPayoutStatus = (typeof TrainingPayoutStatus)[keyof typeof TrainingPayoutStatus];
+
+export const TrainingPayoutStatus = {
+  PENDING: 'PENDING',
+  PAYABLE: 'PAYABLE',
+  APPROVED: 'APPROVED',
+  PAID: 'PAID',
+} as const;
+
+export interface EnrollmentPayoutEntity {
+  /**
+   * PKR; null before the first test
+   * @nullable
+   */
+  amount: number | null;
+  status: TrainingPayoutStatus;
+}
+
+export type TrainingEnrollmentEntityGender =
+  (typeof TrainingEnrollmentEntityGender)[keyof typeof TrainingEnrollmentEntityGender];
+
+export const TrainingEnrollmentEntityGender = {
+  MALE: 'MALE',
+  FEMALE: 'FEMALE',
+} as const;
+
+export interface TrainingEnrollmentEntity {
+  studentId: string;
+  /** The current GR */
+  grNumber: string;
+  name: string;
+  fatherName: string;
+  /**
+   * This session
+   * @nullable
+   */
+  classLevelCode: string | null;
+  /**
+   * This session
+   * @nullable
+   */
+  branchCode: string | null;
+  id: string;
+  sessionId: string;
+  admissionId?: string;
+  ageAtEnrollment?: number;
+  /** TRAINER or ADMIN */
+  source: string;
+  trainerStaffUserId?: string;
+  trainerName?: string;
+  testerStaffUserId?: string;
+  testerName?: string;
+  sessionName: string;
+  gender: TrainingEnrollmentEntityGender;
+  /** Area of the admission the trainings were picked from */
+  areaName?: string;
+  state: TrainingEnrollmentState;
+  round: number;
+  attemptsUsed: number;
+  /** Attempts allowed this session */
+  maxAttempts: number;
+  /** When anything last changed on the enrollment */
+  lastActivityAt: string;
+  /** Trainings in the enrollment */
+  trainingCount: number;
+  /** Of those, passed */
+  passedCount: number;
+  readyAt?: string;
+  autoCloseAt?: string;
+  closedAt?: string;
+  closureReason?: TrainingClosureReason;
+  payout: EnrollmentPayoutEntity;
+  /** The trainer paid at closure */
+  paidTrainerStaffUserId?: string;
+  createdAt: string;
+}
+
+export interface ListTrainingEnrollmentsResponseDto {
+  /** Total number of records */
+  count: number;
+  data: TrainingEnrollmentEntity[];
+}
+
+export interface RulesBandEntity {
+  minPct: number;
+  amount: number;
+}
+
+/**
+ * @nullable
+ */
+export type RulesTrainingEntityGender =
+  | (typeof RulesTrainingEntityGender)[keyof typeof RulesTrainingEntityGender]
+  | null;
+
+export const RulesTrainingEntityGender = {
+  MALE: 'MALE',
+  FEMALE: 'FEMALE',
+} as const;
+
+/**
+ * @nullable
+ */
+export type RulesTrainingEntityStepSkill =
+  | (typeof RulesTrainingEntityStepSkill)[keyof typeof RulesTrainingEntityStepSkill]
+  | null;
+
+export const RulesTrainingEntityStepSkill = {
+  WAZU: 'WAZU',
+  NAMAZ: 'NAMAZ',
+} as const;
+
+export interface RulesTrainingEntity {
+  trainingId: string;
+  code: string;
+  name: string;
+  /** @nullable */
+  nameUr: string | null;
+  requiredFromAge: number;
+  /** @nullable */
+  gender: RulesTrainingEntityGender;
+  maxMarks: number;
+  passMarks: number;
+  payoutFloor: number;
+  bands: RulesBandEntity[];
+  /** @nullable */
+  stepSkill: RulesTrainingEntityStepSkill;
+  sortOrder: number;
+}
+
+export interface EnrollmentRulesEntity {
+  maxAttempts: number;
+  retrainBelowPct: number;
+  autoCloseDays: number;
+  reminderDays: number[];
+  trainings: RulesTrainingEntity[];
+}
+
+export type TrainingItemKind = (typeof TrainingItemKind)[keyof typeof TrainingItemKind];
+
+export const TrainingItemKind = {
+  REQUIRED: 'REQUIRED',
+  IMPROVEMENT: 'IMPROVEMENT',
+} as const;
+
+export type TrainingItemStatus = (typeof TrainingItemStatus)[keyof typeof TrainingItemStatus];
+
+export const TrainingItemStatus = {
+  PENDING: 'PENDING',
+  PASSED: 'PASSED',
+  FAILED: 'FAILED',
+} as const;
+
+export interface TrainingBestEntity {
+  attemptNo: number;
+  scorePct: number;
+  passed: boolean;
+}
+
+/**
+ * Graded step by step with these step codes (GET /staff/results/steps)
+ * @nullable
+ */
+export type EnrollmentItemEntityStepSkill =
+  | (typeof EnrollmentItemEntityStepSkill)[keyof typeof EnrollmentItemEntityStepSkill]
+  | null;
+
+export const EnrollmentItemEntityStepSkill = {
+  WAZU: 'WAZU',
+  NAMAZ: 'NAMAZ',
+} as const;
+
+export interface EnrollmentItemEntity {
+  trainingId: string;
+  code: string;
+  name: string;
+  /** @nullable */
+  nameUr: string | null;
+  maxMarks: number;
+  passMarks: number;
+  /**
+   * Graded step by step with these step codes (GET /staff/results/steps)
+   * @nullable
+   */
+  stepSkill: EnrollmentItemEntityStepSkill;
+  kind: TrainingItemKind;
+  /**
+   * IMPROVEMENT: the best score before this enrollment
+   * @nullable
+   */
+  previousBestPct: number | null;
+  /**
+   * IMPROVEMENT: that score's band; the item pays only a higher band
+   * @nullable
+   */
+  previousBand: number | null;
+  status: TrainingItemStatus;
+  /** Marked complete in the current round */
+  completed: boolean;
+  /** @nullable */
+  completedAt: string | null;
+  attemptsUsed: number;
+  /**
+   * The best-paying attempt so far
+   * @nullable
+   */
+  best: TrainingBestEntity | null;
+  /** PKR it pays now: the band if passed, the floor if failed, 0 if untested */
+  payout: number;
+  /** Can be retrained and retested now: failed, or passed below the threshold (90%), with an attempt left */
+  retrainable: boolean;
+}
+
+export interface StepMarkEntity {
+  /** A step code from GET /staff/results/steps */
+  stepCode: string;
+  correct: boolean;
+}
+
+export interface AttemptMarkEntity {
+  trainingId: string;
+  marks: number;
+  maxMarks: number;
+  scorePct: number;
+  passed: boolean;
+  /** PKR this mark pays */
+  payout: number;
+  /**
+   * null when not graded step by step
+   * @nullable
+   */
+  steps: StepMarkEntity[] | null;
+}
+
+export interface AdminAttemptEntity {
+  attemptId: string;
+  attemptNo: number;
+  /** When the tester submitted it (phone's time) */
+  testedAt: string;
+  /** An admin changed the marks */
+  overridden: boolean;
+  /** Only the trainings not passed before this attempt */
+  marks: AttemptMarkEntity[];
+  testerStaffUserId: string;
+  windowId?: string;
+  /** Arrived after the window end plus the grace period */
+  lateGrade: boolean;
+  overriddenAt?: string;
+  overriddenByAdminUserId?: string;
+  overriddenByName?: string;
+  testerName?: string;
+  overrideReason?: string;
+}
+
+export interface DecisionTrainingEntity {
+  trainingId: string;
+  /** PKR it pays now */
+  payoutNow: number;
+  /** PKR it would pay improved to the threshold (90%) */
+  payoutIfImproved: number;
+}
+
+export interface DecisionDueEntity {
+  attemptNo: number;
+  /** Failed trainings: pre-selected for the retrain */
+  failedTrainingIds: string[];
+  /** Trainings that can be retrained: failed, or passed below the threshold (90%) */
+  retrainableTrainingIds: string[];
+  /** Per retrainable training */
+  trainings: DecisionTrainingEntity[];
+  canRetrain: boolean;
+  /** What the enrollment pays now */
+  payoutNow: number;
+  /** If every failed training passes at its pass mark */
+  payoutIfFailedPass: number;
+}
+
+export interface DecisionEntity {
+  decision: string;
+  /** RETRAIN: the trainings chosen */
+  trainingIds?: string[];
+  /** Who made it: the admin or staff user (none for SYSTEM) */
+  actorName?: string;
+  attemptNo?: number;
+  closureReason?: string;
+  /** STAFF, ADMIN or SYSTEM */
+  actorType: string;
+  staffUserId?: string;
+  adminUserId?: string;
+  clientTime?: string;
+  reason?: string;
+  createdAt: string;
+}
+
+export interface AssignmentEntity {
+  kind: string;
+  fromTrainerName?: string;
+  toTrainerName?: string;
+  /** Who made it: the admin or staff user */
+  byName?: string;
+  fromTrainerStaffUserId?: string;
+  toTrainerStaffUserId?: string;
+  byAdminUserId?: string;
+  byStaffUserId?: string;
+  reason?: string;
+  createdAt: string;
+}
+
+export type TrainerLedgerKind = (typeof TrainerLedgerKind)[keyof typeof TrainerLedgerKind];
+
+export const TrainerLedgerKind = {
+  PAYOUT: 'PAYOUT',
+  ADJUSTMENT: 'ADJUSTMENT',
+  ADHOC: 'ADHOC',
+  PAYMENT: 'PAYMENT',
+} as const;
+
+/**
+ * Credits: PAYABLE → APPROVED → PART_PAID / PAID (from payments), or CANCELLED. Payments: RECORDED or VOIDED.
+ */
+export type TrainerLedgerStatus = (typeof TrainerLedgerStatus)[keyof typeof TrainerLedgerStatus];
+
+export const TrainerLedgerStatus = {
+  PAYABLE: 'PAYABLE',
+  APPROVED: 'APPROVED',
+  PART_PAID: 'PART_PAID',
+  PAID: 'PAID',
+  CANCELLED: 'CANCELLED',
+  RECORDED: 'RECORDED',
+  VOIDED: 'VOIDED',
+} as const;
+
+export interface LedgerStudentEntity {
+  studentId: string;
+  grNumber: string;
+  name: string;
+}
+
+export interface LedgerTrainingEntity {
+  id: string;
+  code: string;
+  name: string;
+  /** @nullable */
+  nameUr: string | null;
+}
+
+/**
+ * Payouts: whether the training was required, or an improvement of an earlier pass
+ * @nullable
+ */
+export type TrainerLedgerEntryEntityItemKind =
+  | (typeof TrainerLedgerEntryEntityItemKind)[keyof typeof TrainerLedgerEntryEntityItemKind]
+  | null;
+
+export const TrainerLedgerEntryEntityItemKind = {
+  REQUIRED: 'REQUIRED',
+  IMPROVEMENT: 'IMPROVEMENT',
+} as const;
+
+export interface TrainerLedgerEntryEntity {
+  id: string;
+  trainerStaffUserId: string;
+  kind: TrainerLedgerKind;
+  /** PKR. Payouts, ad hoc amounts and payments positive; adjustments either sign. */
+  amount: number;
+  /** Credits: PAYABLE → APPROVED → PART_PAID / PAID (from payments), or CANCELLED. Payments: RECORDED or VOIDED. */
+  status: TrainerLedgerStatus;
+  /** For approved credits: how much payments cover */
+  paidAmount: number;
+  /** @nullable */
+  enrollmentId: string | null;
+  /** @nullable */
+  student: LedgerStudentEntity | null;
+  /** @nullable */
+  reason: string | null;
+  /**
+   * Payouts: the training paid for
+   * @nullable
+   */
+  training: LedgerTrainingEntity | null;
+  /**
+   * Payouts: whether the training was required, or an improvement of an earlier pass
+   * @nullable
+   */
+  itemKind: TrainerLedgerEntryEntityItemKind;
+  /**
+   * Ad hoc amounts: what it is for
+   * @nullable
+   */
+  title: string | null;
+  /** @nullable */
+  reference: string | null;
+  /**
+   * Payments: when sent. Ad hoc amounts: their date.
+   * @nullable
+   */
+  date: string | null;
+  createdAt: string;
+  /** @nullable */
+  approvedAt: string | null;
+  approvedByAdminUserId?: string;
+  voidedAt?: string;
+  voidReason?: string;
+  /** Missing: made by the system at closure */
+  createdByAdminUserId?: string;
+}
+
+export type TrainingEnrollmentDetailEntityGender =
+  (typeof TrainingEnrollmentDetailEntityGender)[keyof typeof TrainingEnrollmentDetailEntityGender];
+
+export const TrainingEnrollmentDetailEntityGender = {
+  MALE: 'MALE',
+  FEMALE: 'FEMALE',
+} as const;
+
+export interface TrainingEnrollmentDetailEntity {
+  studentId: string;
+  /** The current GR */
+  grNumber: string;
+  name: string;
+  fatherName: string;
+  /**
+   * This session
+   * @nullable
+   */
+  classLevelCode: string | null;
+  /**
+   * This session
+   * @nullable
+   */
+  branchCode: string | null;
+  id: string;
+  sessionId: string;
+  admissionId?: string;
+  ageAtEnrollment?: number;
+  /** TRAINER or ADMIN */
+  source: string;
+  trainerStaffUserId?: string;
+  trainerName?: string;
+  testerStaffUserId?: string;
+  testerName?: string;
+  sessionName: string;
+  gender: TrainingEnrollmentDetailEntityGender;
+  /** Area of the admission the trainings were picked from */
+  areaName?: string;
+  state: TrainingEnrollmentState;
+  round: number;
+  attemptsUsed: number;
+  /** Attempts allowed this session */
+  maxAttempts: number;
+  /** When anything last changed on the enrollment */
+  lastActivityAt: string;
+  /** Trainings in the enrollment */
+  trainingCount: number;
+  /** Of those, passed */
+  passedCount: number;
+  readyAt?: string;
+  autoCloseAt?: string;
+  closedAt?: string;
+  closureReason?: TrainingClosureReason;
+  payout: EnrollmentPayoutEntity;
+  /** The trainer paid at closure */
+  paidTrainerStaffUserId?: string;
+  createdAt: string;
+  /** The rules snapshot the enrollment started under */
+  rules: EnrollmentRulesEntity;
+  trainings: EnrollmentItemEntity[];
+  attempts: AdminAttemptEntity[];
+  /** @nullable */
+  decision: DecisionDueEntity | null;
+  decisions: DecisionEntity[];
+  assignments: AssignmentEntity[];
+  /** The enrollment's ledger entries: payouts per training and their adjustments */
+  ledgerEntries: TrainerLedgerEntryEntity[];
+}
+
+export interface TrainingEnrollmentResponseDto {
+  /** Message of the action */
+  message: string;
+  data: TrainingEnrollmentDetailEntity;
+}
+
+export interface RequiredTrainingEntity {
+  trainingId: string;
+  code: string;
+  name: string;
+  /** @nullable */
+  nameUr: string | null;
+}
+
+export interface TrainingPassEntity {
+  id: string;
+  trainingId: string;
+  code: string;
+  name: string;
+  /** @nullable */
+  nameUr: string | null;
+  passedAt: string;
+  /** @nullable */
+  sessionId: string | null;
+  /** @nullable */
+  sessionName: string | null;
+  /** TRAINING (graded) or ADMIN (recorded by hand) */
+  source: string;
+  /**
+   * The best score on it in any session (null if recorded by hand)
+   * @nullable
+   */
+  bestScorePct: number | null;
+  /** Best score below the threshold (90%): the trainer may pick it to improve when registering */
+  improvable: boolean;
+  reason?: string;
+}
+
+export interface StudentTrainingsDto {
+  studentId: string;
+  /**
+   * Age at this session’s admission; null when not admitted
+   * @nullable
+   */
+  age: number | null;
+  /** NOT_ADMITTED when there is no admission this session */
+  requiredBlockedBy?: string;
+  /** Trainings their age requires that they haven’t passed */
+  required: RequiredTrainingEntity[];
+  /** Trainings passed, any year */
+  passed: TrainingPassEntity[];
+  /** Every enrollment, any year, newest first */
+  enrollments: TrainingEnrollmentEntity[];
+}
+
+export interface StudentTrainingsResponseDto {
+  /** Message of the action */
+  message: string;
+  data: StudentTrainingsDto;
+}
+
+export interface TrainingPassesResponseDto {
+  /** Message of the action */
+  message: string;
+  data: TrainingPassEntity[];
+}
+
+export interface AddTrainingPassDto {
+  /** grNumber or studentId */
+  grNumber?: string;
+  studentId?: string;
+  trainingId: string;
+  /** The session it counts from; defaults to the student’s current one */
+  sessionId?: string;
+  /** Why, e.g. "passed in 2026 (sheet NK-7)" */
+  reason: string;
+}
+
+export interface ReasonDto {
+  /** Why, for the audit log */
+  reason: string;
+}
+
+export interface CreateTrainingEnrollmentDto {
+  /** grNumber or studentId */
+  grNumber?: string;
+  studentId?: string;
+  trainerStaffUserId?: string;
+  /** Passed trainings with a best score below 90% to improve this session (400 INVALID_IMPROVE_SET otherwise) */
+  improveTrainingIds?: string[];
+}
+
+export interface SetTrainerDto {
+  /** Why, for the audit log */
+  reason: string;
+  /**
+   * null takes the student off their trainer
+   * @nullable
+   */
+  trainerStaffUserId: string | null;
+}
+
+export interface SetTesterDto {
+  /**
+   * null: the first eligible tester
+   * @nullable
+   */
+  testerStaffUserId: string | null;
+}
+
+export interface TrainingAttemptRowEntity {
+  attemptId: string;
+  attemptNo: number;
+  /** When the tester submitted it (phone's time) */
+  testedAt: string;
+  /** An admin changed the marks */
+  overridden: boolean;
+  /** Only the trainings not passed before this attempt */
+  marks: AttemptMarkEntity[];
+  testerStaffUserId: string;
+  windowId?: string;
+  /** Arrived after the window end plus the grace period */
+  lateGrade: boolean;
+  overriddenAt?: string;
+  overriddenByAdminUserId?: string;
+  overriddenByName?: string;
+  testerName?: string;
+  overrideReason?: string;
+  enrollmentId: string;
+  studentId: string;
+  grNumber: string;
+  name: string;
+  windowName?: string;
+  /**
+   * The sync item, for the flagged-items screen
+   * @nullable
+   */
+  syncItemId: string | null;
+}
+
+export interface ListTrainingAttemptsResponseDto {
+  /** Total number of records */
+  count: number;
+  data: TrainingAttemptRowEntity[];
+}
+
+export interface StepMarkDto {
+  /** A step code of the training's step skill */
+  stepCode: string;
+  correct: boolean;
+}
+
+export interface MarkDto {
+  trainingId: string;
+  marks: number;
+  /** Trainings graded step by step only. Leave out to keep the steps the tester recorded. */
+  steps?: StepMarkDto[];
+}
+
+export interface OverrideMarksDto {
+  /** Why, for the audit log */
+  reason: string;
+  /** One mark for every training in the attempt */
+  marks: MarkDto[];
+}
+
+export interface RunClockResponseDto {
+  /** Message of the action */
+  message: string;
+  closed: number;
+  reminded: number;
+}
+
+/**
+ * Enrollments per state: REGISTERED, IN_TRAINING, READY_FOR_TEST, TESTED, CLOSED
+ */
+export type PipelineGroupDtoStates = { [key: string]: unknown };
+
+export interface PipelineGroupDto {
+  /** "all", or the gender, area ID or branch ID */
+  group: string;
+  /** Area or branch name */
+  label?: string;
+  /** Enrollments per state: REGISTERED, IN_TRAINING, READY_FOR_TEST, TESTED, CLOSED */
+  states: PipelineGroupDtoStates;
+  /** Open and unchanged for stuckDays or more */
+  stuck: number;
+  total: number;
+}
+
+export interface PipelineReportDto {
+  groups: PipelineGroupDto[];
+}
+
+export interface TrainingResultRowDto {
+  trainingId: string;
+  code: string;
+  name: string;
+  /** Enrollments where the training was tested */
+  tested: number;
+  /** Of those, passed */
+  passed: number;
+  /**
+   * % of tested
+   * @nullable
+   */
+  passRate: number | null;
+  /**
+   * Average score % of the best attempt
+   * @nullable
+   */
+  averageScore: number | null;
+  /** Best scores in buckets 0–9, 10–19, … 90–100 */
+  distribution: number[];
+  /** Tested twice (failed the first time) */
+  retested: number;
+  /** @nullable */
+  firstAttemptAverage: number | null;
+  /** @nullable */
+  secondAttemptAverage: number | null;
+  /**
+   * Average change from attempt 1 to attempt 2
+   * @nullable
+   */
+  averageImprovement: number | null;
+}
+
+export interface ResultsGroupDto {
+  /** "all", or the gender, area ID or branch ID */
+  group: string;
+  /** Area or branch name */
+  label?: string;
+  /** Enrollments with at least one test */
+  tested: number;
+  /** Of those, every required training passed */
+  allPassed: number;
+  trainings: TrainingResultRowDto[];
+}
+
+export interface ResultsReportDto {
+  groups: ResultsGroupDto[];
+}
+
+export interface TrainingLevelRowDto {
+  trainingId: string;
+  code: string;
+  name: string;
+  graded: number;
+  /** @nullable */
+  passRate: number | null;
+  /**
+   * Average marks as % of max
+   * @nullable
+   */
+  averagePct: number | null;
+}
+
+export interface TrainingLevelGroupDto {
+  /** "all", or the gender, area ID or branch ID */
+  group: string;
+  /** Area or branch name */
+  label?: string;
+  trainings: TrainingLevelRowDto[];
+}
+
+export interface TrainingLevelReportDto {
+  groups: TrainingLevelGroupDto[];
+}
+
+export interface TrainerRowDto {
+  trainerStaffUserId: string;
+  name: string;
+  students: number;
+  tested: number;
+  /** Trainings their students passed */
+  trainingsPassed: number;
+  /**
+   * Average best score % over the trainings tested
+   * @nullable
+   */
+  averageScore: number | null;
+  /**
+   * % of tested students retrained
+   * @nullable
+   */
+  retrainRate: number | null;
+  /** Fixed payouts of closed enrollments (PKR) */
+  payoutTotal: number;
+}
+
+export interface TrainerGroupDto {
+  /** "all", or the gender, area ID or branch ID */
+  group: string;
+  /** Area or branch name */
+  label?: string;
+  trainers: TrainerRowDto[];
+}
+
+export interface TrainerReportDto {
+  groups: TrainerGroupDto[];
+}
+
+export interface TesterRowDto {
+  testerStaffUserId: string;
+  name: string;
+  /** @nullable */
+  windowId: string | null;
+  /** @nullable */
+  windowName: string | null;
+  /** Attempts graded */
+  graded: number;
+  /** Training marks given */
+  marks: number;
+  /**
+   * Average score % given
+   * @nullable
+   */
+  averageScore: number | null;
+  /** Attempts an admin overrode */
+  overridden: number;
+  /** Marks within 5% of max above a pass mark (the requirements ask to watch for clustering) */
+  justAbovePass: number;
+}
+
+export interface TesterGroupDto {
+  /** "all", or the gender, area ID or branch ID */
+  group: string;
+  /** Area or branch name */
+  label?: string;
+  testers: TesterRowDto[];
+}
+
+export interface TesterReportDto {
+  groups: TesterGroupDto[];
+}
+
+export interface ListLedgerResponseDto {
+  /** Total number of records */
+  count: number;
+  data: TrainerLedgerEntryEntity[];
+}
+
+export interface LedgerTotalsEntity {
+  /** Open enrollments: best payout so far (not in the ledger yet) */
+  projected: number;
+  /** Credits waiting for an admin */
+  awaitingApproval: number;
+  /** Approved credits */
+  approved: number;
+  /** Payments recorded */
+  paid: number;
+  /** approved − paid */
+  due: number;
+}
+
+export interface TrainerLedgerSummaryEntity {
+  trainerStaffUserId: string;
+  name: string;
+  staffId: string;
+  totals: LedgerTotalsEntity;
+}
+
+export interface ListLedgerTrainersResponseDto {
+  /** Message of the action */
+  message: string;
+  data: TrainerLedgerSummaryEntity[];
+  /** Every trainer together */
+  totals: LedgerTotalsEntity;
+}
+
+export interface ApproveLedgerDto {
+  /** PAYABLE credits to approve */
+  entryIds: string[];
+}
+
+export interface LedgerActionResponseDto {
+  /** Message of the action */
+  message: string;
+  data: TrainerLedgerEntryEntity[];
+}
+
+export interface RecordPaymentDto {
+  trainerStaffUserId: string;
+  /** PKR, at most what is due */
+  amount: number;
+  /** When the money was sent; defaults to now */
+  paidAt?: string;
+  /** Bank or cash reference */
+  reference?: string;
+  note?: string;
+}
+
+export interface RecordAdjustmentDto {
+  trainerStaffUserId: string;
+  /** PKR, either sign, not 0 */
+  amount: number;
+  reason: string;
+  enrollmentId?: string;
+}
+
+export interface RecordAdhocDto {
+  trainerStaffUserId: string;
+  /** PKR, more than 0 */
+  amount: number;
+  /** Shown to the trainer */
+  title: string;
+  /** The date it is for */
+  date: string;
+  reference?: string;
+  note?: string;
+}
+
+export interface VoidLedgerEntryDto {
+  reason: string;
+}
+
+export interface PayoutReportRowDto {
+  trainerStaffUserId: string;
+  name: string;
+  /** Pending: projected payouts of open enrollments */
+  pending: number;
+  payable: number;
+  /** Approved credits, ad hoc amounts included */
+  approved: number;
+  /** Of approved: ad hoc amounts */
+  adhoc: number;
+  paid: number;
+}
+
+export interface PayoutReportDto {
+  trainers: PayoutReportRowDto[];
+  /** All trainers */
+  total: PayoutReportRowDto;
+}
+
+/**
+ * @nullable
+ */
+export type StaffTrainingDtoStepSkill =
+  | (typeof StaffTrainingDtoStepSkill)[keyof typeof StaffTrainingDtoStepSkill]
+  | null;
+
+export const StaffTrainingDtoStepSkill = {
+  WAZU: 'WAZU',
+  NAMAZ: 'NAMAZ',
+} as const;
+
+export interface StaffTrainingDto {
+  id: string;
+  code: string;
+  name: string;
+  /** @nullable */
+  nameUr: string | null;
+  requiredFromAge: number;
+  /** null: both genders */
+  gender: Gender | null;
+  maxMarks: number;
+  passMarks: number;
+  /** @nullable */
+  stepSkill: StaffTrainingDtoStepSkill;
+  order: number;
+}
+
+export interface StaffLookupTrainerDto {
+  id: string;
+  name: string;
+}
+
+export interface StaffLookupEnrollmentDto {
+  id: string;
+  state: TrainingEnrollmentState;
+  sessionId: string;
+  attemptsUsed: number;
+  /** @nullable */
+  trainer: StaffLookupTrainerDto | null;
+  /** The caller is the trainer */
+  mine: boolean;
+}
+
+export interface StaffLookupResponseDto {
+  studentId: string;
+  /** The current GR */
+  grNumber: string;
+  name: string;
+  fatherName: string;
+  gender: Gender;
+  /** @nullable */
+  classLevelCode: string | null;
+  /** @nullable */
+  branchCode: string | null;
+  /**
+   * Age at this session’s admission; null when not admitted
+   * @nullable
+   */
+  age: number | null;
+  /** Trainings their age requires that they haven’t passed */
+  required: RequiredTrainingEntity[];
+  /** Trainings passed, any year */
+  passed: TrainingPassEntity[];
+  /**
+   * The open enrollment
+   * @nullable
+   */
+  enrollment: StaffLookupEnrollmentDto | null;
+  canRegister: boolean;
+  registerBlockedBy?: StaffSyncReasonCode;
+  /** Gradable by the caller right now */
+  canTest: boolean;
+  testBlockedBy?: StaffSyncReasonCode;
+}
+
+export interface AttemptEntity {
+  attemptId: string;
+  attemptNo: number;
+  /** When the tester submitted it (phone's time) */
+  testedAt: string;
+  /** An admin changed the marks */
+  overridden: boolean;
+  /** Only the trainings not passed before this attempt */
+  marks: AttemptMarkEntity[];
+}
+
+export interface TrainerStudentEntity {
+  studentId: string;
+  /** The current GR */
+  grNumber: string;
+  name: string;
+  fatherName: string;
+  /**
+   * This session
+   * @nullable
+   */
+  classLevelCode: string | null;
+  /**
+   * This session
+   * @nullable
+   */
+  branchCode: string | null;
+  enrollmentId: string;
+  /** @nullable */
+  lastYear: LastYearSummaryDto | null;
+  /** The session the student enrolled in */
+  sessionId: string;
+  state: TrainingEnrollmentState;
+  round: number;
+  attemptsUsed: number;
+  /** Attempts allowed this session */
+  maxAttempts: number;
+  trainings: EnrollmentItemEntity[];
+  attempts: AttemptEntity[];
+  /**
+   * Set while a retrain/close decision is due
+   * @nullable
+   */
+  decision: DecisionDueEntity | null;
+  /**
+   * Closes by itself at this time unless the next step happens
+   * @nullable
+   */
+  autoCloseAt: string | null;
+  payout: EnrollmentPayoutEntity;
+  /** @nullable */
+  closedAt: string | null;
+  closureReason: TrainingClosureReason | null;
+}
+
+/**
+ * grNumber, name, and per kind: attemptNo, marks (per training: scorePct, passed, payout), payoutNow, nextStep, failedTrainingIds, trainings, payout, dueAt…
+ */
+export type StaffNotificationDtoData = { [key: string]: unknown };
+
+export interface StaffNotificationDto {
+  id: string;
+  kind: string;
+  /** @nullable */
+  enrollmentId: string | null;
+  /** grNumber, name, and per kind: attemptNo, marks (per training: scorePct, passed, payout), payoutNow, nextStep, failedTrainingIds, trainings, payout, dueAt… */
+  data: StaffNotificationDtoData;
+  createdAt: string;
+  /** @nullable */
+  readAt: string | null;
+}
+
+export interface LedgerPendingEntity {
+  enrollmentId: string;
+  grNumber: string;
+  name: string;
+  /**
+   * null before the first test
+   * @nullable
+   */
+  projected: number | null;
+}
+
+export interface StaffLedgerDto {
+  totals: LedgerTotalsEntity;
+  /** Open enrollments and their projected payout */
+  pending: LedgerPendingEntity[];
+  /** Newest first, cancelled entries left out */
+  entries: TrainerLedgerEntryEntity[];
+}
+
+/**
+ * Graded step by step with these step codes (GET /staff/results/steps)
+ * @nullable
+ */
+export type EnrollmentTrainingEntityStepSkill =
+  | (typeof EnrollmentTrainingEntityStepSkill)[keyof typeof EnrollmentTrainingEntityStepSkill]
+  | null;
+
+export const EnrollmentTrainingEntityStepSkill = {
+  WAZU: 'WAZU',
+  NAMAZ: 'NAMAZ',
+} as const;
+
+export interface EnrollmentTrainingEntity {
+  trainingId: string;
+  code: string;
+  name: string;
+  /** @nullable */
+  nameUr: string | null;
+  maxMarks: number;
+  passMarks: number;
+  /**
+   * Graded step by step with these step codes (GET /staff/results/steps)
+   * @nullable
+   */
+  stepSkill: EnrollmentTrainingEntityStepSkill;
+}
+
+export interface StaffQueueStudentDto {
+  enrollmentId: string;
+  studentId: string;
+  grNumber: string;
+  name: string;
+  fatherName: string;
+  /** @nullable */
+  classLevelCode: string | null;
+  /** @nullable */
+  branchCode: string | null;
+  /** @nullable */
+  lastYear: LastYearSummaryDto | null;
+  /** The attempt to grade */
+  attemptNo: number;
+  /** The trainings to grade: those not passed yet */
+  trainings: EnrollmentTrainingEntity[];
+  /** An admin assigned this test to the caller */
+  assignedToMe: boolean;
+  /** @nullable */
+  readyAt: string | null;
+}
+
+export interface StaffTestingQueueDto {
+  /** Open now or opening in the next 7 days, for the caller */
+  windows: TestingWindowEntity[];
+  students: StaffQueueStudentDto[];
+}
+
+export interface StaffGradedAttemptDto {
+  attemptId: string;
+  enrollmentId: string;
+  grNumber: string;
+  name: string;
+  attemptNo: number;
+  testedAt: string;
+  passedCount: number;
+  totalCount: number;
+  marks: AttemptMarkEntity[];
 }
 
 export type AssetsControllerUploadPublicParams = {
@@ -5689,12 +7139,12 @@ export type AnnouncementWebhookControllerVerifyParams = {
 export type StaffUserControllerFindAllParams = {
   /** Number of records to skip */
   skip?: number;
-  /** Number of records to take */
-  take?: number;
   /** Sort direction */
   sortOrder?: StaffUserControllerFindAllSortOrder;
   /** Include deactivated records */
   includeInActive?: boolean;
+  /** Up to 500, for staff pickers */
+  take?: number;
   /** Name, staff ID or phone contains this */
   search?: string;
   role?: StaffRole;
@@ -5791,4 +7241,365 @@ export type SectionControllerListAdmissionsSortOrder =
 export const SectionControllerListAdmissionsSortOrder = {
   asc: 'asc',
   desc: 'desc',
+} as const;
+
+export type ResultsControllerTheoryPassMarksParams = {
+  sessionId: string;
+};
+
+export type TrainingsConfigControllerListParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: TrainingsConfigControllerListSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+  sortBy?: TrainingsConfigControllerListSortBy;
+  /** Code or name contains this */
+  search?: string;
+};
+
+export type TrainingsConfigControllerListSortOrder =
+  (typeof TrainingsConfigControllerListSortOrder)[keyof typeof TrainingsConfigControllerListSortOrder];
+
+export const TrainingsConfigControllerListSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type TrainingsConfigControllerListSortBy =
+  (typeof TrainingsConfigControllerListSortBy)[keyof typeof TrainingsConfigControllerListSortBy];
+
+export const TrainingsConfigControllerListSortBy = {
+  sortOrder: 'sortOrder',
+  code: 'code',
+  requiredFromAge: 'requiredFromAge',
+} as const;
+
+export type TrainingsConfigControllerListWindowsParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: TrainingsConfigControllerListWindowsSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+  sessionId?: string;
+  branchId?: string;
+  /** Only windows open at this time */
+  openAt?: string;
+};
+
+export type TrainingsConfigControllerListWindowsSortOrder =
+  (typeof TrainingsConfigControllerListWindowsSortOrder)[keyof typeof TrainingsConfigControllerListWindowsSortOrder];
+
+export const TrainingsConfigControllerListWindowsSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type TrainingsAdminControllerListParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: TrainingsAdminControllerListSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+  sortBy?: TrainingsAdminControllerListSortBy;
+  sessionId?: string;
+  state?: TrainingEnrollmentState;
+  /** Enrollments that include this training */
+  trainingId?: string;
+  trainerStaffUserId?: string;
+  /** Pre-assigned tester */
+  testerStaffUserId?: string;
+  /** Branch of the admission the course was picked from */
+  branchId?: string;
+  areaId?: string;
+  gender?: Gender;
+  /** Exact GR (old GRs included) or part of the name */
+  q?: string;
+  /** Open and unchanged for at least this many days */
+  stuckDays?: number;
+};
+
+export type TrainingsAdminControllerListSortOrder =
+  (typeof TrainingsAdminControllerListSortOrder)[keyof typeof TrainingsAdminControllerListSortOrder];
+
+export const TrainingsAdminControllerListSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type TrainingsAdminControllerListSortBy =
+  (typeof TrainingsAdminControllerListSortBy)[keyof typeof TrainingsAdminControllerListSortBy];
+
+export const TrainingsAdminControllerListSortBy = {
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  closedAt: 'closedAt',
+} as const;
+
+export type TrainingsAdminControllerRequiredParams = {
+  studentId: string;
+};
+
+export type TrainingsAdminControllerPassesParams = {
+  studentId: string;
+};
+
+export type TrainingsAdminControllerAttemptsParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: TrainingsAdminControllerAttemptsSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+  sessionId?: string;
+  /** Only grades that arrived after the window end plus the grace period */
+  lateGrade?: boolean;
+  /** Only grades an admin changed */
+  overridden?: boolean;
+  testerStaffUserId?: string;
+  windowId?: string;
+  /** Tested from */
+  from?: string;
+  to?: string;
+};
+
+export type TrainingsAdminControllerAttemptsSortOrder =
+  (typeof TrainingsAdminControllerAttemptsSortOrder)[keyof typeof TrainingsAdminControllerAttemptsSortOrder];
+
+export const TrainingsAdminControllerAttemptsSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type TrainingsAdminControllerPipelineParams = {
+  /** From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers: the test date. Payouts: when the ledger entry was made (a closure, approval-ready). */
+  from?: string;
+  to?: string;
+  sessionId?: string;
+  /** Only this training */
+  trainingId?: string;
+  trainerStaffUserId?: string;
+  testerStaffUserId?: string;
+  branchId?: string;
+  areaId?: string;
+  gender?: Gender;
+  /** Split every figure by gender, area or branch */
+  groupBy?: TrainingsAdminControllerPipelineGroupBy;
+  /** Pipeline: open and unchanged this many days */
+  stuckDays?: number;
+};
+
+export type TrainingsAdminControllerPipelineGroupBy =
+  (typeof TrainingsAdminControllerPipelineGroupBy)[keyof typeof TrainingsAdminControllerPipelineGroupBy];
+
+export const TrainingsAdminControllerPipelineGroupBy = {
+  gender: 'gender',
+  area: 'area',
+  branch: 'branch',
+} as const;
+
+export type TrainingsAdminControllerResultsParams = {
+  /** From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers: the test date. Payouts: when the ledger entry was made (a closure, approval-ready). */
+  from?: string;
+  to?: string;
+  sessionId?: string;
+  /** Only this training */
+  trainingId?: string;
+  trainerStaffUserId?: string;
+  testerStaffUserId?: string;
+  branchId?: string;
+  areaId?: string;
+  gender?: Gender;
+  /** Split every figure by gender, area or branch */
+  groupBy?: TrainingsAdminControllerResultsGroupBy;
+  /** Pipeline: open and unchanged this many days */
+  stuckDays?: number;
+};
+
+export type TrainingsAdminControllerResultsGroupBy =
+  (typeof TrainingsAdminControllerResultsGroupBy)[keyof typeof TrainingsAdminControllerResultsGroupBy];
+
+export const TrainingsAdminControllerResultsGroupBy = {
+  gender: 'gender',
+  area: 'area',
+  branch: 'branch',
+} as const;
+
+export type TrainingsAdminControllerTrainingsParams = {
+  /** From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers: the test date. Payouts: when the ledger entry was made (a closure, approval-ready). */
+  from?: string;
+  to?: string;
+  sessionId?: string;
+  /** Only this training */
+  trainingId?: string;
+  trainerStaffUserId?: string;
+  testerStaffUserId?: string;
+  branchId?: string;
+  areaId?: string;
+  gender?: Gender;
+  /** Split every figure by gender, area or branch */
+  groupBy?: TrainingsAdminControllerTrainingsGroupBy;
+  /** Pipeline: open and unchanged this many days */
+  stuckDays?: number;
+};
+
+export type TrainingsAdminControllerTrainingsGroupBy =
+  (typeof TrainingsAdminControllerTrainingsGroupBy)[keyof typeof TrainingsAdminControllerTrainingsGroupBy];
+
+export const TrainingsAdminControllerTrainingsGroupBy = {
+  gender: 'gender',
+  area: 'area',
+  branch: 'branch',
+} as const;
+
+export type TrainingsAdminControllerTrainersParams = {
+  /** From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers: the test date. Payouts: when the ledger entry was made (a closure, approval-ready). */
+  from?: string;
+  to?: string;
+  sessionId?: string;
+  /** Only this training */
+  trainingId?: string;
+  trainerStaffUserId?: string;
+  testerStaffUserId?: string;
+  branchId?: string;
+  areaId?: string;
+  gender?: Gender;
+  /** Split every figure by gender, area or branch */
+  groupBy?: TrainingsAdminControllerTrainersGroupBy;
+  /** Pipeline: open and unchanged this many days */
+  stuckDays?: number;
+};
+
+export type TrainingsAdminControllerTrainersGroupBy =
+  (typeof TrainingsAdminControllerTrainersGroupBy)[keyof typeof TrainingsAdminControllerTrainersGroupBy];
+
+export const TrainingsAdminControllerTrainersGroupBy = {
+  gender: 'gender',
+  area: 'area',
+  branch: 'branch',
+} as const;
+
+export type TrainingsAdminControllerTestersParams = {
+  /** From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers: the test date. Payouts: when the ledger entry was made (a closure, approval-ready). */
+  from?: string;
+  to?: string;
+  sessionId?: string;
+  /** Only this training */
+  trainingId?: string;
+  trainerStaffUserId?: string;
+  testerStaffUserId?: string;
+  branchId?: string;
+  areaId?: string;
+  gender?: Gender;
+  /** Split every figure by gender, area or branch */
+  groupBy?: TrainingsAdminControllerTestersGroupBy;
+  /** Pipeline: open and unchanged this many days */
+  stuckDays?: number;
+};
+
+export type TrainingsAdminControllerTestersGroupBy =
+  (typeof TrainingsAdminControllerTestersGroupBy)[keyof typeof TrainingsAdminControllerTestersGroupBy];
+
+export const TrainingsAdminControllerTestersGroupBy = {
+  gender: 'gender',
+  area: 'area',
+  branch: 'branch',
+} as const;
+
+export type TrainingsLedgerControllerListParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: TrainingsLedgerControllerListSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+  trainerStaffUserId?: string;
+  kind?: TrainerLedgerKind;
+  /** Stored status (PAYABLE, APPROVED, CANCELLED, RECORDED, VOIDED) */
+  status?: TrainerLedgerStatus;
+  enrollmentId?: string;
+  /** Created from */
+  from?: string;
+  to?: string;
+};
+
+export type TrainingsLedgerControllerListSortOrder =
+  (typeof TrainingsLedgerControllerListSortOrder)[keyof typeof TrainingsLedgerControllerListSortOrder];
+
+export const TrainingsLedgerControllerListSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type TrainingsLedgerControllerTrainersParams = {
+  /** Entries created from (projected ignores dates) */
+  from?: string;
+  to?: string;
+};
+
+export type TrainingsLedgerControllerExportParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: TrainingsLedgerControllerExportSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+  trainerStaffUserId?: string;
+  kind?: TrainerLedgerKind;
+  /** Stored status (PAYABLE, APPROVED, CANCELLED, RECORDED, VOIDED) */
+  status?: TrainerLedgerStatus;
+  enrollmentId?: string;
+  /** Created from */
+  from?: string;
+  to?: string;
+};
+
+export type TrainingsLedgerControllerExportSortOrder =
+  (typeof TrainingsLedgerControllerExportSortOrder)[keyof typeof TrainingsLedgerControllerExportSortOrder];
+
+export const TrainingsLedgerControllerExportSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type TrainingsLedgerControllerPayoutsParams = {
+  /** From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers: the test date. Payouts: when the ledger entry was made (a closure, approval-ready). */
+  from?: string;
+  to?: string;
+  sessionId?: string;
+  /** Only this training */
+  trainingId?: string;
+  trainerStaffUserId?: string;
+  testerStaffUserId?: string;
+  branchId?: string;
+  areaId?: string;
+  gender?: Gender;
+  /** Split every figure by gender, area or branch */
+  groupBy?: TrainingsLedgerControllerPayoutsGroupBy;
+  /** Pipeline: open and unchanged this many days */
+  stuckDays?: number;
+};
+
+export type TrainingsLedgerControllerPayoutsGroupBy =
+  (typeof TrainingsLedgerControllerPayoutsGroupBy)[keyof typeof TrainingsLedgerControllerPayoutsGroupBy];
+
+export const TrainingsLedgerControllerPayoutsGroupBy = {
+  gender: 'gender',
+  area: 'area',
+  branch: 'branch',
 } as const;

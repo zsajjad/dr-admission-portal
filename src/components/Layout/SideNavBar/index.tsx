@@ -16,13 +16,14 @@ import images from '@/assets/images';
 
 import { routes } from '@/router/routes';
 
-import { navItems } from '../config';
+import { useNavItems } from '../config';
 import { NavList } from '../NavItems';
 
 import { SideNav, SideNavContainer } from './Styled';
 
 export function SideNavBar(): React.JSX.Element {
   const pathname = usePathname();
+  const navItems = useNavItems();
   const {
     light: { palette },
   } = colorSchemes;
