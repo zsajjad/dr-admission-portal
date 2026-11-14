@@ -231,7 +231,15 @@ export function ReportsView() {
               { label: t(messages.students), align: 'right', value: (r) => num(r.students) },
               { label: t(messages.tested), align: 'right', value: (r) => num(r.tested) },
               { label: t(messages.averageScore), align: 'right', value: (r) => formatPct(r.averageScore) },
-              { label: t(messages.retrainRate), align: 'right', value: (r) => formatPct(r.retrainRate) },
+              {
+                label: (
+                  <Tooltip title={t(messages.retrainRateHelp)}>
+                    <span>{t(messages.retrainRate)}</span>
+                  </Tooltip>
+                ),
+                align: 'right',
+                value: (r) => formatPct(r.retrainRate),
+              },
               { label: t(messages.payoutTotal), align: 'right', value: (r) => formatAmount(r.payoutTotal) },
             ]}
           />

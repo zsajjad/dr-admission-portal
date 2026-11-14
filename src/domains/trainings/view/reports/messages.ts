@@ -36,6 +36,11 @@ export default defineMessages({
   graded: { id: `${scope}.graded`, defaultMessage: 'Graded' },
   averagePct: { id: `${scope}.averagePct`, defaultMessage: 'Average %' },
   retrainRate: { id: `${scope}.retrainRate`, defaultMessage: 'Retrain rate' },
+  retrainRateHelp: {
+    id: `${scope}.retrainRateHelp`,
+    defaultMessage:
+      'Share of tested students the trainer chose to retrain: failed trainings, or passed ones below 90% to improve the score and pay.',
+  },
   payoutTotal: { id: `${scope}.payoutTotal`, defaultMessage: 'Payout total' },
   window: { id: `${scope}.window`, defaultMessage: 'Window' },
   averageGiven: { id: `${scope}.averageGiven`, defaultMessage: 'Average given' },
