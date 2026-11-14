@@ -9,11 +9,11 @@ import { useStaffUserControllerFindAll } from '@/providers/service/staff-user/st
 
 import { useAuthenticatedApi } from '@/hooks/useAuthenticatedApi';
 
-/** Active staff users with a role, e.g. every trainer. Staff lists are small; the API pages at 100, which covers a season's trainers and testers. */
+/** Active staff users with a role, e.g. every trainer. Staff lists are small; one page of up to 500 (the API's limit) covers them. */
 export function useStaffByRole(role: StaffRole) {
   const { isAuthenticated } = useAuthenticatedApi();
   const { data, isLoading } = useStaffUserControllerFindAll(
-    { role, take: 100 },
+    { role, take: 500 },
     { query: { enabled: isAuthenticated, staleTime: 5 * 60 * 1000 } },
   );
   return { staff: useMemo(() => data?.data ?? [], [data]), isLoading };
@@ -115,7 +115,7 @@ export function StaffUserMultiSelect({
 export function useStaffNames() {
   const { isAuthenticated } = useAuthenticatedApi();
   const { data } = useStaffUserControllerFindAll(
-    { take: 100, includeInActive: true },
+    { take: 500, includeInActive: true },
     { query: { enabled: isAuthenticated, staleTime: 5 * 60 * 1000 } },
   );
   return useMemo(() => {

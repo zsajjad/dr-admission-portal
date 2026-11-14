@@ -73,7 +73,7 @@ export function WindowDialog({ open, onClose, window: editing, defaultSessionId 
     const data = {
       sessionId,
       name: name.trim(),
-      ...(branchId !== ALL && { branchId }),
+      branchId: branchId === ALL ? null : branchId,
       ...(opensIso && { opensAt: opensIso }),
       closesAt: closesIso,
       testerStaffUserIds: testerIds,

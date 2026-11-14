@@ -25,7 +25,7 @@ export default defineMessages({
   bestPct: { id: `${scope}.bestPct`, defaultMessage: 'Best %' },
   payout: { id: `${scope}.payout`, defaultMessage: 'Payout' },
   projected: { id: `${scope}.projected`, defaultMessage: 'projected' },
-  enrolled_col: { id: `${scope}.enrolled_col`, defaultMessage: 'Enrolled' },
+  today: { id: `${scope}.today`, defaultMessage: 'today' },
   autoCloseAt: { id: `${scope}.autoCloseAt`, defaultMessage: 'Auto-closes' },
   noEnrollments: { id: `${scope}.noEnrollments`, defaultMessage: 'No enrollments match' },
 
@@ -73,7 +73,7 @@ export default defineMessages({
     id: `${scope}.flag_SENT_AFTER_LOGOUT`,
     defaultMessage: 'Sent after the phone was logged out',
   },
-  progress_DONE: { id: `${scope}.progress_DONE`, defaultMessage: 'Done (90%+)' },
+  progress_DONE: { id: `${scope}.progress_DONE`, defaultMessage: 'Done' },
   progress_CAN_RETRAIN: { id: `${scope}.progress_CAN_RETRAIN`, defaultMessage: 'Passed, can retrain' },
   progress_FAILED: { id: `${scope}.progress_FAILED`, defaultMessage: 'Failed' },
   progress_PENDING: { id: `${scope}.progress_PENDING`, defaultMessage: 'Not tested' },
@@ -81,7 +81,22 @@ export default defineMessages({
   progressHelp: {
     id: `${scope}.progressHelp`,
     defaultMessage:
-      'Within a session, any training below 90% can be retrained and retested, even if passed. The best attempt counts, and a pass is never lost.',
+      'Within a session, any training below {pct}% can be retrained and retested, even if passed. The best attempt counts, and a pass is never lost.',
+  },
+  trainingsTitle: { id: `${scope}.trainingsTitle`, defaultMessage: 'Trainings' },
+  trainingsPassed: { id: `${scope}.trainingsPassed`, defaultMessage: 'Trainings passed' },
+  trained: { id: `${scope}.trained`, defaultMessage: 'Trained' },
+  lastActivity: { id: `${scope}.lastActivity`, defaultMessage: 'Last activity' },
+  ruleLine: { id: `${scope}.ruleLine`, defaultMessage: 'Pass {pass}/{max} · pays {floor}–{top}' },
+  improvingFrom: {
+    id: `${scope}.improvingFrom`,
+    defaultMessage:
+      'Improving a pass from an earlier session ({pct}, band {band}). It pays only if it reaches a higher band.',
+  },
+  decisionDueV3: {
+    id: `${scope}.decisionDueV3`,
+    defaultMessage:
+      'The trainer’s decision after attempt {n} is due. Failed: {failed}. Can be retrained to improve: {retrainable}. Closing now pays {now}.',
   },
   item_PENDING: { id: `${scope}.item_PENDING`, defaultMessage: 'Pending' },
   item_PASSED: { id: `${scope}.item_PASSED`, defaultMessage: 'Passed' },
@@ -151,7 +166,7 @@ export default defineMessages({
   closeExplain: {
     id: `${scope}.closeExplain`,
     defaultMessage:
-      'It closes as “Closed by admin”, and {trainer} is paid {amount} from the best attempt. The payout is fixed and goes to the ledger to approve.',
+      'It closes as “Closed by admin”, and {trainer} is paid {amount}: each tested training from its best attempt. The payout is fixed and goes to the ledger to approve.',
   },
   closeExplainUntested: {
     id: `${scope}.closeExplainUntested`,
@@ -193,6 +208,12 @@ export default defineMessages({
   courseOverride: { id: `${scope}.courseOverride`, defaultMessage: 'Course' },
   useMatrix: { id: `${scope}.useMatrix`, defaultMessage: 'The age matrix’s course' },
   requiredNow: { id: `${scope}.requiredNow`, defaultMessage: 'Required now (age {age}), not yet passed' },
+  improvePasses: { id: `${scope}.improvePasses`, defaultMessage: 'Also improve (optional)' },
+  improvePassesHelp: {
+    id: `${scope}.improvePassesHelp`,
+    defaultMessage:
+      'Passes from earlier sessions below 90%. They can be trained again to improve the score; they pay only if a higher band is reached.',
+  },
   nothingRequired: {
     id: `${scope}.nothingRequired`,
     defaultMessage: 'Nothing is required: the student has passed every training for their age.',
@@ -218,6 +239,7 @@ export default defineMessages({
   },
   passedTitle: { id: `${scope}.passedTitle`, defaultMessage: 'Passed, in any year' },
   noPasses: { id: `${scope}.noPasses`, defaultMessage: 'No trainings passed yet' },
+  improvable: { id: `${scope}.improvable`, defaultMessage: 'Can improve' },
   passByTest: { id: `${scope}.passByTest`, defaultMessage: 'Passed a test' },
   passByAdmin: { id: `${scope}.passByAdmin`, defaultMessage: 'Added by an admin' },
   addPass: { id: `${scope}.addPass`, defaultMessage: 'Add a pass' },

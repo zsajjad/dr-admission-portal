@@ -16,7 +16,7 @@ const COLOR: Record<EnrollmentState, 'default' | 'info' | 'primary' | 'warning' 
 /** An enrollment's state; a closed one shows why it closed */
 export function StateChip({ state, closureReason }: { state: EnrollmentState; closureReason?: ClosureReason | null }) {
   const label = state === 'CLOSED' && closureReason ? messages[closureReason] : messages[state];
-  const color = state === 'CLOSED' && closureReason && closureReason !== 'PASSED' ? 'default' : COLOR[state];
+  const color = state === 'CLOSED' && closureReason && closureReason !== 'ALL_PASSED' ? 'default' : COLOR[state];
   return (
     <Chip
       size="small"

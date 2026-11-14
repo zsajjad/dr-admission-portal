@@ -9801,16 +9801,6 @@
             }
           },
           {
-            "name": "take",
-            "required": false,
-            "in": "query",
-            "description": "Number of records to take",
-            "schema": {
-              "default": 10,
-              "type": "number"
-            }
-          },
-          {
             "name": "sortOrder",
             "required": false,
             "in": "query",
@@ -9832,6 +9822,16 @@
             "schema": {
               "default": false,
               "type": "boolean"
+            }
+          },
+          {
+            "name": "take",
+            "required": false,
+            "in": "query",
+            "description": "Up to 500, for staff pickers",
+            "schema": {
+              "default": 100,
+              "type": "number"
             }
           },
           {
@@ -11722,6 +11722,7 @@
     },
     "/results/ranks/compute": {
       "post": {
+        "description": "Pass: Wazu ≥ 75% and Namaz ≥ 75%, each on its own; undecided while either is missing. Positions only for students who passed, per branch and class level: theory %, then practical %, then attendance %. TERMINATED, locked and 2026-imported results keep their pass or fail; imported ranks are kept.",
         "operationId": "ResultsController_computeRanks",
         "parameters": [],
         "requestBody": {
@@ -11760,12 +11761,108 @@
             "admin-jwt": []
           }
         ],
+        "summary": "Work out pass or fail and positions for a session",
         "tags": [
           "Results"
         ],
         "x-permissions": [
           "results.lock",
           "results.override"
+        ]
+      }
+    },
+    "/results/theory-pass-marks": {
+      "get": {
+        "operationId": "ResultsController_theoryPassMarks",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The theory pass mark per class level in a session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TheoryPassMarksResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: reports.view or results.enter or results.lock"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Results"
+        ],
+        "x-permissions": [
+          "reports.view",
+          "results.enter",
+          "results.lock"
+        ]
+      },
+      "put": {
+        "operationId": "ResultsController_setTheoryPassMarks",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetTheoryPassMarksDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sets pass marks (in theory marks; null removes one), then recomputes the session's results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TheoryPassMarksResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: results.lock"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Results"
+        ],
+        "x-permissions": [
+          "results.lock"
         ]
       }
     },
@@ -12037,9 +12134,9 @@
         ]
       }
     },
-    "/trainings/courses": {
+    "/trainings/catalog": {
       "get": {
-        "operationId": "TrainingsConfigController_listCourses",
+        "operationId": "TrainingsConfigController_list",
         "parameters": [
           {
             "name": "skip",
@@ -12090,12 +12187,12 @@
             "required": false,
             "in": "query",
             "schema": {
-              "default": "code",
+              "default": "sortOrder",
               "type": "string",
               "enum": [
+                "sortOrder",
                 "code",
-                "name",
-                "createdAt"
+                "requiredFromAge"
               ]
             }
           },
@@ -12111,11 +12208,11 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "The trainings, each required from an age",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ListTrainingCoursesResponseDto"
+                  "$ref": "#/components/schemas/ListTrainingsResponseDto"
                 }
               }
             }
@@ -12147,14 +12244,14 @@
         ]
       },
       "post": {
-        "operationId": "TrainingsConfigController_createCourse",
+        "operationId": "TrainingsConfigController_create",
         "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateTrainingCourseDto"
+                "$ref": "#/components/schemas/CreateTrainingDto"
               }
             }
           }
@@ -12165,7 +12262,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TrainingCourseResponseDto"
+                  "$ref": "#/components/schemas/TrainingResponseDto"
                 }
               }
             }
@@ -12193,9 +12290,9 @@
         ]
       }
     },
-    "/trainings/courses/{id}": {
+    "/trainings/catalog/{id}": {
       "get": {
-        "operationId": "TrainingsConfigController_getCourse",
+        "operationId": "TrainingsConfigController_get",
         "parameters": [
           {
             "name": "id",
@@ -12212,7 +12309,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TrainingCourseResponseDto"
+                  "$ref": "#/components/schemas/TrainingResponseDto"
                 }
               }
             }
@@ -12244,7 +12341,7 @@
         ]
       },
       "patch": {
-        "operationId": "TrainingsConfigController_updateCourse",
+        "operationId": "TrainingsConfigController_update",
         "parameters": [
           {
             "name": "id",
@@ -12260,18 +12357,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateTrainingCourseDto"
+                "$ref": "#/components/schemas/UpdateTrainingDto"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Only new enrollments use the new rules; open ones keep the rules they started with",
+            "description": "Only new enrollments use the change",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TrainingCourseResponseDto"
+                  "$ref": "#/components/schemas/TrainingResponseDto"
                 }
               }
             }
@@ -12299,9 +12396,9 @@
         ]
       }
     },
-    "/trainings/courses/{id}/activate": {
+    "/trainings/catalog/{id}/activate": {
       "patch": {
-        "operationId": "TrainingsConfigController_activateCourse",
+        "operationId": "TrainingsConfigController_activate",
         "parameters": [
           {
             "name": "id",
@@ -12318,7 +12415,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TrainingCourseResponseDto"
+                  "$ref": "#/components/schemas/TrainingResponseDto"
                 }
               }
             }
@@ -12346,9 +12443,9 @@
         ]
       }
     },
-    "/trainings/courses/{id}/deactivate": {
+    "/trainings/catalog/{id}/deactivate": {
       "delete": {
-        "operationId": "TrainingsConfigController_deactivateCourse",
+        "operationId": "TrainingsConfigController_deactivate",
         "parameters": [
           {
             "name": "id",
@@ -12361,11 +12458,11 @@
         ],
         "responses": {
           "200": {
-            "description": "Refused while the age matrix uses the course",
+            "description": "No longer required from anyone; passes stay",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TrainingCourseResponseDto"
+                  "$ref": "#/components/schemas/TrainingResponseDto"
                 }
               }
             }
@@ -12393,17 +12490,17 @@
         ]
       }
     },
-    "/trainings/age-rules": {
+    "/trainings/settings": {
       "get": {
-        "operationId": "TrainingsConfigController_listAgeRules",
+        "operationId": "TrainingsConfigController_getSettings",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "The training × age matrix",
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AgeRulesResponseDto"
+                  "$ref": "#/components/schemas/TrainingSettingsResponseDto"
                 }
               }
             }
@@ -12435,25 +12532,25 @@
         ]
       },
       "put": {
-        "operationId": "TrainingsConfigController_replaceAgeRules",
+        "operationId": "TrainingsConfigController_updateSettings",
         "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ReplaceAgeRulesDto"
+                "$ref": "#/components/schemas/UpdateTrainingSettingsDto"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Replaces the whole matrix; overlapping ranges are refused",
+            "description": "Open enrollments keep the settings they started with",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AgeRulesResponseDto"
+                  "$ref": "#/components/schemas/TrainingSettingsResponseDto"
                 }
               }
             }
@@ -12882,9 +12979,10 @@
             }
           },
           {
-            "name": "courseId",
+            "name": "trainingId",
             "required": false,
             "in": "query",
+            "description": "Enrollments that include this training",
             "schema": {
               "type": "string"
             }
@@ -13002,7 +13100,7 @@
         },
         "responses": {
           "201": {
-            "description": "400 COURSE_COMPLETED without a reason; 409 ALREADY_ENROLLED",
+            "description": "For the trainings the student still needs. 400 NOTHING_REQUIRED; 409 ALREADY_ENROLLED",
             "content": {
               "application/json": {
                 "schema": {
@@ -13136,9 +13234,9 @@
         ]
       }
     },
-    "/trainings/age-rules/resolve": {
+    "/trainings/required": {
       "get": {
-        "operationId": "TrainingsAdminController_resolve",
+        "operationId": "TrainingsAdminController_required",
         "parameters": [
           {
             "name": "studentId",
@@ -13151,7 +13249,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The course the matrix gives a student now",
+            "description": "What a student still needs, their passes and enrollments",
             "content": {
               "application/json": {
                 "schema": {
@@ -13184,6 +13282,160 @@
           "trainings.manage",
           "trainings.override",
           "trainings.payouts"
+        ]
+      }
+    },
+    "/trainings/passes": {
+      "get": {
+        "operationId": "TrainingsAdminController_passes",
+        "parameters": [
+          {
+            "name": "studentId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A student's passes, any year",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingPassesResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: reports.view or trainings.configure or trainings.manage or trainings.override or trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "reports.view",
+          "trainings.configure",
+          "trainings.manage",
+          "trainings.override",
+          "trainings.payouts"
+        ]
+      },
+      "post": {
+        "operationId": "TrainingsAdminController_addPass",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddTrainingPassDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Record a pass by hand (e.g. from earlier records). Pays nobody. 400 ALREADY_PASSED.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingPassesResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: trainings.manage"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "trainings.manage"
+        ]
+      }
+    },
+    "/trainings/passes/{id}/revoke": {
+      "post": {
+        "operationId": "TrainingsAdminController_revokePass",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReasonDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The training becomes required again",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingPassesResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: trainings.manage"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "trainings.manage"
         ]
       }
     },
@@ -13415,6 +13667,154 @@
         ]
       }
     },
+    "/trainings/attempts": {
+      "get": {
+        "operationId": "TrainingsAdminController_attempts",
+        "parameters": [
+          {
+            "name": "skip",
+            "required": false,
+            "in": "query",
+            "description": "Number of records to skip",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "take",
+            "required": false,
+            "in": "query",
+            "description": "Number of records to take",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "required": false,
+            "in": "query",
+            "description": "Sort direction",
+            "schema": {
+              "default": "asc",
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "includeInActive",
+            "required": false,
+            "in": "query",
+            "description": "Include deactivated records",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "lateGrade",
+            "required": false,
+            "in": "query",
+            "description": "Only grades that arrived after the window end plus the grace period",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "overridden",
+            "required": false,
+            "in": "query",
+            "description": "Only grades an admin changed",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "testerStaffUserId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "windowId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "description": "Tested from",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Grades for review, e.g. lateGrade=true (flagged LATE_GRADE) or overridden=true",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListTrainingAttemptsResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: reports.view or trainings.configure or trainings.manage or trainings.override or trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "reports.view",
+          "trainings.configure",
+          "trainings.manage",
+          "trainings.override",
+          "trainings.payouts"
+        ]
+      }
+    },
     "/trainings/attempts/{id}/marks": {
       "put": {
         "operationId": "TrainingsAdminController_override",
@@ -13518,7 +13918,7 @@
             "name": "from",
             "required": false,
             "in": "query",
-            "description": "Enrollments created (pipeline) or attempts tested (others) from",
+            "description": "From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers: the test date. Payouts: when the ledger entry was made (a closure, approval-ready).",
             "schema": {
               "format": "date-time",
               "type": "string"
@@ -13542,9 +13942,10 @@
             }
           },
           {
-            "name": "courseId",
+            "name": "trainingId",
             "required": false,
             "in": "query",
+            "description": "Only this training",
             "schema": {
               "type": "string"
             }
@@ -13660,7 +14061,7 @@
             "name": "from",
             "required": false,
             "in": "query",
-            "description": "Enrollments created (pipeline) or attempts tested (others) from",
+            "description": "From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers: the test date. Payouts: when the ledger entry was made (a closure, approval-ready).",
             "schema": {
               "format": "date-time",
               "type": "string"
@@ -13684,9 +14085,10 @@
             }
           },
           {
-            "name": "courseId",
+            "name": "trainingId",
             "required": false,
             "in": "query",
+            "description": "Only this training",
             "schema": {
               "type": "string"
             }
@@ -13802,7 +14204,7 @@
             "name": "from",
             "required": false,
             "in": "query",
-            "description": "Enrollments created (pipeline) or attempts tested (others) from",
+            "description": "From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers: the test date. Payouts: when the ledger entry was made (a closure, approval-ready).",
             "schema": {
               "format": "date-time",
               "type": "string"
@@ -13826,9 +14228,10 @@
             }
           },
           {
-            "name": "courseId",
+            "name": "trainingId",
             "required": false,
             "in": "query",
+            "description": "Only this training",
             "schema": {
               "type": "string"
             }
@@ -13944,7 +14347,7 @@
             "name": "from",
             "required": false,
             "in": "query",
-            "description": "Enrollments created (pipeline) or attempts tested (others) from",
+            "description": "From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers: the test date. Payouts: when the ledger entry was made (a closure, approval-ready).",
             "schema": {
               "format": "date-time",
               "type": "string"
@@ -13968,9 +14371,10 @@
             }
           },
           {
-            "name": "courseId",
+            "name": "trainingId",
             "required": false,
             "in": "query",
+            "description": "Only this training",
             "schema": {
               "type": "string"
             }
@@ -14086,7 +14490,7 @@
             "name": "from",
             "required": false,
             "in": "query",
-            "description": "Enrollments created (pipeline) or attempts tested (others) from",
+            "description": "From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers: the test date. Payouts: when the ledger entry was made (a closure, approval-ready).",
             "schema": {
               "format": "date-time",
               "type": "string"
@@ -14110,9 +14514,10 @@
             }
           },
           {
-            "name": "courseId",
+            "name": "trainingId",
             "required": false,
             "in": "query",
+            "description": "Only this training",
             "schema": {
               "type": "string"
             }
@@ -14694,6 +15099,54 @@
         ]
       }
     },
+    "/trainings/ledger/adhoc": {
+      "post": {
+        "operationId": "TrainingsLedgerController_adhoc",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordAdhocDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "An amount the trainer is owed (an allowance, a bonus), approved when made; the trainer is notified",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LedgerActionResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: trainings.payouts"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "Trainings"
+        ],
+        "x-permissions": [
+          "trainings.payouts"
+        ]
+      }
+    },
     "/trainings/ledger/entries/{id}/void": {
       "post": {
         "operationId": "TrainingsLedgerController_void",
@@ -14719,7 +15172,7 @@
         },
         "responses": {
           "201": {
-            "description": "Payments and adjustments only",
+            "description": "Payments, adjustments and ad hoc amounts only",
             "content": {
               "application/json": {
                 "schema": {
@@ -14759,7 +15212,7 @@
             "name": "from",
             "required": false,
             "in": "query",
-            "description": "Enrollments created (pipeline) or attempts tested (others) from",
+            "description": "From this date. Pipeline: when the enrollment was created. Results, trainings, trainers, testers: the test date. Payouts: when the ledger entry was made (a closure, approval-ready).",
             "schema": {
               "format": "date-time",
               "type": "string"
@@ -14783,9 +15236,10 @@
             }
           },
           {
-            "name": "courseId",
+            "name": "trainingId",
             "required": false,
             "in": "query",
+            "description": "Only this training",
             "schema": {
               "type": "string"
             }
@@ -14893,19 +15347,19 @@
         ]
       }
     },
-    "/staff/trainings/courses": {
+    "/staff/trainings/catalog": {
       "get": {
-        "operationId": "TrainingsStaffController_courses",
+        "operationId": "TrainingsStaffController_catalog",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Active courses with their trainings. TRAINER or TESTER.",
+            "description": "Active trainings, each required from an age. TRAINER or TESTER.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/StaffCourseDto"
+                    "$ref": "#/components/schemas/StaffTrainingDto"
                   }
                 }
               }
@@ -26465,10 +26919,9 @@
           "ROLE_REQUIRED",
           "STUDENT_NOT_FOUND",
           "NOT_ADMITTED",
-          "NO_COURSE",
-          "COURSE_COMPLETED",
+          "NOTHING_REQUIRED",
           "OTHER_TRAINER",
-          "COURSE_CHANGED",
+          "ALREADY_PASSED",
           "NOT_ENROLLED",
           "NOT_YOUR_STUDENT",
           "UNKNOWN_TRAINING",
@@ -26484,6 +26937,9 @@
           "OWN_TRAINEE",
           "ALREADY_GRADED",
           "MARKS_INVALID",
+          "INVALID_RETRAIN_SET",
+          "NOT_DUE",
+          "INVALID_IMPROVE_SET",
           "SENT_AFTER_LOGOUT",
           "LATE_DAY",
           "LATE_GRADE",
@@ -27541,7 +27997,7 @@
           },
           "ranked": {
             "type": "number",
-            "description": "Students given a rank"
+            "description": "Students given a position (only students who passed get one)"
           },
           "changed": {
             "type": "number",
@@ -27553,6 +28009,91 @@
           "groups",
           "ranked",
           "changed"
+        ]
+      },
+      "TheoryPassMarkEntity": {
+        "type": "object",
+        "properties": {
+          "classLevelId": {
+            "type": "string"
+          },
+          "classLevelCode": {
+            "type": "string",
+            "example": "Muhibaan7-G"
+          },
+          "passMarks": {
+            "type": "number",
+            "example": 30,
+            "description": "In theory marks"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "classLevelId",
+          "classLevelCode",
+          "passMarks"
+        ]
+      },
+      "TheoryPassMarksResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message of the action"
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TheoryPassMarkEntity"
+            }
+          }
+        },
+        "required": [
+          "message",
+          "sessionId",
+          "data"
+        ]
+      },
+      "TheoryPassMarkRowDto": {
+        "type": "object",
+        "properties": {
+          "classLevelId": {
+            "type": "string"
+          },
+          "passMarks": {
+            "type": "number",
+            "nullable": true,
+            "description": "In theory marks; null removes it"
+          }
+        },
+        "required": [
+          "classLevelId",
+          "passMarks"
+        ]
+      },
+      "SetTheoryPassMarksDto": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "string"
+          },
+          "rows": {
+            "description": "Class levels not listed keep their pass mark",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TheoryPassMarkRowDto"
+            }
+          }
+        },
+        "required": [
+          "sessionId",
+          "rows"
         ]
       },
       "ResultStepEntity": {
@@ -27669,12 +28210,12 @@
           "branchRank": {
             "type": "number",
             "nullable": true,
-            "description": "Rank in the branch and class level"
+            "description": "Position among the students who passed, in the branch and class level"
           },
           "rankedOf": {
             "type": "number",
             "nullable": true,
-            "description": "How many were ranked in that group"
+            "description": "How many passed in that group"
           },
           "rankedAt": {
             "format": "date-time",
@@ -28007,7 +28548,7 @@
           "minPct": {
             "type": "number",
             "example": 90,
-            "description": "Lowest weighted % that earns this band"
+            "description": "Lowest score % that earns this band"
           },
           "amount": {
             "type": "number",
@@ -28037,10 +28578,18 @@
           "nameUr": {
             "type": "string"
           },
-          "weightPct": {
+          "requiredFromAge": {
             "type": "number",
-            "example": 30,
-            "description": "Share of the weighted score; a course's trainings sum to 100"
+            "example": 6,
+            "description": "Required from this age at admission"
+          },
+          "gender": {
+            "description": "Missing: both genders",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Gender"
+              }
+            ]
           },
           "maxMarks": {
             "type": "number",
@@ -28050,83 +28599,28 @@
             "type": "number",
             "example": 50
           },
-          "sortOrder": {
-            "type": "number"
-          },
-          "isActive": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "id",
-          "code",
-          "name",
-          "weightPct",
-          "maxMarks",
-          "passMarks",
-          "sortOrder",
-          "isActive"
-        ]
-      },
-      "TrainingCourseEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "code": {
-            "type": "string",
-            "example": "FIQH-B"
-          },
-          "name": {
-            "type": "string"
-          },
-          "nameUr": {
-            "type": "string"
-          },
-          "retrainThresholdPct": {
-            "type": "number",
-            "example": 90,
-            "description": "Every training passed at this weighted % or more closes the course"
-          },
-          "maxAttempts": {
-            "type": "number",
-            "example": 2
-          },
-          "autoCloseDays": {
-            "type": "number",
-            "example": 30,
-            "description": "Days with no next step before the course closes by itself"
-          },
-          "reminderDays": {
-            "example": [
-              7,
-              25
-            ],
-            "description": "Days on which the trainer is reminded",
-            "type": "array",
-            "items": {
-              "type": "number"
-            }
-          },
           "payoutFloor": {
             "type": "number",
             "example": 350,
-            "description": "PKR"
+            "description": "PKR paid for a tested but failed training"
           },
           "bands": {
-            "description": "Highest first",
+            "description": "PKR paid for a pass, by score %; highest first",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/PayoutBandEntity"
             }
           },
-          "trainings": {
-            "description": "Active trainings in order (all of them for admins)",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/TrainingEntity"
-            }
+          "stepSkill": {
+            "type": "string",
+            "enum": [
+              "WAZU",
+              "NAMAZ"
+            ],
+            "description": "Graded step by step with these step codes (GET /results/steps)"
+          },
+          "sortOrder": {
+            "type": "number"
           },
           "isActive": {
             "type": "boolean"
@@ -28144,18 +28638,17 @@
           "id",
           "code",
           "name",
-          "retrainThresholdPct",
-          "maxAttempts",
-          "autoCloseDays",
-          "reminderDays",
+          "requiredFromAge",
+          "maxMarks",
+          "passMarks",
           "payoutFloor",
           "bands",
-          "trainings",
+          "sortOrder",
           "isActive",
           "createdAt"
         ]
       },
-      "ListTrainingCoursesResponseDto": {
+      "ListTrainingsResponseDto": {
         "type": "object",
         "properties": {
           "count": {
@@ -28165,7 +28658,7 @@
           "data": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/TrainingCourseEntity"
+              "$ref": "#/components/schemas/TrainingEntity"
             }
           }
         },
@@ -28174,7 +28667,7 @@
           "data"
         ]
       },
-      "TrainingCourseResponseDto": {
+      "TrainingResponseDto": {
         "type": "object",
         "properties": {
           "message": {
@@ -28182,7 +28675,7 @@
             "description": "Message of the action"
           },
           "data": {
-            "$ref": "#/components/schemas/TrainingCourseEntity"
+            "$ref": "#/components/schemas/TrainingEntity"
           }
         },
         "required": [
@@ -28208,17 +28701,13 @@
           "amount"
         ]
       },
-      "TrainingInputDto": {
+      "CreateTrainingDto": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "string",
-            "description": "An existing training of this course, to update it"
-          },
           "code": {
             "type": "string",
             "example": "WAZU",
-            "description": "Letters, digits, - and _; unique in the course"
+            "description": "Letters, digits, - and _; unique"
           },
           "name": {
             "type": "string",
@@ -28227,9 +28716,19 @@
           "nameUr": {
             "type": "string"
           },
-          "weightPct": {
+          "requiredFromAge": {
             "type": "number",
-            "example": 30
+            "example": 6,
+            "description": "Required from this age at admission"
+          },
+          "gender": {
+            "nullable": true,
+            "description": "Leave out for both genders",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Gender"
+              }
+            ]
           },
           "maxMarks": {
             "type": "number",
@@ -28239,211 +28738,62 @@
             "type": "number",
             "example": 50
           },
+          "payoutFloor": {
+            "type": "number",
+            "default": 350,
+            "description": "PKR for a tested but failed training"
+          },
+          "bands": {
+            "description": "PKR for a pass by score %; default 90→1000, 75→750, 50→500, 0→350",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PayoutBandDto"
+            }
+          },
+          "stepSkill": {
+            "type": "string",
+            "enum": [
+              "WAZU",
+              "NAMAZ"
+            ],
+            "nullable": true,
+            "description": "Grade it step by step with the WAZU or NAMAZ step codes; leave out for marks only"
+          },
           "sortOrder": {
             "type": "number",
-            "description": "Defaults to the position in the list"
+            "default": 0
           }
         },
         "required": [
           "code",
           "name",
-          "weightPct",
+          "requiredFromAge",
           "maxMarks",
           "passMarks"
         ]
       },
-      "CreateTrainingCourseDto": {
+      "UpdateTrainingDto": {
         "type": "object",
         "properties": {
           "code": {
             "type": "string",
-            "example": "FIQH-B"
+            "example": "WAZU",
+            "description": "Letters, digits, - and _; unique"
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "example": "Wazu"
           },
           "nameUr": {
             "type": "string"
           },
-          "retrainThresholdPct": {
+          "requiredFromAge": {
             "type": "number",
-            "default": 90
-          },
-          "maxAttempts": {
-            "type": "number",
-            "default": 2
-          },
-          "autoCloseDays": {
-            "type": "number",
-            "default": 30
-          },
-          "reminderDays": {
-            "default": [
-              7,
-              25
-            ],
-            "type": "array",
-            "items": {
-              "type": "number"
-            }
-          },
-          "payoutFloor": {
-            "type": "number",
-            "default": 350
-          },
-          "bands": {
-            "description": "Defaults to 90→1000, 75→750, 50→500, 0→350",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PayoutBandDto"
-            }
-          },
-          "trainings": {
-            "description": "Weights must sum to 100. On update, a training left out of the list is deactivated.",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/TrainingInputDto"
-            }
-          }
-        },
-        "required": [
-          "code",
-          "name",
-          "trainings"
-        ]
-      },
-      "UpdateTrainingCourseDto": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "example": "FIQH-B"
-          },
-          "name": {
-            "type": "string"
-          },
-          "nameUr": {
-            "type": "string"
-          },
-          "retrainThresholdPct": {
-            "type": "number",
-            "default": 90
-          },
-          "maxAttempts": {
-            "type": "number",
-            "default": 2
-          },
-          "autoCloseDays": {
-            "type": "number",
-            "default": 30
-          },
-          "reminderDays": {
-            "default": [
-              7,
-              25
-            ],
-            "type": "array",
-            "items": {
-              "type": "number"
-            }
-          },
-          "payoutFloor": {
-            "type": "number",
-            "default": 350
-          },
-          "bands": {
-            "description": "Defaults to 90→1000, 75→750, 50→500, 0→350",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PayoutBandDto"
-            }
-          },
-          "trainings": {
-            "description": "Weights must sum to 100. On update, a training left out of the list is deactivated.",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/TrainingInputDto"
-            }
-          },
-          "reason": {
-            "type": "string",
-            "description": "Why, for the audit log"
-          }
-        }
-      },
-      "TrainingAgeRuleEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "minAge": {
-            "type": "number",
-            "example": 10
-          },
-          "maxAge": {
-            "type": "number",
-            "example": 13
+            "example": 6,
+            "description": "Required from this age at admission"
           },
           "gender": {
-            "description": "Missing: both genders",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Gender"
-              }
-            ]
-          },
-          "courseId": {
-            "type": "string"
-          },
-          "courseCode": {
-            "type": "string"
-          },
-          "courseName": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "minAge",
-          "maxAge",
-          "courseId",
-          "courseCode",
-          "courseName"
-        ]
-      },
-      "AgeRulesResponseDto": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "description": "Message of the action"
-          },
-          "data": {
-            "description": "By gender (both first), then age",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/TrainingAgeRuleEntity"
-            }
-          }
-        },
-        "required": [
-          "message",
-          "data"
-        ]
-      },
-      "AgeRuleInputDto": {
-        "type": "object",
-        "properties": {
-          "minAge": {
-            "type": "number",
-            "example": 10
-          },
-          "maxAge": {
-            "type": "number",
-            "example": 13
-          },
-          "gender": {
+            "nullable": true,
             "description": "Leave out for both genders",
             "allOf": [
               {
@@ -28451,34 +28801,122 @@
               }
             ]
           },
-          "courseId": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "minAge",
-          "maxAge",
-          "courseId"
-        ]
-      },
-      "ReplaceAgeRulesDto": {
-        "type": "object",
-        "properties": {
-          "rules": {
-            "description": "Ranges for the same gender must not overlap",
+          "maxMarks": {
+            "type": "number",
+            "example": 100
+          },
+          "passMarks": {
+            "type": "number",
+            "example": 50
+          },
+          "payoutFloor": {
+            "type": "number",
+            "default": 350,
+            "description": "PKR for a tested but failed training"
+          },
+          "bands": {
+            "description": "PKR for a pass by score %; default 90→1000, 75→750, 50→500, 0→350",
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/AgeRuleInputDto"
+              "$ref": "#/components/schemas/PayoutBandDto"
             }
+          },
+          "stepSkill": {
+            "type": "string",
+            "enum": [
+              "WAZU",
+              "NAMAZ"
+            ],
+            "nullable": true,
+            "description": "Grade it step by step with the WAZU or NAMAZ step codes; leave out for marks only"
+          },
+          "sortOrder": {
+            "type": "number",
+            "default": 0
           },
           "reason": {
             "type": "string",
             "description": "Why, for the audit log"
           }
+        }
+      },
+      "TrainingSettingsEntity": {
+        "type": "object",
+        "properties": {
+          "maxAttempts": {
+            "type": "number",
+            "example": 2,
+            "description": "Attempts per training per session"
+          },
+          "retrainBelowPct": {
+            "type": "number",
+            "example": 90,
+            "description": "A training scored below this % (failed, or passed below it) can be retrained in the session"
+          },
+          "autoCloseDays": {
+            "type": "number",
+            "example": 30,
+            "description": "Days with no next step before an enrollment closes"
+          },
+          "reminderDays": {
+            "example": [
+              7,
+              25
+            ],
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
         },
         "required": [
-          "rules"
+          "maxAttempts",
+          "retrainBelowPct",
+          "autoCloseDays",
+          "reminderDays"
         ]
+      },
+      "TrainingSettingsResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message of the action"
+          },
+          "data": {
+            "$ref": "#/components/schemas/TrainingSettingsEntity"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "UpdateTrainingSettingsDto": {
+        "type": "object",
+        "properties": {
+          "maxAttempts": {
+            "type": "number",
+            "description": "Attempts per training per session"
+          },
+          "retrainBelowPct": {
+            "type": "number",
+            "description": "A training scored below this % can be retrained in the session"
+          },
+          "autoCloseDays": {
+            "type": "number"
+          },
+          "reminderDays": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        }
       },
       "TestingWindowEntity": {
         "type": "object",
@@ -28587,7 +29025,8 @@
           },
           "branchId": {
             "type": "string",
-            "description": "Leave out for every branch"
+            "nullable": true,
+            "description": "Leave out (or null) for every branch; in PATCH, null resets a window to every branch"
           },
           "opensAt": {
             "format": "date-time",
@@ -28624,7 +29063,8 @@
           },
           "branchId": {
             "type": "string",
-            "description": "Leave out for every branch"
+            "nullable": true,
+            "description": "Leave out (or null) for every branch; in PATCH, null resets a window to every branch"
           },
           "opensAt": {
             "format": "date-time",
@@ -28663,38 +29103,15 @@
           "CLOSED"
         ]
       },
-      "CourseRefEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "code": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "nameUr": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "required": [
-          "id",
-          "code",
-          "name",
-          "nameUr"
-        ]
-      },
       "TrainingClosureReason": {
         "type": "string",
         "enum": [
-          "PASSED",
+          "ALL_PASSED",
           "TRAINER_CLOSED",
           "ATTEMPTS_USED",
           "AUTO_CLOSED",
-          "ADMIN_CLOSED"
+          "ADMIN_CLOSED",
+          "SESSION_ENDED"
         ]
       },
       "TrainingPayoutStatus": {
@@ -28756,9 +29173,6 @@
           "id": {
             "type": "string"
           },
-          "course": {
-            "$ref": "#/components/schemas/CourseRefEntity"
-          },
           "sessionId": {
             "type": "string"
           },
@@ -28772,9 +29186,6 @@
             "type": "string",
             "description": "TRAINER or ADMIN"
           },
-          "repeatReason": {
-            "type": "string"
-          },
           "trainerStaffUserId": {
             "type": "string"
           },
@@ -28783,6 +29194,23 @@
           },
           "testerStaffUserId": {
             "type": "string"
+          },
+          "testerName": {
+            "type": "string"
+          },
+          "sessionName": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "MALE",
+              "FEMALE"
+            ]
+          },
+          "areaName": {
+            "type": "string",
+            "description": "Area of the admission the trainings were picked from"
           },
           "state": {
             "allOf": [
@@ -28796,6 +29224,23 @@
           },
           "attemptsUsed": {
             "type": "number"
+          },
+          "maxAttempts": {
+            "type": "number",
+            "description": "Attempts allowed this session"
+          },
+          "lastActivityAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "When anything last changed on the enrollment"
+          },
+          "trainingCount": {
+            "type": "number",
+            "description": "Trainings in the enrollment"
+          },
+          "passedCount": {
+            "type": "number",
+            "description": "Of those, passed"
           },
           "readyAt": {
             "format": "date-time",
@@ -28815,13 +29260,6 @@
                 "$ref": "#/components/schemas/TrainingClosureReason"
               }
             ]
-          },
-          "passed": {
-            "type": "boolean"
-          },
-          "bestPct": {
-            "type": "number",
-            "description": "Weighted % of the best-paying attempt"
           },
           "payout": {
             "$ref": "#/components/schemas/EnrollmentPayoutEntity"
@@ -28843,12 +29281,17 @@
           "classLevelCode",
           "branchCode",
           "id",
-          "course",
           "sessionId",
           "source",
+          "sessionName",
+          "gender",
           "state",
           "round",
           "attemptsUsed",
+          "maxAttempts",
+          "lastActivityAt",
+          "trainingCount",
+          "passedCount",
           "payout",
           "createdAt"
         ]
@@ -28872,7 +29315,22 @@
           "data"
         ]
       },
-      "EnrollmentProgressEntity": {
+      "RulesBandEntity": {
+        "type": "object",
+        "properties": {
+          "minPct": {
+            "type": "number"
+          },
+          "amount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "minPct",
+          "amount"
+        ]
+      },
+      "RulesTrainingEntity": {
         "type": "object",
         "properties": {
           "trainingId": {
@@ -28888,14 +29346,180 @@
             "type": "string",
             "nullable": true
           },
-          "weightPct": {
+          "requiredFromAge": {
             "type": "number"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "MALE",
+              "FEMALE"
+            ],
+            "nullable": true
           },
           "maxMarks": {
             "type": "number"
           },
           "passMarks": {
             "type": "number"
+          },
+          "payoutFloor": {
+            "type": "number"
+          },
+          "bands": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RulesBandEntity"
+            }
+          },
+          "stepSkill": {
+            "type": "string",
+            "enum": [
+              "WAZU",
+              "NAMAZ"
+            ],
+            "nullable": true
+          },
+          "sortOrder": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "trainingId",
+          "code",
+          "name",
+          "nameUr",
+          "requiredFromAge",
+          "gender",
+          "maxMarks",
+          "passMarks",
+          "payoutFloor",
+          "bands",
+          "stepSkill",
+          "sortOrder"
+        ]
+      },
+      "EnrollmentRulesEntity": {
+        "type": "object",
+        "properties": {
+          "maxAttempts": {
+            "type": "number"
+          },
+          "retrainBelowPct": {
+            "type": "number"
+          },
+          "autoCloseDays": {
+            "type": "number"
+          },
+          "reminderDays": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "trainings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RulesTrainingEntity"
+            }
+          }
+        },
+        "required": [
+          "maxAttempts",
+          "retrainBelowPct",
+          "autoCloseDays",
+          "reminderDays",
+          "trainings"
+        ]
+      },
+      "TrainingItemKind": {
+        "type": "string",
+        "enum": [
+          "REQUIRED",
+          "IMPROVEMENT"
+        ]
+      },
+      "TrainingItemStatus": {
+        "type": "string",
+        "enum": [
+          "PENDING",
+          "PASSED",
+          "FAILED"
+        ]
+      },
+      "TrainingBestEntity": {
+        "type": "object",
+        "properties": {
+          "attemptNo": {
+            "type": "number"
+          },
+          "scorePct": {
+            "type": "number"
+          },
+          "passed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "attemptNo",
+          "scorePct",
+          "passed"
+        ]
+      },
+      "EnrollmentItemEntity": {
+        "type": "object",
+        "properties": {
+          "trainingId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nameUr": {
+            "type": "string",
+            "nullable": true
+          },
+          "maxMarks": {
+            "type": "number"
+          },
+          "passMarks": {
+            "type": "number"
+          },
+          "stepSkill": {
+            "type": "string",
+            "enum": [
+              "WAZU",
+              "NAMAZ"
+            ],
+            "nullable": true,
+            "description": "Graded step by step with these step codes (GET /staff/results/steps)"
+          },
+          "kind": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrainingItemKind"
+              }
+            ]
+          },
+          "previousBestPct": {
+            "type": "number",
+            "nullable": true,
+            "description": "IMPROVEMENT: the best score before this enrollment"
+          },
+          "previousBand": {
+            "type": "number",
+            "nullable": true,
+            "description": "IMPROVEMENT: that score's band; the item pays only a higher band"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrainingItemStatus"
+              }
+            ]
           },
           "completed": {
             "type": "boolean",
@@ -28905,6 +29529,27 @@
             "format": "date-time",
             "type": "string",
             "nullable": true
+          },
+          "attemptsUsed": {
+            "type": "number"
+          },
+          "best": {
+            "nullable": true,
+            "description": "The best-paying attempt so far",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrainingBestEntity"
+              }
+            ]
+          },
+          "payout": {
+            "type": "number",
+            "description": "PKR it pays now: the band if passed, the floor if failed, 0 if untested"
+          },
+          "retrainable": {
+            "type": "boolean",
+            "description": "Can be retrained and retested now: failed, or passed below the threshold (90%), with an attempt left"
           }
         },
         "required": [
@@ -28912,11 +29557,35 @@
           "code",
           "name",
           "nameUr",
-          "weightPct",
           "maxMarks",
           "passMarks",
+          "stepSkill",
+          "kind",
+          "previousBestPct",
+          "previousBand",
+          "status",
           "completed",
-          "completedAt"
+          "completedAt",
+          "attemptsUsed",
+          "best",
+          "payout",
+          "retrainable"
+        ]
+      },
+      "StepMarkEntity": {
+        "type": "object",
+        "properties": {
+          "stepCode": {
+            "type": "string",
+            "description": "A step code from GET /staff/results/steps"
+          },
+          "correct": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "stepCode",
+          "correct"
         ]
       },
       "AttemptMarkEntity": {
@@ -28931,15 +29600,33 @@
           "maxMarks": {
             "type": "number"
           },
+          "scorePct": {
+            "type": "number"
+          },
           "passed": {
             "type": "boolean"
+          },
+          "payout": {
+            "type": "number",
+            "description": "PKR this mark pays"
+          },
+          "steps": {
+            "nullable": true,
+            "description": "null when not graded step by step",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StepMarkEntity"
+            }
           }
         },
         "required": [
           "trainingId",
           "marks",
           "maxMarks",
-          "passed"
+          "scorePct",
+          "passed",
+          "payout",
+          "steps"
         ]
       },
       "AdminAttemptEntity": {
@@ -28956,31 +29643,12 @@
             "type": "string",
             "description": "When the tester submitted it (phone's time)"
           },
-          "weightedPct": {
-            "type": "number",
-            "description": "Weighted %, 2 decimals"
-          },
-          "passedCount": {
-            "type": "number"
-          },
-          "totalCount": {
-            "type": "number"
-          },
-          "allPassed": {
-            "type": "boolean"
-          },
-          "band": {
-            "type": "number"
-          },
-          "payout": {
-            "type": "number",
-            "description": "What this attempt pays (PKR)"
-          },
           "overridden": {
             "type": "boolean",
             "description": "An admin changed the marks"
           },
           "marks": {
+            "description": "Only the trainings not passed before this attempt",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/AttemptMarkEntity"
@@ -29003,6 +29671,12 @@
           "overriddenByAdminUserId": {
             "type": "string"
           },
+          "overriddenByName": {
+            "type": "string"
+          },
+          "testerName": {
+            "type": "string"
+          },
           "overrideReason": {
             "type": "string"
           }
@@ -29011,16 +29685,31 @@
           "attemptId",
           "attemptNo",
           "testedAt",
-          "weightedPct",
-          "passedCount",
-          "totalCount",
-          "allPassed",
-          "band",
-          "payout",
           "overridden",
           "marks",
           "testerStaffUserId",
           "lateGrade"
+        ]
+      },
+      "DecisionTrainingEntity": {
+        "type": "object",
+        "properties": {
+          "trainingId": {
+            "type": "string"
+          },
+          "payoutNow": {
+            "type": "number",
+            "description": "PKR it pays now"
+          },
+          "payoutIfImproved": {
+            "type": "number",
+            "description": "PKR it would pay improved to the threshold (90%)"
+          }
+        },
+        "required": [
+          "trainingId",
+          "payoutNow",
+          "payoutIfImproved"
         ]
       },
       "DecisionDueEntity": {
@@ -29029,37 +29718,47 @@
           "attemptNo": {
             "type": "number"
           },
-          "suggested": {
-            "type": "string",
-            "enum": [
-              "RETRAIN"
-            ],
-            "nullable": true,
-            "description": "Pre-selected when a training failed"
+          "failedTrainingIds": {
+            "description": "Failed trainings: pre-selected for the retrain",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "retrainableTrainingIds": {
+            "description": "Trainings that can be retrained: failed, or passed below the threshold (90%)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "trainings": {
+            "description": "Per retrainable training",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DecisionTrainingEntity"
+            }
           },
           "canRetrain": {
             "type": "boolean"
           },
           "payoutNow": {
             "type": "number",
-            "description": "The best payout so far"
+            "description": "What the enrollment pays now"
           },
-          "payoutIfAllPass": {
+          "payoutIfFailedPass": {
             "type": "number",
-            "description": "If every training passes at the latest score"
-          },
-          "payoutMax": {
-            "type": "number",
-            "description": "The top band"
+            "description": "If every failed training passes at its pass mark"
           }
         },
         "required": [
           "attemptNo",
-          "suggested",
+          "failedTrainingIds",
+          "retrainableTrainingIds",
+          "trainings",
           "canRetrain",
           "payoutNow",
-          "payoutIfAllPass",
-          "payoutMax"
+          "payoutIfFailedPass"
         ]
       },
       "DecisionEntity": {
@@ -29067,6 +29766,17 @@
         "properties": {
           "decision": {
             "type": "string"
+          },
+          "trainingIds": {
+            "description": "RETRAIN: the trainings chosen",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "actorName": {
+            "type": "string",
+            "description": "Who made it: the admin or staff user (none for SYSTEM)"
           },
           "attemptNo": {
             "type": "number"
@@ -29108,6 +29818,16 @@
           "kind": {
             "type": "string"
           },
+          "fromTrainerName": {
+            "type": "string"
+          },
+          "toTrainerName": {
+            "type": "string"
+          },
+          "byName": {
+            "type": "string",
+            "description": "Who made it: the admin or staff user"
+          },
           "fromTrainerStaffUserId": {
             "type": "string"
           },
@@ -29131,6 +29851,197 @@
         "required": [
           "kind",
           "createdAt"
+        ]
+      },
+      "TrainerLedgerKind": {
+        "type": "string",
+        "enum": [
+          "PAYOUT",
+          "ADJUSTMENT",
+          "ADHOC",
+          "PAYMENT"
+        ]
+      },
+      "TrainerLedgerStatus": {
+        "type": "string",
+        "enum": [
+          "PAYABLE",
+          "APPROVED",
+          "PART_PAID",
+          "PAID",
+          "CANCELLED",
+          "RECORDED",
+          "VOIDED"
+        ],
+        "description": "Credits: PAYABLE → APPROVED → PART_PAID / PAID (from payments), or CANCELLED. Payments: RECORDED or VOIDED."
+      },
+      "LedgerStudentEntity": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "string"
+          },
+          "grNumber": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "studentId",
+          "grNumber",
+          "name"
+        ]
+      },
+      "LedgerTrainingEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nameUr": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name",
+          "nameUr"
+        ]
+      },
+      "TrainerLedgerEntryEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "trainerStaffUserId": {
+            "type": "string"
+          },
+          "kind": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrainerLedgerKind"
+              }
+            ]
+          },
+          "amount": {
+            "type": "number",
+            "description": "PKR. Payouts, ad hoc amounts and payments positive; adjustments either sign."
+          },
+          "status": {
+            "description": "Credits: PAYABLE → APPROVED → PART_PAID / PAID (from payments), or CANCELLED. Payments: RECORDED or VOIDED.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TrainerLedgerStatus"
+              }
+            ]
+          },
+          "paidAmount": {
+            "type": "number",
+            "description": "For approved credits: how much payments cover"
+          },
+          "enrollmentId": {
+            "type": "string",
+            "nullable": true
+          },
+          "student": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LedgerStudentEntity"
+              }
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "training": {
+            "nullable": true,
+            "description": "Payouts: the training paid for",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LedgerTrainingEntity"
+              }
+            ]
+          },
+          "itemKind": {
+            "type": "string",
+            "enum": [
+              "REQUIRED",
+              "IMPROVEMENT"
+            ],
+            "nullable": true,
+            "description": "Payouts: whether the training was required, or an improvement of an earlier pass"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true,
+            "description": "Ad hoc amounts: what it is for"
+          },
+          "reference": {
+            "type": "string",
+            "nullable": true
+          },
+          "date": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true,
+            "description": "Payments: when sent. Ad hoc amounts: their date."
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "approvedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "approvedByAdminUserId": {
+            "type": "string"
+          },
+          "voidedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "voidReason": {
+            "type": "string"
+          },
+          "createdByAdminUserId": {
+            "type": "string",
+            "description": "Missing: made by the system at closure"
+          }
+        },
+        "required": [
+          "id",
+          "trainerStaffUserId",
+          "kind",
+          "amount",
+          "status",
+          "paidAmount",
+          "enrollmentId",
+          "student",
+          "reason",
+          "training",
+          "itemKind",
+          "title",
+          "reference",
+          "date",
+          "createdAt",
+          "approvedAt"
         ]
       },
       "TrainingEnrollmentDetailEntity": {
@@ -29162,9 +30073,6 @@
           "id": {
             "type": "string"
           },
-          "course": {
-            "$ref": "#/components/schemas/CourseRefEntity"
-          },
           "sessionId": {
             "type": "string"
           },
@@ -29178,9 +30086,6 @@
             "type": "string",
             "description": "TRAINER or ADMIN"
           },
-          "repeatReason": {
-            "type": "string"
-          },
           "trainerStaffUserId": {
             "type": "string"
           },
@@ -29189,6 +30094,23 @@
           },
           "testerStaffUserId": {
             "type": "string"
+          },
+          "testerName": {
+            "type": "string"
+          },
+          "sessionName": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "MALE",
+              "FEMALE"
+            ]
+          },
+          "areaName": {
+            "type": "string",
+            "description": "Area of the admission the trainings were picked from"
           },
           "state": {
             "allOf": [
@@ -29202,6 +30124,23 @@
           },
           "attemptsUsed": {
             "type": "number"
+          },
+          "maxAttempts": {
+            "type": "number",
+            "description": "Attempts allowed this session"
+          },
+          "lastActivityAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "When anything last changed on the enrollment"
+          },
+          "trainingCount": {
+            "type": "number",
+            "description": "Trainings in the enrollment"
+          },
+          "passedCount": {
+            "type": "number",
+            "description": "Of those, passed"
           },
           "readyAt": {
             "format": "date-time",
@@ -29222,13 +30161,6 @@
               }
             ]
           },
-          "passed": {
-            "type": "boolean"
-          },
-          "bestPct": {
-            "type": "number",
-            "description": "Weighted % of the best-paying attempt"
-          },
           "payout": {
             "$ref": "#/components/schemas/EnrollmentPayoutEntity"
           },
@@ -29241,13 +30173,17 @@
             "type": "string"
           },
           "rules": {
-            "type": "object",
-            "description": "The rules snapshot the enrollment started under"
+            "description": "The rules snapshot the enrollment started under",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EnrollmentRulesEntity"
+              }
+            ]
           },
           "trainings": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/EnrollmentProgressEntity"
+              "$ref": "#/components/schemas/EnrollmentItemEntity"
             }
           },
           "attempts": {
@@ -29276,6 +30212,13 @@
             "items": {
               "$ref": "#/components/schemas/AssignmentEntity"
             }
+          },
+          "ledgerEntries": {
+            "description": "The enrollment's ledger entries: payouts per training and their adjustments",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrainerLedgerEntryEntity"
+            }
           }
         },
         "required": [
@@ -29286,12 +30229,17 @@
           "classLevelCode",
           "branchCode",
           "id",
-          "course",
           "sessionId",
           "source",
+          "sessionName",
+          "gender",
           "state",
           "round",
           "attemptsUsed",
+          "maxAttempts",
+          "lastActivityAt",
+          "trainingCount",
+          "passedCount",
           "payout",
           "createdAt",
           "rules",
@@ -29299,7 +30247,8 @@
           "attempts",
           "decision",
           "decisions",
-          "assignments"
+          "assignments",
+          "ledgerEntries"
         ]
       },
       "TrainingEnrollmentResponseDto": {
@@ -29318,59 +30267,90 @@
           "data"
         ]
       },
-      "CompletedCourseEntity": {
+      "RequiredTrainingEntity": {
         "type": "object",
         "properties": {
-          "enrollmentId": {
+          "trainingId": {
             "type": "string"
           },
-          "courseId": {
+          "code": {
             "type": "string"
           },
-          "courseName": {
+          "name": {
             "type": "string"
           },
-          "courseNameUr": {
+          "nameUr": {
             "type": "string",
             "nullable": true
-          },
-          "sessionId": {
-            "type": "string"
-          },
-          "sessionName": {
-            "type": "string"
-          },
-          "closedAt": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "closureReason": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/TrainingClosureReason"
-              }
-            ]
-          },
-          "passed": {
-            "type": "boolean"
-          },
-          "bestPct": {
-            "type": "number",
-            "nullable": true,
-            "description": "Weighted % of the best-paying attempt"
           }
         },
         "required": [
-          "enrollmentId",
-          "courseId",
-          "courseName",
-          "courseNameUr",
+          "trainingId",
+          "code",
+          "name",
+          "nameUr"
+        ]
+      },
+      "TrainingPassEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "trainingId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nameUr": {
+            "type": "string",
+            "nullable": true
+          },
+          "passedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "sessionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "sessionName": {
+            "type": "string",
+            "nullable": true
+          },
+          "source": {
+            "type": "string",
+            "description": "TRAINING (graded) or ADMIN (recorded by hand)"
+          },
+          "bestScorePct": {
+            "type": "number",
+            "nullable": true,
+            "description": "The best score on it in any session (null if recorded by hand)"
+          },
+          "improvable": {
+            "type": "boolean",
+            "description": "Best score below the threshold (90%): the trainer may pick it to improve when registering"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "trainingId",
+          "code",
+          "name",
+          "nameUr",
+          "passedAt",
           "sessionId",
           "sessionName",
-          "closedAt",
-          "closureReason",
-          "passed",
-          "bestPct"
+          "source",
+          "bestScorePct",
+          "improvable"
         ]
       },
       "StudentTrainingsDto": {
@@ -29379,32 +30359,27 @@
           "studentId": {
             "type": "string"
           },
-          "course": {
-            "nullable": true,
-            "description": "What the age matrix gives now",
-            "type": "object",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/CourseRefEntity"
-              }
-            ]
-          },
           "age": {
             "type": "number",
-            "description": "Age at this session’s admission"
+            "nullable": true,
+            "description": "Age at this session’s admission; null when not admitted"
           },
-          "courseBlockedBy": {
+          "requiredBlockedBy": {
             "type": "string",
-            "description": "Why there is no course: NOT_ADMITTED or NO_COURSE"
+            "description": "NOT_ADMITTED when there is no admission this session"
           },
-          "alreadyCompleted": {
-            "type": "boolean",
-            "description": "The student already closed that course"
-          },
-          "completedCourses": {
+          "required": {
+            "description": "Trainings their age requires that they haven’t passed",
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/CompletedCourseEntity"
+              "$ref": "#/components/schemas/RequiredTrainingEntity"
+            }
+          },
+          "passed": {
+            "description": "Trainings passed, any year",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrainingPassEntity"
             }
           },
           "enrollments": {
@@ -29417,9 +30392,9 @@
         },
         "required": [
           "studentId",
-          "course",
-          "alreadyCompleted",
-          "completedCourses",
+          "age",
+          "required",
+          "passed",
           "enrollments"
         ]
       },
@@ -29439,6 +30414,64 @@
           "data"
         ]
       },
+      "TrainingPassesResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message of the action"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrainingPassEntity"
+            }
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "AddTrainingPassDto": {
+        "type": "object",
+        "properties": {
+          "grNumber": {
+            "type": "string",
+            "description": "grNumber or studentId"
+          },
+          "studentId": {
+            "type": "string"
+          },
+          "trainingId": {
+            "type": "string"
+          },
+          "sessionId": {
+            "type": "string",
+            "description": "The session it counts from; defaults to the student’s current one"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Why, e.g. \"passed in 2026 (sheet NK-7)\""
+          }
+        },
+        "required": [
+          "trainingId",
+          "reason"
+        ]
+      },
+      "ReasonDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "Why, for the audit log"
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
       "CreateTrainingEnrollmentDto": {
         "type": "object",
         "properties": {
@@ -29449,16 +30482,15 @@
           "studentId": {
             "type": "string"
           },
-          "courseId": {
-            "type": "string",
-            "description": "Defaults to the course the age matrix gives"
-          },
           "trainerStaffUserId": {
             "type": "string"
           },
-          "reason": {
-            "type": "string",
-            "description": "Required to enroll a student again in a course they closed"
+          "improveTrainingIds": {
+            "description": "Passed trainings with a best score below 90% to improve this session (400 INVALID_IMPROVE_SET otherwise)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       },
@@ -29493,16 +30525,126 @@
           "testerStaffUserId"
         ]
       },
-      "ReasonDto": {
+      "TrainingAttemptRowEntity": {
         "type": "object",
         "properties": {
-          "reason": {
+          "attemptId": {
+            "type": "string"
+          },
+          "attemptNo": {
+            "type": "number"
+          },
+          "testedAt": {
+            "format": "date-time",
             "type": "string",
-            "description": "Why, for the audit log"
+            "description": "When the tester submitted it (phone's time)"
+          },
+          "overridden": {
+            "type": "boolean",
+            "description": "An admin changed the marks"
+          },
+          "marks": {
+            "description": "Only the trainings not passed before this attempt",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttemptMarkEntity"
+            }
+          },
+          "testerStaffUserId": {
+            "type": "string"
+          },
+          "windowId": {
+            "type": "string"
+          },
+          "lateGrade": {
+            "type": "boolean",
+            "description": "Arrived after the window end plus the grace period"
+          },
+          "overriddenAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "overriddenByAdminUserId": {
+            "type": "string"
+          },
+          "overriddenByName": {
+            "type": "string"
+          },
+          "testerName": {
+            "type": "string"
+          },
+          "overrideReason": {
+            "type": "string"
+          },
+          "enrollmentId": {
+            "type": "string"
+          },
+          "studentId": {
+            "type": "string"
+          },
+          "grNumber": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "windowName": {
+            "type": "string"
+          },
+          "syncItemId": {
+            "type": "string",
+            "nullable": true,
+            "description": "The sync item, for the flagged-items screen"
           }
         },
         "required": [
-          "reason"
+          "attemptId",
+          "attemptNo",
+          "testedAt",
+          "overridden",
+          "marks",
+          "testerStaffUserId",
+          "lateGrade",
+          "enrollmentId",
+          "studentId",
+          "grNumber",
+          "name",
+          "syncItemId"
+        ]
+      },
+      "ListTrainingAttemptsResponseDto": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "description": "Total number of records"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrainingAttemptRowEntity"
+            }
+          }
+        },
+        "required": [
+          "count",
+          "data"
+        ]
+      },
+      "StepMarkDto": {
+        "type": "object",
+        "properties": {
+          "stepCode": {
+            "type": "string",
+            "description": "A step code of the training's step skill"
+          },
+          "correct": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "stepCode",
+          "correct"
         ]
       },
       "MarkDto": {
@@ -29513,6 +30655,13 @@
           },
           "marks": {
             "type": "number"
+          },
+          "steps": {
+            "description": "Trainings graded step by step only. Leave out to keep the steps the tester recorded.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StepMarkDto"
+            }
           }
         },
         "required": [
@@ -29604,24 +30753,25 @@
           "groups"
         ]
       },
-      "ResultsGroupDto": {
+      "TrainingResultRowDto": {
         "type": "object",
         "properties": {
-          "group": {
-            "type": "string",
-            "description": "\"all\", or the gender, area ID or branch ID"
+          "trainingId": {
+            "type": "string"
           },
-          "label": {
-            "type": "string",
-            "description": "Area or branch name"
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
           },
           "tested": {
             "type": "number",
-            "description": "Enrollments with at least one test"
+            "description": "Enrollments where the training was tested"
           },
           "passed": {
             "type": "number",
-            "description": "Of those, how many passed every training in some attempt"
+            "description": "Of those, passed"
           },
           "passRate": {
             "type": "number",
@@ -29631,7 +30781,7 @@
           "averageScore": {
             "type": "number",
             "nullable": true,
-            "description": "Average weighted % of the best attempt"
+            "description": "Average score % of the best attempt"
           },
           "distribution": {
             "description": "Best scores in buckets 0–9, 10–19, … 90–100",
@@ -29642,7 +30792,7 @@
           },
           "retested": {
             "type": "number",
-            "description": "Enrollments tested twice"
+            "description": "Tested twice (failed the first time)"
           },
           "firstAttemptAverage": {
             "type": "number",
@@ -29659,7 +30809,9 @@
           }
         },
         "required": [
-          "group",
+          "trainingId",
+          "code",
+          "name",
           "tested",
           "passed",
           "passRate",
@@ -29669,6 +30821,39 @@
           "firstAttemptAverage",
           "secondAttemptAverage",
           "averageImprovement"
+        ]
+      },
+      "ResultsGroupDto": {
+        "type": "object",
+        "properties": {
+          "group": {
+            "type": "string",
+            "description": "\"all\", or the gender, area ID or branch ID"
+          },
+          "label": {
+            "type": "string",
+            "description": "Area or branch name"
+          },
+          "tested": {
+            "type": "number",
+            "description": "Enrollments with at least one test"
+          },
+          "allPassed": {
+            "type": "number",
+            "description": "Of those, every required training passed"
+          },
+          "trainings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrainingResultRowDto"
+            }
+          }
+        },
+        "required": [
+          "group",
+          "tested",
+          "allPassed",
+          "trainings"
         ]
       },
       "ResultsReportDto": {
@@ -29771,10 +30956,14 @@
           "tested": {
             "type": "number"
           },
+          "trainingsPassed": {
+            "type": "number",
+            "description": "Trainings their students passed"
+          },
           "averageScore": {
             "type": "number",
             "nullable": true,
-            "description": "Average best weighted %"
+            "description": "Average best score % over the trainings tested"
           },
           "retrainRate": {
             "type": "number",
@@ -29791,6 +30980,7 @@
           "name",
           "students",
           "tested",
+          "trainingsPassed",
           "averageScore",
           "retrainRate",
           "payoutTotal"
@@ -29846,15 +31036,26 @@
             "type": "string",
             "nullable": true
           },
+          "windowName": {
+            "type": "string",
+            "nullable": true
+          },
           "graded": {
-            "type": "number"
+            "type": "number",
+            "description": "Attempts graded"
+          },
+          "marks": {
+            "type": "number",
+            "description": "Training marks given"
           },
           "averageScore": {
             "type": "number",
-            "nullable": true
+            "nullable": true,
+            "description": "Average score % given"
           },
           "overridden": {
-            "type": "number"
+            "type": "number",
+            "description": "Attempts an admin overrode"
           },
           "justAbovePass": {
             "type": "number",
@@ -29865,7 +31066,9 @@
           "testerStaffUserId",
           "name",
           "windowId",
+          "windowName",
           "graded",
+          "marks",
           "averageScore",
           "overridden",
           "justAbovePass"
@@ -29906,143 +31109,6 @@
         },
         "required": [
           "groups"
-        ]
-      },
-      "TrainerLedgerKind": {
-        "type": "string",
-        "enum": [
-          "PAYOUT",
-          "ADJUSTMENT",
-          "PAYMENT"
-        ]
-      },
-      "TrainerLedgerStatus": {
-        "type": "string",
-        "enum": [
-          "PAYABLE",
-          "APPROVED",
-          "PART_PAID",
-          "PAID",
-          "CANCELLED",
-          "RECORDED",
-          "VOIDED"
-        ]
-      },
-      "LedgerStudentEntity": {
-        "type": "object",
-        "properties": {
-          "studentId": {
-            "type": "string"
-          },
-          "grNumber": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "studentId",
-          "grNumber",
-          "name"
-        ]
-      },
-      "TrainerLedgerEntryEntity": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "trainerStaffUserId": {
-            "type": "string"
-          },
-          "kind": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/TrainerLedgerKind"
-              }
-            ]
-          },
-          "amount": {
-            "type": "number",
-            "description": "PKR. Payouts and payments positive; adjustments either sign."
-          },
-          "status": {
-            "description": "Credits: PAYABLE → APPROVED → PART_PAID / PAID (from payments), or CANCELLED. Payments: RECORDED or VOIDED.",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/TrainerLedgerStatus"
-              }
-            ]
-          },
-          "paidAmount": {
-            "type": "number",
-            "description": "For approved credits: how much payments cover"
-          },
-          "enrollmentId": {
-            "type": "string",
-            "nullable": true
-          },
-          "student": {
-            "nullable": true,
-            "type": "object",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/LedgerStudentEntity"
-              }
-            ]
-          },
-          "reason": {
-            "type": "string",
-            "nullable": true
-          },
-          "reference": {
-            "type": "string",
-            "nullable": true
-          },
-          "paidAt": {
-            "format": "date-time",
-            "type": "string",
-            "nullable": true
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "approvedAt": {
-            "format": "date-time",
-            "type": "string",
-            "nullable": true
-          },
-          "approvedByAdminUserId": {
-            "type": "string"
-          },
-          "voidedAt": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "voidReason": {
-            "type": "string"
-          },
-          "createdByAdminUserId": {
-            "type": "string",
-            "description": "Missing: made by the system at closure"
-          }
-        },
-        "required": [
-          "id",
-          "trainerStaffUserId",
-          "kind",
-          "amount",
-          "status",
-          "paidAmount",
-          "enrollmentId",
-          "student",
-          "reason",
-          "reference",
-          "paidAt",
-          "createdAt",
-          "approvedAt"
         ]
       },
       "ListLedgerResponseDto": {
@@ -30232,6 +31298,40 @@
           "reason"
         ]
       },
+      "RecordAdhocDto": {
+        "type": "object",
+        "properties": {
+          "trainerStaffUserId": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number",
+            "description": "PKR, more than 0"
+          },
+          "title": {
+            "type": "string",
+            "example": "Travel allowance, March",
+            "description": "Shown to the trainer"
+          },
+          "date": {
+            "format": "date-time",
+            "type": "string",
+            "description": "The date it is for"
+          },
+          "reference": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "trainerStaffUserId",
+          "amount",
+          "title",
+          "date"
+        ]
+      },
       "VoidLedgerEntryDto": {
         "type": "object",
         "properties": {
@@ -30260,7 +31360,12 @@
             "type": "number"
           },
           "approved": {
-            "type": "number"
+            "type": "number",
+            "description": "Approved credits, ad hoc amounts included"
+          },
+          "adhoc": {
+            "type": "number",
+            "description": "Of approved: ad hoc amounts"
           },
           "paid": {
             "type": "number"
@@ -30272,6 +31377,7 @@
           "pending",
           "payable",
           "approved",
+          "adhoc",
           "paid"
         ]
       },
@@ -30298,7 +31404,7 @@
           "total"
         ]
       },
-      "StaffCourseTrainingDto": {
+      "StaffTrainingDto": {
         "type": "object",
         "properties": {
           "id": {
@@ -30314,14 +31420,31 @@
             "type": "string",
             "nullable": true
           },
-          "weightPct": {
+          "requiredFromAge": {
             "type": "number"
+          },
+          "gender": {
+            "nullable": true,
+            "description": "null: both genders",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Gender"
+              }
+            ]
           },
           "maxMarks": {
             "type": "number"
           },
           "passMarks": {
             "type": "number"
+          },
+          "stepSkill": {
+            "type": "string",
+            "enum": [
+              "WAZU",
+              "NAMAZ"
+            ],
+            "nullable": true
           },
           "order": {
             "type": "number"
@@ -30332,49 +31455,12 @@
           "code",
           "name",
           "nameUr",
-          "weightPct",
+          "requiredFromAge",
+          "gender",
           "maxMarks",
           "passMarks",
+          "stepSkill",
           "order"
-        ]
-      },
-      "StaffCourseDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "code": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "nameUr": {
-            "type": "string",
-            "nullable": true
-          },
-          "maxAttempts": {
-            "type": "number"
-          },
-          "retrainThresholdPct": {
-            "type": "number"
-          },
-          "trainings": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/StaffCourseTrainingDto"
-            }
-          }
-        },
-        "required": [
-          "id",
-          "code",
-          "name",
-          "nameUr",
-          "maxAttempts",
-          "retrainThresholdPct",
-          "trainings"
         ]
       },
       "StaffLookupTrainerDto": {
@@ -30405,7 +31491,7 @@
               }
             ]
           },
-          "courseId": {
+          "sessionId": {
             "type": "string"
           },
           "attemptsUsed": {
@@ -30428,7 +31514,7 @@
         "required": [
           "id",
           "state",
-          "courseId",
+          "sessionId",
           "attemptsUsed",
           "trainer",
           "mine"
@@ -30465,15 +31551,24 @@
             "type": "string",
             "nullable": true
           },
-          "course": {
+          "age": {
+            "type": "number",
             "nullable": true,
-            "description": "The course the age matrix gives now",
-            "type": "object",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/CourseRefEntity"
-              }
-            ]
+            "description": "Age at this session’s admission; null when not admitted"
+          },
+          "required": {
+            "description": "Trainings their age requires that they haven’t passed",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RequiredTrainingEntity"
+            }
+          },
+          "passed": {
+            "description": "Trainings passed, any year",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrainingPassEntity"
+            }
           },
           "enrollment": {
             "nullable": true,
@@ -30484,13 +31579,6 @@
                 "$ref": "#/components/schemas/StaffLookupEnrollmentDto"
               }
             ]
-          },
-          "completedCourses": {
-            "description": "Courses closed with at least one test, any year",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/CompletedCourseEntity"
-            }
           },
           "canRegister": {
             "type": "boolean"
@@ -30522,9 +31610,10 @@
           "gender",
           "classLevelCode",
           "branchCode",
-          "course",
+          "age",
+          "required",
+          "passed",
           "enrollment",
-          "completedCourses",
           "canRegister",
           "canTest"
         ]
@@ -30543,31 +31632,12 @@
             "type": "string",
             "description": "When the tester submitted it (phone's time)"
           },
-          "weightedPct": {
-            "type": "number",
-            "description": "Weighted %, 2 decimals"
-          },
-          "passedCount": {
-            "type": "number"
-          },
-          "totalCount": {
-            "type": "number"
-          },
-          "allPassed": {
-            "type": "boolean"
-          },
-          "band": {
-            "type": "number"
-          },
-          "payout": {
-            "type": "number",
-            "description": "What this attempt pays (PKR)"
-          },
           "overridden": {
             "type": "boolean",
             "description": "An admin changed the marks"
           },
           "marks": {
+            "description": "Only the trainings not passed before this attempt",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/AttemptMarkEntity"
@@ -30578,12 +31648,6 @@
           "attemptId",
           "attemptNo",
           "testedAt",
-          "weightedPct",
-          "passedCount",
-          "totalCount",
-          "allPassed",
-          "band",
-          "payout",
           "overridden",
           "marks"
         ]
@@ -30626,9 +31690,6 @@
               }
             ]
           },
-          "course": {
-            "$ref": "#/components/schemas/CourseRefEntity"
-          },
           "sessionId": {
             "type": "string",
             "description": "The session the student enrolled in"
@@ -30647,12 +31708,13 @@
             "type": "number"
           },
           "maxAttempts": {
-            "type": "number"
+            "type": "number",
+            "description": "Attempts allowed this session"
           },
           "trainings": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/EnrollmentProgressEntity"
+              "$ref": "#/components/schemas/EnrollmentItemEntity"
             }
           },
           "attempts": {
@@ -30692,11 +31754,6 @@
                 "$ref": "#/components/schemas/TrainingClosureReason"
               }
             ]
-          },
-          "passed": {
-            "type": "boolean",
-            "nullable": true,
-            "description": "Some attempt passed every training"
           }
         },
         "required": [
@@ -30708,7 +31765,6 @@
           "branchCode",
           "enrollmentId",
           "lastYear",
-          "course",
           "sessionId",
           "state",
           "round",
@@ -30720,8 +31776,7 @@
           "autoCloseAt",
           "payout",
           "closedAt",
-          "closureReason",
-          "passed"
+          "closureReason"
         ]
       },
       "StaffNotificationDto": {
@@ -30740,7 +31795,7 @@
           },
           "data": {
             "type": "object",
-            "description": "grNumber, name, courseName, courseNameUr, and per kind: attemptNo, weightedPct, marks, nextStep, payout, dueAt…"
+            "description": "grNumber, name, and per kind: attemptNo, marks (per training: scorePct, passed, payout), payoutNow, nextStep, failedTrainingIds, trainings, payout, dueAt…"
           },
           "createdAt": {
             "format": "date-time",
@@ -30829,14 +31884,20 @@
             "type": "string",
             "nullable": true
           },
-          "weightPct": {
-            "type": "number"
-          },
           "maxMarks": {
             "type": "number"
           },
           "passMarks": {
             "type": "number"
+          },
+          "stepSkill": {
+            "type": "string",
+            "enum": [
+              "WAZU",
+              "NAMAZ"
+            ],
+            "nullable": true,
+            "description": "Graded step by step with these step codes (GET /staff/results/steps)"
           }
         },
         "required": [
@@ -30844,9 +31905,9 @@
           "code",
           "name",
           "nameUr",
-          "weightPct",
           "maxMarks",
-          "passMarks"
+          "passMarks",
+          "stepSkill"
         ]
       },
       "StaffQueueStudentDto": {
@@ -30884,14 +31945,12 @@
               }
             ]
           },
-          "course": {
-            "$ref": "#/components/schemas/CourseRefEntity"
-          },
           "attemptNo": {
             "type": "number",
             "description": "The attempt to grade"
           },
           "trainings": {
+            "description": "The trainings to grade: those not passed yet",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/EnrollmentTrainingEntity"
@@ -30916,7 +31975,6 @@
           "classLevelCode",
           "branchCode",
           "lastYear",
-          "course",
           "attemptNo",
           "trainings",
           "assignedToMe",
@@ -30960,9 +32018,6 @@
           "name": {
             "type": "string"
           },
-          "course": {
-            "$ref": "#/components/schemas/CourseRefEntity"
-          },
           "attemptNo": {
             "type": "number"
           },
@@ -30970,11 +32025,11 @@
             "format": "date-time",
             "type": "string"
           },
-          "weightedPct": {
+          "passedCount": {
             "type": "number"
           },
-          "allPassed": {
-            "type": "boolean"
+          "totalCount": {
+            "type": "number"
           },
           "marks": {
             "type": "array",
@@ -30988,11 +32043,10 @@
           "enrollmentId",
           "grNumber",
           "name",
-          "course",
           "attemptNo",
           "testedAt",
-          "weightedPct",
-          "allPassed",
+          "passedCount",
+          "totalCount",
           "marks"
         ]
       }
