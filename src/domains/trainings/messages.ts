@@ -13,6 +13,7 @@ export default defineMessages({
   tabCourses: { id: `${scope}.tabCourses`, defaultMessage: 'Courses' },
   tabAgeMatrix: { id: `${scope}.tabAgeMatrix`, defaultMessage: 'Age matrix' },
   tabWindows: { id: `${scope}.tabWindows`, defaultMessage: 'Testing windows' },
+  tabReports: { id: `${scope}.tabReports`, defaultMessage: 'Reports' },
   tabLedger: { id: `${scope}.tabLedger`, defaultMessage: 'Trainer ledger' },
 
   // Common

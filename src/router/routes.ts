@@ -51,6 +51,7 @@ export const routes = {
     ageMatrix: '/trainings/age-matrix',
     windows: '/trainings/windows',
     ledger: '/trainings/ledger',
+    reports: '/trainings/reports',
   },
   auth: {
     signIn: '/auth/sign-in',
