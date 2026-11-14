@@ -33,6 +33,11 @@ export const routes = {
     detail: (id: string) => `/staff-users/${id}`,
     cards: (ids?: string[]) => (ids?.length ? `/staff-users/cards?ids=${ids.join(',')}` : '/staff-users/cards'),
   },
+  sections: {
+    listing: '/sections',
+    detail: (id: string) => `/sections/${id}`,
+    classOverride: '/sections/class-override',
+  },
   questions: {
     listing: '/questions?includeInActive=true',
     create: '/questions/create',
