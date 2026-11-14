@@ -39,6 +39,7 @@ import { DataNotFound } from '@/components/DataNotFound';
 import { DetailSkeleton } from '@/components/Skeleton/DetailSkeleton';
 
 import { StaffDeviceEntity, StaffLanguage, StaffUserDetail } from '@/providers/service/app.schemas';
+import { useBranchControllerFindAll } from '@/providers/service/branch/branch';
 import { useStaffUserControllerFindOne } from '@/providers/service/staff-user/staff-user';
 
 import { FormattedMessage, useFormattedMessage } from '@/theme/FormattedMessage';
@@ -160,6 +161,10 @@ export function StaffUserDetailView({ id }: { id: string }) {
 }
 
 function Header({ user, onDialog }: { user: StaffUserDetail; onDialog: (d: Dialog) => void }) {
+  const { data: branches } = useBranchControllerFindAll({ take: 100 });
+  const branchCodes = (user.branchIds ?? [])
+    .map((id) => branches?.data.find((b) => b.id === id)?.code ?? id)
+    .join(', ');
   const initials = user.name
     .split(' ')
     .filter(Boolean)
@@ -205,6 +210,12 @@ function Header({ user, onDialog }: { user: StaffUserDetail; onDialog: (d: Dialo
                       {...(user.language === StaffLanguage.en ? messages.languageEn : messages.languageUr)}
                     />
                   }
+                />
+              </Grid>
+              <Grid size={{ xs: 6, md: 3 }}>
+                <Field
+                  label={<FormattedMessage {...messages.branches} />}
+                  value={branchCodes || <FormattedMessage {...messages.noBranches} />}
                 />
               </Grid>
               <Grid size={{ xs: 6, md: 3 }}>

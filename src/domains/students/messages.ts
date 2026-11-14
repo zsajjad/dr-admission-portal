@@ -74,6 +74,7 @@ export default defineMessages({
   feePaid: { id: `${scope}.feePaid`, defaultMessage: 'Paid' },
   feeUnpaid: { id: `${scope}.feeUnpaid`, defaultMessage: 'Unpaid' },
   byOn: { id: `${scope}.byOn`, defaultMessage: '{name}, {date}' },
+  byStaffApp: { id: `${scope}.byStaffApp`, defaultMessage: '{name} (staff app, {staffId})' },
   finalized: { id: `${scope}.finalized`, defaultMessage: 'Finalized' },
   notFinalized: { id: `${scope}.notFinalized`, defaultMessage: 'Not finalized' },
   van: { id: `${scope}.van`, defaultMessage: 'Van' },

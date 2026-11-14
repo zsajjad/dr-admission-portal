@@ -26,6 +26,7 @@ import { DataTable } from '@/components/DataTable';
 import { PageHeading } from '@/components/PageHeading';
 
 import { StaffRole, StaffUserEntity } from '@/providers/service/app.schemas';
+import { useBranchControllerFindAll } from '@/providers/service/branch/branch';
 import { useStaffUserControllerFindAll } from '@/providers/service/staff-user/staff-user';
 
 import { FormattedMessage, useFormattedMessage } from '@/theme/FormattedMessage';
@@ -61,6 +62,7 @@ export function StaffUsersListing() {
     staffId: useFormattedMessage(messages.staffId),
     name: useFormattedMessage(messages.name),
     phone: useFormattedMessage(messages.phone),
+    branches: useFormattedMessage(messages.branches),
     roles: useFormattedMessage(messages.roles),
     activePhones: useFormattedMessage(messages.activePhones),
     status: useFormattedMessage(messages.status),
@@ -74,6 +76,9 @@ export function StaffUsersListing() {
     skip: pagination.page * pagination.pageSize,
     take: pagination.pageSize,
   });
+
+  const { data: branches } = useBranchControllerFindAll({ take: 100 });
+  const branchCode = useMemo(() => new Map((branches?.data || []).map((b) => [b.id, b.code])), [branches?.data]);
 
   const columns: GridColDef<StaffUserEntity>[] = useMemo(
     () => [
@@ -103,6 +108,13 @@ export function StaffUsersListing() {
           </Box>
         ),
       },
+      {
+        field: 'branchIds',
+        headerName: text.branches,
+        width: 110,
+        sortable: false,
+        valueGetter: (_, row) => (row.branchIds ?? []).map((id) => branchCode.get(id) ?? id).join(', '),
+      },
       { field: 'phone', headerName: text.phone, width: 150, sortable: false },
       { field: 'activeDevices', headerName: text.activePhones, width: 140, sortable: false, type: 'number' },
       {
@@ -120,7 +132,7 @@ export function StaffUsersListing() {
         ),
       },
     ],
-    [text.staffId, text.name, text.roles, text.phone, text.activePhones, text.status],
+    [text.staffId, text.name, text.roles, text.branches, text.phone, text.activePhones, text.status, branchCode],
   );
 
   const selectedIds = [...selection.ids].map(String);

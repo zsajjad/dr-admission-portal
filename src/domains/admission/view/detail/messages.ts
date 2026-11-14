@@ -101,6 +101,18 @@ export default defineMessages({
     id: `${scope}.isFeePaidLabel`,
     defaultMessage: 'Fee Paid',
   },
+  feePaidByLabel: {
+    id: `${scope}.feePaidByLabel`,
+    defaultMessage: 'Fee marked paid by',
+  },
+  feePaidByStaffApp: {
+    id: `${scope}.feePaidByStaffApp`,
+    defaultMessage: '{name} (staff app fee desk, {staffId}), {date}',
+  },
+  feePaidByAdmin: {
+    id: `${scope}.feePaidByAdmin`,
+    defaultMessage: '{name}, {date}',
+  },
   studentInfoLabel: {
     id: `${scope}.studentInfoLabel`,
     defaultMessage: 'Student Information',
