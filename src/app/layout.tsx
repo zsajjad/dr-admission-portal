@@ -49,12 +49,29 @@ const interVariable = localFont({
   variable: '--font-inter', // Define a CSS variable name
   weight: '100 900', // Specify the range for the variable font
   display: 'swap',
+  // No metric-matched Arial stand-in: Arial has Arabic letters, so it would catch Urdu text
+  // before the Urdu font further down the font stack.
+  adjustFontFallback: false,
 });
 
-const mehrNastaliq = localFont({
-  src: '../assets/fonts/MehrNastaliq.woff2',
+// Urdu: Noto Nastaliq Urdu (SIL Open Font License), the Arabic-script subset from Google Fonts,
+// weights 400-700. It sits after the Latin font in the theme's font stack, so Urdu letters use it in
+// both locales. Not preloaded: with the unicode-range below, the browser fetches it only when a page
+// has Urdu text.
+const notoNastaliqUrdu = localFont({
+  src: '../assets/fonts/NotoNastaliqUrdu-Arabic.woff2',
   variable: '--font-urdu',
+  weight: '400 700',
   display: 'swap',
+  preload: false,
+  adjustFontFallback: false,
+  declarations: [
+    {
+      prop: 'unicode-range',
+      value:
+        'U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FEFC',
+    },
+  ],
 });
 
 export default function RootLayout({
@@ -63,7 +80,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${interVariable.variable} ${mehrNastaliq.variable}`}>
+    <html lang="en" className={`${interVariable.variable} ${notoNastaliqUrdu.variable}`}>
       <head></head>
       <body>
         <ErrorBoundary fallback={<SimpleErrorFallback />}>

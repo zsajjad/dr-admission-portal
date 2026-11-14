@@ -1,7 +1,8 @@
 import type { TypographyVariantsOptions } from '@mui/material/styles';
 
 export const typography = {
-  fontFamily: 'var(--font-inter)',
+  // Latin from Plus Jakarta Sans; Urdu letters fall through to Noto Nastaliq Urdu
+  fontFamily: 'var(--font-inter), var(--font-urdu), system-ui, sans-serif',
 
   body1: { fontSize: '1rem', fontWeight: 400, lineHeight: 1.5 },
   body2: { fontSize: '0.875rem', fontWeight: 400, lineHeight: 1.57 },
