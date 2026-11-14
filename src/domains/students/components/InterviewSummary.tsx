@@ -1,3 +1,5 @@
+import { useIntl } from 'react-intl';
+
 import { Box, Chip, Divider, Rating, Stack, Typography } from '@mui/material';
 
 import { StudentProfileInterview } from '@/providers/service/app.schemas';
@@ -10,6 +12,17 @@ import { formatDate } from '../utils';
 import { SectionCard } from './SectionCard';
 
 export function InterviewSummary({ interview }: { interview?: StudentProfileInterview }) {
+  const intl = useIntl();
+  // An interview is done by an admin in the portal or by a teacher in the staff app (core #20)
+  const interviewer = interview?.teacher
+    ? interview.teacher.name
+    : interview?.staffUser
+      ? intl.formatMessage(messages.byStaffApp, {
+          name: interview.staffUser.name,
+          staffId: interview.staffUser.staffId,
+        })
+      : intl.formatMessage(messages.interviewerUnknown);
+
   return (
     <SectionCard
       title={<FormattedMessage {...messages.interview} />}
@@ -34,7 +47,7 @@ export function InterviewSummary({ interview }: { interview?: StudentProfileInte
             {interview.questionSetTitle} ·{' '}
             <FormattedMessage
               {...messages.interviewBy}
-              values={{ name: interview.teacher.name, date: formatDate(interview.createdAt) }}
+              values={{ name: interviewer, date: formatDate(interview.createdAt) }}
             />
           </Typography>
           <Stack divider={<Divider flexItem />} spacing={0.75}>
