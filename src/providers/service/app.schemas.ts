@@ -1410,6 +1410,30 @@ export interface UpdateAdmissionStatusResponseDto {
   data: Admission;
 }
 
+export interface UpdateAdmissionClassLevelDto {
+  /** Class level to place the student in. Must match the student’s gender. */
+  classLevelId: string;
+  /** Why the class was overridden */
+  reason?: string;
+}
+
+export interface AdmissionClassLevelSummary {
+  id: string;
+  code: string;
+  name: string;
+}
+
+export interface AdmissionClassLevelChange {
+  admissionId: string;
+  classLevel: AdmissionClassLevelSummary;
+}
+
+export interface UpdateAdmissionClassLevelResponseDto {
+  /** Message of the action */
+  message: string;
+  data: AdmissionClassLevelChange;
+}
+
 export interface MarkFeePaidDto {
   /** isFeePaid */
   isFeePaid: boolean;
@@ -1430,6 +1454,321 @@ export interface FinalizeAdmissionResponseDto {
   /** Message of the action */
   message: string;
   data: Admission;
+}
+
+export interface StudentListBranch {
+  id: string;
+  code: string;
+  name: string;
+}
+
+export interface StudentListArea {
+  id: string;
+  name: string;
+}
+
+export interface StudentLatestAdmission {
+  id: string;
+  sessionName: string;
+  classLevelName: string;
+  status: AdmissionStatus;
+  isFeePaid: boolean;
+}
+
+export interface StudentListItem {
+  id: string;
+  grNumber: string;
+  name: string;
+  fatherName: string;
+  gender: Gender;
+  phone: string;
+  branch: StudentListBranch;
+  area: StudentListArea;
+  /** Number of active admissions across sessions */
+  admissionCount: number;
+  /** Most recent active admission */
+  latestAdmission?: StudentLatestAdmission;
+}
+
+export interface ListStudentsResponseDto {
+  /** Total number of records */
+  count: number;
+  data: StudentListItem[];
+}
+
+export interface StudentProfileBranch {
+  id: string;
+  code: string;
+  name: string;
+}
+
+export interface StudentProfileArea {
+  id: string;
+  code: string;
+  name: string;
+  alias: string;
+  hasVan: boolean;
+  hasBoysVan: boolean;
+}
+
+export type AssetType = (typeof AssetType)[keyof typeof AssetType];
+
+export const AssetType = {
+  IMAGE: 'IMAGE',
+  VIDEO: 'VIDEO',
+  DOCUMENT: 'DOCUMENT',
+} as const;
+
+export interface StudentProfileAsset {
+  id: string;
+  title: string;
+  type: AssetType;
+  mimeType: string;
+}
+
+export interface StudentProfileIdentity {
+  id: string;
+  /** Permanent GR number */
+  grNumber: string;
+  name: string;
+  fatherName: string;
+  dateOfBirth: string;
+  gender: Gender;
+  phone: string;
+  alternatePhone?: string;
+  address?: string;
+  /** B-Form / CNIC number */
+  identityNumber?: string;
+  /** Branch on the student record (from the latest admission) */
+  branch: StudentProfileBranch;
+  /** Area on the student record (from the latest admission) */
+  area: StudentProfileArea;
+  photoAsset?: StudentProfileAsset;
+  identityProofAsset?: StudentProfileAsset;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt?: string;
+  updatedByAdmin?: AdminUserBase;
+}
+
+export interface StudentProfileSession {
+  id: string;
+  name: string;
+  startsAt?: string;
+  endsAt?: string;
+  /** Number of attendance days in the session */
+  attendanceDays: number;
+  isActive: boolean;
+}
+
+export interface StudentProfileClassLevel {
+  id: string;
+  code: string;
+  name: string;
+  age: number;
+  gender: Gender;
+  group: ClassLevelGroup;
+}
+
+/**
+ * Whether the van rules give this admission a van (see docs/VAN_RULES.md)
+ */
+export type StudentProfileVanEligibility =
+  (typeof StudentProfileVanEligibility)[keyof typeof StudentProfileVanEligibility];
+
+export const StudentProfileVanEligibility = {
+  ELIGIBLE: 'ELIGIBLE',
+  TIFLAN: 'TIFLAN',
+  NO_VAN_IN_AREA: 'NO_VAN_IN_AREA',
+  NO_BOYS_VAN: 'NO_BOYS_VAN',
+} as const;
+
+export interface StudentProfileVan {
+  id: string;
+  code: string;
+  name: string;
+  colorName: string;
+  colorHex: string;
+}
+
+export interface StudentProfileInterviewRating {
+  questionId: string;
+  prompt: string;
+  sortOrder: number;
+  /** 1 to 5 */
+  rating: number;
+  notes?: string;
+}
+
+export interface StudentProfileInterview {
+  id: string;
+  teacher: AdminUserBase;
+  questionSetTitle: string;
+  /** Overall notes */
+  notes?: string;
+  /** Mean rating, one decimal place */
+  averageRating?: number;
+  ratings: StudentProfileInterviewRating[];
+  createdAt: string;
+}
+
+export interface StudentProfileAttendance {
+  /** Days in the session (Session.attendanceDays) */
+  totalDays: number;
+  /** Days with a record for this admission */
+  recordedDays: number;
+  present: number;
+  absent: number;
+  late: number;
+  excused: number;
+}
+
+export type CardPrintRequestStatus = (typeof CardPrintRequestStatus)[keyof typeof CardPrintRequestStatus];
+
+export const CardPrintRequestStatus = {
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+} as const;
+
+export interface StudentProfileCardPrint {
+  id: string;
+  status: CardPrintRequestStatus;
+  requestedAt: string;
+  requestedBy?: AdminUserBase;
+  completedAt?: string;
+  completedBy?: AdminUserBase;
+  printBatchId?: string;
+}
+
+export type AnnouncementRecipientStatus =
+  (typeof AnnouncementRecipientStatus)[keyof typeof AnnouncementRecipientStatus];
+
+export const AnnouncementRecipientStatus = {
+  PENDING: 'PENDING',
+  SENT: 'SENT',
+  DELIVERED: 'DELIVERED',
+  READ: 'READ',
+  FAILED: 'FAILED',
+} as const;
+
+export interface StudentProfileMessage {
+  /** Announcement recipient id */
+  id: string;
+  announcementId: string;
+  announcementTitle: string;
+  /** WhatsApp template name */
+  templateName: string;
+  /** Number the message went to */
+  phone: string;
+  status: AnnouncementRecipientStatus;
+  errorMessage?: string;
+  sentAt?: string;
+  deliveredAt?: string;
+  readAt?: string;
+  failedAt?: string;
+  createdAt: string;
+}
+
+export interface StudentProfileAdmission {
+  id: string;
+  session: StudentProfileSession;
+  branch: StudentProfileBranch;
+  area: StudentProfileArea;
+  classLevel: StudentProfileClassLevel;
+  status: AdmissionStatus;
+  rejectedReason?: string;
+  schoolName?: string;
+  schoolClass?: string;
+  lastYearClass?: string;
+  /** The family asked for a van */
+  vanRequired: boolean;
+  /** Whether the van rules give this admission a van (see docs/VAN_RULES.md) */
+  vanEligibility: StudentProfileVanEligibility;
+  /** The van for the area, when eligible */
+  van?: StudentProfileVan;
+  isMarried: boolean;
+  isWorking: boolean;
+  isFeePaid: boolean;
+  feePaidAt?: string;
+  feePaidByAdmin?: AdminUserBase;
+  isFinalized: boolean;
+  finalizedAt?: string;
+  finalizedByAdmin?: AdminUserBase;
+  /** Prefilled from last year’s record */
+  fromLegacyRecord: boolean;
+  /** False when the admission was deactivated */
+  isActive: boolean;
+  createdAt: string;
+  updatedAt?: string;
+  updatedByAdmin?: AdminUserBase;
+  interview?: StudentProfileInterview;
+  attendance: StudentProfileAttendance;
+  /** Newest first */
+  cardPrints: StudentProfileCardPrint[];
+  /** WhatsApp messages, newest first (latest 50) */
+  messages: StudentProfileMessage[];
+}
+
+export interface StudentProfilePermissions {
+  /** Can change name, father name, birth date, B-form and GR number (SUPER_ADMIN and ADMIN) */
+  canEditIdentity: boolean;
+}
+
+export interface StudentProfile {
+  student: StudentProfileIdentity;
+  /** Every admission across sessions, newest session first */
+  admissions: StudentProfileAdmission[];
+  /** What the calling admin may change */
+  permissions: StudentProfilePermissions;
+}
+
+export interface StudentProfileResponseDto {
+  /** Message of the action */
+  message: string;
+  data: StudentProfile;
+}
+
+export interface UpdateStudentDto {
+  /** Main phone number */
+  phone?: string;
+  /** Alternate phone number; empty string clears it */
+  alternatePhone?: string;
+  /** Address; empty string clears it */
+  address?: string;
+  /** Photo asset id; empty string removes the photo */
+  photoAssetId?: string;
+  /** Identity document asset id; empty string removes it */
+  identityProofAssetId?: string;
+  /** Why the change was made (optional for these fields) */
+  reason?: string;
+}
+
+export interface UpdateStudentResponseDto {
+  /** Message of the action */
+  message: string;
+  data: StudentProfileIdentity;
+}
+
+export interface UpdateStudentIdentityDto {
+  /** Why the change was made. Kept with the change for the audit log. */
+  reason: string;
+  /** Student name */
+  name?: string;
+  /** Father / guardian name */
+  fatherName?: string;
+  /** Date of birth */
+  dateOfBirth?: string;
+  /** B-Form / CNIC number; empty string clears it */
+  identityNumber?: string;
+  /** GR number, 9221-G-A-NNNNNN. Must be unused, and G must match the student’s gender. */
+  grNumber?: string;
+}
+
+export interface UpdateStudentIdentityResponseDto {
+  /** Message of the action */
+  message: string;
+  data: StudentProfileIdentity;
 }
 
 export interface InteractionStudent {
@@ -2113,14 +2452,6 @@ export interface VerificationSlipPreviewResponseDto {
   data: VerificationSlipStudent[];
 }
 
-export type CardPrintRequestStatus = (typeof CardPrintRequestStatus)[keyof typeof CardPrintRequestStatus];
-
-export const CardPrintRequestStatus = {
-  PENDING: 'PENDING',
-  COMPLETED: 'COMPLETED',
-  CANCELLED: 'CANCELLED',
-} as const;
-
 export interface CardPrintRequestStudentInfo {
   grNumber: string;
   name: string;
@@ -2225,6 +2556,396 @@ export interface CancelCardPrintRequestResponseDto {
   /** Success message */
   message: string;
   data: CardPrintRequestEntity;
+}
+
+/**
+ * Custom variable overrides (e.g. group links, dates)
+ */
+export type PreviewAnnouncementDtoCustomVariables = { [key: string]: unknown };
+
+export interface PreviewAnnouncementDto {
+  /** sessionId */
+  sessionId: string;
+  /** templateId */
+  templateId: string;
+  /** branchId */
+  branchId?: string;
+  /** areaId */
+  areaId?: string;
+  /** classLevelId */
+  classLevelId?: string;
+  /** classLevelGroup */
+  classLevelGroup?: ClassLevelGroup;
+  /** student gender */
+  gender?: Gender;
+  status?: AdmissionStatus;
+  /** isFeePaid */
+  isFeePaid?: boolean;
+  /** grNumber (exact match) */
+  grNumber?: string;
+  /** phone (contains) */
+  phone?: string;
+  /** name (contains) */
+  name?: string;
+  /** fatherName (contains) */
+  fatherName?: string;
+  /** One search to query all fields */
+  search?: string;
+  /** Custom variable overrides (e.g. group links, dates) */
+  customVariables?: PreviewAnnouncementDtoCustomVariables;
+}
+
+export interface ClassLevelBreakdown {
+  classLevelName: string;
+  count: number;
+}
+
+export type PreviewRecipientSampleResolvedVariables = { [key: string]: unknown };
+
+export interface PreviewRecipientSample {
+  phone: string;
+  studentName: string;
+  classLevelName: string;
+  resolvedVariables: PreviewRecipientSampleResolvedVariables;
+}
+
+export interface PreviewAnnouncementResponseDto {
+  /** Total matching recipients */
+  totalRecipients: number;
+  /** Unique phone numbers */
+  uniquePhones: number;
+  /** Breakdown by class level */
+  classLevelBreakdown: ClassLevelBreakdown[];
+  /** Sample recipients with resolved variables */
+  samples: PreviewRecipientSample[];
+}
+
+/**
+ * Custom variable overrides (e.g. group links, dates)
+ */
+export type CreateAnnouncementDtoCustomVariables = { [key: string]: unknown };
+
+export interface CreateAnnouncementDto {
+  /** Admin label for this announcement */
+  title: string;
+  /** sessionId */
+  sessionId: string;
+  /** templateId */
+  templateId: string;
+  /** branchId */
+  branchId?: string;
+  /** areaId */
+  areaId?: string;
+  /** classLevelId */
+  classLevelId?: string;
+  /** classLevelGroup */
+  classLevelGroup?: ClassLevelGroup;
+  /** student gender */
+  gender?: Gender;
+  status?: AdmissionStatus;
+  /** isFeePaid */
+  isFeePaid?: boolean;
+  /** grNumber (exact match) */
+  grNumber?: string;
+  /** phone (contains) */
+  phone?: string;
+  /** name (contains) */
+  name?: string;
+  /** fatherName (contains) */
+  fatherName?: string;
+  /** One search to query all fields */
+  search?: string;
+  /** Custom variable overrides (e.g. group links, dates) */
+  customVariables?: CreateAnnouncementDtoCustomVariables;
+}
+
+export interface AnnouncementSession {
+  id: string;
+  name: string;
+}
+
+export interface AnnouncementTemplateSummary {
+  id: string;
+  name: string;
+  description: string;
+}
+
+/**
+ * Filters snapshot
+ */
+export type AnnouncementFilters = { [key: string]: unknown };
+
+/**
+ * Custom variable overrides
+ */
+export type AnnouncementCustomVariables = { [key: string]: unknown };
+
+/**
+ * Announcement status
+ */
+export type AnnouncementStatusProperty = (typeof AnnouncementStatusProperty)[keyof typeof AnnouncementStatusProperty];
+
+export const AnnouncementStatusProperty = {
+  DRAFT: 'DRAFT',
+  QUEUED: 'QUEUED',
+  SENDING: 'SENDING',
+  COMPLETED: 'COMPLETED',
+  PARTIALLY_FAILED: 'PARTIALLY_FAILED',
+} as const;
+
+export interface Announcement {
+  /** id */
+  id: string;
+  /** session */
+  session: AnnouncementSession;
+  /** template */
+  template: AnnouncementTemplateSummary;
+  /** Admin label */
+  title: string;
+  /** Filters snapshot */
+  filters: AnnouncementFilters;
+  /** Custom variable overrides */
+  customVariables?: AnnouncementCustomVariables;
+  /** Announcement status */
+  status: AnnouncementStatusProperty;
+  /** Total recipients */
+  totalRecipients: number;
+  /** Sent count */
+  sentCount: number;
+  /** Delivered count */
+  deliveredCount: number;
+  /** Read count */
+  readCount: number;
+  /** Failed count */
+  failedCount: number;
+  /** triggeredByAdmin */
+  triggeredByAdmin: AdminUserBase;
+  /** triggeredAt */
+  triggeredAt: string;
+  /** completedAt */
+  completedAt?: string;
+  /** isActive */
+  isActive: boolean;
+  /** createdAt */
+  createdAt: string;
+  /** updatedAt */
+  updatedAt?: string;
+}
+
+export interface CreateAnnouncementResponseDto {
+  /** Message of the action */
+  message: string;
+  data: Announcement;
+}
+
+export type AnnouncementStatus = (typeof AnnouncementStatus)[keyof typeof AnnouncementStatus];
+
+export const AnnouncementStatus = {
+  DRAFT: 'DRAFT',
+  QUEUED: 'QUEUED',
+  SENDING: 'SENDING',
+  COMPLETED: 'COMPLETED',
+  PARTIALLY_FAILED: 'PARTIALLY_FAILED',
+} as const;
+
+export interface ListAnnouncementsResponseDto {
+  /** Total number of records */
+  count: number;
+  data: Announcement[];
+}
+
+export interface DetailAnnouncementResponseDto {
+  /** Message of the action */
+  message: string;
+  data: Announcement;
+}
+
+/**
+ * Resolved template variables
+ */
+export type AnnouncementRecipientResolvedVariables = { [key: string]: unknown };
+
+/**
+ * Recipient status
+ */
+export type AnnouncementRecipientStatusProperty =
+  (typeof AnnouncementRecipientStatusProperty)[keyof typeof AnnouncementRecipientStatusProperty];
+
+export const AnnouncementRecipientStatusProperty = {
+  PENDING: 'PENDING',
+  SENT: 'SENT',
+  DELIVERED: 'DELIVERED',
+  READ: 'READ',
+  FAILED: 'FAILED',
+} as const;
+
+export interface AnnouncementRecipient {
+  /** id */
+  id: string;
+  /** announcementId */
+  announcementId: string;
+  /** admissionId */
+  admissionId: string;
+  /** Phone number */
+  phone: string;
+  /** Student name */
+  studentName: string;
+  /** Class level name */
+  classLevelName: string;
+  /** Resolved template variables */
+  resolvedVariables: AnnouncementRecipientResolvedVariables;
+  /** Recipient status */
+  status: AnnouncementRecipientStatusProperty;
+  /** WhatsApp message ID */
+  whatsappMessageId?: string;
+  /** Error message */
+  errorMessage?: string;
+  /** sentAt */
+  sentAt?: string;
+  /** deliveredAt */
+  deliveredAt?: string;
+  /** readAt */
+  readAt?: string;
+  /** failedAt */
+  failedAt?: string;
+  /** createdAt */
+  createdAt: string;
+  /** updatedAt */
+  updatedAt?: string;
+}
+
+export interface ListAnnouncementRecipientsResponseDto {
+  /** Total number of records */
+  count: number;
+  data: AnnouncementRecipient[];
+}
+
+export type CreateAnnouncementTemplateDtoVariablesItem = { [key: string]: unknown };
+
+export interface CreateAnnouncementTemplateDto {
+  /** Template name as registered with Meta */
+  name: string;
+  /** Template language code */
+  language?: string;
+  /** Admin-friendly description */
+  description: string;
+  /** Variable mapping array: [{ position, key, source }] */
+  variables: CreateAnnouncementTemplateDtoVariablesItem[];
+  /** Sample rendered text for admin preview */
+  sampleBody: string;
+}
+
+/**
+ * Variable mapping array
+ */
+export type AnnouncementTemplateVariables = { [key: string]: unknown };
+
+export interface AnnouncementTemplate {
+  /** id */
+  id: string;
+  /** Template name as registered with Meta */
+  name: string;
+  /** Template language code */
+  language: string;
+  /** Admin-friendly description */
+  description: string;
+  /** Variable mapping array */
+  variables: AnnouncementTemplateVariables;
+  /** Sample rendered text for preview */
+  sampleBody: string;
+  /** isActive */
+  isActive: boolean;
+  /** createdAt */
+  createdAt: string;
+  /** updatedAt */
+  updatedAt?: string;
+  /** createdBy */
+  createdBy?: AdminUserBase;
+  /** updatedBy */
+  updatedBy?: AdminUserBase;
+}
+
+export interface CreateAnnouncementTemplateResponseDto {
+  /** Message of the action */
+  message: string;
+  data: AnnouncementTemplate;
+}
+
+export interface ListAnnouncementTemplatesResponseDto {
+  /** Total number of records */
+  count: number;
+  data: AnnouncementTemplate[];
+}
+
+export interface DetailAnnouncementTemplateResponseDto {
+  /** Message of the action */
+  message: string;
+  data: AnnouncementTemplate;
+}
+
+export type UpdateAnnouncementTemplateDtoVariablesItem = { [key: string]: unknown };
+
+export interface UpdateAnnouncementTemplateDto {
+  /** Template name as registered with Meta */
+  name?: string;
+  /** Template language code */
+  language?: string;
+  /** Admin-friendly description */
+  description?: string;
+  /** Variable mapping array: [{ position, key, source }] */
+  variables?: UpdateAnnouncementTemplateDtoVariablesItem[];
+  /** Sample rendered text for admin preview */
+  sampleBody?: string;
+}
+
+export interface UpdateAnnouncementTemplateResponseDto {
+  /** Message of the action */
+  message: string;
+  data?: AnnouncementTemplate;
+}
+
+/**
+ * Custom variable values to use in the template (keys matching "custom.*" sources)
+ */
+export type TestAnnouncementTemplateDtoCustomVariables = { [key: string]: unknown };
+
+/**
+ * Override values for auto-resolved variables (e.g. student.name). Useful for testing when you do not have real admission data.
+ */
+export type TestAnnouncementTemplateDtoVariableOverrides = { [key: string]: unknown };
+
+export interface TestAnnouncementTemplateDto {
+  /** Phone numbers to send the test message to (international format, e.g. "923001234567") */
+  phones: string[];
+  /** Custom variable values to use in the template (keys matching "custom.*" sources) */
+  customVariables?: TestAnnouncementTemplateDtoCustomVariables;
+  /** Override values for auto-resolved variables (e.g. student.name). Useful for testing when you do not have real admission data. */
+  variableOverrides?: TestAnnouncementTemplateDtoVariableOverrides;
+}
+
+export interface TestSendResult {
+  /** Phone number the message was sent to */
+  phone: string;
+  /** Whether the send succeeded */
+  success: boolean;
+  /** WhatsApp message ID on success */
+  whatsappMessageId?: string;
+  /** Error message on failure */
+  error?: string;
+}
+
+/**
+ * Resolved variables that were sent
+ */
+export type TestAnnouncementTemplateResponseDtoResolvedVariables = { [key: string]: unknown };
+
+export interface TestAnnouncementTemplateResponseDto {
+  /** Summary message */
+  message: string;
+  /** Results per phone number */
+  results: TestSendResult[];
+  /** Resolved variables that were sent */
+  resolvedVariables: TestAnnouncementTemplateResponseDtoResolvedVariables;
 }
 
 export type AssetsControllerUploadPublicParams = {
@@ -2637,6 +3358,8 @@ export type AdmissionsControllerFindAllParams = {
   /** classLevelGroup */
   classLevelGroup?: ClassLevelGroup;
   status?: AdmissionStatus;
+  /** student gender */
+  gender?: Gender;
   /** isFeePaid */
   isFeePaid?: boolean;
   /** Sort by */
@@ -2680,6 +3403,43 @@ export type AdmissionsControllerFindOneParams = {
   /** Include deactivated records */
   includeInActive?: boolean;
 };
+
+export type StudentsControllerFindAllParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: StudentsControllerFindAllSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+  /** Matches GR number, name, father name or phone (partial) */
+  search?: string;
+  /** GR number (partial match) */
+  grNumber?: string;
+  /** Branch on the student record */
+  branchId?: string;
+  /** Sort by */
+  sortBy?: StudentsControllerFindAllSortBy;
+};
+
+export type StudentsControllerFindAllSortOrder =
+  (typeof StudentsControllerFindAllSortOrder)[keyof typeof StudentsControllerFindAllSortOrder];
+
+export const StudentsControllerFindAllSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type StudentsControllerFindAllSortBy =
+  (typeof StudentsControllerFindAllSortBy)[keyof typeof StudentsControllerFindAllSortBy];
+
+export const StudentsControllerFindAllSortBy = {
+  grNumber: 'grNumber',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
 
 export type InteractionsControllerFindAllParams = {
   /** Number of records to skip */
@@ -2881,4 +3641,106 @@ export type PrintingControllerCountCardPrintRequestsParams = {
   branchId?: string;
   /** Status filter */
   status?: CardPrintRequestStatus;
+};
+
+export type AnnouncementControllerFindAllParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: AnnouncementControllerFindAllSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+  /** sessionId */
+  sessionId?: string;
+  status?: AnnouncementStatus;
+  /** title (contains) */
+  title?: string;
+  /** Sort by */
+  sortBy?: AnnouncementControllerFindAllSortBy;
+};
+
+export type AnnouncementControllerFindAllSortOrder =
+  (typeof AnnouncementControllerFindAllSortOrder)[keyof typeof AnnouncementControllerFindAllSortOrder];
+
+export const AnnouncementControllerFindAllSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type AnnouncementControllerFindAllSortBy =
+  (typeof AnnouncementControllerFindAllSortBy)[keyof typeof AnnouncementControllerFindAllSortBy];
+
+export const AnnouncementControllerFindAllSortBy = {
+  createdAt: 'createdAt',
+  triggeredAt: 'triggeredAt',
+  status: 'status',
+} as const;
+
+export type AnnouncementControllerFindOneParams = {
+  /** Include deactivated records (admins only) */
+  includeInActive?: boolean;
+};
+
+export type AnnouncementControllerFindRecipientsParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: AnnouncementControllerFindRecipientsSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+};
+
+export type AnnouncementControllerFindRecipientsSortOrder =
+  (typeof AnnouncementControllerFindRecipientsSortOrder)[keyof typeof AnnouncementControllerFindRecipientsSortOrder];
+
+export const AnnouncementControllerFindRecipientsSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type AnnouncementTemplateControllerFindAllParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: AnnouncementTemplateControllerFindAllSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+  /** Template name (contains) */
+  name?: string;
+  /** Sort by */
+  sortBy?: AnnouncementTemplateControllerFindAllSortBy;
+};
+
+export type AnnouncementTemplateControllerFindAllSortOrder =
+  (typeof AnnouncementTemplateControllerFindAllSortOrder)[keyof typeof AnnouncementTemplateControllerFindAllSortOrder];
+
+export const AnnouncementTemplateControllerFindAllSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type AnnouncementTemplateControllerFindAllSortBy =
+  (typeof AnnouncementTemplateControllerFindAllSortBy)[keyof typeof AnnouncementTemplateControllerFindAllSortBy];
+
+export const AnnouncementTemplateControllerFindAllSortBy = {
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  name: 'name',
+} as const;
+
+export type AnnouncementTemplateControllerFindOneParams = {
+  /** Include deactivated records (admins only) */
+  includeInActive?: boolean;
+};
+
+export type AnnouncementWebhookControllerVerifyParams = {
+  'hub.mode': string;
+  'hub.verify_token': string;
+  'hub.challenge': string;
 };

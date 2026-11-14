@@ -36,6 +36,8 @@ import type {
   MarkFeePaidDto,
   MarkFeePaidResponseDto,
   SearchLegacyAdmissionsResponseDto,
+  UpdateAdmissionClassLevelDto,
+  UpdateAdmissionClassLevelResponseDto,
   UpdateAdmissionDto,
   UpdateAdmissionResponseDto,
   UpdateAdmissionStatusDto,
@@ -920,6 +922,84 @@ export const useAdmissionsControllerUpdateStatus = <TError = unknown, TContext =
   TContext
 > => {
   return useMutation(getAdmissionsControllerUpdateStatusMutationOptions(options), queryClient);
+};
+/**
+ * @summary Override the class level of an admission (must match the student’s gender)
+ */
+export const admissionsControllerUpdateClassLevel = (
+  id: string,
+  updateAdmissionClassLevelDto: UpdateAdmissionClassLevelDto,
+  signal?: AbortSignal,
+) => {
+  return service<UpdateAdmissionClassLevelResponseDto>({
+    url: `/admissions/${id}/class-level`,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    data: updateAdmissionClassLevelDto,
+    signal,
+  });
+};
+
+export const getAdmissionsControllerUpdateClassLevelMutationKey = () =>
+  ['admissionsControllerUpdateClassLevel'] as const;
+
+export const getAdmissionsControllerUpdateClassLevelMutationOptions = <TError = unknown, TContext = unknown>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof admissionsControllerUpdateClassLevel>>,
+    TError,
+    AdmissionsControllerUpdateClassLevelMutationVariables,
+    TContext
+  >;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof admissionsControllerUpdateClassLevel>>,
+  TError,
+  AdmissionsControllerUpdateClassLevelMutationVariables,
+  TContext
+> => {
+  const mutationKey = getAdmissionsControllerUpdateClassLevelMutationKey();
+  const { mutation: mutationOptions } = options
+    ? options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey } };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof admissionsControllerUpdateClassLevel>>,
+    AdmissionsControllerUpdateClassLevelMutationVariables
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return admissionsControllerUpdateClassLevel(id, data);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type AdmissionsControllerUpdateClassLevelMutationResult = NonNullable<
+  Awaited<ReturnType<typeof admissionsControllerUpdateClassLevel>>
+>;
+export type AdmissionsControllerUpdateClassLevelMutationBody = UpdateAdmissionClassLevelDto;
+export type AdmissionsControllerUpdateClassLevelMutationError = unknown;
+export type AdmissionsControllerUpdateClassLevelMutationVariables = { id: string; data: UpdateAdmissionClassLevelDto };
+
+/** @summary Override the class level of an admission (must match the student’s gender) */
+export const useAdmissionsControllerUpdateClassLevel = <TError = unknown, TContext = unknown>(
+  options?: {
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof admissionsControllerUpdateClassLevel>>,
+      TError,
+      AdmissionsControllerUpdateClassLevelMutationVariables,
+      TContext
+    >;
+  },
+  queryClient?: QueryClient,
+): UseMutationResult<
+  Awaited<ReturnType<typeof admissionsControllerUpdateClassLevel>>,
+  TError,
+  AdmissionsControllerUpdateClassLevelMutationVariables,
+  TContext
+> => {
+  return useMutation(getAdmissionsControllerUpdateClassLevelMutationOptions(options), queryClient);
 };
 export const admissionsControllerMarkFeePaid = (id: string, markFeePaidDto: MarkFeePaidDto, signal?: AbortSignal) => {
   return service<MarkFeePaidResponseDto>({
