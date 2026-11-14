@@ -3,10 +3,18 @@ import { styled } from '@mui/material/styles';
 
 export const Container = styled(Box)(({ theme }) => ({
   display: 'flex',
+  flexDirection: 'column',
   height: '100vh',
   // The ivory page; cards sit on it in white.
   backgroundColor: theme.palette.background.default,
 }));
+
+/** Everything under the top bar: the side nav and the page. */
+export const Body = styled(Box)({
+  display: 'flex',
+  flex: '1 1 auto',
+  minHeight: 0,
+});
 
 export const ContentContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -21,8 +29,7 @@ export const ContentContainer = styled(Box)(({ theme }) => ({
 
 export const Content = styled(Box)(() => ({
   height: '100%',
-  minHeight: 'calc(100vh - 64px)',
   flex: 1,
-  padding: '16px 24px 24px 24px',
+  padding: '24px 24px 24px 24px',
   overflow: 'auto',
 }));
