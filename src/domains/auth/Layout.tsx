@@ -7,6 +7,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 import { Brand, Logo } from '@/components/Logo';
+import { KhatamDivider, khatamPattern } from '@/components/Ornament';
 
 import { colorSchemes } from '@/theme/color-schemes';
 import FormattedMessage from '@/theme/FormattedMessage';
@@ -39,7 +40,9 @@ export function Layout({ children }: LayoutProps): React.JSX.Element {
       </Box>
       <Box
         sx={{
-          background: `linear-gradient(160deg, ${palette.primary.main} 0%, ${palette.primary.dark} 100%)`,
+          // Deep green with a faint gold khatam lattice over it.
+          backgroundColor: palette.primary.dark,
+          backgroundImage: `${khatamPattern(palette.brand.gold, 0.14)}, linear-gradient(160deg, ${palette.primary.main} 0%, ${palette.primary.dark} 100%)`,
           color: palette.common.white,
           display: { xs: 'none', lg: 'flex' },
           flexDirection: 'column',
@@ -50,9 +53,9 @@ export function Layout({ children }: LayoutProps): React.JSX.Element {
         }}
       >
         <Stack spacing={4} alignItems="center" sx={{ maxWidth: '440px', textAlign: 'center' }}>
-          <Logo height="200px" lettersColor={palette.common.white} />
+          <Logo height="200px" lettersColor={palette.brand.ivory} />
           <Stack spacing={1.5} alignItems="center">
-            <Box sx={{ width: '56px', height: '2px', bgcolor: palette.brand.gold, borderRadius: 1 }} />
+            <KhatamDivider color={palette.brand.gold} />
             <Typography
               sx={{
                 fontSize: '13px',

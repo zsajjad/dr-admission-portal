@@ -17,7 +17,7 @@ export interface Config {
 export const config: Config = {
   site: {
     url: getSiteURL(),
-    themeColor: '#0B2A63',
+    themeColor: '#0F4D3A',
     id: process.env.NEXT_PUBLIC_APP_ID ?? 'admin-dashboard',
     description: 'Admin portal for Danishgah-e-Ramzan, a program of the Aba Saleh Foundation',
     name: process.env.NEXTAPP_NAME ?? 'Danishgah-e-Ramzan Admin',
