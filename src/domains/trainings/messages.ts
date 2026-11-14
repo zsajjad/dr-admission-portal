@@ -9,8 +9,7 @@ export default defineMessages({
   title: { id: `${scope}.title`, defaultMessage: 'Fiqh trainings' },
 
   // Tabs
-  tabCourses: { id: `${scope}.tabCourses`, defaultMessage: 'Courses' },
-  tabAgeMatrix: { id: `${scope}.tabAgeMatrix`, defaultMessage: 'Age matrix' },
+  tabCatalog: { id: `${scope}.tabCatalog`, defaultMessage: 'Training catalog' },
   tabWindows: { id: `${scope}.tabWindows`, defaultMessage: 'Testing windows' },
 
   // Common

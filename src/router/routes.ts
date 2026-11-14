@@ -42,10 +42,9 @@ export const routes = {
   },
   trainings: {
     home: '/trainings',
-    courses: '/trainings/courses',
-    courseCreate: '/trainings/courses/new',
-    course: (id: string) => `/trainings/courses/${id}`,
-    ageMatrix: '/trainings/age-matrix',
+    catalog: '/trainings/catalog',
+    catalogCreate: '/trainings/catalog/new',
+    catalogTraining: (id: string) => `/trainings/catalog/${id}`,
     windows: '/trainings/windows',
   },
   auth: {
