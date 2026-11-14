@@ -4,11 +4,8 @@
 /node_modules
 /.pnp
 .pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+# Left over from Yarn in older checkouts
+.yarn/
 
 # testing
 /coverage

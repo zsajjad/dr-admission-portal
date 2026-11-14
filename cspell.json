@@ -1,6 +1,7 @@
 {
   "version": "0.2",
   "ignorePaths": [
+    "pnpm-lock.yaml",
     "tsconfig.tsbuildinfo",
     "tsconfig.json",
     "src/translations/ur.json",
@@ -13,6 +14,7 @@
   "dictionaryDefinitions": [],
   "dictionaries": [],
   "words": [
+    "unrs",
     "akeo",
     "escpos",
     "Nuvoton",

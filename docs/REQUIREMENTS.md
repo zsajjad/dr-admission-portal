@@ -4,7 +4,7 @@ This portal build with Next.js, MUI, React, TypeScript, and other modern technol
 
 ## Architecture
 
-APIs: All API are generated using orval, to regenerate API, run `npm run service:orval`
+APIs: All API are generated using orval, to regenerate API, run `pnpm run service:orval`
 Components: All components are stored in `src/components` folder; component is a UI element that is used by multiple pages and is coupled with business logic.
 Domains: All features are grouped as domains in `src/domains` folder; each domain has views, components, hooks, etc. Whatever is required to achieve a feature is grouped together in a domain.
 Forms: All forms are build using formik and yup for validation. Yup validations schema is store in separate files for each form. Each form can be used for add/edit both support of providing edit item id in props.
