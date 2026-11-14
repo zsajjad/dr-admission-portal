@@ -73,6 +73,16 @@ export default defineMessages({
     id: `${scope}.flag_SENT_AFTER_LOGOUT`,
     defaultMessage: 'Sent after the phone was logged out',
   },
+  progress_DONE: { id: `${scope}.progress_DONE`, defaultMessage: 'Done (90%+)' },
+  progress_CAN_RETRAIN: { id: `${scope}.progress_CAN_RETRAIN`, defaultMessage: 'Passed, can retrain' },
+  progress_FAILED: { id: `${scope}.progress_FAILED`, defaultMessage: 'Failed' },
+  progress_PENDING: { id: `${scope}.progress_PENDING`, defaultMessage: 'Not tested' },
+  retrainChosen: { id: `${scope}.retrainChosen`, defaultMessage: 'Chosen to retrain: {trainings}' },
+  progressHelp: {
+    id: `${scope}.progressHelp`,
+    defaultMessage:
+      'Within a session, any training below 90% can be retrained and retested, even if passed. The best attempt counts, and a pass is never lost.',
+  },
   item_PENDING: { id: `${scope}.item_PENDING`, defaultMessage: 'Pending' },
   item_PASSED: { id: `${scope}.item_PASSED`, defaultMessage: 'Passed' },
   item_FAILED: { id: `${scope}.item_FAILED`, defaultMessage: 'Failed' },
