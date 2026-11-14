@@ -142,5 +142,6 @@ export function CumulativeChart({ points, metric, sessionName, compareName, toda
     };
   }, [points, metric, sessionName, compareName, today, todayLabel, startLabel, axisLabel, textColor, theme]);
 
-  return <div ref={chartRef} data-testid="cumulative-chart" style={{ width: '100%', height: 420 }} />;
+  // A number axis reads left to right in Urdu too, and the canvas mis-draws its labels when mirrored
+  return <div ref={chartRef} dir="ltr" data-testid="cumulative-chart" style={{ width: '100%', height: 420 }} />;
 }
