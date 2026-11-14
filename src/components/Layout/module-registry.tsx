@@ -56,6 +56,12 @@ export const MODULE_REGISTRY = {
     icon: 'staffUsers',
     permissions: [Permission.staffmanage],
   },
+  sections: {
+    title: <FormattedMessage {...messages.sections} />,
+    href: routes.sections.listing,
+    icon: 'sections',
+    permissions: [Permission.sectionsmanage],
+  },
   questionSets: {
     title: <FormattedMessage {...messages.questionSets} />,
     href: routes.questions.listing,
