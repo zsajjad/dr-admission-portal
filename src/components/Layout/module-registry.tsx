@@ -76,6 +76,12 @@ export const MODULE_REGISTRY = {
     icon: 'syncReview',
     permissions: [Permission.staffreview],
   },
+  results: {
+    title: <FormattedMessage {...messages.results} />,
+    href: routes.results.listing,
+    icon: 'results',
+    permissions: [Permission.reportsview, Permission.resultsenter],
+  },
   questionSets: {
     title: <FormattedMessage {...messages.questionSets} />,
     href: routes.questions.listing,

@@ -45,6 +45,9 @@ export const routes = {
   syncReview: {
     listing: '/sync-review',
   },
+  results: {
+    listing: '/results',
+  },
   questions: {
     listing: '/questions?includeInActive=true',
     create: '/questions/create',

@@ -30,9 +30,9 @@ import { cardStyle } from '@/domains/students/utils';
 import { PageHeading } from '@/components/PageHeading';
 import { SessionFilter } from '@/components/SessionFilter';
 
-import { admissionsControllerFindAll } from '@/providers/service/admissions/admissions';
 import { BulkClassLevelOverrideResponseDto, ClassLevel } from '@/providers/service/app.schemas';
 import { sectionControllerBulkOverrideClassLevel } from '@/providers/service/section/section';
+import { studentMergeControllerLookupGrs } from '@/providers/service/student-merge/student-merge';
 
 import { FormattedMessage } from '@/theme/FormattedMessage';
 
@@ -42,8 +42,7 @@ import { useSectionActions } from '../../hooks/useSectionActions';
 import { useClassLevels, useSessionBranchFilters } from '../../hooks/useSectionData';
 import messages from '../../messages';
 
-const MAX_ROWS = 2000; // the endpoint's limit
-const LOOKUP_CONCURRENCY = 6;
+const MAX_ROWS = 2000; // the limit of the bulk class change and the GR lookup
 
 type Outcome = 'change' | 'same' | 'notFound' | 'badClass' | 'otherGender' | 'twice';
 
@@ -146,33 +145,28 @@ export function ClassOverrideView() {
       string,
       { admissionId: string; name: string; current: string; currentId: string; gender: string } | null
     >();
-    const grs = [...new Set(list.map((r) => r.grNumber))];
-    let done = 0;
     try {
-      for (let i = 0; i < grs.length; i += LOOKUP_CONCURRENCY) {
-        await Promise.all(
-          grs.slice(i, i + LOOKUP_CONCURRENCY).map(async (gr) => {
-            const res = await admissionsControllerFindAll({ sessionId, grNumber: gr, take: 5 });
-            const exact = res.data.filter((a) => a.student.grNumber === gr);
-            // One exact match, or a single match found through an old GR
-            const a = exact.length === 1 ? exact[0] : res.data.length === 1 ? res.data[0] : undefined;
-            found.set(
-              gr,
-              a
-                ? {
-                    admissionId: a.id,
-                    name: a.student.name,
-                    current: a.classLevel.code,
-                    currentId: a.classLevel.id,
-                    gender: a.classLevel.gender,
-                  }
-                : null,
-            );
-            done += list.filter((r) => r.grNumber === gr).length;
-            setProgress({ done, total: list.length });
-          }),
+      // One call for every GR (old GRs too), with each student's admission in this session
+      const res = await studentMergeControllerLookupGrs({
+        grNumbers: [...new Set(list.map((r) => r.grNumber))],
+        sessionId,
+      });
+      for (const row of res.data) {
+        const a = row.admissions.length === 1 ? row.admissions[0] : undefined;
+        found.set(
+          row.queriedGr,
+          a && row.student
+            ? {
+                admissionId: a.id,
+                name: row.student.name,
+                current: a.classLevel.code,
+                currentId: a.classLevel.id,
+                gender: a.classLevel.gender,
+              }
+            : null,
         );
       }
+      setProgress({ done: list.length, total: list.length });
     } catch (error) {
       onError(error);
       setProgress(null);
