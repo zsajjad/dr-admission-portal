@@ -117,6 +117,11 @@ export const MODULE_REGISTRY = {
     icon: 'trainings',
     permissions: TRAININGS_READ,
   },
+  resultRules: {
+    title: <FormattedMessage {...messages.resultRules} />,
+    href: routes.results.passMarks,
+    icon: 'resultRules',
+  },
 } satisfies Record<string, ModuleConfig>;
 
 export type ModuleKey = keyof typeof MODULE_REGISTRY;

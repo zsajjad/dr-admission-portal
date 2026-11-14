@@ -52,6 +52,7 @@ export const routes = {
   },
   results: {
     listing: '/results',
+    passMarks: '/results/pass-marks',
   },
   auditLog: {
     listing: '/audit-log',

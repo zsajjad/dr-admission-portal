@@ -80,6 +80,10 @@ export default defineMessages({
     id: `${scope}.trainings`,
     defaultMessage: 'Fiqh trainings',
   },
+  resultRules: {
+    id: `${scope}.resultRules`,
+    defaultMessage: 'Pass marks',
+  },
   signOut: {
     id: `${scope}.signOut`,
     defaultMessage: 'Sign Out',

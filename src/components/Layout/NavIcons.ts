@@ -106,4 +106,8 @@ export const navIcons: Record<string, { filled: MuiIcon; outlined: MuiIcon }> = 
     filled: SchoolRoundedIcon,
     outlined: SchoolOutlinedIcon,
   },
+  resultRules: {
+    filled: RuleRoundedIcon,
+    outlined: RuleOutlinedIcon,
+  },
 };
