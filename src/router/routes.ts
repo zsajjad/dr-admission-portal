@@ -48,6 +48,11 @@ export const routes = {
   results: {
     listing: '/results',
   },
+  auditLog: {
+    listing: '/audit-log',
+    record: (entityType: string, entityId: string) =>
+      `/audit-log?entityType=${encodeURIComponent(entityType)}&entityId=${encodeURIComponent(entityId)}`,
+  },
   questions: {
     listing: '/questions?includeInActive=true',
     create: '/questions/create',
