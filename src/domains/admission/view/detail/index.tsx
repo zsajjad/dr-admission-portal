@@ -10,7 +10,8 @@ import { Person as ProfileIcon } from '@mui/icons-material';
 import { Box, Button, Card, CardContent, Chip, Grid, Stack, Typography } from '@mui/material';
 
 import { PrintActions } from '@/domains/admission/components/PrintActions';
-import { formatDateTime } from '@/domains/students/utils';
+import studentMessages from '@/domains/students/messages';
+import { admissionStatusMessage, formatBirthDate, formatDateTime } from '@/domains/students/utils';
 import { VanChip } from '@/domains/van/components/VanChip';
 
 import { DataNotFound } from '@/components/DataNotFound';
@@ -58,7 +59,7 @@ export function AdmissionDetail({ admissionId }: { admissionId: string }) {
     query: { queryKey: [KEYS.ADMISSION_DETAIL, admissionId] },
   });
 
-  const studentFields: { value?: string | number; label: keyof typeof messages }[] = useMemo(() => {
+  const studentFields: { value?: React.ReactNode; label: keyof typeof messages }[] = useMemo(() => {
     return [
       {
         label: 'grNumberLabel',
@@ -82,11 +83,15 @@ export function AdmissionDetail({ admissionId }: { admissionId: string }) {
       },
       {
         label: 'dateOfBirthLabel',
-        value: admissionDetail?.student?.dateOfBirth,
+        value: admissionDetail?.student?.dateOfBirth ? formatBirthDate(admissionDetail.student.dateOfBirth) : undefined,
       },
       {
         label: 'genderLabel',
-        value: admissionDetail?.student?.gender,
+        value: admissionDetail?.student?.gender ? (
+          <FormattedMessage
+            {...(admissionDetail.student.gender === 'FEMALE' ? studentMessages.female : studentMessages.male)}
+          />
+        ) : undefined,
       },
       {
         label: 'addressLabel',
@@ -224,7 +229,11 @@ export function AdmissionDetail({ admissionId }: { admissionId: string }) {
               <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 0.5 }}>
                 <FormattedMessage {...messages.statusLabel} />
               </Typography>
-              <Chip label={admissionDetail?.status} color={getStatusColor(admissionDetail?.status)} size="small" />
+              <Chip
+                label={<FormattedMessage {...admissionStatusMessage(admissionDetail.status)} />}
+                color={getStatusColor(admissionDetail?.status)}
+                size="small"
+              />
             </Grid>
             <Grid size={{ xs: 12, md: 6, lg: 9 }}>
               <Stack direction="row" spacing={1} justifyContent={{ xs: 'flex-start', md: 'flex-end' }}>
