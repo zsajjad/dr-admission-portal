@@ -10,7 +10,7 @@ export default function VanDetailPage({ params }: { params: Promise<{ id: string
 
   return (
     <Stack>
-      <Heading headingType="detail" showEditButton />
+      <Heading headingType="detail" />
       <VanDetail vanId={id} />
     </Stack>
   );

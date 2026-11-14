@@ -944,6 +944,14 @@
   "app.domains.students.attendanceSoFar": "اب تک {marked} میں سے {attended} دن",
   "app.domains.students.daysLeft": "{days} باقی",
   "app.domains.students.lastYearResult": "پچھلے سال کا نتیجہ، {session}",
+  "app.components.DetailHeader.active": "فعال",
+  "app.components.DetailHeader.deactivated": "غیر فعال",
+  "app.components.DetailHeader.edit": "ترمیم",
+  "app.components.DetailHeader.deactivate": "غیر فعال کریں",
+  "app.components.DetailHeader.reactivate": "دوبارہ فعال کریں",
+  "app.components.DetailHeader.added": "شامل کیا گیا",
+  "app.components.DetailHeader.lastChanged": "آخری تبدیلی",
+  "app.components.DetailHeader.by": "از {name}",
   "app.components.RowMenu.more": "مزید اقدامات",
   "app.domains.admission.view.listing.printVerificationSlip": "تصدیقی سلپ پرنٹ کریں"
 }

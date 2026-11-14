@@ -14,7 +14,7 @@ export default defineMessages({
   },
   detail: {
     id: `${scope}.heading.detail`,
-    defaultMessage: 'Question Set Details',
+    defaultMessage: 'Question set',
   },
   create: {
     id: `${scope}.heading.create`,

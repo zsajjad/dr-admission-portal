@@ -14,7 +14,7 @@ export default defineMessages({
   },
   detail: {
     id: `${scope}.heading.detail`,
-    defaultMessage: 'Branch Details',
+    defaultMessage: 'Branch',
   },
   create: {
     id: `${scope}.heading.create`,

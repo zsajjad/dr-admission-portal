@@ -1,13 +1,9 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { Box, Chip, Stack } from '@mui/material';
 
-import { Card, CardContent, Chip, CircularProgress, FormControlLabel, Grid, Stack, Switch } from '@mui/material';
-
-import InfoTooltip from '@/components/DataTable/InfoTooltipColumn/Tooltip';
-import { DetailItem } from '@/components/DetailItem';
+import { DetailHeader } from '@/components/DetailHeader';
 import { DetailNotFound } from '@/components/DetailNotFound';
-import { DetailTooltipWrapper } from '@/components/DetailTooltipWrapper';
 import { DetailSkeleton } from '@/components/Skeleton/DetailSkeleton';
 
 import { KEYS } from '@/providers/constants/key';
@@ -24,19 +20,13 @@ import { useActivationHandlers } from '@/hooks/useActivationHandlers';
 import { useEntityDetailHandler } from '@/hooks/useEntityDetailHandler';
 import { useMutationHandlers } from '@/hooks/useMutationHandlers';
 
+import { routes } from '@/router/routes';
+import { useQueryParams } from '@/router/useQueryParams';
+
 import messages from './messages';
 
-// Helper function to determine text color based on background luminance
-function getContrastColor(hexColor: string): string {
-  if (!hexColor || !hexColor.startsWith('#')) return '#000000';
-  const r = parseInt(hexColor.slice(1, 3), 16);
-  const g = parseInt(hexColor.slice(3, 5), 16);
-  const b = parseInt(hexColor.slice(5, 7), 16);
-  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  return luminance > 0.5 ? '#000000' : '#FFFFFF';
-}
-
 export function VanDetail({ vanId }: { vanId: string }) {
+  const { route } = useQueryParams();
   const activateVan = useVanControllerActivate();
   const deactivateVan = useVanControllerDeactivate();
   const {
@@ -65,59 +55,6 @@ export function VanDetail({ vanId }: { vanId: string }) {
     errorUpdate: useFormattedMessage(messages.errorUpdate),
   };
 
-  const vanDetailFields: { label: keyof typeof messages; value?: string | number | React.ReactNode }[] = useMemo(() => {
-    return [
-      {
-        label: 'idLabel',
-        value: van?.id,
-      },
-      {
-        label: 'codeLabel',
-        value: van?.code,
-      },
-      {
-        label: 'nameLabel',
-        value: van?.name,
-      },
-      {
-        label: 'branchLabel',
-        value: van?.branch?.name,
-      },
-      {
-        label: 'colorNameLabel',
-        value: van?.colorName,
-      },
-      {
-        label: 'colorHexLabel',
-        value: van?.colorHex ? (
-          <Chip
-            label={van.colorHex}
-            size="small"
-            sx={{
-              backgroundColor: van.colorHex,
-              color: getContrastColor(van.colorHex),
-            }}
-          />
-        ) : (
-          '-'
-        ),
-      },
-      {
-        label: 'areasLabel',
-        value:
-          van?.areas && van.areas.length > 0 ? (
-            <Stack direction="row" spacing={0.5} flexWrap="wrap">
-              {van.areas.map((area) => (
-                <Chip key={area.id} label={area.name} size="small" variant="outlined" />
-              ))}
-            </Stack>
-          ) : (
-            '-'
-          ),
-      },
-    ];
-  }, [van]);
-
   const { onSuccess, onError } = useMutationHandlers({
     queryKey: [KEYS.VAN_DETAIL, vanId],
     messages: {
@@ -131,17 +68,6 @@ export function VanDetail({ vanId }: { vanId: string }) {
     deactivateVan,
     onSuccess,
     onError,
-  );
-
-  const handleCheck = useCallback(
-    (checked: boolean) => {
-      if (van) {
-        if (checked) {
-          handleActivate(van);
-        } else handleDeactivate(van);
-      }
-    },
-    [handleActivate, handleDeactivate, van],
   );
 
   useEntityDetailHandler({
@@ -161,41 +87,56 @@ export function VanDetail({ vanId }: { vanId: string }) {
 
   return (
     <Stack spacing={2}>
-      <Card>
-        <CardContent>
-          <DetailTooltipWrapper>
-            <InfoTooltip
-              createdAt={van?.createdAt}
-              createdBy={van?.createdBy?.name}
-              updatedAt={van?.updatedAt}
-              updatedBy={van?.updatedBy?.name}
-              isActive={van?.isActive}
-            />
-          </DetailTooltipWrapper>
-          <Grid container spacing={2}>
-            {vanDetailFields?.map((field, idx) => (
-              <DetailItem
-                key={`van-${idx}`}
-                label={<FormattedMessage {...messages?.[field.label]} />}
-                value={field.value}
-              />
-            ))}
-
-            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-              <FormControlLabel
-                control={
-                  activateVan.isPending || deactivateVan.isPending || isFetching || isLoading ? (
-                    <CircularProgress size={26} sx={{ mr: 2 }} />
-                  ) : (
-                    <Switch checked={van?.isActive || false} onChange={(e) => handleCheck(e.target.checked)} />
-                  )
-                }
-                label={<FormattedMessage {...(van?.isActive ? messages.deactivate : messages.activate)} />}
-              />
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
+      <DetailHeader
+        mark={van.code}
+        markColor={van.colorHex || undefined}
+        title={van.name}
+        isActive={van.isActive}
+        fields={[
+          { key: 'code', label: <FormattedMessage {...messages.codeLabel} />, value: van.code, dir: 'ltr' },
+          { key: 'branch', label: <FormattedMessage {...messages.branchLabel} />, value: van.branch?.name },
+          {
+            key: 'color',
+            label: <FormattedMessage {...messages.colorNameLabel} />,
+            value: van.colorName ? (
+              <Stack direction="row" spacing={1} alignItems="center">
+                {van.colorHex ? (
+                  <Box
+                    sx={{
+                      width: 14,
+                      height: 14,
+                      borderRadius: '50%',
+                      bgcolor: van.colorHex,
+                      border: '1px solid',
+                      borderColor: 'divider',
+                    }}
+                  />
+                ) : null}
+                <span>{van.colorName}</span>
+              </Stack>
+            ) : undefined,
+          },
+          {
+            key: 'areas',
+            label: <FormattedMessage {...messages.areasLabel} />,
+            value:
+              van.areas && van.areas.length > 0 ? (
+                <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+                  {van.areas.map((area) => (
+                    <Chip key={area.id} label={area.name} size="small" variant="outlined" />
+                  ))}
+                </Stack>
+              ) : undefined,
+          },
+        ]}
+        createdAt={van.createdAt}
+        createdBy={van.createdBy?.name}
+        updatedAt={van.updatedAt}
+        updatedBy={van.updatedBy?.name}
+        onEdit={() => route({ url: routes.van.edit(van.id) })}
+        onToggleActive={() => (van.isActive ? handleDeactivate(van) : handleActivate(van))}
+        isToggling={activateVan.isPending || deactivateVan.isPending || isFetching}
+      />
     </Stack>
   );
 }
