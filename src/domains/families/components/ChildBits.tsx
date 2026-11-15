@@ -136,7 +136,9 @@ export function ClassText({
   }
   return (
     <Typography variant="body2" color="text.secondary">
-      {intl.formatMessage(messages.noAdmission)}
+      {sessionName
+        ? intl.formatMessage(messages.notIn, { session: sessionName })
+        : intl.formatMessage(messages.noAdmission)}
     </Typography>
   );
 }

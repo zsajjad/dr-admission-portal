@@ -206,12 +206,11 @@ export function ResultsMatrix({
 
   const pinned = {
     position: 'sticky',
-    left: 0,
+    insetInlineStart: 0,
     zIndex: 1,
     bgcolor: 'background.paper',
     minWidth: 140,
-    borderRight: 1,
-    borderRightColor: 'divider',
+    borderInlineEnd: '1px solid var(--mui-palette-divider)',
   } as const;
 
   return (

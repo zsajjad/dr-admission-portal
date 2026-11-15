@@ -112,15 +112,18 @@ export function FamilyBody({
           {
             key: 'phones',
             label: intl.formatMessage(messages.fieldPhones),
-            value: header.phones.length
-              ? header.phones.map((p, i) => (
-                  <span key={p} style={{ whiteSpace: 'nowrap' }}>
-                    {i > 0 && ' · '}
+            // Each number stays whole and left to right; a gap separates them, so nothing dangles on a wrap
+            value: header.phones.length ? (
+              <Box component="span" sx={{ display: 'inline-flex', flexWrap: 'wrap', columnGap: 2, rowGap: 0.25 }}>
+                {header.phones.map((p) => (
+                  <Box component="span" key={p} dir="ltr" sx={{ whiteSpace: 'nowrap' }}>
                     {formatPhone(p)}
-                  </span>
-                ))
-              : '--',
-            dir: 'ltr',
+                  </Box>
+                ))}
+              </Box>
+            ) : (
+              '--'
+            ),
           },
           {
             key: 'area',

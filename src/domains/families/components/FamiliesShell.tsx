@@ -1,9 +1,9 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { Box, Stack, Tab, Tabs } from '@mui/material';
 
@@ -17,10 +17,14 @@ import { routes } from '@/router/routes';
 import messages from '../messages';
 import { FAMILIES_READ, FAMILY_REPORT_READ, useFamiliesAccess } from '../permissions';
 
-/** Heading, tabs and the permission check shared by the family pages */
+/**
+ * Heading, tabs and the permission check shared by the family pages. Like the trainings pages, the nav item shows
+ * with reports.view too: those admins see only the Report tab, and any other family page opens the report.
+ */
 export function FamiliesShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const { canRead, canReport } = useFamiliesAccess();
+  const router = useRouter();
+  const { canRead, canReport, isLoading } = useFamiliesAccess();
   const tabs = [
     canRead && { href: routes.families.listing, label: messages.tabFamilies },
     canRead && { href: routes.families.review, label: messages.tabReview },
@@ -33,6 +37,11 @@ export function FamiliesShell({ children }: { children: ReactNode }) {
         : routes.families.report
       : routes.families.listing;
   const onReport = current === routes.families.report;
+  const reportOnly = !isLoading && !canRead && canReport;
+
+  useEffect(() => {
+    if (reportOnly && !onReport) router.replace(routes.families.report);
+  }, [reportOnly, onReport, router]);
 
   return (
     <Stack>
@@ -51,7 +60,11 @@ export function FamiliesShell({ children }: { children: ReactNode }) {
             ))}
           </Tabs>
         </Box>
-        {onReport ? children : <RequirePermission anyOf={FAMILIES_READ}>{children}</RequirePermission>}
+        {onReport ? (
+          children
+        ) : reportOnly ? null : (
+          <RequirePermission anyOf={FAMILIES_READ}>{children}</RequirePermission>
+        )}
       </RequirePermission>
     </Stack>
   );

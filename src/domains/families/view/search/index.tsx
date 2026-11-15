@@ -29,7 +29,6 @@ import { extractNetworkError } from '@/utils/extractNetworkError';
 
 import { SearchRow, useFamilySearch } from '../../api';
 import messages from '../../messages';
-import { useFamiliesAccess } from '../../permissions';
 import {
   ageOn,
   byBirthOrder,
@@ -76,17 +75,11 @@ export function FamiliesSearch() {
   const intl = useIntl();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const access = useFamiliesAccess();
   const query = searchParams.get('q') ?? '';
   const [input, setInput] = useState(query);
   const hint = useQueryHint(input);
 
   useEffect(() => setInput(query), [query]);
-
-  // An admin with only reports.view can open the report, not the families
-  useEffect(() => {
-    if (!access.isLoading && !access.canRead && access.canReport) router.replace(routes.families.report);
-  }, [access.isLoading, access.canRead, access.canReport, router]);
 
   const submit = (e: FormEvent) => {
     e.preventDefault();

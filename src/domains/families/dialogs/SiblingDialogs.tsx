@@ -45,7 +45,7 @@ export interface PairStudent {
 export interface PairInfo {
   level?: SiblingLevel;
   reasons?: string[];
-  fatherScore?: number;
+  fatherScore?: number | null;
   outcome?: string;
 }
 

@@ -292,11 +292,11 @@ export function StudentFamilyCard({ studentId }: { studentId: string }) {
         <Chip
           size="small"
           variant="outlined"
-          label={intl.formatMessage(messages.cardSummary, {
-            children: members.length,
-            attending: family.childrenAttending,
-            session: sessionName ?? '',
-          })}
+          label={intl.formatMessage(
+            // A new session with no admissions yet: say so, since the rows then show each child's latest session
+            family.childrenAdmitted === 0 ? messages.cardSummaryNoneAdmitted : messages.cardSummary,
+            { children: members.length, attending: family.childrenAttending, session: sessionName ?? '' },
+          )}
         />
       }
       actions={
@@ -313,7 +313,7 @@ export function StudentFamilyCard({ studentId }: { studentId: string }) {
               <TableRow>
                 <TableCell>{intl.formatMessage(messages.colChild)}</TableCell>
                 <TableCell>{intl.formatMessage(messages.colAge)}</TableCell>
-                <TableCell>{sessionName ?? intl.formatMessage(messages.colLatestClass)}</TableCell>
+                <TableCell>{intl.formatMessage(messages.colClass)}</TableCell>
                 <TableCell>{intl.formatMessage(messages.colSchool)}</TableCell>
                 <TableCell>{intl.formatMessage(messages.colResult)}</TableCell>
               </TableRow>
@@ -329,7 +329,9 @@ export function StudentFamilyCard({ studentId }: { studentId: string }) {
                       isThis
                         ? {
                             bgcolor: 'var(--mui-palette-brand-goldSoft)',
-                            '& > td:first-of-type': { boxShadow: 'inset 3px 0 0 var(--mui-palette-brand-gold)' },
+                            '& > td:first-of-type': {
+                              borderInlineStart: '3px solid var(--mui-palette-brand-gold)',
+                            },
                           }
                         : undefined
                     }

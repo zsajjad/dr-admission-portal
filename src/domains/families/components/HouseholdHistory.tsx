@@ -34,7 +34,7 @@ export function HouseholdHistory({ family, names }: { family: FamilyEntity; name
   for (const h of family.history ?? []) {
     const name = names.get(h.studentId) ?? h.grNumber;
     const member = members.get(h.membershipId);
-    const evidence = (member?.evidence ?? {}) as { reasons?: string[]; level?: string; fatherScore?: number };
+    const evidence = (member?.evidence ?? {}) as { reasons?: string[]; level?: string; fatherScore?: number | null };
     const who = member?.confirmedBy?.name ?? member?.confirmedByStaffUser?.name;
     events.push({
       key: `${h.membershipId}-join`,

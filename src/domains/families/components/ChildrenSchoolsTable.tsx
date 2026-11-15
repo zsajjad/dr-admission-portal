@@ -113,7 +113,9 @@ export function ChildrenSchoolsTable({
                 sx={{
                   ...(e.isThis && {
                     bgcolor: 'var(--mui-palette-brand-goldSoft)',
-                    '& > td:first-of-type': { boxShadow: 'inset 3px 0 0 var(--mui-palette-brand-gold)' },
+                    '& > td:first-of-type': {
+                      borderInlineStart: '3px solid var(--mui-palette-brand-gold)',
+                    },
                   }),
                   ...(e.extra && { '& > td': { borderBottom: 'none' } }),
                   '& > td': { verticalAlign: 'top', ...dashed },

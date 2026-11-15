@@ -101,6 +101,11 @@ export default defineMessages({
     id: `${scope}.cardSummary`,
     defaultMessage: '{children, plural, one {# child} other {# children}} · {attending} attending {session}',
   },
+  cardSummaryNoneAdmitted: {
+    id: `${scope}.cardSummaryNoneAdmitted`,
+    defaultMessage:
+      '{children, plural, one {# child} other {# children}} · none admitted in {session} yet, so each row shows its latest session',
+  },
   openFamily: { id: `${scope}.openFamily`, defaultMessage: 'Open family' },
   seePossibleFamily: { id: `${scope}.seePossibleFamily`, defaultMessage: 'See possible family' },
   onlyChild: { id: `${scope}.onlyChild`, defaultMessage: 'The only child in this family.' },

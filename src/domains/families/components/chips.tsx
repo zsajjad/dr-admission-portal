@@ -49,10 +49,11 @@ export function RelationChip({ relation, always }: { relation: FamilyRelation; a
 /** The reasons for a match, in words, joined with " · " */
 export function useReasonsText() {
   const intl = useIntl();
-  return (reasons: readonly string[], fatherScore?: number) =>
+  return (reasons: readonly string[], fatherScore?: number | null) =>
     orderReasons(reasons)
       .map((r) => {
-        if (r === 'SIMILAR_FATHER_NAME' && fatherScore === undefined) {
+        // Core's confirm evidence has no score, and a suggestion's may be empty: say it without a number
+        if (r === 'SIMILAR_FATHER_NAME' && typeof fatherScore !== 'number') {
           return intl.formatMessage(familyMessages.reasonSimilarFatherNoScore);
         }
         const msg = (familyMessages as Record<string, Msg>)[`reason${r}`];
@@ -61,7 +62,7 @@ export function useReasonsText() {
       .join(' · ');
 }
 
-export function ReasonsText({ reasons, fatherScore }: { reasons: readonly string[]; fatherScore?: number }) {
+export function ReasonsText({ reasons, fatherScore }: { reasons: readonly string[]; fatherScore?: number | null }) {
   const text = useReasonsText();
   return (
     <Typography component="span" variant="body2" color="text.secondary">
