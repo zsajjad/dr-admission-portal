@@ -53,6 +53,30 @@ export interface PublicAreasResponseDto {
   data: PublicArea[];
 }
 
+export type SchoolKind = (typeof SchoolKind)[keyof typeof SchoolKind];
+
+export const SchoolKind = {
+  SCHOOL: 'SCHOOL',
+  COLLEGE: 'COLLEGE',
+  UNIVERSITY: 'UNIVERSITY',
+  MADRASA: 'MADRASA',
+} as const;
+
+export interface PublicSchool {
+  id: string;
+  /** The name to show; send this id as schoolId */
+  name: string;
+  kind: SchoolKind;
+  /** Other spellings families used; search matches these too */
+  aliases: string[];
+  /** Areas its students live in; list these schools first for those areas */
+  areaIds: string[];
+}
+
+export interface PublicSchoolsResponseDto {
+  data: PublicSchool[];
+}
+
 export interface PublicSession {
   id: string;
   /** e.g. DR1447 */
@@ -67,6 +91,177 @@ export interface PublicSession {
 
 export interface PublicSessionResponseDto {
   data: PublicSession;
+}
+
+export interface CreateSchoolDto {
+  /** The name shown in the list, in English */
+  name: string;
+  kind?: SchoolKind;
+  /** Other spellings (English or Urdu) */
+  aliases?: string[];
+  /** Areas its students live in */
+  areaIds?: string[];
+}
+
+export interface AdminUserBase {
+  /** The ID of the admin user */
+  id: string;
+  /** The name of the admin user */
+  name: string;
+  /** The email of the admin user */
+  email: string;
+}
+
+export interface School {
+  /** id */
+  id: string;
+  /** The name shown in the list */
+  name: string;
+  /** kind */
+  kind: SchoolKind;
+  /** Other spellings families have used (English or Urdu); search matches these too */
+  aliases: string[];
+  /** Areas students of this school live in; the form lists these schools first */
+  areaIds: string[];
+  /** Admissions linked to this school (admins only) */
+  admissionCount?: number;
+  /** isActive (admins only) */
+  isActive?: boolean;
+  /** createdAt (admins only) */
+  createdAt?: string;
+  /** updatedAt (admins only) */
+  updatedAt?: string;
+  /** createdBy (admins only) */
+  createdBy?: AdminUserBase;
+  /** updatedBy (admins only) */
+  updatedBy?: AdminUserBase;
+}
+
+export interface CreateSchoolResponseDto {
+  /** Message of the action */
+  message: string;
+  data: School;
+}
+
+export interface ListSchoolsResponseDto {
+  /** Total number of records */
+  count: number;
+  data: School[];
+}
+
+export interface UnmatchedSchoolName {
+  /** The most common spelling */
+  name: string;
+  /** Other spellings with the same letters */
+  spellings: string[];
+  /** Admissions with this name and no school */
+  count: number;
+}
+
+export interface UnmatchedSchoolNamesResponseDto {
+  /** Distinct unmatched names */
+  count: number;
+  data: UnmatchedSchoolName[];
+}
+
+export interface ImportSchoolItemDto {
+  /** The name shown in the list; an existing school with this name is updated */
+  name: string;
+  kind?: SchoolKind;
+  /** Other spellings; added to the ones the school has */
+  aliases?: string[];
+  /** Area codes (e.g. "15"); added to the areas the school has */
+  areaCodes?: string[];
+}
+
+export interface ImportSchoolsDto {
+  items: ImportSchoolItemDto[];
+  /** Report what would change, change nothing */
+  dryRun?: boolean;
+}
+
+export interface ImportSchoolsConflict {
+  school: string;
+  alias: string;
+  /** The school that already has this spelling */
+  takenBy: string;
+}
+
+export interface ImportSchoolsResponseDto {
+  message: string;
+  dryRun: boolean;
+  created: number;
+  updated: number;
+  unchanged: number;
+  aliasesAdded: number;
+  /** Spellings left out because another school has them */
+  aliasConflicts: ImportSchoolsConflict[];
+  /** Area codes that match no active area */
+  unknownAreaCodes: string[];
+}
+
+export interface LinkSchoolAdmissionsResponseDto {
+  message: string;
+  dryRun: boolean;
+  /** Admissions with a typed school name and no school */
+  checked: number;
+  /** Of those, the ones whose name matches a school spelling */
+  linked: number;
+  /** Of those, the ones that still match no school */
+  unmatched: number;
+}
+
+export interface DetailSchoolsResponseDto {
+  /** Message of the action */
+  message: string;
+  data: School;
+}
+
+export interface UpdateSchoolDto {
+  /** New name. The old name stays as a spelling, so admissions typed with it still match. */
+  name?: string;
+  kind?: SchoolKind;
+  /** Replaces the other spellings */
+  aliases?: string[];
+  /** Replaces the areas */
+  areaIds?: string[];
+}
+
+export interface UpdateSchoolResponseDto {
+  /** Message of the action */
+  message: string;
+  data?: School;
+}
+
+export interface AddSchoolAliasesDto {
+  /** Typed names that mean this school (e.g. from the unmatched names list) */
+  names: string[];
+}
+
+export interface AddSchoolAliasesResponseDto {
+  /** Message of the action */
+  message: string;
+  data: School;
+  /** Admissions with one of these names now linked to the school */
+  admissionsLinked: number;
+}
+
+export interface MergeSchoolDto {
+  /** The duplicate school: its admissions, spellings and areas move to this one, then it is deleted */
+  sourceSchoolId: string;
+}
+
+export interface MergeSchoolResponseDto {
+  /** Message of the action */
+  message: string;
+  data: School;
+  /** Admissions moved to this school */
+  admissionsMoved: number;
+}
+
+export interface ActionResponseDto {
+  /** Message of the action */
+  message: string;
 }
 
 export interface AdminLoginRequestDto {
@@ -191,11 +386,6 @@ export interface UpdateAdminUserDto {
 export interface UpdateAdminUserResponseDto {
   /** Admin user data */
   data: AdminUser;
-}
-
-export interface ActionResponseDto {
-  /** Message of the action */
-  message: string;
 }
 
 export interface AdminChangePasswordRequestDto {
@@ -485,15 +675,6 @@ export interface CreateBranchDto {
   defaultColorName?: string;
   /** defaultColorHex (e.g. #FF5733) */
   defaultColorHex?: string;
-}
-
-export interface AdminUserBase {
-  /** The ID of the admin user */
-  id: string;
-  /** The name of the admin user */
-  name: string;
-  /** The email of the admin user */
-  email: string;
 }
 
 export interface Branch {
@@ -1166,7 +1347,9 @@ export interface CreateAdmissionDto {
   address?: string;
   /** identityNumber (B-Form/CNIC as text) */
   identityNumber?: string;
-  /** schoolName */
+  /** A school picked from the list (GET /public/schools). Its name is stored as schoolName. Leave empty when the family typed a school that is not listed. */
+  schoolId?: string;
+  /** schoolName: what the family typed, or the picked school's name */
   schoolName?: string;
   /** schoolClass */
   schoolClass?: string;
@@ -1349,6 +1532,8 @@ export interface Admission {
   classLevel: AdmissionClassLevel;
   /** classLevelGroup */
   classLevelGroup: ClassLevelGroup;
+  /** The school from the schools list, if linked */
+  schoolId?: string;
   /** schoolName */
   schoolName?: string;
   /** schoolClass */
@@ -1655,7 +1840,9 @@ export interface UpdateAdmissionDto {
   address?: string;
   /** identityNumber */
   identityNumber?: string;
-  /** schoolName */
+  /** A school picked from the list (GET /public/schools). Its name is stored as schoolName. Leave empty when the family typed a school that is not listed. */
+  schoolId?: string;
+  /** schoolName: what the family typed, or the picked school's name */
   schoolName?: string;
   /** schoolClass */
   schoolClass?: string;
@@ -1811,7 +1998,9 @@ export interface PublicCreateReturningAdmissionDto {
   alternatePhone?: string;
   /** address */
   address?: string;
-  /** schoolName */
+  /** A school picked from the list (GET /public/schools). Its name is stored as schoolName. Leave empty when the family typed a school that is not listed. */
+  schoolId?: string;
+  /** schoolName: what the family typed, or the picked school's name */
   schoolName?: string;
   /** schoolClass */
   schoolClass?: string;
@@ -1875,7 +2064,9 @@ export interface PublicCreateAdmissionDto {
   address?: string;
   /** identityNumber (B-Form/CNIC as text) */
   identityNumber?: string;
-  /** schoolName */
+  /** A school picked from the list (GET /public/schools). Its name is stored as schoolName. Leave empty when the family typed a school that is not listed. */
+  schoolId?: string;
+  /** schoolName: what the family typed, or the picked school's name */
   schoolName?: string;
   /** schoolClass */
   schoolClass?: string;
@@ -7266,6 +7457,8 @@ export interface QueueTrainingEntity {
 
 export interface StaffQueueStudentDto {
   enrollmentId: string;
+  /** The enrollment's session: the grade only counts in a window of this session */
+  sessionId: string;
   studentId: string;
   grNumber: string;
   name: string;
@@ -7287,7 +7480,7 @@ export interface StaffQueueStudentDto {
 }
 
 export interface StaffTestingQueueDto {
-  /** Open now or opening in the next 7 days, for the caller */
+  /** Open now or opening in the next 7 days, for the caller, of the current session or a listed student's session */
   windows: TestingWindowEntity[];
   students: StaffQueueStudentDto[];
 }
@@ -7739,6 +7932,60 @@ export const AssetsControllerUploadPublicType = {
   VIDEO: 'VIDEO',
   DOCUMENT: 'DOCUMENT',
 } as const;
+
+export type SchoolControllerFindAllParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: SchoolControllerFindAllSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+  /** Part of the name or of another spelling */
+  search?: string;
+  kind?: SchoolKind;
+  /** Only schools linked to this area */
+  areaId?: string;
+  /** Sort by */
+  sortBy?: SchoolControllerFindAllSortBy;
+};
+
+export type SchoolControllerFindAllSortOrder =
+  (typeof SchoolControllerFindAllSortOrder)[keyof typeof SchoolControllerFindAllSortOrder];
+
+export const SchoolControllerFindAllSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type SchoolControllerFindAllSortBy =
+  (typeof SchoolControllerFindAllSortBy)[keyof typeof SchoolControllerFindAllSortBy];
+
+export const SchoolControllerFindAllSortBy = {
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
+
+export type SchoolControllerUnmatchedNamesParams = {
+  /** Only this session; all sessions when empty */
+  sessionId?: string;
+  /** Most names to return */
+  take?: number;
+};
+
+export type SchoolControllerLinkAdmissionsParams = {
+  /** Only this session; all sessions when empty */
+  sessionId?: string;
+  /** Count only, change nothing */
+  dryRun?: boolean;
+};
+
+export type SchoolControllerFindOneParams = {
+  /** Include deactivated records (admins only) */
+  includeInActive?: boolean;
+};
 
 export type AdminUsersControllerFindAllParams = {
   /** Number of records to skip */
