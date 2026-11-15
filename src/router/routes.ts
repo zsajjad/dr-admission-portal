@@ -41,6 +41,15 @@ export const routes = {
     listing: '/students/merge',
     withRecord: (studentId: string) => `/students/merge?a=${studentId}`,
     history: '/students/merge?tab=history',
+    compare: (a: string, b: string) => `/students/merge?a=${a}&b=${b}`,
+  },
+  families: {
+    listing: '/families',
+    search: (q: string) => `/families?q=${encodeURIComponent(q)}`,
+    detail: (id: string) => `/families/${id}`,
+    possible: (studentId: string) => `/families/possible/${studentId}`,
+    review: '/families/review',
+    report: '/families/report',
   },
   staffUsers: {
     listing: '/staff-users',

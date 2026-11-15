@@ -2,11 +2,16 @@
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { Search as SearchIcon } from '@mui/icons-material';
-import { Alert, Box, Button, Chip, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Chip, Link as MuiLink, Stack, TextField, Typography } from '@mui/material';
 import { GridColDef, GridPaginationModel } from '@mui/x-data-grid';
+
+import familyMessages from '@/domains/families/messages';
+import { useFamiliesAccess } from '@/domains/families/permissions';
+import { queryKind } from '@/domains/families/rules';
 
 import { DataTable } from '@/components/DataTable';
 
@@ -30,6 +35,7 @@ export function StudentSearch() {
   const query = searchParams.get('q') ?? '';
   const [input, setInput] = useState(query);
   const [pagination, setPagination] = useState<GridPaginationModel>({ page: 0, pageSize: 20 });
+  const { canRead: canReadFamilies } = useFamiliesAccess();
 
   useEffect(() => setInput(query), [query]);
 
@@ -142,6 +148,14 @@ export function StudentSearch() {
         <Alert severity="error" sx={{ borderRadius: 3 }}>
           {extractNetworkError(error)}
         </Alert>
+      )}
+
+      {enabled && canReadFamilies && queryKind(query) === 'PHONE' && (
+        <Typography variant="body2">
+          <MuiLink component={Link} href={routes.families.search(query.trim())}>
+            <FormattedMessage {...familyMessages.seeFamiliesForPhone} />
+          </MuiLink>
+        </Typography>
       )}
 
       {enabled && (

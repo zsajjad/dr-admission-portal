@@ -14,6 +14,8 @@ import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
 import BarChartRoundedIcon from '@mui/icons-material/BarChartRounded';
 import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined';
 import ClassRoundedIcon from '@mui/icons-material/ClassRounded';
+import FamilyRestroomOutlinedIcon from '@mui/icons-material/FamilyRestroomOutlined';
+import FamilyRestroomRoundedIcon from '@mui/icons-material/FamilyRestroomRounded';
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
 import ForumRoundedIcon from '@mui/icons-material/ForumRounded';
 import GradingOutlinedIcon from '@mui/icons-material/GradingOutlined';
@@ -73,6 +75,10 @@ export const navIcons: Record<string, { filled: MuiIcon; outlined: MuiIcon }> = 
   students: {
     filled: PersonSearchRoundedIcon,
     outlined: PersonSearchOutlinedIcon,
+  },
+  families: {
+    filled: FamilyRestroomRoundedIcon,
+    outlined: FamilyRestroomOutlinedIcon,
   },
   studentMerge: {
     filled: JoinInnerRoundedIcon,
