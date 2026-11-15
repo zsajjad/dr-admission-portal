@@ -32,8 +32,8 @@ import messages from '../../messages';
 
 /**
  * Everything about one student, from GET /students/:id/profile, ordered for the days classes run:
- * who they are and where they sit this session, their family (or possible siblings), this session's attendance and Fiqh trainings,
- * last year's result, the last two admissions side by side, every admission in full, then identity and documents.
+ * who they are and where they sit this session, this session's attendance and Fiqh trainings, last year's result,
+ * the last two admissions side by side, their family (or possible siblings), every admission in full, then identity and documents.
  */
 export function StudentProfileView({ studentId }: { studentId: string }) {
   const notFound = useFormattedMessage(messages.notFound);
@@ -102,9 +102,6 @@ export function StudentProfileView({ studentId }: { studentId: string }) {
 
       <ProfileHeader profile={profile} current={current} />
 
-      {/* Family: the confirmed household, else one line of possible siblings that opens in place */}
-      <StudentFamilyCard studentId={profile.student.id} />
-
       {/* This session */}
       <Grid container spacing={2.5}>
         <Grid size={{ xs: 12, lg: canReadTrainings ? 7 : 12 }}>
@@ -148,6 +145,9 @@ export function StudentProfileView({ studentId }: { studentId: string }) {
           </Grid>
         </Stack>
       )}
+
+      {/* Family: the confirmed household, else one line of possible siblings that opens in place */}
+      <StudentFamilyCard studentId={profile.student.id} />
 
       {/* Every admission in full, with its actions */}
       <Stack spacing={1.5}>
