@@ -4505,7 +4505,7 @@
             "name": "sessionId",
             "required": false,
             "in": "query",
-            "description": "sessionId - Filter admission counts by session",
+            "description": "sessionId - Filter admission counts by session. If omitted, counts cover every session",
             "schema": {
               "type": "string"
             }
@@ -6128,7 +6128,7 @@
             "name": "sessionId",
             "required": false,
             "in": "query",
-            "description": "sessionId",
+            "description": "sessionId. If omitted, admissions of every session (history included)",
             "schema": {
               "type": "string"
             }
@@ -6305,7 +6305,7 @@
             "name": "sessionId",
             "required": false,
             "in": "query",
-            "description": "Filter statistics by a specific session ID. If omitted, aggregates across all sessions.",
+            "description": "The session to show. If omitted, the current session (all sessions only if there is none).",
             "schema": {
               "example": "DR1447",
               "type": "string"
@@ -7998,7 +7998,7 @@
     },
     "/session-dashboard/record": {
       "get": {
-        "description": "Per session: applications, fee paid, admitted, different students, and new against returning among\nthe admitted. 2025 has no session in this system, only imported records, so it is one number.",
+        "description": "Per session: applications, fee paid, admitted, different students, and new against returning among\nthe admitted. Before 2025 is imported as a session, the 2025 records are one number (legacyRecords2025, 0 after).",
         "operationId": "SessionDashboardController_getRecord",
         "parameters": [
           {
@@ -22002,7 +22002,7 @@
           },
           "alreadyRegistered": {
             "type": "boolean",
-            "description": "true if this student already has an admission"
+            "description": "true if this student already has an admission in the current session"
           },
           "grNumber": {
             "type": "string",
@@ -22166,7 +22166,7 @@
           },
           "alreadyRegistered": {
             "type": "boolean",
-            "description": "true if an admission already exists for this phone"
+            "description": "true if this student already has an admission in the current session"
           },
           "grNumber": {
             "type": "string",
@@ -23528,7 +23528,7 @@
           },
           "sessionId": {
             "type": "string",
-            "description": "Session ID filter applied (if any)",
+            "description": "The session shown (the current one if none was asked for)",
             "example": "DR1447"
           },
           "branchId": {
@@ -24705,7 +24705,7 @@
           },
           "keepAdmissionId": {
             "type": "string",
-            "description": "The admission to keep live when the records have more than one live admission in a session"
+            "description": "The admission to keep live when the records have more than one live admission in an active session. In a past (inactive) session the merge picks one itself: fee paid first, then CONFIRMED, VERIFIED, then the oldest."
           },
           "fieldChoices": {
             "$ref": "#/components/schemas/MergeFieldChoicesDto"
@@ -25217,7 +25217,7 @@
           },
           "keepAdmissionId": {
             "type": "string",
-            "description": "The admission to keep live when the records have more than one live admission in a session"
+            "description": "The admission to keep live when the records have more than one live admission in an active session. In a past (inactive) session the merge picks one itself: fee paid first, then CONFIRMED, VERIFIED, then the oldest."
           },
           "fieldChoices": {
             "$ref": "#/components/schemas/MergeFieldChoicesDto"
@@ -26404,11 +26404,11 @@
         "properties": {
           "newStudents": {
             "type": "number",
-            "description": "Applicants never admitted in an earlier session and with no 2025 record"
+            "description": "Applicants who are not returning"
           },
           "returningStudents": {
             "type": "number",
-            "description": "Applicants admitted in any earlier session, or with a 2025 record"
+            "description": "Applicants admitted in an earlier session, or, in a session after 2025, who have a 2025 record"
           }
         },
         "required": [
@@ -26974,7 +26974,7 @@
           },
           "returningStudents": {
             "type": "number",
-            "description": "Of admitted: admitted in an earlier session, or with a 2025 record"
+            "description": "Of admitted: returning (see SessionDashboardStudentMix.returningStudents)"
           },
           "newStudents": {
             "type": "number",
@@ -27003,7 +27003,7 @@
           },
           "legacyRecords2025": {
             "type": "number",
-            "description": "2025 records on file (imported; 2025 has no session or admissions in this system)"
+            "description": "2025 records on file (imported 2025 sign-ups). 0 once a session starting in 2025 exists: that session is the 2025 row"
           },
           "uniqueStudentsAdmitted": {
             "type": "number",

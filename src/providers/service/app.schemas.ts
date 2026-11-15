@@ -1269,7 +1269,7 @@ export interface LegacyAdmissionPrefill {
 export interface LegacyStudentRow {
   /** id */
   id: string;
-  /** true if this student already has an admission */
+  /** true if this student already has an admission in the current session */
   alreadyRegistered: boolean;
   /** grNumber (legacy gr_no) */
   grNumber?: string;
@@ -1342,7 +1342,7 @@ export interface LegacyAdmissionRaw {
 export interface LegacyStudentFullRow {
   /** id */
   id: string;
-  /** true if an admission already exists for this phone */
+  /** true if this student already has an admission in the current session */
   alreadyRegistered: boolean;
   /** grNumber (legacy gr_no) */
   grNumber?: string;
@@ -1826,7 +1826,7 @@ export interface AdmissionsDashboardTrendPoint {
 export interface AdmissionsDashboardResponseData {
   /** Timestamp when this dashboard data was generated */
   generatedAt: string;
-  /** Session ID filter applied (if any) */
+  /** The session shown (the current one if none was asked for) */
   sessionId?: string;
   /** Branch ID filter applied (if any) */
   branchId?: string;
@@ -2253,7 +2253,7 @@ export interface PreviewStudentMergeDto {
   survivorStudentId: string;
   /** Records merged into the survivor (1 to 9) */
   mergeStudentIds: string[];
-  /** The admission to keep live when the records have more than one live admission in a session */
+  /** The admission to keep live when the records have more than one live admission in an active session. In a past (inactive) session the merge picks one itself: fee paid first, then CONFIRMED, VERIFIED, then the oldest. */
   keepAdmissionId?: string;
   fieldChoices?: MergeFieldChoicesDto;
   /** Confirms the birth dates are more than a year apart */
@@ -2421,7 +2421,7 @@ export interface CreateStudentMergeDto {
   survivorStudentId: string;
   /** Records merged into the survivor (1 to 9) */
   mergeStudentIds: string[];
-  /** The admission to keep live when the records have more than one live admission in a session */
+  /** The admission to keep live when the records have more than one live admission in an active session. In a past (inactive) session the merge picks one itself: fee paid first, then CONFIRMED, VERIFIED, then the oldest. */
   keepAdmissionId?: string;
   fieldChoices?: MergeFieldChoicesDto;
   /** Confirms the birth dates are more than a year apart */
@@ -2834,9 +2834,9 @@ export interface SessionDashboardBreakdownRow {
 }
 
 export interface SessionDashboardStudentMix {
-  /** Applicants never admitted in an earlier session and with no 2025 record */
+  /** Applicants who are not returning */
   newStudents: number;
-  /** Applicants admitted in any earlier session, or with a 2025 record */
+  /** Applicants admitted in an earlier session, or, in a session after 2025, who have a 2025 record */
   returningStudents: number;
 }
 
@@ -3024,7 +3024,7 @@ export interface SessionDashboardRecordRow {
   admitted: number;
   /** Different students among the admitted (merged records count once) */
   uniqueStudents: number;
-  /** Of admitted: admitted in an earlier session, or with a 2025 record */
+  /** Of admitted: returning (see SessionDashboardStudentMix.returningStudents) */
   returningStudents: number;
   /** Of admitted: first time */
   newStudents: number;
@@ -3033,7 +3033,7 @@ export interface SessionDashboardRecordRow {
 export interface SessionDashboardRecord {
   /** Every session with a start date or admissions, oldest first */
   sessions: SessionDashboardRecordRow[];
-  /** 2025 records on file (imported; 2025 has no session or admissions in this system) */
+  /** 2025 records on file (imported 2025 sign-ups). 0 once a session starting in 2025 exists: that session is the 2025 row */
   legacyRecords2025: number;
   /** Different students admitted in any session */
   uniqueStudentsAdmitted: number;
@@ -8253,7 +8253,7 @@ export type VanControllerFindAllParams = {
   code?: string;
   /** name */
   name?: string;
-  /** sessionId - Filter admission counts by session */
+  /** sessionId - Filter admission counts by session. If omitted, counts cover every session */
   sessionId?: string;
   /** Sort by */
   sortBy?: VanControllerFindAllSortBy;
@@ -8484,7 +8484,7 @@ export type AdmissionsControllerFindAllParams = {
   sortOrder?: AdmissionsControllerFindAllSortOrder;
   /** Include deactivated records */
   includeInActive?: boolean;
-  /** sessionId */
+  /** sessionId. If omitted, admissions of every session (history included) */
   sessionId?: string;
   /** branchId */
   branchId?: string;
@@ -8534,7 +8534,7 @@ export const AdmissionsControllerFindAllSortBy = {
 } as const;
 
 export type AdmissionsControllerGetDashboardParams = {
-  /** Filter statistics by a specific session ID. If omitted, aggregates across all sessions. */
+  /** The session to show. If omitted, the current session (all sessions only if there is none). */
   sessionId?: string;
   /** Filter statistics by a specific branch ID. If omitted, aggregates across all branches. */
   branchId?: string;
