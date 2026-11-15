@@ -1130,6 +1130,39 @@
         ]
       }
     },
+    "/public/schools": {
+      "get": {
+        "operationId": "PublicReferenceController_schools",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicSchoolsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "x-proxy-secret": []
+          }
+        ],
+        "summary": "Active schools, with other spellings and the areas their students live in",
+        "tags": [
+          "Public Reference"
+        ]
+      }
+    },
     "/public/sessions/current": {
       "get": {
         "operationId": "PublicReferenceController_currentSession",
@@ -1160,6 +1193,700 @@
         "summary": "The session families register for, and whether registration is open",
         "tags": [
           "Public Reference"
+        ]
+      }
+    },
+    "/school": {
+      "post": {
+        "operationId": "SchoolController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSchoolDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateSchoolResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "School"
+        ]
+      },
+      "get": {
+        "operationId": "SchoolController_findAll",
+        "parameters": [
+          {
+            "name": "skip",
+            "required": false,
+            "in": "query",
+            "description": "Number of records to skip",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "take",
+            "required": false,
+            "in": "query",
+            "description": "Number of records to take",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "required": false,
+            "in": "query",
+            "description": "Sort direction",
+            "schema": {
+              "default": "asc",
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "includeInActive",
+            "required": false,
+            "in": "query",
+            "description": "Include deactivated records",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Part of the name or of another spelling",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "kind",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/SchoolKind"
+            }
+          },
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/SchoolType"
+            }
+          },
+          {
+            "name": "feeBand",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/SchoolFeeBand"
+            }
+          },
+          {
+            "name": "medium",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/SchoolMedium"
+            }
+          },
+          {
+            "name": "attributesMissing",
+            "required": false,
+            "in": "query",
+            "description": "Only schools whose type, fee band or medium is not set yet (to fill them in)",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "areaId",
+            "required": false,
+            "in": "query",
+            "description": "Only schools linked to this area",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "description": "Sort by",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "name",
+                "createdAt",
+                "updatedAt"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListSchoolsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "optional-jwt": []
+          }
+        ],
+        "tags": [
+          "School"
+        ]
+      }
+    },
+    "/school/unmatched-names": {
+      "get": {
+        "operationId": "SchoolController_unmatchedNames",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "description": "Only this session; all sessions when empty",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "take",
+            "required": false,
+            "in": "query",
+            "description": "Most names to return",
+            "schema": {
+              "default": 200,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnmatchedSchoolNamesResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "summary": "Typed school names that match no school, most used first",
+        "tags": [
+          "School"
+        ]
+      }
+    },
+    "/school/import": {
+      "post": {
+        "operationId": "SchoolController_import",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportSchoolsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportSchoolsResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "summary": "Create or update schools from a list; adds spellings and areas, never removes them",
+        "tags": [
+          "School"
+        ]
+      }
+    },
+    "/school/link-admissions": {
+      "post": {
+        "operationId": "SchoolController_linkAdmissions",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "description": "Only this session; all sessions when empty",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dryRun",
+            "required": false,
+            "in": "query",
+            "description": "Count only, change nothing",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkSchoolAdmissionsResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "summary": "Link admissions with a typed school name to the school with that spelling",
+        "tags": [
+          "School"
+        ]
+      }
+    },
+    "/school/{id}": {
+      "get": {
+        "operationId": "SchoolController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "includeInActive",
+            "required": false,
+            "in": "query",
+            "description": "Include deactivated records (admins only)",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetailSchoolsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "optional-jwt": []
+          }
+        ],
+        "tags": [
+          "School"
+        ]
+      },
+      "patch": {
+        "operationId": "SchoolController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSchoolDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateSchoolResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "School"
+        ]
+      },
+      "delete": {
+        "operationId": "SchoolController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "School"
+        ]
+      }
+    },
+    "/school/{id}/aliases": {
+      "post": {
+        "operationId": "SchoolController_addAliases",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddSchoolAliasesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddSchoolAliasesResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "summary": "Add typed names as spellings of this school and link the admissions that used them",
+        "tags": [
+          "School"
+        ]
+      }
+    },
+    "/school/{id}/merge": {
+      "post": {
+        "operationId": "SchoolController_merge",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MergeSchoolDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MergeSchoolResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "summary": "Fold a duplicate school into this one",
+        "tags": [
+          "School"
+        ]
+      }
+    },
+    "/school/{id}/deactivate": {
+      "delete": {
+        "operationId": "SchoolController_deactivate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "School"
+        ]
+      }
+    },
+    "/school/{id}/activate": {
+      "patch": {
+        "operationId": "SchoolController_activate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "tags": [
+          "School"
         ]
       }
     },
@@ -3778,7 +4505,7 @@
             "name": "sessionId",
             "required": false,
             "in": "query",
-            "description": "sessionId - Filter admission counts by session",
+            "description": "sessionId - Filter admission counts by session. If omitted, counts cover every session",
             "schema": {
               "type": "string"
             }
@@ -5401,7 +6128,7 @@
             "name": "sessionId",
             "required": false,
             "in": "query",
-            "description": "sessionId",
+            "description": "sessionId. If omitted, admissions of every session (history included)",
             "schema": {
               "type": "string"
             }
@@ -5578,7 +6305,7 @@
             "name": "sessionId",
             "required": false,
             "in": "query",
-            "description": "Filter statistics by a specific session ID. If omitted, aggregates across all sessions.",
+            "description": "The session to show. If omitted, the current session (all sessions only if there is none).",
             "schema": {
               "example": "DR1447",
               "type": "string"
@@ -7271,7 +7998,7 @@
     },
     "/session-dashboard/record": {
       "get": {
-        "description": "Per session: applications, fee paid, admitted, different students, and new against returning among\nthe admitted. 2025 has no session in this system, only imported records, so it is one number.",
+        "description": "Per session: applications, fee paid, admitted, different students, and new against returning among\nthe admitted. Before 2025 is imported as a session, the 2025 records are one number (legacyRecords2025, 0 after).",
         "operationId": "SessionDashboardController_getRecord",
         "parameters": [
           {
@@ -18074,6 +18801,69 @@
           "data"
         ]
       },
+      "SchoolKind": {
+        "type": "string",
+        "enum": [
+          "SCHOOL",
+          "COLLEGE",
+          "UNIVERSITY",
+          "MADRASA"
+        ]
+      },
+      "PublicSchool": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name to show; send this id as schoolId"
+          },
+          "kind": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolKind"
+              }
+            ]
+          },
+          "aliases": {
+            "description": "Other spellings families used; search matches these too",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "areaIds": {
+            "description": "Areas its students live in; list these schools first for those areas",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "aliases",
+          "areaIds"
+        ]
+      },
+      "PublicSchoolsResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PublicSchool"
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
       "PublicSession": {
         "type": "object",
         "properties": {
@@ -18114,6 +18904,614 @@
         },
         "required": [
           "data"
+        ]
+      },
+      "SchoolType": {
+        "type": "string",
+        "enum": [
+          "GOVERNMENT",
+          "PRIVATE",
+          "TRUST",
+          "MADRASSA"
+        ],
+        "description": "Who runs it. TRUST is semi-government or run by a trust. Null clears it"
+      },
+      "SchoolFeeBand": {
+        "type": "string",
+        "enum": [
+          "LOW",
+          "MEDIUM",
+          "HIGH"
+        ],
+        "description": "Rough monthly fee band. Null clears it"
+      },
+      "SchoolMedium": {
+        "type": "string",
+        "enum": [
+          "ENGLISH",
+          "URDU"
+        ],
+        "description": "Null clears it"
+      },
+      "CreateSchoolDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name shown in the list, in English"
+          },
+          "kind": {
+            "default": "SCHOOL",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolKind"
+              }
+            ]
+          },
+          "type": {
+            "nullable": true,
+            "description": "Who runs it. TRUST is semi-government or run by a trust. Null clears it",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolType"
+              }
+            ]
+          },
+          "feeBand": {
+            "nullable": true,
+            "description": "Rough monthly fee band. Null clears it",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolFeeBand"
+              }
+            ]
+          },
+          "medium": {
+            "nullable": true,
+            "description": "Null clears it",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolMedium"
+              }
+            ]
+          },
+          "aliases": {
+            "description": "Other spellings (English or Urdu)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "areaIds": {
+            "description": "Areas its students live in",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "AdminUserBase": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The ID of the admin user"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the admin user"
+          },
+          "email": {
+            "type": "string",
+            "description": "The email of the admin user"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "email"
+        ]
+      },
+      "School": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "id"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name shown in the list"
+          },
+          "kind": {
+            "description": "kind",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolKind"
+              }
+            ]
+          },
+          "type": {
+            "description": "Who runs it (TRUST: semi-government or a trust); empty until staff set it",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolType"
+              }
+            ]
+          },
+          "feeBand": {
+            "description": "Rough monthly fee band; empty until staff set it",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolFeeBand"
+              }
+            ]
+          },
+          "medium": {
+            "description": "Medium; empty until staff set it",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolMedium"
+              }
+            ]
+          },
+          "aliases": {
+            "description": "Other spellings families have used (English or Urdu); search matches these too",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "areaIds": {
+            "description": "Areas students of this school live in; the form lists these schools first",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "admissionCount": {
+            "type": "number",
+            "description": "Admissions linked to this school (admins only)"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "isActive (admins only)"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "createdAt (admins only)"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "updatedAt (admins only)"
+          },
+          "createdBy": {
+            "description": "createdBy (admins only)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AdminUserBase"
+              }
+            ]
+          },
+          "updatedBy": {
+            "description": "updatedBy (admins only)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AdminUserBase"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "aliases",
+          "areaIds"
+        ]
+      },
+      "CreateSchoolResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message of the action"
+          },
+          "data": {
+            "$ref": "#/components/schemas/School"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "ListSchoolsResponseDto": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "description": "Total number of records"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/School"
+            }
+          }
+        },
+        "required": [
+          "count",
+          "data"
+        ]
+      },
+      "UnmatchedSchoolName": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The most common spelling"
+          },
+          "spellings": {
+            "description": "Other spellings with the same letters",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "count": {
+            "type": "number",
+            "description": "Admissions with this name and no school"
+          }
+        },
+        "required": [
+          "name",
+          "spellings",
+          "count"
+        ]
+      },
+      "UnmatchedSchoolNamesResponseDto": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "description": "Distinct unmatched names"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UnmatchedSchoolName"
+            }
+          }
+        },
+        "required": [
+          "count",
+          "data"
+        ]
+      },
+      "ImportSchoolItemDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name shown in the list; an existing school with this name is updated"
+          },
+          "kind": {
+            "default": "SCHOOL",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolKind"
+              }
+            ]
+          },
+          "aliases": {
+            "description": "Other spellings; added to the ones the school has",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "areaCodes": {
+            "description": "Area codes (e.g. \"15\"); added to the areas the school has",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "ImportSchoolsDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImportSchoolItemDto"
+            }
+          },
+          "dryRun": {
+            "type": "boolean",
+            "description": "Report what would change, change nothing",
+            "default": false
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "ImportSchoolsConflict": {
+        "type": "object",
+        "properties": {
+          "school": {
+            "type": "string"
+          },
+          "alias": {
+            "type": "string"
+          },
+          "takenBy": {
+            "type": "string",
+            "description": "The school that already has this spelling"
+          }
+        },
+        "required": [
+          "school",
+          "alias",
+          "takenBy"
+        ]
+      },
+      "ImportSchoolsResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "created": {
+            "type": "number"
+          },
+          "updated": {
+            "type": "number"
+          },
+          "unchanged": {
+            "type": "number"
+          },
+          "aliasesAdded": {
+            "type": "number"
+          },
+          "aliasConflicts": {
+            "description": "Spellings left out because another school has them",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImportSchoolsConflict"
+            }
+          },
+          "unknownAreaCodes": {
+            "description": "Area codes that match no active area",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "message",
+          "dryRun",
+          "created",
+          "updated",
+          "unchanged",
+          "aliasesAdded",
+          "aliasConflicts",
+          "unknownAreaCodes"
+        ]
+      },
+      "LinkSchoolAdmissionsResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "dryRun": {
+            "type": "boolean"
+          },
+          "checked": {
+            "type": "number",
+            "description": "Admissions with a typed school name and no school"
+          },
+          "linked": {
+            "type": "number",
+            "description": "Of those, the ones whose name matches a school spelling"
+          },
+          "unmatched": {
+            "type": "number",
+            "description": "Of those, the ones that still match no school"
+          }
+        },
+        "required": [
+          "message",
+          "dryRun",
+          "checked",
+          "linked",
+          "unmatched"
+        ]
+      },
+      "DetailSchoolsResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message of the action"
+          },
+          "data": {
+            "$ref": "#/components/schemas/School"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "UpdateSchoolDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "New name. The old name stays as a spelling, so admissions typed with it still match."
+          },
+          "kind": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolKind"
+              }
+            ]
+          },
+          "type": {
+            "nullable": true,
+            "description": "Who runs it. TRUST is semi-government or run by a trust. Null clears it",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolType"
+              }
+            ]
+          },
+          "feeBand": {
+            "nullable": true,
+            "description": "Rough monthly fee band. Null clears it",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolFeeBand"
+              }
+            ]
+          },
+          "medium": {
+            "nullable": true,
+            "description": "Null clears it",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolMedium"
+              }
+            ]
+          },
+          "aliases": {
+            "description": "Replaces the other spellings",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "areaIds": {
+            "description": "Replaces the areas",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "UpdateSchoolResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message of the action"
+          },
+          "data": {
+            "$ref": "#/components/schemas/School"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "AddSchoolAliasesDto": {
+        "type": "object",
+        "properties": {
+          "names": {
+            "description": "Typed names that mean this school (e.g. from the unmatched names list)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "names"
+        ]
+      },
+      "AddSchoolAliasesResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message of the action"
+          },
+          "data": {
+            "$ref": "#/components/schemas/School"
+          },
+          "admissionsLinked": {
+            "type": "number",
+            "description": "Admissions with one of these names now linked to the school"
+          }
+        },
+        "required": [
+          "message",
+          "data",
+          "admissionsLinked"
+        ]
+      },
+      "MergeSchoolDto": {
+        "type": "object",
+        "properties": {
+          "sourceSchoolId": {
+            "type": "string",
+            "description": "The duplicate school: its admissions, spellings and areas move to this one, then it is deleted"
+          }
+        },
+        "required": [
+          "sourceSchoolId"
+        ]
+      },
+      "MergeSchoolResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message of the action"
+          },
+          "data": {
+            "$ref": "#/components/schemas/School"
+          },
+          "admissionsMoved": {
+            "type": "number",
+            "description": "Admissions moved to this school"
+          }
+        },
+        "required": [
+          "message",
+          "data",
+          "admissionsMoved"
+        ]
+      },
+      "ActionResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message of the action"
+          }
+        },
+        "required": [
+          "message"
         ]
       },
       "AdminLoginRequestDto": {
@@ -18436,18 +19834,6 @@
         },
         "required": [
           "data"
-        ]
-      },
-      "ActionResponseDto": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "description": "Message of the action"
-          }
-        },
-        "required": [
-          "message"
         ]
       },
       "AdminChangePasswordRequestDto": {
@@ -19234,28 +20620,6 @@
         "required": [
           "code",
           "name"
-        ]
-      },
-      "AdminUserBase": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "The ID of the admin user"
-          },
-          "name": {
-            "type": "string",
-            "description": "The name of the admin user"
-          },
-          "email": {
-            "type": "string",
-            "description": "The email of the admin user"
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "email"
         ]
       },
       "Branch": {
@@ -20638,7 +22002,7 @@
           },
           "alreadyRegistered": {
             "type": "boolean",
-            "description": "true if this student already has an admission"
+            "description": "true if this student already has an admission in the current session"
           },
           "grNumber": {
             "type": "string",
@@ -20802,7 +22166,7 @@
           },
           "alreadyRegistered": {
             "type": "boolean",
-            "description": "true if an admission already exists for this phone"
+            "description": "true if this student already has an admission in the current session"
           },
           "grNumber": {
             "type": "string",
@@ -20943,9 +22307,13 @@
             "type": "string",
             "description": "identityNumber (B-Form/CNIC as text)"
           },
+          "schoolId": {
+            "type": "string",
+            "description": "A school picked from the list (GET /public/schools). Its name is stored as schoolName. Leave empty when the family typed a school that is not listed."
+          },
           "schoolName": {
             "type": "string",
-            "description": "schoolName"
+            "description": "schoolName: what the family typed, or the picked school's name"
           },
           "schoolClass": {
             "type": "string",
@@ -21432,6 +22800,10 @@
                 "$ref": "#/components/schemas/ClassLevelGroup"
               }
             ]
+          },
+          "schoolId": {
+            "type": "string",
+            "description": "The school from the schools list, if linked"
           },
           "schoolName": {
             "type": "string",
@@ -22156,7 +23528,7 @@
           },
           "sessionId": {
             "type": "string",
-            "description": "Session ID filter applied (if any)",
+            "description": "The session shown (the current one if none was asked for)",
             "example": "DR1447"
           },
           "branchId": {
@@ -22359,9 +23731,13 @@
             "type": "string",
             "description": "identityNumber"
           },
+          "schoolId": {
+            "type": "string",
+            "description": "A school picked from the list (GET /public/schools). Its name is stored as schoolName. Leave empty when the family typed a school that is not listed."
+          },
           "schoolName": {
             "type": "string",
-            "description": "schoolName"
+            "description": "schoolName: what the family typed, or the picked school's name"
           },
           "schoolClass": {
             "type": "string",
@@ -22740,9 +24116,13 @@
             "type": "string",
             "description": "address"
           },
+          "schoolId": {
+            "type": "string",
+            "description": "A school picked from the list (GET /public/schools). Its name is stored as schoolName. Leave empty when the family typed a school that is not listed."
+          },
           "schoolName": {
             "type": "string",
-            "description": "schoolName"
+            "description": "schoolName: what the family typed, or the picked school's name"
           },
           "schoolClass": {
             "type": "string",
@@ -22927,9 +24307,13 @@
             "type": "string",
             "description": "identityNumber (B-Form/CNIC as text)"
           },
+          "schoolId": {
+            "type": "string",
+            "description": "A school picked from the list (GET /public/schools). Its name is stored as schoolName. Leave empty when the family typed a school that is not listed."
+          },
           "schoolName": {
             "type": "string",
-            "description": "schoolName"
+            "description": "schoolName: what the family typed, or the picked school's name"
           },
           "schoolClass": {
             "type": "string",
@@ -23321,7 +24705,7 @@
           },
           "keepAdmissionId": {
             "type": "string",
-            "description": "The admission to keep live when the records have more than one live admission in a session"
+            "description": "The admission to keep live when the records have more than one live admission in an active session. In a past (inactive) session the merge picks one itself: fee paid first, then CONFIRMED, VERIFIED, then the oldest."
           },
           "fieldChoices": {
             "$ref": "#/components/schemas/MergeFieldChoicesDto"
@@ -23833,7 +25217,7 @@
           },
           "keepAdmissionId": {
             "type": "string",
-            "description": "The admission to keep live when the records have more than one live admission in a session"
+            "description": "The admission to keep live when the records have more than one live admission in an active session. In a past (inactive) session the merge picks one itself: fee paid first, then CONFIRMED, VERIFIED, then the oldest."
           },
           "fieldChoices": {
             "$ref": "#/components/schemas/MergeFieldChoicesDto"
@@ -25020,11 +26404,11 @@
         "properties": {
           "newStudents": {
             "type": "number",
-            "description": "Applicants never admitted in an earlier session and with no 2025 record"
+            "description": "Applicants who are not returning"
           },
           "returningStudents": {
             "type": "number",
-            "description": "Applicants admitted in any earlier session, or with a 2025 record"
+            "description": "Applicants admitted in an earlier session, or, in a session after 2025, who have a 2025 record"
           }
         },
         "required": [
@@ -25590,7 +26974,7 @@
           },
           "returningStudents": {
             "type": "number",
-            "description": "Of admitted: admitted in an earlier session, or with a 2025 record"
+            "description": "Of admitted: returning (see SessionDashboardStudentMix.returningStudents)"
           },
           "newStudents": {
             "type": "number",
@@ -25619,7 +27003,7 @@
           },
           "legacyRecords2025": {
             "type": "number",
-            "description": "2025 records on file (imported; 2025 has no session or admissions in this system)"
+            "description": "2025 records on file (imported 2025 sign-ups). 0 once a session starting in 2025 exists: that session is the 2025 row"
           },
           "uniqueStudentsAdmitted": {
             "type": "number",
@@ -36989,6 +38373,10 @@
           "enrollmentId": {
             "type": "string"
           },
+          "sessionId": {
+            "type": "string",
+            "description": "The enrollment's session: the grade only counts in a window of this session"
+          },
           "studentId": {
             "type": "string"
           },
@@ -37041,6 +38429,7 @@
         },
         "required": [
           "enrollmentId",
+          "sessionId",
           "studentId",
           "grNumber",
           "name",
@@ -37058,7 +38447,7 @@
         "type": "object",
         "properties": {
           "windows": {
-            "description": "Open now or opening in the next 7 days, for the caller",
+            "description": "Open now or opening in the next 7 days, for the caller, of the current session or a listed student's session",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/TestingWindowEntity"

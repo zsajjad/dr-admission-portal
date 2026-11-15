@@ -4,6 +4,8 @@ import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettin
 import AdminPanelSettingsRoundedIcon from '@mui/icons-material/AdminPanelSettingsRounded';
 import AirportShuttleOutlinedIcon from '@mui/icons-material/AirportShuttleOutlined';
 import AirportShuttleRoundedIcon from '@mui/icons-material/AirportShuttleRounded';
+import ApartmentOutlinedIcon from '@mui/icons-material/ApartmentOutlined';
+import ApartmentRoundedIcon from '@mui/icons-material/ApartmentRounded';
 import AssignmentIndOutlinedIcon from '@mui/icons-material/AssignmentIndOutlined';
 import AssignmentIndRoundedIcon from '@mui/icons-material/AssignmentIndRounded';
 import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
@@ -59,6 +61,10 @@ export const navIcons: Record<string, { filled: MuiIcon; outlined: MuiIcon }> = 
   van: {
     filled: AirportShuttleRoundedIcon,
     outlined: AirportShuttleOutlinedIcon,
+  },
+  schools: {
+    filled: ApartmentRoundedIcon,
+    outlined: ApartmentOutlinedIcon,
   },
   admissions: {
     filled: AssignmentIndRoundedIcon,

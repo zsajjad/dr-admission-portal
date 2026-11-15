@@ -545,7 +545,7 @@ export function useSessionDashboardControllerGetReturningPool<
 
 /**
  * Per session: applications, fee paid, admitted, different students, and new against returning among
- * the admitted. 2025 has no session in this system, only imported records, so it is one number.
+ * the admitted. Before 2025 is imported as a session, the 2025 records are one number (legacyRecords2025, 0 after).
  * @summary Totals of every session on record
  */
 export const sessionDashboardControllerGetRecord = (
@@ -594,7 +594,7 @@ export type SessionDashboardControllerGetRecordQueryError = void;
 
 /**
  * Per session: applications, fee paid, admitted, different students, and new against returning among
- * the admitted. 2025 has no session in this system, only imported records, so it is one number.
+ * the admitted. Before 2025 is imported as a session, the 2025 records are one number (legacyRecords2025, 0 after).
  * @summary Totals of every session on record
  */
 export function useSessionDashboardControllerGetRecord<
@@ -617,7 +617,7 @@ export function useSessionDashboardControllerGetRecord<
 ): DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
  * Per session: applications, fee paid, admitted, different students, and new against returning among
- * the admitted. 2025 has no session in this system, only imported records, so it is one number.
+ * the admitted. Before 2025 is imported as a session, the 2025 records are one number (legacyRecords2025, 0 after).
  * @summary Totals of every session on record
  */
 export function useSessionDashboardControllerGetRecord<
@@ -640,7 +640,7 @@ export function useSessionDashboardControllerGetRecord<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
  * Per session: applications, fee paid, admitted, different students, and new against returning among
- * the admitted. 2025 has no session in this system, only imported records, so it is one number.
+ * the admitted. Before 2025 is imported as a session, the 2025 records are one number (legacyRecords2025, 0 after).
  * @summary Totals of every session on record
  */
 export function useSessionDashboardControllerGetRecord<
@@ -655,7 +655,7 @@ export function useSessionDashboardControllerGetRecord<
 ): UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 /**
  * Per session: applications, fee paid, admitted, different students, and new against returning among
- * the admitted. 2025 has no session in this system, only imported records, so it is one number.
+ * the admitted. Before 2025 is imported as a session, the 2025 records are one number (legacyRecords2025, 0 after).
  * @summary Totals of every session on record
  */
 export function useSessionDashboardControllerGetRecord<

@@ -29,6 +29,8 @@ export function usePermissions() {
     role,
     /** Only super admins grant permissions */
     isSuperAdmin: role === RoleName.SUPER_ADMIN,
+    /** Super admins and admins, not teachers: what core's admin routes with no permission allow */
+    isAdmin: role === RoleName.SUPER_ADMIN || role === RoleName.ADMIN,
     isLoading: status === 'loading' || isLoading,
   };
 }

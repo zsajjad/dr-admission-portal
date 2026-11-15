@@ -11,4 +11,8 @@ export default defineMessages({
     id: `${scope}.superAdminOnly`,
     defaultMessage: 'Only super admins can open this page.',
   },
+  adminOnly: {
+    id: `${scope}.adminOnly`,
+    defaultMessage: 'Only admins can open this page.',
+  },
 });

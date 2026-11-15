@@ -20,6 +20,8 @@ interface ModuleConfig {
   permissions?: Permission[];
   /** Shown only to super admins */
   superAdminOnly?: boolean;
+  /** Shown only to super admins and admins (not teachers) */
+  adminOnly?: boolean;
 }
 
 export const MODULE_REGISTRY = {
@@ -49,6 +51,12 @@ export const MODULE_REGISTRY = {
     title: <FormattedMessage {...messages.van} />,
     href: routes.van.listing,
     icon: 'van',
+  },
+  schools: {
+    title: <FormattedMessage {...messages.schools} />,
+    href: routes.schools.listing,
+    icon: 'schools',
+    adminOnly: true,
   },
   admission: {
     title: <FormattedMessage {...messages.admissions} />,
