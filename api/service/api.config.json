@@ -1305,6 +1305,39 @@
             }
           },
           {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/SchoolType"
+            }
+          },
+          {
+            "name": "feeBand",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/SchoolFeeBand"
+            }
+          },
+          {
+            "name": "medium",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/SchoolMedium"
+            }
+          },
+          {
+            "name": "attributesMissing",
+            "required": false,
+            "in": "query",
+            "description": "Only schools whose type, fee band or medium is not set yet (to fill them in)",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
             "name": "areaId",
             "required": false,
             "in": "query",
@@ -18873,6 +18906,33 @@
           "data"
         ]
       },
+      "SchoolType": {
+        "type": "string",
+        "enum": [
+          "GOVERNMENT",
+          "PRIVATE",
+          "TRUST",
+          "MADRASSA"
+        ],
+        "description": "Who runs it. TRUST is semi-government or run by a trust. Null clears it"
+      },
+      "SchoolFeeBand": {
+        "type": "string",
+        "enum": [
+          "LOW",
+          "MEDIUM",
+          "HIGH"
+        ],
+        "description": "Rough monthly fee band. Null clears it"
+      },
+      "SchoolMedium": {
+        "type": "string",
+        "enum": [
+          "ENGLISH",
+          "URDU"
+        ],
+        "description": "Null clears it"
+      },
       "CreateSchoolDto": {
         "type": "object",
         "properties": {
@@ -18885,6 +18945,33 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/SchoolKind"
+              }
+            ]
+          },
+          "type": {
+            "nullable": true,
+            "description": "Who runs it. TRUST is semi-government or run by a trust. Null clears it",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolType"
+              }
+            ]
+          },
+          "feeBand": {
+            "nullable": true,
+            "description": "Rough monthly fee band. Null clears it",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolFeeBand"
+              }
+            ]
+          },
+          "medium": {
+            "nullable": true,
+            "description": "Null clears it",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolMedium"
               }
             ]
           },
@@ -18945,6 +19032,30 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/SchoolKind"
+              }
+            ]
+          },
+          "type": {
+            "description": "Who runs it (TRUST: semi-government or a trust); empty until staff set it",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolType"
+              }
+            ]
+          },
+          "feeBand": {
+            "description": "Rough monthly fee band; empty until staff set it",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolFeeBand"
+              }
+            ]
+          },
+          "medium": {
+            "description": "Medium; empty until staff set it",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolMedium"
               }
             ]
           },
@@ -19261,6 +19372,33 @@
             "allOf": [
               {
                 "$ref": "#/components/schemas/SchoolKind"
+              }
+            ]
+          },
+          "type": {
+            "nullable": true,
+            "description": "Who runs it. TRUST is semi-government or run by a trust. Null clears it",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolType"
+              }
+            ]
+          },
+          "feeBand": {
+            "nullable": true,
+            "description": "Rough monthly fee band. Null clears it",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolFeeBand"
+              }
+            ]
+          },
+          "medium": {
+            "nullable": true,
+            "description": "Null clears it",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolMedium"
               }
             ]
           },

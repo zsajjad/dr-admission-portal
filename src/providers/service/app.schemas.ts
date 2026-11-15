@@ -93,10 +93,49 @@ export interface PublicSessionResponseDto {
   data: PublicSession;
 }
 
+/**
+ * Who runs it. TRUST is semi-government or run by a trust. Null clears it
+ */
+export type SchoolType = (typeof SchoolType)[keyof typeof SchoolType];
+
+export const SchoolType = {
+  GOVERNMENT: 'GOVERNMENT',
+  PRIVATE: 'PRIVATE',
+  TRUST: 'TRUST',
+  MADRASSA: 'MADRASSA',
+} as const;
+
+/**
+ * Rough monthly fee band. Null clears it
+ */
+export type SchoolFeeBand = (typeof SchoolFeeBand)[keyof typeof SchoolFeeBand];
+
+export const SchoolFeeBand = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+} as const;
+
+/**
+ * Null clears it
+ */
+export type SchoolMedium = (typeof SchoolMedium)[keyof typeof SchoolMedium];
+
+export const SchoolMedium = {
+  ENGLISH: 'ENGLISH',
+  URDU: 'URDU',
+} as const;
+
 export interface CreateSchoolDto {
   /** The name shown in the list, in English */
   name: string;
   kind?: SchoolKind;
+  /** Who runs it. TRUST is semi-government or run by a trust. Null clears it */
+  type?: SchoolType | null;
+  /** Rough monthly fee band. Null clears it */
+  feeBand?: SchoolFeeBand | null;
+  /** Null clears it */
+  medium?: SchoolMedium | null;
   /** Other spellings (English or Urdu) */
   aliases?: string[];
   /** Areas its students live in */
@@ -119,6 +158,12 @@ export interface School {
   name: string;
   /** kind */
   kind: SchoolKind;
+  /** Who runs it (TRUST: semi-government or a trust); empty until staff set it */
+  type?: SchoolType;
+  /** Rough monthly fee band; empty until staff set it */
+  feeBand?: SchoolFeeBand;
+  /** Medium; empty until staff set it */
+  medium?: SchoolMedium;
   /** Other spellings families have used (English or Urdu); search matches these too */
   aliases: string[];
   /** Areas students of this school live in; the form lists these schools first */
@@ -221,6 +266,12 @@ export interface UpdateSchoolDto {
   /** New name. The old name stays as a spelling, so admissions typed with it still match. */
   name?: string;
   kind?: SchoolKind;
+  /** Who runs it. TRUST is semi-government or run by a trust. Null clears it */
+  type?: SchoolType | null;
+  /** Rough monthly fee band. Null clears it */
+  feeBand?: SchoolFeeBand | null;
+  /** Null clears it */
+  medium?: SchoolMedium | null;
   /** Replaces the other spellings */
   aliases?: string[];
   /** Replaces the areas */
@@ -7945,6 +7996,11 @@ export type SchoolControllerFindAllParams = {
   /** Part of the name or of another spelling */
   search?: string;
   kind?: SchoolKind;
+  type?: SchoolType;
+  feeBand?: SchoolFeeBand;
+  medium?: SchoolMedium;
+  /** Only schools whose type, fee band or medium is not set yet (to fill them in) */
+  attributesMissing?: boolean;
   /** Only schools linked to this area */
   areaId?: string;
   /** Sort by */
