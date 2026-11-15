@@ -17,6 +17,8 @@ export interface NavItemConfig {
   permissions?: Permission[];
   /** Shown only to super admins */
   superAdminOnly?: boolean;
+  /** Shown only to super admins and admins (not teachers) */
+  adminOnly?: boolean;
   // Matcher cannot be a function in order
   // to be able to use it on the server.
   // If you need to match multiple paths,

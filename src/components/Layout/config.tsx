@@ -34,7 +34,7 @@ const NAV_GROUPS: NavGroupConfig[] = [
     items: ['sections', 'questionSets', 'results', 'resultRules', 'trainings', 'syncReview'],
   },
   { key: 'staff', heading: navMessages.staff, items: ['staffUsers', 'adminUsers', 'adminPermissions'] },
-  { key: 'setup', heading: navMessages.setup, items: ['branches', 'van', 'auditLog'] },
+  { key: 'setup', heading: navMessages.setup, items: ['branches', 'van', 'schools', 'auditLog'] },
 ];
 
 const toNavItem = (moduleKey: ModuleKey): NavItemConfig => {
@@ -44,9 +44,10 @@ const toNavItem = (moduleKey: ModuleKey): NavItemConfig => {
     icon: string;
     permissions?: NavItemConfig['permissions'];
     superAdminOnly?: boolean;
+    adminOnly?: boolean;
   } = MODULE_REGISTRY[moduleKey];
-  const { title, href, icon, permissions, superAdminOnly } = entry;
-  return { key: moduleKey, title, href, icon, permissions, superAdminOnly };
+  const { title, href, icon, permissions, superAdminOnly, adminOnly } = entry;
+  return { key: moduleKey, title, href, icon, permissions, superAdminOnly, adminOnly };
 };
 
 /** Every nav item, flat, in the side nav's order (e.g. to find the current page's title). */
@@ -63,7 +64,7 @@ export interface NavGroup {
  * without one of them). Groups left empty are dropped.
  */
 export function useNavGroups(): NavGroup[] {
-  const { has, isSuperAdmin } = usePermissions();
+  const { has, isSuperAdmin, isAdmin } = usePermissions();
   return useMemo(
     () =>
       NAV_GROUPS.map((group) => ({
@@ -71,8 +72,13 @@ export function useNavGroups(): NavGroup[] {
         heading: group.heading,
         items: group.items
           .map(toNavItem)
-          .filter((item) => (!item.permissions || has(...item.permissions)) && (!item.superAdminOnly || isSuperAdmin)),
+          .filter(
+            (item) =>
+              (!item.permissions || has(...item.permissions)) &&
+              (!item.superAdminOnly || isSuperAdmin) &&
+              (!item.adminOnly || isAdmin),
+          ),
       })).filter((group) => group.items.length > 0),
-    [has, isSuperAdmin],
+    [has, isSuperAdmin, isAdmin],
   );
 }

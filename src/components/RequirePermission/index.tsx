@@ -17,17 +17,26 @@ interface RequirePermissionProps {
   anyOf?: Permission[];
   /** Only super admins (for pages no permission opens, like granting permissions) */
   superAdminOnly?: boolean;
+  /** Only super admins and admins (core's admin routes that need no permission, like schools) */
+  adminOnly?: boolean;
   children: ReactNode;
 }
 
 /** Shows the page only to admins with one of the permissions; the API enforces the same rule. */
-export function RequirePermission({ anyOf = [], superAdminOnly, children }: RequirePermissionProps) {
-  const { has, isSuperAdmin, isLoading } = usePermissions();
+export function RequirePermission({ anyOf = [], superAdminOnly, adminOnly, children }: RequirePermissionProps) {
+  const { has, isSuperAdmin, isAdmin, isLoading } = usePermissions();
   if (isLoading) return <Skeleton variant="rounded" height={160} sx={{ borderRadius: 3 }} />;
   if (superAdminOnly && !isSuperAdmin) {
     return (
       <Alert severity="warning" sx={{ borderRadius: 3 }}>
         <FormattedMessage {...messages.superAdminOnly} />
+      </Alert>
+    );
+  }
+  if (adminOnly && !isAdmin) {
+    return (
+      <Alert severity="warning" sx={{ borderRadius: 3 }}>
+        <FormattedMessage {...messages.adminOnly} />
       </Alert>
     );
   }

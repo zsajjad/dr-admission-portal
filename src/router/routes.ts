@@ -21,6 +21,11 @@ export const routes = {
     edit: (id: string) => `/van/edit/${id}`,
     detail: (id: string) => `/van/${id}`,
   },
+  schools: {
+    listing: '/schools',
+    unmatched: '/schools/unmatched',
+    detail: (id: string) => `/schools/${id}`,
+  },
   admission: {
     listing: '/admission',
     create: '/admission/create',
