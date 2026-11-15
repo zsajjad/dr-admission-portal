@@ -7783,6 +7783,858 @@
         ]
       }
     },
+    "/admin/families": {
+      "get": {
+        "description": "Filters: session, branch, at least N children attending, siblings split across branches or sections.",
+        "operationId": "FamiliesController_findAll",
+        "parameters": [
+          {
+            "name": "skip",
+            "required": false,
+            "in": "query",
+            "description": "Number of records to skip",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "take",
+            "required": false,
+            "in": "query",
+            "description": "Number of records to take",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "required": false,
+            "in": "query",
+            "description": "Sort direction",
+            "schema": {
+              "default": "asc",
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "includeInActive",
+            "required": false,
+            "in": "query",
+            "description": "Include deactivated records",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "description": "Default: the current session (the newest active one), with households as they are now. Given: households as of the session's start",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "branchId",
+            "required": false,
+            "in": "query",
+            "description": "Families with a child attending in this branch",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "relationScope",
+            "required": false,
+            "in": "query",
+            "description": "Which members count towards minChildren and the sort",
+            "schema": {
+              "$ref": "#/components/schemas/FamilyRelationScope"
+            }
+          },
+          {
+            "name": "minChildren",
+            "required": false,
+            "in": "query",
+            "description": "At least this many children attending the session",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "split",
+            "required": false,
+            "in": "query",
+            "description": "Only families split this way",
+            "schema": {
+              "$ref": "#/components/schemas/FamilySplit"
+            }
+          },
+          {
+            "name": "gr",
+            "required": false,
+            "in": "query",
+            "description": "Families with a member whose GR (current) is this",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/FamilySortBy"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListFamiliesResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: families.read or families.manage"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "summary": "Families, with each member’s admission in the session",
+        "tags": [
+          "Families"
+        ],
+        "x-permissions": [
+          "families.read",
+          "families.manage"
+        ]
+      }
+    },
+    "/admin/families/search": {
+      "get": {
+        "description": "Digits only (7+) is a phone: exact on 10 digits, else the end of the number. A GR (current or alias) finds its child. Letters (3+) match fathers’ and children’s names (normalized, similarity 80+). Matched children in a household give a HOUSEHOLD row with every current member; the rest are grouped into POSSIBLE rows by the STRONG rule (never across a \"not siblings\" pair). At most 200 matched children (`truncated`). 400 QUERY_TOO_SHORT.",
+        "operationId": "FamiliesController_search",
+        "parameters": [
+          {
+            "name": "q",
+            "required": true,
+            "in": "query",
+            "description": "A GR (current or alias), a phone (no letters, 7+ digits: exact on 10 digits, else the end of the number), or a name (3+ letters: father's name, or the child's)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "skip",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "take",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 20,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamilySearchResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: families.read or families.manage"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "summary": "Find households by phone, GR, or father’s or child’s name",
+        "tags": [
+          "Families"
+        ],
+        "x-permissions": [
+          "families.read",
+          "families.manage"
+        ]
+      }
+    },
+    "/admin/families/student-sessions": {
+      "get": {
+        "description": "1 to 30 student IDs; merged IDs show their survivor. Results (final, parts, attendance, trainings) are filled only for admins who also have reports.view or results.enter (`resultsVisible`).",
+        "operationId": "FamiliesController_studentSessions",
+        "parameters": [
+          {
+            "name": "studentIds",
+            "required": true,
+            "in": "query",
+            "description": "Student IDs, comma-separated (1 to 30). A merged ID is followed to its survivor",
+            "schema": {
+              "example": "id1,id2",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentSessionsResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: families.read or families.manage"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "summary": "Children session by session: identity, phones, area, and every admission with school and result",
+        "tags": [
+          "Families"
+        ],
+        "x-permissions": [
+          "families.read",
+          "families.manage"
+        ]
+      }
+    },
+    "/admin/families/report": {
+      "get": {
+        "description": "Families by children attending, siblings split across branches or sections, and van use. GRs, no names.",
+        "operationId": "FamiliesController_report",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "description": "Default: the current session (the newest active one), with the household as it is now. Given: the household as of the session's start",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamilyReportResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: families.read or families.manage or reports.view"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "summary": "Family report for a session",
+        "tags": [
+          "Families"
+        ],
+        "x-permissions": [
+          "families.read",
+          "families.manage",
+          "reports.view"
+        ]
+      }
+    },
+    "/admin/families/suggestions": {
+      "get": {
+        "description": "Paged. Excludes pairs already in one family, pairs marked not siblings, and possible duplicates.",
+        "operationId": "FamiliesController_suggestions",
+        "parameters": [
+          {
+            "name": "skip",
+            "required": false,
+            "in": "query",
+            "description": "Number of records to skip",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "take",
+            "required": false,
+            "in": "query",
+            "description": "Number of records to take",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "required": false,
+            "in": "query",
+            "description": "Sort direction",
+            "schema": {
+              "default": "asc",
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "includeInActive",
+            "required": false,
+            "in": "query",
+            "description": "Include deactivated records",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "description": "Session whose admissions are shown (and filtered on). Default: the current session",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "admittedOnly",
+            "required": false,
+            "in": "query",
+            "description": "Only pairs where both have a live admission in the session",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "branchId",
+            "required": false,
+            "in": "query",
+            "description": "Pairs with a student in this branch (the session's admission, else the student's)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "minLevel",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/SiblingLevel"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListFamilySuggestionsResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: families.read or families.manage"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "summary": "Review queue: unconfirmed possible siblings across all students, strongest first",
+        "tags": [
+          "Families"
+        ],
+        "x-permissions": [
+          "families.read",
+          "families.manage"
+        ]
+      }
+    },
+    "/admin/families/students/{studentId}": {
+      "get": {
+        "description": "The confirmed family with each member’s admission in the session, possible siblings with reasons, and possible duplicates (for the merge flow). A merged student ID shows its survivor.",
+        "operationId": "FamiliesController_studentFamily",
+        "parameters": [
+          {
+            "name": "studentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "description": "Default: the current session (the newest active one), with the household as it is now. Given: the household as of the session's start",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "includeWeak",
+            "required": false,
+            "in": "query",
+            "description": "Include WEAK suggestions (a shared phone only)",
+            "schema": {
+              "default": true,
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentFamilyResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: families.read or families.manage"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "summary": "A student’s family and possible siblings",
+        "tags": [
+          "Families"
+        ],
+        "x-permissions": [
+          "families.read",
+          "families.manage"
+        ]
+      }
+    },
+    "/admin/families/confirm": {
+      "post": {
+        "description": "Creates a family, adds one to the other’s family, or merges their two families. Clears a \"not siblings\" mark on the pair.",
+        "operationId": "FamiliesController_confirm",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmSiblingsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfirmSiblingsResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: families.manage"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "summary": "Confirm two students are siblings",
+        "tags": [
+          "Families"
+        ],
+        "x-permissions": [
+          "families.manage"
+        ]
+      }
+    },
+    "/admin/families/confirm-bulk": {
+      "post": {
+        "description": "Each pair is confirmed as the single confirm does (merges, duplicate refusal, audit), in its own transaction. At most 500 pairs per call; `remaining` says how many queue pairs are left. dryRun counts without writing.",
+        "operationId": "FamiliesController_confirmBulk",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmSiblingsBulkDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfirmSiblingsBulkResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: families.manage"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "summary": "Confirm many sibling pairs: explicit pairs, or the review queue (STRONG by default)",
+        "tags": [
+          "Families"
+        ],
+        "x-permissions": [
+          "families.manage"
+        ]
+      }
+    },
+    "/admin/families/reject": {
+      "post": {
+        "operationId": "FamiliesController_reject",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectSiblingsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RejectSiblingsResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: families.manage"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "summary": "Mark two students as not siblings, so they are never suggested again",
+        "tags": [
+          "Families"
+        ],
+        "x-permissions": [
+          "families.manage"
+        ]
+      }
+    },
+    "/admin/families/{id}": {
+      "get": {
+        "operationId": "FamiliesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sessionId",
+            "required": false,
+            "in": "query",
+            "description": "Default: the current session (the newest active one), with the household as it is now. Given: the household as of the session's start",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetailFamilyResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: families.read or families.manage"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "summary": "A family with each member’s admission in the session",
+        "tags": [
+          "Families"
+        ],
+        "x-permissions": [
+          "families.read",
+          "families.manage"
+        ]
+      }
+    },
+    "/admin/families/{id}/members/{studentId}": {
+      "patch": {
+        "operationId": "FamiliesController_updateMembership",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "studentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateFamilyMembershipDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamilyMembershipResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: families.manage"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "summary": "Change a child's current membership: the relation, or since when they've been in the household",
+        "tags": [
+          "Families"
+        ],
+        "x-permissions": [
+          "families.manage"
+        ]
+      }
+    },
+    "/admin/families/{id}/members/{studentId}/end": {
+      "post": {
+        "description": "MOVED_OUT keeps the membership for sessions before the date; LINKED_IN_ERROR makes it never count. A household with no current members is closed. Optionally marks the child \"not siblings\" with the rest.",
+        "operationId": "FamiliesController_endMembership",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "studentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EndFamilyMembershipDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamilyMembershipResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Allowed roles: SUPER_ADMIN, ADMIN\n\nNeeds permission: families.manage"
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          },
+          {
+            "x-channel": []
+          },
+          {
+            "admin-jwt": []
+          }
+        ],
+        "summary": "End a child's current membership",
+        "tags": [
+          "Families"
+        ],
+        "x-permissions": [
+          "families.manage"
+        ]
+      }
+    },
     "/session-dashboard/overview": {
       "get": {
         "description": "**Applied** is every active admission that is not REJECTED and not DUPLICATE_MERGED; the other steps\nare counted out of applied: **verified** (status VERIFIED or CONFIRMED), **fee paid**, **finalized**, **placed** (has\na section) and **interviewed** (has a teacher interview).\n\nThe comparison session is shown twice: its final numbers, and its numbers **on the same day of its cycle**. Days are\ncounted from each session's start date in Pakistan time, because Ramzan moves about 11 days earlier every year. An\napplication counts on the day it was created, a fee on the day it was marked paid, a finalization on the day it was\ndone. Same-day numbers are left out when either session has no start date.\n\nAlso: new against returning applicants, and fee collection by day.",
@@ -19983,7 +20835,9 @@
           "trainings.manage",
           "trainings.override",
           "trainings.payouts",
-          "reports.chat"
+          "reports.chat",
+          "families.read",
+          "families.manage"
         ]
       },
       "PermissionDefinition": {
@@ -26216,6 +27070,2267 @@
         "required": [
           "count",
           "data"
+        ]
+      },
+      "FamilyRelationScope": {
+        "type": "string",
+        "enum": [
+          "HOUSEHOLD",
+          "SIBLINGS",
+          "FULL_SIBLINGS"
+        ]
+      },
+      "FamilySplit": {
+        "type": "string",
+        "enum": [
+          "BRANCHES",
+          "SECTIONS",
+          "ANY"
+        ]
+      },
+      "FamilySortBy": {
+        "type": "string",
+        "enum": [
+          "childrenAttending",
+          "createdAt"
+        ]
+      },
+      "FamilySessionRef": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "example": "DR1447"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "FamilyCodeRef": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name"
+        ]
+      },
+      "FamilySectionRef": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "classNumber": {
+            "type": "string",
+            "example": "Muhibaan5"
+          },
+          "letter": {
+            "type": "string",
+            "example": "A"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "classNumber",
+          "letter"
+        ]
+      },
+      "FamilySchoolRef": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolType"
+              }
+            ]
+          },
+          "feeBand": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolFeeBand"
+              }
+            ]
+          },
+          "medium": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolMedium"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "FamilyMemberAdmission": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "branch": {
+            "$ref": "#/components/schemas/FamilyCodeRef"
+          },
+          "classLevel": {
+            "$ref": "#/components/schemas/FamilyCodeRef"
+          },
+          "section": {
+            "description": "Empty until the student is placed",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilySectionRef"
+              }
+            ]
+          },
+          "school": {
+            "description": "Empty when the admission has no school from the list (counted as unknown)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilySchoolRef"
+              }
+            ]
+          },
+          "vanRequired": {
+            "type": "boolean",
+            "description": "Uses the van"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AdmissionStatus"
+              }
+            ]
+          },
+          "isFeePaid": {
+            "type": "boolean"
+          },
+          "attending": {
+            "type": "boolean",
+            "description": "Attending this session: fee paid, and not rejected or retired as a duplicate"
+          }
+        },
+        "required": [
+          "id",
+          "sessionId",
+          "branch",
+          "classLevel",
+          "vanRequired",
+          "status",
+          "isFeePaid",
+          "attending"
+        ]
+      },
+      "FamilyRelation": {
+        "type": "string",
+        "enum": [
+          "SIBLING",
+          "HALF_SIBLING",
+          "COUSIN",
+          "WARD"
+        ],
+        "description": "SIBLING or HALF_SIBLING count in sibling studies; COUSIN and WARD only in the household"
+      },
+      "FamilyMemberEndReason": {
+        "type": "string",
+        "enum": [
+          "MOVED_OUT",
+          "LINKED_IN_ERROR"
+        ]
+      },
+      "FamilyLinkMethod": {
+        "type": "string",
+        "enum": [
+          "STAFF",
+          "FAMILY_DECLARED",
+          "ADMIN"
+        ]
+      },
+      "FamilyMemberEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "grNumber": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "fatherName": {
+            "type": "string"
+          },
+          "gender": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Gender"
+              }
+            ]
+          },
+          "dateOfBirth": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "False for a deactivated or merged record"
+          },
+          "familyId": {
+            "type": "string",
+            "description": "The student's current household, if they're in one"
+          },
+          "admission": {
+            "description": "Live admission in the session, if any",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilyMemberAdmission"
+              }
+            ]
+          },
+          "membershipId": {
+            "type": "string",
+            "description": "The membership"
+          },
+          "relation": {
+            "description": "SIBLING or HALF_SIBLING count in sibling studies; COUSIN and WARD only in the household",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilyRelation"
+              }
+            ]
+          },
+          "validFrom": {
+            "format": "date-time",
+            "type": "string",
+            "description": "In the household from (empty: always)"
+          },
+          "validTo": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Until (exclusive; empty: current)"
+          },
+          "endReason": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilyMemberEndReason"
+              }
+            ]
+          },
+          "method": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilyLinkMethod"
+              }
+            ]
+          },
+          "confirmedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "confirmedBy": {
+            "description": "The admin who confirmed it (method ADMIN)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AdminUserBase"
+              }
+            ]
+          },
+          "confirmedByStaffUser": {
+            "description": "The staff user who confirmed it (method STAFF)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StaffUserBase"
+              }
+            ]
+          },
+          "evidence": {
+            "type": "object",
+            "description": "What it was confirmed on: the sibling, the match level, score and reasons at the time"
+          }
+        },
+        "required": [
+          "id",
+          "grNumber",
+          "name",
+          "fatherName",
+          "gender",
+          "dateOfBirth",
+          "isActive",
+          "membershipId",
+          "relation",
+          "method",
+          "confirmedAt"
+        ]
+      },
+      "FamilyCountByValue": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "description": "The value, or UNKNOWN (no school from the list, or not set)"
+          },
+          "children": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "value",
+          "children"
+        ]
+      },
+      "FamilySchooling": {
+        "type": "object",
+        "properties": {
+          "byType": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FamilyCountByValue"
+            }
+          },
+          "byFeeBand": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FamilyCountByValue"
+            }
+          },
+          "byMedium": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FamilyCountByValue"
+            }
+          },
+          "topFeeBand": {
+            "type": "string",
+            "description": "Highest fee band among the children: HIGH, MEDIUM, LOW or UNKNOWN"
+          },
+          "unknownSchool": {
+            "type": "number",
+            "description": "Attending children with no school from the list"
+          }
+        },
+        "required": [
+          "byType",
+          "byFeeBand",
+          "byMedium",
+          "topFeeBand",
+          "unknownSchool"
+        ]
+      },
+      "FamilyMembershipPeriod": {
+        "type": "object",
+        "properties": {
+          "membershipId": {
+            "type": "string"
+          },
+          "studentId": {
+            "type": "string"
+          },
+          "grNumber": {
+            "type": "string"
+          },
+          "relation": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilyRelation"
+              }
+            ]
+          },
+          "validFrom": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "validTo": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "endReason": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilyMemberEndReason"
+              }
+            ]
+          },
+          "method": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilyLinkMethod"
+              }
+            ]
+          },
+          "confirmedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "membershipId",
+          "studentId",
+          "grNumber",
+          "relation",
+          "method",
+          "confirmedAt"
+        ]
+      },
+      "FamilyEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "False once closed (merged into another, or one member left)"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "closedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "mergedIntoFamilyId": {
+            "type": "string",
+            "description": "The family this one was merged into"
+          },
+          "session": {
+            "description": "The session the admissions are from",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilySessionRef"
+              }
+            ]
+          },
+          "asOf": {
+            "format": "date-time",
+            "type": "string",
+            "description": "The household is as of this moment (the session's start); empty: as it is now"
+          },
+          "members": {
+            "description": "Members at `asOf` (or now), oldest link first",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FamilyMemberEntity"
+            }
+          },
+          "childrenAttending": {
+            "type": "number",
+            "description": "Members attending the session (the whole household)"
+          },
+          "siblingsAttending": {
+            "type": "number",
+            "description": "SIBLING and HALF_SIBLING members attending"
+          },
+          "fullSiblingsAttending": {
+            "type": "number",
+            "description": "SIBLING members attending (full siblings)"
+          },
+          "childrenAdmitted": {
+            "type": "number",
+            "description": "Members with a live admission in the session"
+          },
+          "vanChildren": {
+            "type": "number",
+            "description": "Attending members who use the van"
+          },
+          "branchCodes": {
+            "description": "Branch codes of the attending members",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "splitBranches": {
+            "type": "boolean",
+            "description": "Attending members in more than one branch"
+          },
+          "splitSections": {
+            "type": "boolean",
+            "description": "Attending members in the same branch and class level but different sections (siblings in different classes are always in different sections, so those are not counted)"
+          },
+          "schooling": {
+            "$ref": "#/components/schemas/FamilySchooling"
+          },
+          "history": {
+            "description": "Every membership over time, ended ones too (family detail and student family only)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FamilyMembershipPeriod"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "isActive",
+          "createdAt",
+          "session",
+          "members",
+          "childrenAttending",
+          "siblingsAttending",
+          "fullSiblingsAttending",
+          "childrenAdmitted",
+          "vanChildren",
+          "branchCodes",
+          "splitBranches",
+          "splitSections",
+          "schooling"
+        ]
+      },
+      "ListFamiliesResponseDto": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "description": "Total number of records"
+          },
+          "session": {
+            "$ref": "#/components/schemas/FamilySessionRef"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FamilyEntity"
+            }
+          }
+        },
+        "required": [
+          "count",
+          "session",
+          "data"
+        ]
+      },
+      "FamilySearchKind": {
+        "type": "string",
+        "enum": [
+          "PHONE",
+          "FATHER_NAME",
+          "GR"
+        ]
+      },
+      "FamilySearchRowKind": {
+        "type": "string",
+        "enum": [
+          "HOUSEHOLD",
+          "POSSIBLE"
+        ]
+      },
+      "FamilySearchAreaRef": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name"
+        ]
+      },
+      "FamilySearchMatch": {
+        "type": "string",
+        "enum": [
+          "PHONE",
+          "FATHER_NAME",
+          "STUDENT_NAME",
+          "GR"
+        ],
+        "description": "What matched; empty for a member who did not"
+      },
+      "FamilySearchLatest": {
+        "type": "object",
+        "properties": {
+          "sessionId": {
+            "type": "string"
+          },
+          "sessionName": {
+            "type": "string",
+            "example": "DR1447"
+          },
+          "branchCode": {
+            "type": "string"
+          },
+          "classLevelCode": {
+            "type": "string"
+          },
+          "classLevelName": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "sessionId",
+          "sessionName",
+          "branchCode",
+          "classLevelCode",
+          "classLevelName"
+        ]
+      },
+      "FamilySearchChild": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "grNumber": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "fatherName": {
+            "type": "string"
+          },
+          "gender": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Gender"
+              }
+            ]
+          },
+          "dateOfBirth": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "matched": {
+            "type": "boolean",
+            "description": "This child matched the query (household rows list every member)"
+          },
+          "matchedOn": {
+            "type": "array",
+            "description": "What matched; empty for a member who did not",
+            "items": {
+              "$ref": "#/components/schemas/FamilySearchMatch"
+            }
+          },
+          "score": {
+            "type": "number",
+            "description": "How well this child matched, 0–100"
+          },
+          "latest": {
+            "description": "Empty when the child has no live admission",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilySearchLatest"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "grNumber",
+          "name",
+          "fatherName",
+          "gender",
+          "dateOfBirth",
+          "matched",
+          "matchedOn"
+        ]
+      },
+      "FamilySearchRow": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilySearchRowKind"
+              }
+            ]
+          },
+          "familyId": {
+            "type": "string",
+            "description": "HOUSEHOLD only"
+          },
+          "anchorStudentId": {
+            "type": "string",
+            "description": "The best-matching child; opens the possible-family page"
+          },
+          "fatherNames": {
+            "description": "Fathers' names, distinct, most common first",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "phones": {
+            "description": "Phones as stored, distinct (normalized), most common first",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "areas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FamilySearchAreaRef"
+            }
+          },
+          "schools": {
+            "description": "School names from each child's latest admission (the list's name, else the typed one)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "childrenCount": {
+            "type": "number"
+          },
+          "score": {
+            "type": "number",
+            "description": "100 for an exact phone or a GR, 90 for a partial phone, else the name score"
+          },
+          "children": {
+            "description": "Eldest first",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FamilySearchChild"
+            }
+          }
+        },
+        "required": [
+          "kind",
+          "anchorStudentId",
+          "fatherNames",
+          "phones",
+          "areas",
+          "schools",
+          "childrenCount",
+          "score",
+          "children"
+        ]
+      },
+      "FamilySearchResponseDto": {
+        "type": "object",
+        "properties": {
+          "queryKind": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilySearchKind"
+              }
+            ]
+          },
+          "normalized": {
+            "type": "string",
+            "description": "What was searched: the last 10 digits, the normalized name, or the GR"
+          },
+          "count": {
+            "type": "number",
+            "description": "Rows in all pages"
+          },
+          "truncated": {
+            "type": "boolean",
+            "description": "More than 200 students matched; only the best 200 were grouped"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FamilySearchRow"
+            }
+          }
+        },
+        "required": [
+          "queryKind",
+          "normalized",
+          "count",
+          "truncated",
+          "data"
+        ]
+      },
+      "StudentSessionRef": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "example": "DR1447"
+          },
+          "startsAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "isCurrent": {
+            "type": "boolean",
+            "description": "The current session (the newest active one)"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "isCurrent"
+        ]
+      },
+      "StudentSessionSchool": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Null for a typed name that is not on the list"
+          },
+          "name": {
+            "type": "string"
+          },
+          "kind": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolKind"
+              }
+            ]
+          },
+          "type": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolType"
+              }
+            ]
+          },
+          "medium": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolMedium"
+              }
+            ]
+          },
+          "feeBand": {
+            "nullable": true,
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SchoolFeeBand"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "FinalResultStatus": {
+        "type": "string",
+        "enum": [
+          "PASS",
+          "FAIL",
+          "TERMINATED"
+        ],
+        "description": "PASS, FAIL or TERMINATED; null while pending"
+      },
+      "StudentSessionTrainings": {
+        "type": "object",
+        "properties": {
+          "due": {
+            "type": "number"
+          },
+          "passed": {
+            "type": "number"
+          },
+          "missingCodes": {
+            "description": "Codes of the trainings due and not passed in the session",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "due",
+          "passed",
+          "missingCodes"
+        ]
+      },
+      "StudentSessionResult": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "nullable": true,
+            "description": "PASS, FAIL or TERMINATED; null while pending",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FinalResultStatus"
+              }
+            ]
+          },
+          "total": {
+            "type": "number",
+            "nullable": true
+          },
+          "maxTotal": {
+            "type": "number",
+            "nullable": true
+          },
+          "pct": {
+            "type": "number",
+            "nullable": true,
+            "description": "total ÷ maxTotal, in percent (2 decimals)"
+          },
+          "branchRank": {
+            "type": "number",
+            "nullable": true,
+            "description": "Position in session + branch + class level"
+          },
+          "rankedOf": {
+            "type": "number",
+            "nullable": true
+          },
+          "locked": {
+            "type": "boolean"
+          },
+          "theoryMarks": {
+            "type": "number",
+            "nullable": true
+          },
+          "theoryMaxMarks": {
+            "type": "number",
+            "nullable": true
+          },
+          "theoryPct": {
+            "type": "number",
+            "nullable": true
+          },
+          "wazuPct": {
+            "type": "number",
+            "nullable": true
+          },
+          "namazPct": {
+            "type": "number",
+            "nullable": true
+          },
+          "attendanceDays": {
+            "type": "number",
+            "nullable": true,
+            "description": "Days present (or late)"
+          },
+          "attendanceTotal": {
+            "type": "number",
+            "nullable": true,
+            "description": "The session's class days"
+          },
+          "attendancePct": {
+            "type": "number",
+            "nullable": true
+          },
+          "trainings": {
+            "description": "Sessions from 2026 on only (no trainings before)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StudentSessionTrainings"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "total",
+          "maxTotal",
+          "pct",
+          "branchRank",
+          "rankedOf",
+          "locked",
+          "theoryMarks",
+          "theoryMaxMarks",
+          "theoryPct",
+          "wazuPct",
+          "namazPct",
+          "attendanceDays",
+          "attendanceTotal",
+          "attendancePct"
+        ]
+      },
+      "StudentSessionAdmission": {
+        "type": "object",
+        "properties": {
+          "admissionId": {
+            "type": "string"
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "sessionName": {
+            "type": "string"
+          },
+          "branch": {
+            "$ref": "#/components/schemas/FamilyCodeRef"
+          },
+          "classLevel": {
+            "$ref": "#/components/schemas/FamilyCodeRef"
+          },
+          "sectionId": {
+            "type": "string"
+          },
+          "sectionLetter": {
+            "type": "string",
+            "example": "B"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AdmissionStatus"
+              }
+            ]
+          },
+          "isFeePaid": {
+            "type": "boolean"
+          },
+          "vanRequired": {
+            "type": "boolean",
+            "description": "Uses the van"
+          },
+          "attending": {
+            "type": "boolean",
+            "description": "Fee paid, and not rejected or retired as a duplicate"
+          },
+          "school": {
+            "nullable": true,
+            "description": "Null when no school was given",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StudentSessionSchool"
+              }
+            ]
+          },
+          "schoolClass": {
+            "type": "string",
+            "nullable": true
+          },
+          "result": {
+            "nullable": true,
+            "description": "Left out unless resultsVisible. Null when there is no final result, no part, no attendance marked and no training passed",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StudentSessionResult"
+              }
+            ]
+          }
+        },
+        "required": [
+          "admissionId",
+          "sessionId",
+          "sessionName",
+          "branch",
+          "classLevel",
+          "status",
+          "isFeePaid",
+          "vanRequired",
+          "attending",
+          "school",
+          "schoolClass"
+        ]
+      },
+      "StudentSessionsStudent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The record shown (a merged ID is followed to its survivor)"
+          },
+          "requestedId": {
+            "type": "string",
+            "description": "The ID asked for"
+          },
+          "grNumber": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "fatherName": {
+            "type": "string"
+          },
+          "gender": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Gender"
+              }
+            ]
+          },
+          "dateOfBirth": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "alternatePhone": {
+            "type": "string",
+            "nullable": true
+          },
+          "area": {
+            "$ref": "#/components/schemas/FamilySearchAreaRef"
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "familyId": {
+            "type": "string",
+            "description": "The child's current household, if any"
+          },
+          "admissions": {
+            "description": "The live admission of each session, oldest first",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StudentSessionAdmission"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "requestedId",
+          "grNumber",
+          "name",
+          "fatherName",
+          "gender",
+          "dateOfBirth",
+          "isActive",
+          "phone",
+          "alternatePhone",
+          "area",
+          "address",
+          "admissions"
+        ]
+      },
+      "StudentSessionsResponseDto": {
+        "type": "object",
+        "properties": {
+          "resultsVisible": {
+            "type": "boolean",
+            "description": "Results are shown: the admin also has reports.view or results.enter"
+          },
+          "sessions": {
+            "description": "Every session one of the students has an admission in, plus the current one, oldest first",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StudentSessionRef"
+            }
+          },
+          "students": {
+            "description": "In the order asked; one per surviving record",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StudentSessionsStudent"
+            }
+          }
+        },
+        "required": [
+          "resultsVisible",
+          "sessions",
+          "students"
+        ]
+      },
+      "FamilyCountRow": {
+        "type": "object",
+        "properties": {
+          "children": {
+            "type": "number",
+            "description": "Children attending (or on the van, for vans.byVanChildren)"
+          },
+          "families": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "children",
+          "families"
+        ]
+      },
+      "FamilySplitMember": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "string"
+          },
+          "grNumber": {
+            "type": "string"
+          },
+          "relation": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilyRelation"
+              }
+            ]
+          },
+          "branchCode": {
+            "type": "string"
+          },
+          "classLevelCode": {
+            "type": "string"
+          },
+          "section": {
+            "type": "string",
+            "description": "Section as classNumber-letter, e.g. Muhibaan5-A"
+          },
+          "vanRequired": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "studentId",
+          "grNumber",
+          "relation",
+          "branchCode",
+          "classLevelCode",
+          "vanRequired"
+        ]
+      },
+      "FamilySplitRow": {
+        "type": "object",
+        "properties": {
+          "familyId": {
+            "type": "string"
+          },
+          "members": {
+            "description": "Attending members",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FamilySplitMember"
+            }
+          }
+        },
+        "required": [
+          "familyId",
+          "members"
+        ]
+      },
+      "FamilySplitSummary": {
+        "type": "object",
+        "properties": {
+          "families": {
+            "type": "number"
+          },
+          "list": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FamilySplitRow"
+            }
+          }
+        },
+        "required": [
+          "families",
+          "list"
+        ]
+      },
+      "FamilyVanSummary": {
+        "type": "object",
+        "properties": {
+          "familiesUsingVan": {
+            "type": "number",
+            "description": "Families with at least one attending child on the van"
+          },
+          "childrenOnVan": {
+            "type": "number",
+            "description": "Attending children in families who use the van"
+          },
+          "familiesAllOnVan": {
+            "type": "number",
+            "description": "Families whose attending children all use the van"
+          },
+          "familiesMixed": {
+            "type": "number",
+            "description": "Families where some attending children use the van and some do not"
+          },
+          "byVanChildren": {
+            "description": "Families by number of children on the van (1 and up)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FamilyCountRow"
+            }
+          }
+        },
+        "required": [
+          "familiesUsingVan",
+          "childrenOnVan",
+          "familiesAllOnVan",
+          "familiesMixed",
+          "byVanChildren"
+        ]
+      },
+      "FamilyBranchRow": {
+        "type": "object",
+        "properties": {
+          "branch": {
+            "$ref": "#/components/schemas/FamilyCodeRef"
+          },
+          "families": {
+            "type": "number",
+            "description": "Families with at least one child attending in the branch"
+          },
+          "children": {
+            "type": "number",
+            "description": "Children from families attending in the branch"
+          }
+        },
+        "required": [
+          "branch",
+          "families",
+          "children"
+        ]
+      },
+      "FamilyValueFamilies": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string"
+          },
+          "families": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "value",
+          "families"
+        ]
+      },
+      "FamilyReportSchooling": {
+        "type": "object",
+        "properties": {
+          "byType": {
+            "description": "Attending children by school type",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FamilyCountByValue"
+            }
+          },
+          "byFeeBand": {
+            "description": "Attending children by fee band",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FamilyCountByValue"
+            }
+          },
+          "byMedium": {
+            "description": "Attending children by medium",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FamilyCountByValue"
+            }
+          },
+          "familiesByTopFeeBand": {
+            "description": "Households by the highest fee band among their children",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FamilyValueFamilies"
+            }
+          }
+        },
+        "required": [
+          "byType",
+          "byFeeBand",
+          "byMedium",
+          "familiesByTopFeeBand"
+        ]
+      },
+      "FamilyReportEntity": {
+        "type": "object",
+        "properties": {
+          "session": {
+            "$ref": "#/components/schemas/FamilySessionRef"
+          },
+          "asOf": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Households as of this moment (the session's start, or now)"
+          },
+          "families": {
+            "type": "number",
+            "description": "Active (confirmed) families"
+          },
+          "familiesAttending": {
+            "type": "number",
+            "description": "Families with at least one child attending the session"
+          },
+          "familiesWithSeveralAttending": {
+            "type": "number",
+            "description": "Families with two or more children attending (whole household)"
+          },
+          "familiesWithSiblingsAttending": {
+            "type": "number",
+            "description": "Families with two or more siblings attending (SIBLING and HALF_SIBLING members)"
+          },
+          "byRelation": {
+            "description": "Attending children in households by relation",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FamilyCountByValue"
+            }
+          },
+          "childrenAttending": {
+            "type": "number",
+            "description": "Children attending from confirmed families"
+          },
+          "byChildrenAttending": {
+            "description": "Families by number of children attending (0 and up)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FamilyCountRow"
+            }
+          },
+          "splitBranches": {
+            "description": "Attending siblings in more than one branch",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilySplitSummary"
+              }
+            ]
+          },
+          "splitSections": {
+            "description": "Attending siblings in the same branch and class level but different sections",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilySplitSummary"
+              }
+            ]
+          },
+          "vans": {
+            "$ref": "#/components/schemas/FamilyVanSummary"
+          },
+          "byBranch": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FamilyBranchRow"
+            }
+          },
+          "schooling": {
+            "$ref": "#/components/schemas/FamilyReportSchooling"
+          },
+          "strongSuggestionsWaiting": {
+            "type": "number",
+            "description": "Unconfirmed STRONG suggestions waiting in the review queue"
+          }
+        },
+        "required": [
+          "session",
+          "asOf",
+          "families",
+          "familiesAttending",
+          "familiesWithSeveralAttending",
+          "familiesWithSiblingsAttending",
+          "byRelation",
+          "childrenAttending",
+          "byChildrenAttending",
+          "splitBranches",
+          "splitSections",
+          "vans",
+          "byBranch",
+          "schooling",
+          "strongSuggestionsWaiting"
+        ]
+      },
+      "FamilyReportResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message of the action"
+          },
+          "data": {
+            "$ref": "#/components/schemas/FamilyReportEntity"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "SiblingLevel": {
+        "type": "string",
+        "enum": [
+          "STRONG",
+          "MEDIUM",
+          "WEAK"
+        ]
+      },
+      "FamilyStudent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "grNumber": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "fatherName": {
+            "type": "string"
+          },
+          "gender": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Gender"
+              }
+            ]
+          },
+          "dateOfBirth": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "False for a deactivated or merged record"
+          },
+          "familyId": {
+            "type": "string",
+            "description": "The student's current household, if they're in one"
+          },
+          "admission": {
+            "description": "Live admission in the session, if any",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilyMemberAdmission"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "grNumber",
+          "name",
+          "fatherName",
+          "gender",
+          "dateOfBirth",
+          "isActive"
+        ]
+      },
+      "SiblingReason": {
+        "type": "string",
+        "enum": [
+          "SHARED_PHONE",
+          "SIMILAR_FATHER_NAME",
+          "SAME_FATHER_NAME",
+          "SAME_IDENTITY_NUMBER",
+          "SAME_AREA",
+          "SIMILAR_ADDRESS",
+          "SAME_BIRTH_DATE",
+          "COMMON_PHONE"
+        ]
+      },
+      "SuggestionOutcome": {
+        "type": "string",
+        "enum": [
+          "NEW_FAMILY",
+          "JOINS_FAMILY",
+          "MERGES_FAMILIES"
+        ]
+      },
+      "SuggestionPair": {
+        "type": "object",
+        "properties": {
+          "studentA": {
+            "$ref": "#/components/schemas/FamilyStudent"
+          },
+          "studentB": {
+            "$ref": "#/components/schemas/FamilyStudent"
+          },
+          "level": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SiblingLevel"
+              }
+            ]
+          },
+          "score": {
+            "type": "number"
+          },
+          "reasons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SiblingReason"
+            }
+          },
+          "nameScore": {
+            "type": "number"
+          },
+          "fatherScore": {
+            "type": "number"
+          },
+          "outcome": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SuggestionOutcome"
+              }
+            ]
+          }
+        },
+        "required": [
+          "studentA",
+          "studentB",
+          "level",
+          "score",
+          "reasons",
+          "nameScore",
+          "fatherScore",
+          "outcome"
+        ]
+      },
+      "ListFamilySuggestionsResponseDto": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "description": "Total number of records"
+          },
+          "session": {
+            "$ref": "#/components/schemas/FamilySessionRef"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SuggestionPair"
+            }
+          }
+        },
+        "required": [
+          "count",
+          "session",
+          "data"
+        ]
+      },
+      "SiblingSuggestion": {
+        "type": "object",
+        "properties": {
+          "student": {
+            "$ref": "#/components/schemas/FamilyStudent"
+          },
+          "level": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SiblingLevel"
+              }
+            ]
+          },
+          "score": {
+            "type": "number",
+            "description": "0–99, for ranking. STRONG 80–99, MEDIUM 60–79, WEAK 30–59"
+          },
+          "reasons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SiblingReason"
+            }
+          },
+          "nameScore": {
+            "type": "number",
+            "description": "Name similarity, 0–100"
+          },
+          "fatherScore": {
+            "type": "number",
+            "description": "Father name similarity, 0–100"
+          },
+          "outcome": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SuggestionOutcome"
+              }
+            ]
+          }
+        },
+        "required": [
+          "student",
+          "level",
+          "score",
+          "reasons",
+          "nameScore",
+          "fatherScore",
+          "outcome"
+        ]
+      },
+      "DuplicateReason": {
+        "type": "string",
+        "enum": [
+          "NEAR_IDENTICAL_NAME",
+          "SAME_BIRTH_DATE",
+          "CLOSE_BIRTH_DATE",
+          "SHARED_PHONE",
+          "SAME_IDENTITY_NUMBER"
+        ]
+      },
+      "DuplicateSuggestion": {
+        "type": "object",
+        "properties": {
+          "student": {
+            "$ref": "#/components/schemas/FamilyStudent"
+          },
+          "score": {
+            "type": "number",
+            "description": "0–99"
+          },
+          "reasons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DuplicateReason"
+            }
+          },
+          "mergePreviewPath": {
+            "type": "string",
+            "example": "/admin/students/merge/preview",
+            "description": "Possibly the same person: check with the merge flow, not as a sibling"
+          }
+        },
+        "required": [
+          "student",
+          "score",
+          "reasons",
+          "mergePreviewPath"
+        ]
+      },
+      "StudentFamilyEntity": {
+        "type": "object",
+        "properties": {
+          "student": {
+            "description": "The student (the survivor, when the ID asked for was merged)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilyStudent"
+              }
+            ]
+          },
+          "requestedStudentId": {
+            "type": "string",
+            "description": "The student ID that was asked for"
+          },
+          "family": {
+            "description": "Empty when the student is in no family",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilyEntity"
+              }
+            ]
+          },
+          "suggestions": {
+            "description": "Strongest first",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SiblingSuggestion"
+            }
+          },
+          "possibleDuplicates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DuplicateSuggestion"
+            }
+          }
+        },
+        "required": [
+          "student",
+          "requestedStudentId",
+          "suggestions",
+          "possibleDuplicates"
+        ]
+      },
+      "StudentFamilyResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message of the action"
+          },
+          "data": {
+            "$ref": "#/components/schemas/StudentFamilyEntity"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "ConfirmSiblingsDto": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "string"
+          },
+          "otherStudentId": {
+            "type": "string"
+          },
+          "confirmNotDuplicate": {
+            "type": "boolean",
+            "default": false,
+            "description": "Confirm even though the pair looks like one person (near-identical name and birth date). Check the merge flow first"
+          },
+          "relation": {
+            "default": "SIBLING",
+            "description": "Recorded on the memberships this confirmation creates (change it later with PATCH)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilyRelation"
+              }
+            ]
+          },
+          "note": {
+            "type": "string",
+            "description": "Optional note, kept with the confirmation and in the audit log"
+          }
+        },
+        "required": [
+          "studentId",
+          "otherStudentId"
+        ]
+      },
+      "FamilyLinkOutcome": {
+        "type": "string",
+        "enum": [
+          "CREATED",
+          "ADDED",
+          "MERGED",
+          "ALREADY_LINKED"
+        ]
+      },
+      "ConfirmSiblingsResult": {
+        "type": "object",
+        "properties": {
+          "outcome": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilyLinkOutcome"
+              }
+            ]
+          },
+          "family": {
+            "$ref": "#/components/schemas/FamilyEntity"
+          },
+          "mergedFamilyId": {
+            "type": "string",
+            "description": "The family merged into this one (MERGED)"
+          },
+          "clearedRejection": {
+            "type": "boolean",
+            "description": "A \"not siblings\" mark on this pair was removed"
+          }
+        },
+        "required": [
+          "outcome",
+          "family",
+          "clearedRejection"
+        ]
+      },
+      "ConfirmSiblingsResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message of the action"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ConfirmSiblingsResult"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "BulkConfirmPairDto": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "string"
+          },
+          "otherStudentId": {
+            "type": "string"
+          },
+          "relation": {
+            "default": "SIBLING",
+            "description": "Recorded on the memberships this confirmation creates",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilyRelation"
+              }
+            ]
+          }
+        },
+        "required": [
+          "studentId",
+          "otherStudentId"
+        ]
+      },
+      "BulkConfirmFilterDto": {
+        "type": "object",
+        "properties": {
+          "minLevel": {
+            "default": "STRONG",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SiblingLevel"
+              }
+            ]
+          },
+          "branchId": {
+            "type": "string",
+            "description": "Pairs with a student in this branch"
+          },
+          "sessionId": {
+            "type": "string",
+            "description": "For admittedOnly and branchId. Default: the current session"
+          },
+          "admittedOnly": {
+            "type": "boolean",
+            "default": false,
+            "description": "Only pairs where both are admitted in the session"
+          },
+          "limit": {
+            "type": "number",
+            "default": 500,
+            "description": "Strongest pairs first, at most 500 per call; call again for the rest"
+          }
+        }
+      },
+      "ConfirmSiblingsBulkDto": {
+        "type": "object",
+        "properties": {
+          "pairs": {
+            "description": "Explicit pairs (at most 500)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BulkConfirmPairDto"
+            }
+          },
+          "filter": {
+            "description": "Or: the review-queue pairs these filters select",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BulkConfirmFilterDto"
+              }
+            ]
+          },
+          "dryRun": {
+            "type": "boolean",
+            "default": false,
+            "description": "Count the pairs and what confirming would do, without writing"
+          },
+          "note": {
+            "type": "string",
+            "description": "Kept with each confirmation and in the audit log"
+          }
+        }
+      },
+      "BulkConfirmCount": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "pairs": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "code",
+          "pairs"
+        ]
+      },
+      "BulkConfirmStatus": {
+        "type": "string",
+        "enum": [
+          "CONFIRMED",
+          "SKIPPED",
+          "REFUSED",
+          "WOULD_CONFIRM"
+        ]
+      },
+      "BulkConfirmPairResult": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "string"
+          },
+          "otherStudentId": {
+            "type": "string"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BulkConfirmStatus"
+              }
+            ]
+          },
+          "outcome": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilyLinkOutcome"
+              }
+            ]
+          },
+          "familyId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "description": "Why it was refused or skipped: POSSIBLE_DUPLICATE, STUDENT_INACTIVE, NOT_FOUND, SAME_STUDENT, ALREADY_LINKED, or ERROR"
+          }
+        },
+        "required": [
+          "studentId",
+          "otherStudentId",
+          "status"
+        ]
+      },
+      "ConfirmSiblingsBulkResult": {
+        "type": "object",
+        "properties": {
+          "dryRun": {
+            "type": "boolean"
+          },
+          "pairs": {
+            "type": "number",
+            "description": "Pairs considered in this call"
+          },
+          "remaining": {
+            "type": "number",
+            "description": "Filter mode: queue pairs left beyond `limit`"
+          },
+          "confirmed": {
+            "type": "number",
+            "description": "Confirmed (dryRun: would be confirmed)"
+          },
+          "skipped": {
+            "type": "number"
+          },
+          "refused": {
+            "type": "number"
+          },
+          "reasons": {
+            "description": "Skipped and refused pairs by code",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BulkConfirmCount"
+            }
+          },
+          "outcomes": {
+            "description": "Confirmed pairs by outcome (CREATED, ADDED, MERGED)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BulkConfirmCount"
+            }
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BulkConfirmPairResult"
+            }
+          }
+        },
+        "required": [
+          "dryRun",
+          "pairs",
+          "remaining",
+          "confirmed",
+          "skipped",
+          "refused",
+          "reasons",
+          "outcomes",
+          "results"
+        ]
+      },
+      "ConfirmSiblingsBulkResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ConfirmSiblingsBulkResult"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "RejectSiblingsDto": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "string"
+          },
+          "otherStudentId": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "studentId",
+          "otherStudentId"
+        ]
+      },
+      "FamilyRejectedPairEntity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "studentAId": {
+            "type": "string"
+          },
+          "studentBId": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "rejectedBy": {
+            "$ref": "#/components/schemas/AdminUserBase"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "studentAId",
+          "studentBId",
+          "createdAt"
+        ]
+      },
+      "RejectSiblingsResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message of the action"
+          },
+          "data": {
+            "$ref": "#/components/schemas/FamilyRejectedPairEntity"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "DetailFamilyResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message of the action"
+          },
+          "data": {
+            "$ref": "#/components/schemas/FamilyEntity"
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "UpdateFamilyMembershipDto": {
+        "type": "object",
+        "properties": {
+          "relation": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilyRelation"
+              }
+            ]
+          },
+          "validFrom": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true,
+            "description": "In the household from this date. Null: always (counts for every past session)"
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      },
+      "FamilyMembershipResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message of the action"
+          },
+          "data": {
+            "description": "The household afterwards, as it is now. Closed when no current members are left",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilyEntity"
+              }
+            ]
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "EndFamilyMembershipDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "description": "MOVED_OUT: the child left on `effectiveDate` and still counts before then. LINKED_IN_ERROR: the link never counts, in any session",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FamilyMemberEndReason"
+              }
+            ]
+          },
+          "effectiveDate": {
+            "format": "date-time",
+            "type": "string",
+            "description": "MOVED_OUT only: when they left (default now; not in the future, not before they joined)"
+          },
+          "note": {
+            "type": "string"
+          },
+          "markNotSiblings": {
+            "type": "boolean",
+            "default": false,
+            "description": "Also mark the child \"not siblings\" with every remaining current member, so they are not suggested again"
+          }
+        },
+        "required": [
+          "reason"
         ]
       },
       "SessionDashboardSessionRef": {
@@ -33042,14 +36157,6 @@
           "admissionId",
           "part",
           "source"
-        ]
-      },
-      "FinalResultStatus": {
-        "type": "string",
-        "enum": [
-          "PASS",
-          "FAIL",
-          "TERMINATED"
         ]
       },
       "FinalResultInputDto": {

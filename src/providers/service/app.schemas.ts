@@ -507,6 +507,8 @@ export const Permission = {
   trainingsoverride: 'trainings.override',
   trainingspayouts: 'trainings.payouts',
   reportschat: 'reports.chat',
+  familiesread: 'families.read',
+  familiesmanage: 'families.manage',
 } as const;
 
 export interface PermissionDefinition {
@@ -2772,6 +2774,817 @@ export interface ListLikelyDuplicatesResponseDto {
   count: number;
   /** Strongest matches first */
   data: LikelyDuplicate[];
+}
+
+export type FamilyRelationScope = (typeof FamilyRelationScope)[keyof typeof FamilyRelationScope];
+
+export const FamilyRelationScope = {
+  HOUSEHOLD: 'HOUSEHOLD',
+  SIBLINGS: 'SIBLINGS',
+  FULL_SIBLINGS: 'FULL_SIBLINGS',
+} as const;
+
+export type FamilySplit = (typeof FamilySplit)[keyof typeof FamilySplit];
+
+export const FamilySplit = {
+  BRANCHES: 'BRANCHES',
+  SECTIONS: 'SECTIONS',
+  ANY: 'ANY',
+} as const;
+
+export type FamilySortBy = (typeof FamilySortBy)[keyof typeof FamilySortBy];
+
+export const FamilySortBy = {
+  childrenAttending: 'childrenAttending',
+  createdAt: 'createdAt',
+} as const;
+
+export interface FamilySessionRef {
+  id: string;
+  name: string;
+}
+
+export interface FamilyCodeRef {
+  id: string;
+  code: string;
+  name: string;
+}
+
+export interface FamilySectionRef {
+  id: string;
+  classNumber: string;
+  letter: string;
+  name?: string;
+}
+
+export interface FamilySchoolRef {
+  id: string;
+  name: string;
+  type?: SchoolType;
+  feeBand?: SchoolFeeBand;
+  medium?: SchoolMedium;
+}
+
+export interface FamilyMemberAdmission {
+  id: string;
+  sessionId: string;
+  branch: FamilyCodeRef;
+  classLevel: FamilyCodeRef;
+  /** Empty until the student is placed */
+  section?: FamilySectionRef;
+  /** Empty when the admission has no school from the list (counted as unknown) */
+  school?: FamilySchoolRef;
+  /** Uses the van */
+  vanRequired: boolean;
+  status: AdmissionStatus;
+  isFeePaid: boolean;
+  /** Attending this session: fee paid, and not rejected or retired as a duplicate */
+  attending: boolean;
+}
+
+/**
+ * SIBLING or HALF_SIBLING count in sibling studies; COUSIN and WARD only in the household
+ */
+export type FamilyRelation = (typeof FamilyRelation)[keyof typeof FamilyRelation];
+
+export const FamilyRelation = {
+  SIBLING: 'SIBLING',
+  HALF_SIBLING: 'HALF_SIBLING',
+  COUSIN: 'COUSIN',
+  WARD: 'WARD',
+} as const;
+
+export type FamilyMemberEndReason = (typeof FamilyMemberEndReason)[keyof typeof FamilyMemberEndReason];
+
+export const FamilyMemberEndReason = {
+  MOVED_OUT: 'MOVED_OUT',
+  LINKED_IN_ERROR: 'LINKED_IN_ERROR',
+} as const;
+
+export type FamilyLinkMethod = (typeof FamilyLinkMethod)[keyof typeof FamilyLinkMethod];
+
+export const FamilyLinkMethod = {
+  STAFF: 'STAFF',
+  FAMILY_DECLARED: 'FAMILY_DECLARED',
+  ADMIN: 'ADMIN',
+} as const;
+
+/**
+ * What it was confirmed on: the sibling, the match level, score and reasons at the time
+ */
+export type FamilyMemberEntityEvidence = { [key: string]: unknown };
+
+export interface FamilyMemberEntity {
+  id: string;
+  grNumber: string;
+  name: string;
+  fatherName: string;
+  gender: Gender;
+  dateOfBirth: string;
+  /** False for a deactivated or merged record */
+  isActive: boolean;
+  /** The student's current household, if they're in one */
+  familyId?: string;
+  /** Live admission in the session, if any */
+  admission?: FamilyMemberAdmission;
+  /** The membership */
+  membershipId: string;
+  /** SIBLING or HALF_SIBLING count in sibling studies; COUSIN and WARD only in the household */
+  relation: FamilyRelation;
+  /** In the household from (empty: always) */
+  validFrom?: string;
+  /** Until (exclusive; empty: current) */
+  validTo?: string;
+  endReason?: FamilyMemberEndReason;
+  method: FamilyLinkMethod;
+  confirmedAt: string;
+  /** The admin who confirmed it (method ADMIN) */
+  confirmedBy?: AdminUserBase;
+  /** The staff user who confirmed it (method STAFF) */
+  confirmedByStaffUser?: StaffUserBase;
+  /** What it was confirmed on: the sibling, the match level, score and reasons at the time */
+  evidence?: FamilyMemberEntityEvidence;
+}
+
+export interface FamilyCountByValue {
+  /** The value, or UNKNOWN (no school from the list, or not set) */
+  value: string;
+  children: number;
+}
+
+export interface FamilySchooling {
+  byType: FamilyCountByValue[];
+  byFeeBand: FamilyCountByValue[];
+  byMedium: FamilyCountByValue[];
+  /** Highest fee band among the children: HIGH, MEDIUM, LOW or UNKNOWN */
+  topFeeBand: string;
+  /** Attending children with no school from the list */
+  unknownSchool: number;
+}
+
+export interface FamilyMembershipPeriod {
+  membershipId: string;
+  studentId: string;
+  grNumber: string;
+  relation: FamilyRelation;
+  validFrom?: string;
+  validTo?: string;
+  endReason?: FamilyMemberEndReason;
+  method: FamilyLinkMethod;
+  confirmedAt: string;
+}
+
+export interface FamilyEntity {
+  id: string;
+  /** False once closed (merged into another, or one member left) */
+  isActive: boolean;
+  createdAt: string;
+  closedAt?: string;
+  /** The family this one was merged into */
+  mergedIntoFamilyId?: string;
+  /** The session the admissions are from */
+  session: FamilySessionRef;
+  /** The household is as of this moment (the session's start); empty: as it is now */
+  asOf?: string;
+  /** Members at `asOf` (or now), oldest link first */
+  members: FamilyMemberEntity[];
+  /** Members attending the session (the whole household) */
+  childrenAttending: number;
+  /** SIBLING and HALF_SIBLING members attending */
+  siblingsAttending: number;
+  /** SIBLING members attending (full siblings) */
+  fullSiblingsAttending: number;
+  /** Members with a live admission in the session */
+  childrenAdmitted: number;
+  /** Attending members who use the van */
+  vanChildren: number;
+  /** Branch codes of the attending members */
+  branchCodes: string[];
+  /** Attending members in more than one branch */
+  splitBranches: boolean;
+  /** Attending members in the same branch and class level but different sections (siblings in different classes are always in different sections, so those are not counted) */
+  splitSections: boolean;
+  schooling: FamilySchooling;
+  /** Every membership over time, ended ones too (family detail and student family only) */
+  history?: FamilyMembershipPeriod[];
+}
+
+export interface ListFamiliesResponseDto {
+  /** Total number of records */
+  count: number;
+  session: FamilySessionRef;
+  data: FamilyEntity[];
+}
+
+export type FamilySearchKind = (typeof FamilySearchKind)[keyof typeof FamilySearchKind];
+
+export const FamilySearchKind = {
+  PHONE: 'PHONE',
+  FATHER_NAME: 'FATHER_NAME',
+  GR: 'GR',
+} as const;
+
+export type FamilySearchRowKind = (typeof FamilySearchRowKind)[keyof typeof FamilySearchRowKind];
+
+export const FamilySearchRowKind = {
+  HOUSEHOLD: 'HOUSEHOLD',
+  POSSIBLE: 'POSSIBLE',
+} as const;
+
+export interface FamilySearchAreaRef {
+  id: string;
+  code: string;
+  name: string;
+}
+
+/**
+ * What matched; empty for a member who did not
+ */
+export type FamilySearchMatch = (typeof FamilySearchMatch)[keyof typeof FamilySearchMatch];
+
+export const FamilySearchMatch = {
+  PHONE: 'PHONE',
+  FATHER_NAME: 'FATHER_NAME',
+  STUDENT_NAME: 'STUDENT_NAME',
+  GR: 'GR',
+} as const;
+
+export interface FamilySearchLatest {
+  sessionId: string;
+  sessionName: string;
+  branchCode: string;
+  classLevelCode: string;
+  classLevelName: string;
+}
+
+export interface FamilySearchChild {
+  id: string;
+  grNumber: string;
+  name: string;
+  fatherName: string;
+  gender: Gender;
+  dateOfBirth: string;
+  /** This child matched the query (household rows list every member) */
+  matched: boolean;
+  /** What matched; empty for a member who did not */
+  matchedOn: FamilySearchMatch[];
+  /** How well this child matched, 0–100 */
+  score?: number;
+  /** Empty when the child has no live admission */
+  latest?: FamilySearchLatest;
+}
+
+export interface FamilySearchRow {
+  kind: FamilySearchRowKind;
+  /** HOUSEHOLD only */
+  familyId?: string;
+  /** The best-matching child; opens the possible-family page */
+  anchorStudentId: string;
+  /** Fathers' names, distinct, most common first */
+  fatherNames: string[];
+  /** Phones as stored, distinct (normalized), most common first */
+  phones: string[];
+  areas: FamilySearchAreaRef[];
+  /** School names from each child's latest admission (the list's name, else the typed one) */
+  schools: string[];
+  childrenCount: number;
+  /** 100 for an exact phone or a GR, 90 for a partial phone, else the name score */
+  score: number;
+  /** Eldest first */
+  children: FamilySearchChild[];
+}
+
+export interface FamilySearchResponseDto {
+  queryKind: FamilySearchKind;
+  /** What was searched: the last 10 digits, the normalized name, or the GR */
+  normalized: string;
+  /** Rows in all pages */
+  count: number;
+  /** More than 200 students matched; only the best 200 were grouped */
+  truncated: boolean;
+  data: FamilySearchRow[];
+}
+
+export interface StudentSessionRef {
+  id: string;
+  name: string;
+  startsAt?: string;
+  /** The current session (the newest active one) */
+  isCurrent: boolean;
+}
+
+export interface StudentSessionSchool {
+  /**
+   * Null for a typed name that is not on the list
+   * @nullable
+   */
+  id: string | null;
+  name: string;
+  kind?: SchoolKind | null;
+  type?: SchoolType | null;
+  medium?: SchoolMedium | null;
+  feeBand?: SchoolFeeBand | null;
+}
+
+/**
+ * PASS, FAIL or TERMINATED; null while pending
+ */
+export type FinalResultStatus = (typeof FinalResultStatus)[keyof typeof FinalResultStatus];
+
+export const FinalResultStatus = {
+  PASS: 'PASS',
+  FAIL: 'FAIL',
+  TERMINATED: 'TERMINATED',
+} as const;
+
+export interface StudentSessionTrainings {
+  due: number;
+  passed: number;
+  /** Codes of the trainings due and not passed in the session */
+  missingCodes: string[];
+}
+
+export interface StudentSessionResult {
+  /** PASS, FAIL or TERMINATED; null while pending */
+  status: FinalResultStatus | null;
+  /** @nullable */
+  total: number | null;
+  /** @nullable */
+  maxTotal: number | null;
+  /**
+   * total ÷ maxTotal, in percent (2 decimals)
+   * @nullable
+   */
+  pct: number | null;
+  /**
+   * Position in session + branch + class level
+   * @nullable
+   */
+  branchRank: number | null;
+  /** @nullable */
+  rankedOf: number | null;
+  locked: boolean;
+  /** @nullable */
+  theoryMarks: number | null;
+  /** @nullable */
+  theoryMaxMarks: number | null;
+  /** @nullable */
+  theoryPct: number | null;
+  /** @nullable */
+  wazuPct: number | null;
+  /** @nullable */
+  namazPct: number | null;
+  /**
+   * Days present (or late)
+   * @nullable
+   */
+  attendanceDays: number | null;
+  /**
+   * The session's class days
+   * @nullable
+   */
+  attendanceTotal: number | null;
+  /** @nullable */
+  attendancePct: number | null;
+  /** Sessions from 2026 on only (no trainings before) */
+  trainings?: StudentSessionTrainings;
+}
+
+export interface StudentSessionAdmission {
+  admissionId: string;
+  sessionId: string;
+  sessionName: string;
+  branch: FamilyCodeRef;
+  classLevel: FamilyCodeRef;
+  sectionId?: string;
+  sectionLetter?: string;
+  status: AdmissionStatus;
+  isFeePaid: boolean;
+  /** Uses the van */
+  vanRequired: boolean;
+  /** Fee paid, and not rejected or retired as a duplicate */
+  attending: boolean;
+  /**
+   * Null when no school was given
+   * @nullable
+   */
+  school: StudentSessionSchool | null;
+  /** @nullable */
+  schoolClass: string | null;
+  /**
+   * Left out unless resultsVisible. Null when there is no final result, no part, no attendance marked and no training passed
+   * @nullable
+   */
+  result?: StudentSessionResult | null;
+}
+
+export interface StudentSessionsStudent {
+  /** The record shown (a merged ID is followed to its survivor) */
+  id: string;
+  /** The ID asked for */
+  requestedId: string;
+  grNumber: string;
+  name: string;
+  fatherName: string;
+  gender: Gender;
+  dateOfBirth: string;
+  isActive: boolean;
+  phone: string;
+  /** @nullable */
+  alternatePhone: string | null;
+  area: FamilySearchAreaRef;
+  /** @nullable */
+  address: string | null;
+  /** The child's current household, if any */
+  familyId?: string;
+  /** The live admission of each session, oldest first */
+  admissions: StudentSessionAdmission[];
+}
+
+export interface StudentSessionsResponseDto {
+  /** Results are shown: the admin also has reports.view or results.enter */
+  resultsVisible: boolean;
+  /** Every session one of the students has an admission in, plus the current one, oldest first */
+  sessions: StudentSessionRef[];
+  /** In the order asked; one per surviving record */
+  students: StudentSessionsStudent[];
+}
+
+export interface FamilyCountRow {
+  /** Children attending (or on the van, for vans.byVanChildren) */
+  children: number;
+  families: number;
+}
+
+export interface FamilySplitMember {
+  studentId: string;
+  grNumber: string;
+  relation: FamilyRelation;
+  branchCode: string;
+  classLevelCode: string;
+  /** Section as classNumber-letter, e.g. Muhibaan5-A */
+  section?: string;
+  vanRequired: boolean;
+}
+
+export interface FamilySplitRow {
+  familyId: string;
+  /** Attending members */
+  members: FamilySplitMember[];
+}
+
+export interface FamilySplitSummary {
+  families: number;
+  list: FamilySplitRow[];
+}
+
+export interface FamilyVanSummary {
+  /** Families with at least one attending child on the van */
+  familiesUsingVan: number;
+  /** Attending children in families who use the van */
+  childrenOnVan: number;
+  /** Families whose attending children all use the van */
+  familiesAllOnVan: number;
+  /** Families where some attending children use the van and some do not */
+  familiesMixed: number;
+  /** Families by number of children on the van (1 and up) */
+  byVanChildren: FamilyCountRow[];
+}
+
+export interface FamilyBranchRow {
+  branch: FamilyCodeRef;
+  /** Families with at least one child attending in the branch */
+  families: number;
+  /** Children from families attending in the branch */
+  children: number;
+}
+
+export interface FamilyValueFamilies {
+  value: string;
+  families: number;
+}
+
+export interface FamilyReportSchooling {
+  /** Attending children by school type */
+  byType: FamilyCountByValue[];
+  /** Attending children by fee band */
+  byFeeBand: FamilyCountByValue[];
+  /** Attending children by medium */
+  byMedium: FamilyCountByValue[];
+  /** Households by the highest fee band among their children */
+  familiesByTopFeeBand: FamilyValueFamilies[];
+}
+
+export interface FamilyReportEntity {
+  session: FamilySessionRef;
+  /** Households as of this moment (the session's start, or now) */
+  asOf: string;
+  /** Active (confirmed) families */
+  families: number;
+  /** Families with at least one child attending the session */
+  familiesAttending: number;
+  /** Families with two or more children attending (whole household) */
+  familiesWithSeveralAttending: number;
+  /** Families with two or more siblings attending (SIBLING and HALF_SIBLING members) */
+  familiesWithSiblingsAttending: number;
+  /** Attending children in households by relation */
+  byRelation: FamilyCountByValue[];
+  /** Children attending from confirmed families */
+  childrenAttending: number;
+  /** Families by number of children attending (0 and up) */
+  byChildrenAttending: FamilyCountRow[];
+  /** Attending siblings in more than one branch */
+  splitBranches: FamilySplitSummary;
+  /** Attending siblings in the same branch and class level but different sections */
+  splitSections: FamilySplitSummary;
+  vans: FamilyVanSummary;
+  byBranch: FamilyBranchRow[];
+  schooling: FamilyReportSchooling;
+  /** Unconfirmed STRONG suggestions waiting in the review queue */
+  strongSuggestionsWaiting: number;
+}
+
+export interface FamilyReportResponseDto {
+  /** Message of the action */
+  message: string;
+  data: FamilyReportEntity;
+}
+
+export type SiblingLevel = (typeof SiblingLevel)[keyof typeof SiblingLevel];
+
+export const SiblingLevel = {
+  STRONG: 'STRONG',
+  MEDIUM: 'MEDIUM',
+  WEAK: 'WEAK',
+} as const;
+
+export interface FamilyStudent {
+  id: string;
+  grNumber: string;
+  name: string;
+  fatherName: string;
+  gender: Gender;
+  dateOfBirth: string;
+  /** False for a deactivated or merged record */
+  isActive: boolean;
+  /** The student's current household, if they're in one */
+  familyId?: string;
+  /** Live admission in the session, if any */
+  admission?: FamilyMemberAdmission;
+}
+
+export type SiblingReason = (typeof SiblingReason)[keyof typeof SiblingReason];
+
+export const SiblingReason = {
+  SHARED_PHONE: 'SHARED_PHONE',
+  SIMILAR_FATHER_NAME: 'SIMILAR_FATHER_NAME',
+  SAME_FATHER_NAME: 'SAME_FATHER_NAME',
+  SAME_IDENTITY_NUMBER: 'SAME_IDENTITY_NUMBER',
+  SAME_AREA: 'SAME_AREA',
+  SIMILAR_ADDRESS: 'SIMILAR_ADDRESS',
+  SAME_BIRTH_DATE: 'SAME_BIRTH_DATE',
+  COMMON_PHONE: 'COMMON_PHONE',
+} as const;
+
+export type SuggestionOutcome = (typeof SuggestionOutcome)[keyof typeof SuggestionOutcome];
+
+export const SuggestionOutcome = {
+  NEW_FAMILY: 'NEW_FAMILY',
+  JOINS_FAMILY: 'JOINS_FAMILY',
+  MERGES_FAMILIES: 'MERGES_FAMILIES',
+} as const;
+
+export interface SuggestionPair {
+  studentA: FamilyStudent;
+  studentB: FamilyStudent;
+  level: SiblingLevel;
+  score: number;
+  reasons: SiblingReason[];
+  nameScore: number;
+  fatherScore: number;
+  outcome: SuggestionOutcome;
+}
+
+export interface ListFamilySuggestionsResponseDto {
+  /** Total number of records */
+  count: number;
+  session: FamilySessionRef;
+  data: SuggestionPair[];
+}
+
+export interface SiblingSuggestion {
+  student: FamilyStudent;
+  level: SiblingLevel;
+  /** 0–99, for ranking. STRONG 80–99, MEDIUM 60–79, WEAK 30–59 */
+  score: number;
+  reasons: SiblingReason[];
+  /** Name similarity, 0–100 */
+  nameScore: number;
+  /** Father name similarity, 0–100 */
+  fatherScore: number;
+  outcome: SuggestionOutcome;
+}
+
+export type DuplicateReason = (typeof DuplicateReason)[keyof typeof DuplicateReason];
+
+export const DuplicateReason = {
+  NEAR_IDENTICAL_NAME: 'NEAR_IDENTICAL_NAME',
+  SAME_BIRTH_DATE: 'SAME_BIRTH_DATE',
+  CLOSE_BIRTH_DATE: 'CLOSE_BIRTH_DATE',
+  SHARED_PHONE: 'SHARED_PHONE',
+  SAME_IDENTITY_NUMBER: 'SAME_IDENTITY_NUMBER',
+} as const;
+
+export interface DuplicateSuggestion {
+  student: FamilyStudent;
+  /** 0–99 */
+  score: number;
+  reasons: DuplicateReason[];
+  /** Possibly the same person: check with the merge flow, not as a sibling */
+  mergePreviewPath: string;
+}
+
+export interface StudentFamilyEntity {
+  /** The student (the survivor, when the ID asked for was merged) */
+  student: FamilyStudent;
+  /** The student ID that was asked for */
+  requestedStudentId: string;
+  /** Empty when the student is in no family */
+  family?: FamilyEntity;
+  /** Strongest first */
+  suggestions: SiblingSuggestion[];
+  possibleDuplicates: DuplicateSuggestion[];
+}
+
+export interface StudentFamilyResponseDto {
+  /** Message of the action */
+  message: string;
+  data: StudentFamilyEntity;
+}
+
+export interface ConfirmSiblingsDto {
+  studentId: string;
+  otherStudentId: string;
+  /** Confirm even though the pair looks like one person (near-identical name and birth date). Check the merge flow first */
+  confirmNotDuplicate?: boolean;
+  /** Recorded on the memberships this confirmation creates (change it later with PATCH) */
+  relation?: FamilyRelation;
+  /** Optional note, kept with the confirmation and in the audit log */
+  note?: string;
+}
+
+export type FamilyLinkOutcome = (typeof FamilyLinkOutcome)[keyof typeof FamilyLinkOutcome];
+
+export const FamilyLinkOutcome = {
+  CREATED: 'CREATED',
+  ADDED: 'ADDED',
+  MERGED: 'MERGED',
+  ALREADY_LINKED: 'ALREADY_LINKED',
+} as const;
+
+export interface ConfirmSiblingsResult {
+  outcome: FamilyLinkOutcome;
+  family: FamilyEntity;
+  /** The family merged into this one (MERGED) */
+  mergedFamilyId?: string;
+  /** A "not siblings" mark on this pair was removed */
+  clearedRejection: boolean;
+}
+
+export interface ConfirmSiblingsResponseDto {
+  /** Message of the action */
+  message: string;
+  data: ConfirmSiblingsResult;
+}
+
+export interface BulkConfirmPairDto {
+  studentId: string;
+  otherStudentId: string;
+  /** Recorded on the memberships this confirmation creates */
+  relation?: FamilyRelation;
+}
+
+export interface BulkConfirmFilterDto {
+  minLevel?: SiblingLevel;
+  /** Pairs with a student in this branch */
+  branchId?: string;
+  /** For admittedOnly and branchId. Default: the current session */
+  sessionId?: string;
+  /** Only pairs where both are admitted in the session */
+  admittedOnly?: boolean;
+  /** Strongest pairs first, at most 500 per call; call again for the rest */
+  limit?: number;
+}
+
+export interface ConfirmSiblingsBulkDto {
+  /** Explicit pairs (at most 500) */
+  pairs?: BulkConfirmPairDto[];
+  /** Or: the review-queue pairs these filters select */
+  filter?: BulkConfirmFilterDto;
+  /** Count the pairs and what confirming would do, without writing */
+  dryRun?: boolean;
+  /** Kept with each confirmation and in the audit log */
+  note?: string;
+}
+
+export interface BulkConfirmCount {
+  code: string;
+  pairs: number;
+}
+
+export type BulkConfirmStatus = (typeof BulkConfirmStatus)[keyof typeof BulkConfirmStatus];
+
+export const BulkConfirmStatus = {
+  CONFIRMED: 'CONFIRMED',
+  SKIPPED: 'SKIPPED',
+  REFUSED: 'REFUSED',
+  WOULD_CONFIRM: 'WOULD_CONFIRM',
+} as const;
+
+export interface BulkConfirmPairResult {
+  studentId: string;
+  otherStudentId: string;
+  status: BulkConfirmStatus;
+  outcome?: FamilyLinkOutcome;
+  familyId?: string;
+  /** Why it was refused or skipped: POSSIBLE_DUPLICATE, STUDENT_INACTIVE, NOT_FOUND, SAME_STUDENT, ALREADY_LINKED, or ERROR */
+  code?: string;
+}
+
+export interface ConfirmSiblingsBulkResult {
+  dryRun: boolean;
+  /** Pairs considered in this call */
+  pairs: number;
+  /** Filter mode: queue pairs left beyond `limit` */
+  remaining: number;
+  /** Confirmed (dryRun: would be confirmed) */
+  confirmed: number;
+  skipped: number;
+  refused: number;
+  /** Skipped and refused pairs by code */
+  reasons: BulkConfirmCount[];
+  /** Confirmed pairs by outcome (CREATED, ADDED, MERGED) */
+  outcomes: BulkConfirmCount[];
+  results: BulkConfirmPairResult[];
+}
+
+export interface ConfirmSiblingsBulkResponseDto {
+  message: string;
+  data: ConfirmSiblingsBulkResult;
+}
+
+export interface RejectSiblingsDto {
+  studentId: string;
+  otherStudentId: string;
+  reason?: string;
+}
+
+export interface FamilyRejectedPairEntity {
+  id: string;
+  studentAId: string;
+  studentBId: string;
+  reason?: string;
+  rejectedBy?: AdminUserBase;
+  createdAt: string;
+}
+
+export interface RejectSiblingsResponseDto {
+  /** Message of the action */
+  message: string;
+  data: FamilyRejectedPairEntity;
+}
+
+export interface DetailFamilyResponseDto {
+  /** Message of the action */
+  message: string;
+  data: FamilyEntity;
+}
+
+export interface UpdateFamilyMembershipDto {
+  relation?: FamilyRelation;
+  /**
+   * In the household from this date. Null: always (counts for every past session)
+   * @nullable
+   */
+  validFrom?: string | null;
+  reason?: string;
+}
+
+export interface FamilyMembershipResponseDto {
+  /** Message of the action */
+  message: string;
+  /** The household afterwards, as it is now. Closed when no current members are left */
+  data: FamilyEntity;
+}
+
+export interface EndFamilyMembershipDto {
+  /** MOVED_OUT: the child left on `effectiveDate` and still counts before then. LINKED_IN_ERROR: the link never counts, in any session */
+  reason: FamilyMemberEndReason;
+  /** MOVED_OUT only: when they left (default now; not in the future, not before they joined) */
+  effectiveDate?: string;
+  note?: string;
+  /** Also mark the child "not siblings" with every remaining current member, so they are not suggested again */
+  markNotSiblings?: boolean;
 }
 
 export interface SessionDashboardSessionRef {
@@ -5384,14 +6197,6 @@ export interface ResultPartInputDto {
   /** WAZU and NAMAZ only. Replaces the stored steps. */
   steps?: ResultStepInputDto[];
 }
-
-export type FinalResultStatus = (typeof FinalResultStatus)[keyof typeof FinalResultStatus];
-
-export const FinalResultStatus = {
-  PASS: 'PASS',
-  FAIL: 'FAIL',
-  TERMINATED: 'TERMINATED',
-} as const;
 
 export interface FinalResultInputDto {
   admissionId: string;
@@ -8592,6 +9397,93 @@ export const StudentMergeControllerFindAllSortOrder = {
   asc: 'asc',
   desc: 'desc',
 } as const;
+
+export type FamiliesControllerFindAllParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: FamiliesControllerFindAllSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+  /** Default: the current session (the newest active one), with households as they are now. Given: households as of the session's start */
+  sessionId?: string;
+  /** Families with a child attending in this branch */
+  branchId?: string;
+  /** Which members count towards minChildren and the sort */
+  relationScope?: FamilyRelationScope;
+  /** At least this many children attending the session */
+  minChildren?: number;
+  /** Only families split this way */
+  split?: FamilySplit;
+  /** Families with a member whose GR (current) is this */
+  gr?: string;
+  sortBy?: FamilySortBy;
+};
+
+export type FamiliesControllerFindAllSortOrder =
+  (typeof FamiliesControllerFindAllSortOrder)[keyof typeof FamiliesControllerFindAllSortOrder];
+
+export const FamiliesControllerFindAllSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type FamiliesControllerSearchParams = {
+  /** A GR (current or alias), a phone (no letters, 7+ digits: exact on 10 digits, else the end of the number), or a name (3+ letters: father's name, or the child's) */
+  q: string;
+  skip?: number;
+  take?: number;
+};
+
+export type FamiliesControllerStudentSessionsParams = {
+  /** Student IDs, comma-separated (1 to 30). A merged ID is followed to its survivor */
+  studentIds: string;
+};
+
+export type FamiliesControllerReportParams = {
+  /** Default: the current session (the newest active one), with the household as it is now. Given: the household as of the session's start */
+  sessionId?: string;
+};
+
+export type FamiliesControllerSuggestionsParams = {
+  /** Number of records to skip */
+  skip?: number;
+  /** Number of records to take */
+  take?: number;
+  /** Sort direction */
+  sortOrder?: FamiliesControllerSuggestionsSortOrder;
+  /** Include deactivated records */
+  includeInActive?: boolean;
+  /** Session whose admissions are shown (and filtered on). Default: the current session */
+  sessionId?: string;
+  /** Only pairs where both have a live admission in the session */
+  admittedOnly?: boolean;
+  /** Pairs with a student in this branch (the session's admission, else the student's) */
+  branchId?: string;
+  minLevel?: SiblingLevel;
+};
+
+export type FamiliesControllerSuggestionsSortOrder =
+  (typeof FamiliesControllerSuggestionsSortOrder)[keyof typeof FamiliesControllerSuggestionsSortOrder];
+
+export const FamiliesControllerSuggestionsSortOrder = {
+  asc: 'asc',
+  desc: 'desc',
+} as const;
+
+export type FamiliesControllerStudentFamilyParams = {
+  /** Default: the current session (the newest active one), with the household as it is now. Given: the household as of the session's start */
+  sessionId?: string;
+  /** Include WEAK suggestions (a shared phone only) */
+  includeWeak?: boolean;
+};
+
+export type FamiliesControllerFindOneParams = {
+  /** Default: the current session (the newest active one), with the household as it is now. Given: the household as of the session's start */
+  sessionId?: string;
+};
 
 export type SessionDashboardControllerGetOverviewParams = {
   /** The session to monitor. Default: the active session. */
