@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useIntl } from 'react-intl';
 
-import { Autocomplete, Chip, CircularProgress, TextField, Typography } from '@mui/material';
+import { Autocomplete, Chip, CircularProgress, MenuItem, TextField, Typography } from '@mui/material';
 
 import { Area, School, SchoolKind } from '@/providers/service/app.schemas';
 import { useAreaControllerFindAll } from '@/providers/service/area/area';
@@ -18,7 +18,7 @@ import { useSnackbarContext } from '@/contexts/SnackbarContext';
 import { extractNetworkError } from '@/utils/extractNetworkError';
 
 import messages from '../messages';
-import { isSchoolQueryKey } from '../rules';
+import { Attribute, ATTRIBUTE_VALUES, isSchoolQueryKey } from '../rules';
 
 type Msg = { id: string; defaultMessage: string };
 
@@ -38,6 +38,83 @@ export const KIND_LABELS: Record<SchoolKind, Msg> = {
 };
 
 export const KINDS = Object.keys(KIND_LABELS) as SchoolKind[];
+
+/** Each detail's label and its values' labels, in core's order */
+export const ATTRIBUTE_LABELS: Record<Attribute, { label: Msg; values: Record<string, Msg> }> = {
+  type: {
+    label: messages.type,
+    values: {
+      GOVERNMENT: messages.typeGOVERNMENT,
+      PRIVATE: messages.typePRIVATE,
+      TRUST: messages.typeTRUST,
+      MADRASSA: messages.typeMADRASSA,
+    },
+  },
+  feeBand: {
+    label: messages.feeBand,
+    values: { LOW: messages.feeBandLOW, MEDIUM: messages.feeBandMEDIUM, HIGH: messages.feeBandHIGH },
+  },
+  medium: {
+    label: messages.medium,
+    values: { ENGLISH: messages.mediumENGLISH, URDU: messages.mediumURDU },
+  },
+};
+
+/** A type, fee band or medium select. The empty choice is "Not set" (or what `emptyLabel` says). */
+export function AttributeSelect({
+  attribute,
+  value,
+  onChange,
+  emptyLabel,
+  size = 'medium',
+  variant = 'outlined',
+  label = true,
+  disabled,
+  fullWidth = true,
+}: {
+  attribute: Attribute;
+  value: string | null | undefined;
+  onChange: (value: string) => void;
+  emptyLabel?: Msg;
+  size?: 'small' | 'medium';
+  variant?: 'outlined' | 'standard';
+  /** Show the field's label (off in table cells, where the column says it) */
+  label?: boolean;
+  disabled?: boolean;
+  fullWidth?: boolean;
+}) {
+  const intl = useIntl();
+  const { label: fieldLabel, values } = ATTRIBUTE_LABELS[attribute];
+  return (
+    <TextField
+      select
+      size={size}
+      variant={variant}
+      fullWidth={fullWidth}
+      disabled={disabled}
+      label={label ? intl.formatMessage(fieldLabel) : undefined}
+      value={value ?? ''}
+      onChange={(e) => onChange(e.target.value)}
+      slotProps={{
+        select: { displayEmpty: true },
+        inputLabel: { shrink: true },
+        htmlInput: { 'aria-label': intl.formatMessage(fieldLabel) },
+      }}
+      sx={variant === 'standard' ? { '& .MuiInput-root::before': { borderBottomColor: 'transparent' } } : undefined}
+    >
+      <MenuItem value="">
+        <Typography component="span" variant="inherit" color="text.secondary">
+          {intl.formatMessage(emptyLabel ?? messages.notSet)}
+        </Typography>
+      </MenuItem>
+      {ATTRIBUTE_VALUES[attribute].map((v) => (
+        <MenuItem key={v} value={v}>
+          {intl.formatMessage(values[v])}
+        </MenuItem>
+      ))}
+    </TextField>
+  );
+}
 
 /** Fetches every school query again: the list, each school and the unmatched names */
 export function useRefreshSchools() {

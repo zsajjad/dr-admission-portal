@@ -45,6 +45,43 @@ export default defineMessages({
   kindUNIVERSITY: { id: `${scope}.kindUNIVERSITY`, defaultMessage: 'University' },
   kindMADRASA: { id: `${scope}.kindMADRASA`, defaultMessage: 'Madrassa' },
 
+  // Type, fee band and medium: set once per school, for each family's schooling picture
+  type: { id: `${scope}.type`, defaultMessage: 'Type' },
+  typeGOVERNMENT: { id: `${scope}.typeGOVERNMENT`, defaultMessage: 'Government' },
+  typePRIVATE: { id: `${scope}.typePRIVATE`, defaultMessage: 'Private' },
+  typeTRUST: { id: `${scope}.typeTRUST`, defaultMessage: 'Trust or semi-government' },
+  typeMADRASSA: { id: `${scope}.typeMADRASSA`, defaultMessage: 'Madrassa' },
+  feeBand: { id: `${scope}.feeBand`, defaultMessage: 'Fee band' },
+  feeBandLOW: { id: `${scope}.feeBandLOW`, defaultMessage: 'Low fee' },
+  feeBandMEDIUM: { id: `${scope}.feeBandMEDIUM`, defaultMessage: 'Medium fee' },
+  feeBandHIGH: { id: `${scope}.feeBandHIGH`, defaultMessage: 'High fee' },
+  medium: { id: `${scope}.medium`, defaultMessage: 'Medium' },
+  mediumENGLISH: { id: `${scope}.mediumENGLISH`, defaultMessage: 'English' },
+  mediumURDU: { id: `${scope}.mediumURDU`, defaultMessage: 'Urdu' },
+  detailsMissing: { id: `${scope}.detailsMissing`, defaultMessage: 'Details missing' },
+  detailsAll: { id: `${scope}.detailsAll`, defaultMessage: 'All' },
+  detailsMissingOnly: {
+    id: `${scope}.detailsMissingOnly`,
+    defaultMessage: 'Type, fee band or medium missing',
+  },
+  missingChip: { id: `${scope}.missingChip`, defaultMessage: 'Details missing' },
+  setForSelected: { id: `${scope}.setForSelected`, defaultMessage: 'Set for the selected' },
+  keepAsIs: { id: `${scope}.keepAsIs`, defaultMessage: 'Keep as is' },
+  apply: { id: `${scope}.apply`, defaultMessage: 'Apply' },
+  applying: { id: `${scope}.applying`, defaultMessage: 'Saving {done} of {total}…' },
+  applied: {
+    id: `${scope}.applied`,
+    defaultMessage: '{count, plural, one {# school updated} other {# schools updated}}',
+  },
+  appliedWithFailures: {
+    id: `${scope}.appliedWithFailures`,
+    defaultMessage: '{done} updated, {failed} not saved: {names}',
+  },
+  attributesHelp: {
+    id: `${scope}.attributesHelp`,
+    defaultMessage: 'Set once per school; they give each family a picture of where its children study.',
+  },
+
   // Status filter
   activeOnly: { id: `${scope}.activeOnly`, defaultMessage: 'Active only' },
   activeAndInactive: { id: `${scope}.activeAndInactive`, defaultMessage: 'Active and inactive' },
@@ -53,7 +90,7 @@ export default defineMessages({
   listHelp: {
     id: `${scope}.listHelp`,
     defaultMessage:
-      'The schools, colleges and universities families pick on the admission form. Search matches every spelling. Open a school to change its name, areas or spellings, or to merge a duplicate into it.',
+      'The schools, colleges and universities families pick on the admission form. Search matches every spelling. Set type, fee band and medium right in the table, or select several schools and set them together. Open a school to change its name, areas or spellings, or to merge a duplicate into it.',
   },
   addSchool: { id: `${scope}.addSchool`, defaultMessage: 'Add school' },
   noSchools: { id: `${scope}.noSchools`, defaultMessage: 'No schools found' },

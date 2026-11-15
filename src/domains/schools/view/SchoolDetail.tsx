@@ -46,6 +46,8 @@ import { extractNetworkError } from '@/utils/extractNetworkError';
 
 import {
   areaLabel,
+  ATTRIBUTE_LABELS,
+  AttributeSelect,
   AreasSelect,
   KIND_LABELS,
   KINDS,
@@ -55,7 +57,7 @@ import {
 } from '../components/common';
 import { MergeDialog } from '../components/dialogs';
 import messages from '../messages';
-import { cleanSpellings } from '../rules';
+import { Attribute, ATTRIBUTES, cleanSpellings, isMissingDetails } from '../rules';
 
 /** A titled card on the school's page */
 function Section({ title, help, children }: { title: string; help?: string; children: React.ReactNode }) {
@@ -76,13 +78,20 @@ function Section({ title, help, children }: { title: string; help?: string; chil
   );
 }
 
-interface FormValues {
+interface FormValues extends Record<Attribute, string> {
   name: string;
   kind: SchoolKind;
   areaIds: string[];
 }
 
-const toValues = (s: School): FormValues => ({ name: s.name, kind: s.kind, areaIds: [...s.areaIds] });
+const toValues = (s: School): FormValues => ({
+  name: s.name,
+  kind: s.kind,
+  areaIds: [...s.areaIds],
+  type: s.type ?? '',
+  feeBand: s.feeBand ?? '',
+  medium: s.medium ?? '',
+});
 
 /** Only the fields that changed, so a save never touches the rest */
 function changes(school: School, v: FormValues): UpdateSchoolDto {
@@ -92,6 +101,10 @@ function changes(school: School, v: FormValues): UpdateSchoolDto {
   if (v.kind !== school.kind) dto.kind = v.kind;
   const sameAreas = v.areaIds.length === school.areaIds.length && v.areaIds.every((id) => school.areaIds.includes(id));
   if (!sameAreas) dto.areaIds = v.areaIds;
+  // An emptied detail is sent as null, which clears it
+  for (const a of ATTRIBUTES) {
+    if (v[a] !== (school[a] ?? '')) Object.assign(dto, { [a]: v[a] || null });
+  }
   return dto;
 }
 
@@ -119,7 +132,7 @@ function DetailsForm({ school }: { school: School }) {
   };
 
   return (
-    <Section title={intl.formatMessage(messages.details)}>
+    <Section title={intl.formatMessage(messages.details)} help={intl.formatMessage(messages.attributesHelp)}>
       <Stack component="form" spacing={2} onSubmit={submit} noValidate>
         <Grid container spacing={2}>
           <Grid size={{ xs: 12, md: 8 }}>
@@ -148,6 +161,11 @@ function DetailsForm({ school }: { school: School }) {
               ))}
             </TextField>
           </Grid>
+          {ATTRIBUTES.map((a) => (
+            <Grid key={a} size={{ xs: 12, md: 4 }}>
+              <AttributeSelect attribute={a} value={values[a]} onChange={(v) => setValues({ ...values, [a]: v })} />
+            </Grid>
+          ))}
           <Grid size={{ xs: 12 }}>
             <AreasSelect
               value={values.areaIds}
@@ -320,9 +338,24 @@ export function SchoolDetail({ id }: { id: string }) {
       </Box>
       <DetailHeader
         title={school.name}
-        chips={<Chip size="small" variant="outlined" label={intl.formatMessage(KIND_LABELS[school.kind])} />}
+        chips={
+          <>
+            <Chip size="small" variant="outlined" label={intl.formatMessage(KIND_LABELS[school.kind])} />
+            {isMissingDetails(school) && (
+              <Chip size="small" color="warning" variant="outlined" label={intl.formatMessage(messages.missingChip)} />
+            )}
+          </>
+        }
         isActive={isActive}
         fields={[
+          ...ATTRIBUTES.map((a) => {
+            const value = school[a];
+            return {
+              key: a,
+              label: intl.formatMessage(ATTRIBUTE_LABELS[a].label),
+              value: value ? intl.formatMessage(ATTRIBUTE_LABELS[a].values[value]) : undefined,
+            };
+          }),
           {
             key: 'admissions',
             label: intl.formatMessage(messages.admissions),

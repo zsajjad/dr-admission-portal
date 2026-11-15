@@ -12,6 +12,8 @@ import { RequirePermission } from '@/components/RequirePermission';
 
 import { FormattedMessage } from '@/theme/FormattedMessage';
 
+import { usePermissions } from '@/hooks/usePermissions';
+
 import { routes } from '@/router/routes';
 import { useQueryParams } from '@/router/useQueryParams';
 
@@ -21,8 +23,9 @@ import messages from '../messages';
 export function SchoolsShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { setParam } = useQueryParams();
+  const { isAdmin } = usePermissions();
   const current = pathname.startsWith(routes.schools.unmatched) ? routes.schools.unmatched : routes.schools.listing;
-  const onList = pathname === routes.schools.listing;
+  const onList = pathname === routes.schools.listing && isAdmin;
 
   return (
     <Stack>

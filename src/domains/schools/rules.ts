@@ -47,3 +47,28 @@ export async function runInBatches<T>(
   }
   return { done, failed };
 }
+
+/** The three details staff set once per school (core: type, feeBand, medium) */
+export const ATTRIBUTES = ['type', 'feeBand', 'medium'] as const;
+export type Attribute = (typeof ATTRIBUTES)[number];
+
+export const ATTRIBUTE_VALUES = {
+  type: ['GOVERNMENT', 'PRIVATE', 'TRUST', 'MADRASSA'],
+  feeBand: ['LOW', 'MEDIUM', 'HIGH'],
+  medium: ['ENGLISH', 'URDU'],
+} as const satisfies Record<Attribute, readonly string[]>;
+
+/** True when a school has no type, fee band or medium yet */
+export function isMissingDetails(school: Partial<Record<Attribute, string | null>>): boolean {
+  return ATTRIBUTES.some((a) => !school[a]);
+}
+
+/** The update for a bulk change: only the details the admin chose (an empty choice keeps each school's own) */
+export function bulkChanges(choice: Partial<Record<Attribute, string>>): Partial<Record<Attribute, string>> {
+  const dto: Partial<Record<Attribute, string>> = {};
+  for (const a of ATTRIBUTES) {
+    const value = choice[a];
+    if (value && (ATTRIBUTE_VALUES[a] as readonly string[]).includes(value)) dto[a] = value;
+  }
+  return dto;
+}

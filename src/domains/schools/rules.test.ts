@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { cleanSpellings, isSchoolQueryKey, namesOf, runInBatches } from './rules.ts';
+import { bulkChanges, cleanSpellings, isMissingDetails, isSchoolQueryKey, namesOf, runInBatches } from './rules.ts';
 
 describe('school query keys', () => {
   it('matches the list, a school and the unmatched names', () => {
@@ -65,5 +65,24 @@ describe('batches', () => {
 
   it('does nothing for no items', async () => {
     assert.deepEqual(await runInBatches([], async () => undefined), { done: 0, failed: [] });
+  });
+});
+
+describe('type, fee band and medium', () => {
+  it('a school misses details until all three are set', () => {
+    assert.equal(isMissingDetails({}), true);
+    assert.equal(isMissingDetails({ type: 'PRIVATE', feeBand: 'LOW' }), true);
+    assert.equal(isMissingDetails({ type: 'PRIVATE', feeBand: 'LOW', medium: null }), true);
+    assert.equal(isMissingDetails({ type: 'PRIVATE', feeBand: 'LOW', medium: 'URDU' }), false);
+  });
+
+  it('a bulk change sends only the chosen details', () => {
+    assert.deepEqual(bulkChanges({ type: 'GOVERNMENT', feeBand: '', medium: undefined }), { type: 'GOVERNMENT' });
+    assert.deepEqual(bulkChanges({ feeBand: 'HIGH', medium: 'ENGLISH' }), { feeBand: 'HIGH', medium: 'ENGLISH' });
+    assert.deepEqual(bulkChanges({}), {});
+  });
+
+  it('a bulk change ignores values core does not have', () => {
+    assert.deepEqual(bulkChanges({ type: 'MADRASA', medium: 'SINDHI' }), {});
   });
 });

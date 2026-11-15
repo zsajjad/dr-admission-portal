@@ -9,7 +9,7 @@ import { Alert, Box, Button, Grid, MenuItem, Stack, TextField, Typography } from
 
 import { ActionDialog } from '@/domains/trainings/components/ActionDialog';
 
-import { School, SchoolKind, UnmatchedSchoolName } from '@/providers/service/app.schemas';
+import { CreateSchoolDto, School, SchoolKind, UnmatchedSchoolName } from '@/providers/service/app.schemas';
 import {
   useSchoolControllerAddAliases,
   useSchoolControllerCreate,
@@ -20,9 +20,18 @@ import {
 import { extractNetworkError } from '@/utils/extractNetworkError';
 
 import messages from '../messages';
-import { cleanSpellings, namesOf } from '../rules';
+import { Attribute, ATTRIBUTES, bulkChanges, cleanSpellings, namesOf } from '../rules';
 
-import { AreasSelect, KIND_LABELS, KINDS, SchoolPicker, SpellingsInput, useNotify, useRefreshSchools } from './common';
+import {
+  AreasSelect,
+  AttributeSelect,
+  KIND_LABELS,
+  KINDS,
+  SchoolPicker,
+  SpellingsInput,
+  useNotify,
+  useRefreshSchools,
+} from './common';
 
 /** A new school, empty or from an unmatched typed name (whose admissions are then linked to it) */
 export function CreateSchoolDialog({
@@ -46,10 +55,12 @@ export function CreateSchoolDialog({
   const [kind, setKind] = useState<SchoolKind>('SCHOOL');
   const [areaIds, setAreaIds] = useState<string[]>([]);
   const [aliases, setAliases] = useState<string[]>([]);
+  const [details, setDetails] = useState<Partial<Record<Attribute, string>>>({});
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open) return;
+    setDetails({});
     setName(from?.name ?? '');
     setKind('SCHOOL');
     setAreaIds([]);
@@ -64,7 +75,13 @@ export function CreateSchoolDialog({
     try {
       const trimmed = name.replace(/\s+/g, ' ').trim();
       const res = await create.mutateAsync({
-        data: { name: trimmed, kind, areaIds, aliases: cleanSpellings(aliases, [trimmed]) },
+        data: {
+          name: trimmed,
+          kind,
+          areaIds,
+          aliases: cleanSpellings(aliases, [trimmed]),
+          ...(bulkChanges(details) as Partial<CreateSchoolDto>),
+        },
       });
       // Creating a school adds its spellings but links nothing; this links the admissions that used them
       if (from) {
@@ -120,6 +137,17 @@ export function CreateSchoolDialog({
               ))}
             </TextField>
           </Grid>
+        </Grid>
+        <Grid container spacing={2}>
+          {ATTRIBUTES.map((a) => (
+            <Grid key={a} size={{ xs: 12, sm: 4 }}>
+              <AttributeSelect
+                attribute={a}
+                value={details[a]}
+                onChange={(v) => setDetails((d) => ({ ...d, [a]: v || undefined }))}
+              />
+            </Grid>
+          ))}
         </Grid>
         <SpellingsInput
           value={aliases}
