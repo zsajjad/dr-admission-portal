@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 
 import { Alert, Grid, Stack, Typography } from '@mui/material';
 
+import { StudentFamilyCard } from '@/domains/families/components/StudentFamilyCard';
 import { useSessions } from '@/domains/trainings/components/useCurrentSession';
 import { useTrainingsAccess } from '@/domains/trainings/permissions';
 import { StudentSessionTrainingsCard } from '@/domains/trainings/view/enrollments/StudentTrainingsView';
@@ -31,7 +32,7 @@ import messages from '../../messages';
 
 /**
  * Everything about one student, from GET /students/:id/profile, ordered for the days classes run:
- * who they are and where they sit this session, this session's attendance and Fiqh trainings,
+ * who they are and where they sit this session, their family (or possible siblings), this session's attendance and Fiqh trainings,
  * last year's result, the last two admissions side by side, every admission in full, then identity and documents.
  */
 export function StudentProfileView({ studentId }: { studentId: string }) {
@@ -100,6 +101,9 @@ export function StudentProfileView({ studentId }: { studentId: string }) {
       )}
 
       <ProfileHeader profile={profile} current={current} />
+
+      {/* Family: the confirmed household, else one line of possible siblings that opens in place */}
+      <StudentFamilyCard studentId={profile.student.id} />
 
       {/* This session */}
       <Grid container spacing={2.5}>

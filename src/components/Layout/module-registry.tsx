@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 
+import { FAMILY_REPORT_READ } from '@/domains/families/permissions';
 import { TRAININGS_READ } from '@/domains/trainings/permissions';
 
 import { Permission } from '@/providers/service/app.schemas';
@@ -67,6 +68,12 @@ export const MODULE_REGISTRY = {
     title: <FormattedMessage {...messages.students} />,
     href: routes.students.listing,
     icon: 'students',
+  },
+  families: {
+    title: <FormattedMessage {...messages.families} />,
+    href: routes.families.listing,
+    icon: 'families',
+    permissions: FAMILY_REPORT_READ,
   },
   studentMerge: {
     title: <FormattedMessage {...messages.studentMerge} />,

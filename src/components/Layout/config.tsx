@@ -26,7 +26,7 @@ const NAV_GROUPS: NavGroupConfig[] = [
   {
     key: 'admissions',
     heading: navMessages.admissions,
-    items: ['admission', 'students', 'studentMerge', 'printing', 'interactionReport'],
+    items: ['admission', 'students', 'families', 'studentMerge', 'printing', 'interactionReport'],
   },
   {
     key: 'session',
