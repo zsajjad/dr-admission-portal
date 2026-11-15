@@ -399,7 +399,6 @@ export function LinkAdmissionsDialog({
             {intl.formatMessage(messages.linkAllDryRun, {
               checked: preview.checked,
               linked: preview.linked,
-              unmatched: preview.unmatched,
             })}
           </Alert>
         )}

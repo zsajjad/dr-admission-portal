@@ -130,7 +130,7 @@ export function UnmatchedNames() {
         <Box sx={{ ...cardStyle, py: 1.5, bgcolor: 'var(--mui-palette-brand-goldSoft)' }}>
           <Stack direction="row" spacing={1.5} alignItems="center" flexWrap="wrap" useFlexGap>
             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-              {intl.formatMessage(messages.selected, { count: selected.length })}
+              {intl.formatMessage(messages.namesSelected, { count: selected.length })}
             </Typography>
             <Button size="small" variant="contained" onClick={() => setLinking(selected)}>
               {intl.formatMessage(messages.linkSelected)}

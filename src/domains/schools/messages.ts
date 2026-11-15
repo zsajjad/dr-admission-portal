@@ -98,6 +98,10 @@ export default defineMessages({
     id: `${scope}.selected`,
     defaultMessage: '{count, plural, one {# school selected} other {# schools selected}}',
   },
+  namesSelected: {
+    id: `${scope}.namesSelected`,
+    defaultMessage: '{count, plural, one {# name selected} other {# names selected}}',
+  },
   clearSelection: { id: `${scope}.clearSelection`, defaultMessage: 'Clear' },
   mergeSelected: { id: `${scope}.mergeSelected`, defaultMessage: 'Merge these two' },
   admissionsUnknown: {
@@ -161,12 +165,12 @@ export default defineMessages({
   mergeSummary: {
     id: `${scope}.mergeSummary`,
     defaultMessage:
-      '“{remove}” will be deleted. Its {count, plural, =0 {admissions} one {# admission} other {# admissions}}, spellings and areas move to “{keep}”, which keeps its own name.',
+      '“{remove}” will be deleted. Its {count, plural, =0 {admissions} one {# admission} other {# admissions}}, spellings and areas move to “{keep}”. It keeps its own name, type, fee band and medium; any it hasn’t set come from the deleted one.',
   },
   mergeSummaryNoCount: {
     id: `${scope}.mergeSummaryNoCount`,
     defaultMessage:
-      '“{remove}” will be deleted. Its admissions, spellings and areas move to “{keep}”, which keeps its own name.',
+      '“{remove}” will be deleted. Its admissions, spellings and areas move to “{keep}”. It keeps its own name, type, fee band and medium; any it hasn’t set come from the deleted one.',
   },
   mergeCannotUndo: { id: `${scope}.mergeCannotUndo`, defaultMessage: 'This can’t be undone.' },
   mergeConfirm: { id: `${scope}.mergeConfirm`, defaultMessage: 'Merge' },
@@ -222,8 +226,9 @@ export default defineMessages({
   linkAllDryRun: {
     id: `${scope}.linkAllDryRun`,
     defaultMessage:
-      '{checked, plural, =0 {No admissions have} one {# admission has} other {# admissions have}} a typed school name and no school. {linked, plural, =0 {None match} one {# matches} other {# match}} a school’s spelling and can be linked; {unmatched} still match none.',
+      '{checked, plural, =0 {No admissions have} one {# admission has} other {# admissions have}} a typed school name and no school. {linked, plural, =0 {None of them match a school’s spelling yet.} one {# matches a school’s spelling and can be linked.} other {# match a school’s spelling and can be linked.}}',
   },
+
   linkAllHelp: {
     id: `${scope}.linkAllHelp`,
     defaultMessage:
